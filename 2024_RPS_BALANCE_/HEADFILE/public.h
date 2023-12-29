@@ -60,6 +60,7 @@ else if(val>=max)\
 #include "DJI_MOTOR.h"
 #include "LK_TECH.h"
 #include "REMOTE.h"
+#include "PM01.h"
 
 
 /****************BSP**********************/

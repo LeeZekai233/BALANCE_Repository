@@ -489,6 +489,11 @@
               <FileType>1</FileType>
               <FilePath>..\EMBEDDED\senior\CH100\CH100.c</FilePath>
             </File>
+            <File>
+              <FileName>PM01.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\EMBEDDED\senior\PM01\PM01.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

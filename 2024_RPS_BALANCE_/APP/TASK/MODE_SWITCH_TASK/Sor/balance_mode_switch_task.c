@@ -20,10 +20,10 @@ void balance_mode_switch_task(void)
     {
         if (b_chassis.ctrl_mode != CHASSIS_INIT)
         {
-            b_chassis.chassis_dynemic_ref.vy = (RC_CtrlData.rc.ch1- (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * 0.002f;
+            b_chassis.chassis_dynemic_ref.vy = (RC_CtrlData.rc.ch1- (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * 0.003f;
             b_chassis.chassis_dynemic_ref.vx = (RC_CtrlData.rc.ch0- (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * 0.001f;
             b_chassis.chassis_dynemic_ref.vw = (RC_CtrlData.rc.ch2 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * 0.005f;
-            VAL_LIMIT(b_chassis.chassis_dynemic_ref.vy,-2.5,2.5);
+            VAL_LIMIT(b_chassis.chassis_dynemic_ref.vy,-1.5,1.5);
             VAL_LIMIT(b_chassis.chassis_dynemic_ref.vx,-2,2);
             VAL_LIMIT(b_chassis.chassis_dynemic_ref.vw,-5,5);
         }
@@ -35,7 +35,7 @@ void balance_mode_switch_task(void)
 	    {
 		    b_chassis.ctrl_mode = CHASSIS_INIT;
 	    }
-			if(b_chassis.ctrl_mode == CHASSIS_SEPARATE&&fabs(chassis_gyro.pitch_Angle)>10)
+			if(b_chassis.ctrl_mode == CHASSIS_SEPARATE&&fabs(chassis_gyro.pitch_Angle)>12)
 			{
 				b_chassis.ctrl_mode = CHASSIS_INIT;
 			}

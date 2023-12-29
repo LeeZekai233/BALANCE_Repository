@@ -184,7 +184,7 @@ void balance_task(void)
 	b_chassis.balance_loop.state_err[4] = -(b_chassis.balance_loop.phi);
 	b_chassis.balance_loop.state_err[5] = -(b_chassis.balance_loop.dphi);
     //对腿变化加速度的限制
-    VAL_LIMIT(b_chassis.balance_loop.state_err[3], -3, 3);
+    VAL_LIMIT(b_chassis.balance_loop.state_err[3], -2.5, 2.5);
 
     //lqr未离地增益计算
     float V_T_gain = b_chassis.balance_loop.k[0][3] * b_chassis.balance_loop.state_err[3];
