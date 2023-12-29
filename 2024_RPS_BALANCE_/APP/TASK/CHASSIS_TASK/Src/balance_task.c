@@ -279,7 +279,59 @@ void balance_task(void)
     
 }
 
+/**
+************************************************************************************************************************
+* @Name     : power_limit_handle
+* @brief    : 功率控制的主函数
+* @param		: None
+* @retval   : void
+* @Note     : 
+************************************************************************************************************************
+**/
 
+void power_limit_handle(void)
+{
+    b_chassis.Max_power_to_PM01 = input_power_cal();
+}
+
+/**
+************************************************************************************************************************
+* @Name     : input_power_cal
+* @brief    : 计算发送给功率控制板的最大功率值
+* @retval   : Max_Power
+* @Note     : 在此处处理缓冲功率
+************************************************************************************************************************
+**/
+
+float input_power_cal(void)
+{
+    float Max_Power = judge_rece_mesg.game_robot_state.chassis_power_limit +
+                      (judge_rece_mesg.power_heat_data.chassis_power_buffer - 5) * 2;
+
+    if (capacitance_message.cap_voltage_filte >= 23.0)
+    {
+        Max_Power = (23.7 - capacitance_message.cap_voltage_filte) * 150;
+        VAL_LIMIT(Max_Power, 0, judge_rece_mesg.game_robot_state.chassis_power_limit + (judge_rece_mesg.power_heat_data.chassis_power_buffer - 5) * 2);
+    }
+    //	Max_Power=50;
+    if (capacitance_message.cap_voltage_filte >= 23.7)
+    {
+        Max_Power = 0;
+    }
+
+    VAL_LIMIT(Max_Power, 0, 150);
+    return Max_Power;
+}
+
+/**
+************************************************************************************************************************
+* @Name     : get_the_limite_rate
+* @brief    : 根据给定最大功率求出最优功率限制系数
+* @param		: max_power
+* @retval   : 二次方程的根（可以优化！10.13）
+* @Note     :
+************************************************************************************************************************
+**/
 void balance_param_init(void)
 {
     memset(&b_chassis, 0, sizeof(Balance_chassis_t));

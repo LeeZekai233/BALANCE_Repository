@@ -24,7 +24,8 @@
         "cstdint": "c",
         "balance_mode_switch_task.h": "c",
         "balance_task.h": "c",
-        "mileage.h": "c"
+        "mileage.h": "c",
+        "pm01.h": "c"
     },
     "C_Cpp.errorSquiggles": "enabled"
 }

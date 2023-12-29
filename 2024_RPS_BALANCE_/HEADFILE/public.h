@@ -61,7 +61,7 @@ else if(val>=max)\
 #include "LK_TECH.h"
 #include "REMOTE.h"
 #include "PM01.h"
-
+#include "JUDGE.h"
 
 /****************BSP**********************/
 #include "BSP.h"

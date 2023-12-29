@@ -138,7 +138,8 @@ typedef struct
 	pid_t roll_pid;
 	
 	pid_t Init_Tp_pid;
-
+    
+	u16 Max_power_to_PM01;
 	//tqouce
 	double joint_T[4];
 	double driving_T[2];
@@ -149,6 +150,10 @@ void chasis_standup_handle(void);
 void chassis_seperate_handle(void);
 void balance_chassis_task(void);
 void balance_task(void);
+
+void power_limit_handle(void);
+float input_power_cal(void);
+
 void balance_param_init(void);
 void lqr_k(double L0, double K[12]);
 uint8_t wheel_state_estimate(leg_state_t* leg);

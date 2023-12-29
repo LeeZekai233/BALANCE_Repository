@@ -494,6 +494,11 @@
               <FileType>1</FileType>
               <FilePath>..\EMBEDDED\senior\PM01\PM01.c</FilePath>
             </File>
+            <File>
+              <FileName>JUDGE.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\EMBEDDED\senior\JUDGE\JUDGE.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
