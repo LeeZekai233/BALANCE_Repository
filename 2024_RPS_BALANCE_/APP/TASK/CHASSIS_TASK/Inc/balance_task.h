@@ -6,6 +6,8 @@
 #define BODY_MASS 8.438
 #define WHEEL_MASS 2.268
 #define T_MAX 10 
+#define WARNING_VOLTAGE 10
+#define POWER_LIMIT 0
 #define TIME_STEP 2
 
 
@@ -74,7 +76,7 @@ typedef struct
 	float vy;
 	float vw;
 	float roll;
-	float theta;
+	float pitch;
 	float leglength;
 }chassis_ref_t;
 
@@ -140,6 +142,9 @@ typedef struct
 	pid_t Init_Tp_pid;
     
 	u16 Max_power_to_PM01;
+	float predict_power;
+	float max_speed;
+	float min_speed;
 	//tqouce
 	double joint_T[4];
 	double driving_T[2];
@@ -153,6 +158,11 @@ void balance_task(void);
 
 void power_limit_handle(void);
 float input_power_cal(void);
+float output_power_cal(float voltage);//限制电压防止电压过低导致电机复位
+void get_speed_err_limite_rate(float max_power);
+float all_power_cal(float T, float k1, float k2, float k3, float w);
+void Vmax_cal(float Kv, float Pmax, float bT_gain, float k1, float k2,
+              float k3, float w, float Vmax[2]);
 
 void balance_param_init(void);
 void lqr_k(double L0, double K[12]);

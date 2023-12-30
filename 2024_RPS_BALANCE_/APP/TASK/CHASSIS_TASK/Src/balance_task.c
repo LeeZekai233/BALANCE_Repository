@@ -3,7 +3,37 @@
 
 
 Balance_chassis_t b_chassis = { 0 };
-int Init_cnt;
+    int Init_cnt;
+    float V_T_gain;
+    float V_Tp_gain;
+    float balance_Tgain;
+    float balance_Tpgain;
+
+    float V_T_outlandgain ;
+    float V_Tp_outlandgain ;
+    float balance_Toutlandgain ;
+    float balance_Tpoutlandgain ;
+/**
+************************************************************************************************************************
+* @Name     : balance_param_init
+* @brief    : 平衡底盘参数初始化
+* @param		: void
+* @retval   : void
+* @Note     :
+************************************************************************************************************************
+**/
+void balance_param_init(void)
+{
+    memset(&b_chassis, 0, sizeof(Balance_chassis_t));
+    b_chassis.chassis_dynemic_ref.leglength = 0.23;
+    PID_struct_init(&b_chassis.left_leg.leglengthpid, POSITION_PID,2000,2000,800,0,40000);
+    PID_struct_init(&b_chassis.right_leg.leglengthpid, POSITION_PID, 2000, 2000, 800, 0, 40000);
+    PID_struct_init(&b_chassis.leg_harmonize_pid, POSITION_PID, 2000, 2000, 150, 0, 3000);
+    PID_struct_init(&b_chassis.vw_pid, POSITION_PID,5,5,2,0,0);
+    PID_struct_init(&b_chassis.roll_pid, POSITION_PID, 500, 200, 1000, 0, 0);
+	
+	PID_struct_init(&b_chassis.Init_Tp_pid, POSITION_PID, 500, 200, 40, 0, 60);
+}
 
 void balance_chassis_task(void)
 {
@@ -177,7 +207,7 @@ void balance_task(void)
     }
    
    //误差计算
-    b_chassis.balance_loop.state_err[0] = -(b_chassis.balance_loop.theta - b_chassis.chassis_ref.theta);
+    b_chassis.balance_loop.state_err[0] = -(b_chassis.balance_loop.theta);
 	b_chassis.balance_loop.state_err[1] = -(b_chassis.balance_loop.dtheta);
 	b_chassis.balance_loop.state_err[2] = -(b_chassis.balance_loop.x -b_chassis.chassis_ref.y_position);
 	b_chassis.balance_loop.state_err[3] = -(b_chassis.balance_loop.dx - b_chassis.chassis_ref.vy);
@@ -187,20 +217,26 @@ void balance_task(void)
     VAL_LIMIT(b_chassis.balance_loop.state_err[3], -2.5, 2.5);
 
     //lqr未离地增益计算
-    float V_T_gain = b_chassis.balance_loop.k[0][3] * b_chassis.balance_loop.state_err[3];
-    float V_Tp_gain = b_chassis.balance_loop.k[1][3] * b_chassis.balance_loop.state_err[3];
-    float balance_Tgain = b_chassis.balance_loop.k[0][0] * b_chassis.balance_loop.state_err[0] + b_chassis.balance_loop.k[0][1] * b_chassis.balance_loop.state_err[1] + b_chassis.balance_loop.k[0][2] * b_chassis.balance_loop.state_err[2] + b_chassis.balance_loop.k[0][4] * b_chassis.balance_loop.state_err[4] + b_chassis.balance_loop.k[0][5] * b_chassis.balance_loop.state_err[5];
-    float balance_Tpgain = b_chassis.balance_loop.k[1][0] * b_chassis.balance_loop.state_err[0] + b_chassis.balance_loop.k[1][1] * b_chassis.balance_loop.state_err[1] + b_chassis.balance_loop.k[1][2] * b_chassis.balance_loop.state_err[2] + b_chassis.balance_loop.k[1][4] * b_chassis.balance_loop.state_err[4] + b_chassis.balance_loop.k[1][5] * b_chassis.balance_loop.state_err[5];
+    V_T_gain = b_chassis.balance_loop.k[0][3] * b_chassis.balance_loop.state_err[3];
+    V_Tp_gain = b_chassis.balance_loop.k[1][3] * b_chassis.balance_loop.state_err[3];
+    balance_Tgain = b_chassis.balance_loop.k[0][0] * b_chassis.balance_loop.state_err[0] + b_chassis.balance_loop.k[0][1] * b_chassis.balance_loop.state_err[1] + b_chassis.balance_loop.k[0][2] * b_chassis.balance_loop.state_err[2] + b_chassis.balance_loop.k[0][4] * b_chassis.balance_loop.state_err[4] + b_chassis.balance_loop.k[0][5] * b_chassis.balance_loop.state_err[5];
+    balance_Tpgain = b_chassis.balance_loop.k[1][0] * b_chassis.balance_loop.state_err[0] + b_chassis.balance_loop.k[1][1] * b_chassis.balance_loop.state_err[1] + b_chassis.balance_loop.k[1][2] * b_chassis.balance_loop.state_err[2] + b_chassis.balance_loop.k[1][4] * b_chassis.balance_loop.state_err[4] + b_chassis.balance_loop.k[1][5] * b_chassis.balance_loop.state_err[5];
     //lqr离地增益计算
-    float V_T_outlandgain = 0;
-    float V_Tp_outlandgain = 0;
-    float balance_Toutlandgain = 0;
-    float balance_Tpoutlandgain = b_chassis.balance_loop.k[1][0] * b_chassis.balance_loop.state_err[0] + b_chassis.balance_loop.k[1][1] * b_chassis.balance_loop.state_err[1] ;
+    V_T_outlandgain = 0;
+    V_Tp_outlandgain = 0;
+    balance_Toutlandgain = 0;
+    balance_Tpoutlandgain = b_chassis.balance_loop.k[1][0] * b_chassis.balance_loop.state_err[0] + b_chassis.balance_loop.k[1][1] * b_chassis.balance_loop.state_err[1] ;
     
     //lqr输出
     b_chassis.balance_loop.lqrOutT = balance_Tgain + V_T_gain;
     b_chassis.balance_loop.lqrOutTp = balance_Tpgain + V_Tp_gain;
 
+#if POWER_LIMIT == 1
+    power_limit_handle();
+#else
+    b_chassis.max_speed = 3;
+    b_chassis.min_speed = -3;
+#endif    
     //双腿协调pid
     float harmonize_output = pid_calc(&b_chassis.leg_harmonize_pid, (b_chassis.right_leg.phi0 - b_chassis.left_leg.phi0), 0);
     //转向pid
@@ -292,6 +328,7 @@ void balance_task(void)
 void power_limit_handle(void)
 {
     b_chassis.Max_power_to_PM01 = input_power_cal();
+    get_speed_err_limite_rate(output_power_cal(capacitance_message.cap_voltage_filte));
 }
 
 /**
@@ -313,7 +350,6 @@ float input_power_cal(void)
         Max_Power = (23.7 - capacitance_message.cap_voltage_filte) * 150;
         VAL_LIMIT(Max_Power, 0, judge_rece_mesg.game_robot_state.chassis_power_limit + (judge_rece_mesg.power_heat_data.chassis_power_buffer - 5) * 2);
     }
-    //	Max_Power=50;
     if (capacitance_message.cap_voltage_filte >= 23.7)
     {
         Max_Power = 0;
@@ -325,26 +361,129 @@ float input_power_cal(void)
 
 /**
 ************************************************************************************************************************
-* @Name     : get_the_limite_rate
+* @Name     : output_power_cal
+* @brief    : 计算功率控制板输出的最大功率值
+* @retval   : Max_Power
+* @Note     : 在此处进行软件限制
+************************************************************************************************************************
+**/
+float output_power_cal(float voltage)//限制电压防止电压过低导致电机复位
+{ 
+	int max_power=0;
+  if(voltage>WARNING_VOLTAGE+3)
+    max_power=150;
+  else
+    max_power=b_chassis.Max_power_to_PM01;
+  VAL_LIMIT(max_power,0,150);
+  return max_power;
+//  return 80;
+}
+
+
+/**
+************************************************************************************************************************
+* @Name     : get_speed_err_limite_rate
 * @brief    : 根据给定最大功率求出最优功率限制系数
 * @param		: max_power
 * @retval   : 二次方程的根（可以优化！10.13）
 * @Note     :
 ************************************************************************************************************************
 **/
-void balance_param_init(void)
+
+void get_speed_err_limite_rate(float max_power)
 {
-    memset(&b_chassis, 0, sizeof(Balance_chassis_t));
-    b_chassis.chassis_dynemic_ref.leglength = 0.23;
-    PID_struct_init(&b_chassis.left_leg.leglengthpid, POSITION_PID,2000,2000,800,0,40000);
-    PID_struct_init(&b_chassis.right_leg.leglengthpid, POSITION_PID, 2000, 2000, 800, 0, 40000);
-    PID_struct_init(&b_chassis.leg_harmonize_pid, POSITION_PID, 2000, 2000, 150, 0, 3000);
-    PID_struct_init(&b_chassis.vw_pid, POSITION_PID,5,5,2,0,0);
-    PID_struct_init(&b_chassis.roll_pid, POSITION_PID, 500, 200, 1000, 0, 0);
-	
-	PID_struct_init(&b_chassis.Init_Tp_pid, POSITION_PID, 500, 200, 40, 0, 60);
+    static float K1 = 0.0f;
+    static float K2 = 0.0f;
+    static float K3 = 0.0f;
+    float w = ((balance_chassis.Driving_Encoder[0].rate_rpm + (-balance_chassis.Driving_Encoder[1].rate_rpm))/2.0f);
+    float Vmax[2];
+    b_chassis.predict_power = all_power_cal(b_chassis.balance_loop.lqrOutT,K1,K2,K3,w);
+    Vmax_cal(b_chassis.balance_loop.k[0][3],max_power,balance_Tgain,K1,K2,K3,w,Vmax);
+    if (Vmax[0]>0)
+    {
+        b_chassis.max_speed = Vmax[0];
+        b_chassis.min_speed = Vmax[1];
+    }else
+    {
+        b_chassis.max_speed = Vmax[1];
+        b_chassis.min_speed = Vmax[0];
+    }
+    
 }
 
+/* Function Definitions */
+/*
+ * ALL_POWER_CAL
+ *     P = ALL_POWER_CAL(T,K1,K2,K3,W)
+ *
+ * Arguments    : float T
+ *                float k1
+ *                float k2
+ *                float k3
+ *                float w
+ * Return Type  : float
+ */
+float all_power_cal(float T, float k1, float k2, float k3, float w)
+{
+  /*     This function was generated by the Symbolic Math Toolbox version 23.2.
+   */
+  /*     2023-12-31 00:57:20 */
+  return ((k3 + T * w * 0.10471204188481675) + T * T * k1) + k2 * (w * w);
+}
+
+/*
+ * File trailer for all_power_cal.c
+ *
+
+/* Function Definitions */
+/*
+ * Vmax_cal
+ *     Vmax = Vmax_cal(Kv,Pmax,bT_gain,K1,K2,K3,W)
+ *
+ * Arguments    : float Kv
+ *                float Pmax
+ *                float bT_gain
+ *                float k1
+ *                float k2
+ *                float k3
+ *                float w
+ *                float Vmax[2]
+ * Return Type  : void
+ */
+void Vmax_cal(float Kv, float Pmax, float bT_gain, float k1, float k2,
+              float k3, float w, float Vmax[2])
+{
+  float Vmax_tmp;
+  float b_Vmax_tmp;
+  float t2;
+  /*     This function was generated by the Symbolic Math Toolbox version 23.2.
+   */
+  /*     2023-12-31 01:37:29 */
+  t2 = w * w;
+  t2 = sqrt(((Pmax * k1 * 16.0 - k1 * k3 * 16.0) - k1 * k2 * t2 * 16.0) +
+            t2 * 0.043858446862750471) *
+       191.0;
+  Vmax_tmp = 1.0 / Kv * (1.0 / k1);
+  b_Vmax_tmp = w * 40.0 + bT_gain * k1 * 764.0;
+  Vmax[0] = Vmax_tmp * (b_Vmax_tmp - t2) * -0.00065445026178010475;
+  Vmax[1] = Vmax_tmp * (b_Vmax_tmp + t2) * -0.00065445026178010475;
+}
+
+/*
+ * File trailer for Vmax_cal.c
+ *
+ * [EOF]
+ */
+
+/**
+************************************************************************************************************************
+* @Name     : wheel_state_estimate
+* @brief    : 底盘离地检测函数
+* @param		: leg
+* @retval   : wheel_state
+* @Note     :
+************************************************************************************************************************
+**/
 
 uint8_t wheel_state_estimate(leg_state_t *leg)
 {
@@ -361,6 +500,15 @@ uint8_t wheel_state_estimate(leg_state_t *leg)
 }
 
 
+/**
+************************************************************************************************************************
+* @Name     : lqr_k
+* @brief    : 底盘倒立摆lqr计算函数
+* @param		: double L0, double K[12]
+* @retval   : void
+* @Note     : This function was generated by the Symbolic Math Toolbox version 23.2.
+************************************************************************************************************************
+**/
 
 void lqr_k(double L0, double K[12])
 {
