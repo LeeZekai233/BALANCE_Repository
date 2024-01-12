@@ -19,7 +19,15 @@ void control_task(void)
 		balance_chassis_task();
 		can_bus_send_task();
 	}
-
+	if(time_tick%10==9)
+	{
+		power_data_set_handle(CAN2,b_chassis.Max_power_to_PM01);
+	}
+	if(time_tick%10==5)
+	{
+		power_data_read_handle(CAN2);
+	}
+		
 	
 	
 }

@@ -74,6 +74,7 @@ void Can2ReceiveMsgProcess(CanRxMsg * msg)
     default:
         break;
     }
+	PM01_message_Process(&capacitance_message,msg);
 }
 
 

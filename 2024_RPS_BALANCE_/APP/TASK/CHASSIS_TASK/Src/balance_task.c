@@ -236,6 +236,7 @@ void balance_task(void)
 #else
     b_chassis.max_speed = 3;
     b_chassis.min_speed = -3;
+		b_chassis.Max_power_to_PM01 = 150;
 #endif    
     //Ë«ÍÈÐ­µ÷pid
     float harmonize_output = pid_calc(&b_chassis.leg_harmonize_pid, (b_chassis.right_leg.phi0 - b_chassis.left_leg.phi0), 0);
