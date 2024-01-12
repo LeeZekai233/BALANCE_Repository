@@ -46,7 +46,8 @@
                 "c:\\Users\\HP\\Desktop\\MY_Repository\\2024_RPS_BALANCE_\\BSP\\sys\\Sor",
                 "c:\\Users\\HP\\Desktop\\MY_Repository\\2024_RPS_BALANCE_\\BSP\\usart\\Src",
                 "c:\\Users\\HP\\Desktop\\MY_Repository\\2024_RPS_BALANCE_\\BSP\\timer\\Src",
-                "c:\\Users\\HP\\Desktop\\MY_Repository\\2024_RPS_BALANCE_"
+                "c:\\Users\\HP\\Desktop\\MY_Repository\\2024_RPS_BALANCE_",
+                "C:/Users/HP/Desktop/MY_Repository/BALANCE_INFANTRY_UP/APP/TASK/MODE_SWITCH_TASK/Inc"
             ],
             "defines": [
                 "STM32F40_41xxx",
