@@ -77,7 +77,7 @@ else if(val>=max)\
 #include "balance_task.h"
 #include "leg_task.h"
 #include "Mileage.h"
-#include "balance_mode_switch_task.h"
+
 
 
 /**************RTOS**********************/

@@ -11,7 +11,7 @@ typedef struct
 	u8 speed_mode;
 	u8 chassis_mode;
 	int64_t yaw_Encoder_ecd_angle;
-	int16_t yaw_Encoder_filter_rate;
+	int16_t cmd_leg_length;
 	int16_t x;
 	int16_t y;
 	int16_t rotate_speed;
@@ -29,7 +29,7 @@ void can_chassis_task(CAN_TypeDef *CANx,u8 if_follow_gim,
 										u8 speed_mode,
 										u8 chassis_mode,
 										double yaw_encoder_angle,
-										int16_t yaw_encoder_filter_rate,
+										int16_t cmd_leg_length,
 										int16_t x,
 										int16_t y,
 										int16_t rotate_speed,

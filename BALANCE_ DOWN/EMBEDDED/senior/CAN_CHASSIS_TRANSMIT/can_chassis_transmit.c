@@ -18,8 +18,8 @@ void can_chassis_send1(CAN_TypeDef *CANx)
 	tx_message.Data[2] = can_chassis_data.chassis_mode;
 	tx_message.Data[3] = (uint8_t)(can_chassis_data.rotate_speed >> 8);
 	tx_message.Data[4] = (uint8_t)(can_chassis_data.rotate_speed);
-	tx_message.Data[5] = (uint8_t)(can_chassis_data.yaw_Encoder_filter_rate >> 8);
-	tx_message.Data[6] = (uint8_t)can_chassis_data.yaw_Encoder_filter_rate;
+	tx_message.Data[5] = (uint8_t)((can_chassis_data.cmd_leg_length) >> 8);
+	tx_message.Data[6] = (uint8_t)can_chassis_data.cmd_leg_length;
 	tx_message.Data[7] = (uint8_t)can_chassis_data.chassis_power_limit;
 
 	CAN_Transmit(CANx,&tx_message);
@@ -73,7 +73,7 @@ void can_chassis_task(CAN_TypeDef *CANx,
 										u8 speed_mode,
 										u8 chassis_mode,
 										double yaw_encoder_angle,
-										int16_t yaw_encoder_filter_rate,
+										int16_t cmd_leg_length,
 										int16_t x,
 										int16_t y,
 										int16_t rotate_speed,
@@ -85,7 +85,7 @@ void can_chassis_task(CAN_TypeDef *CANx,
 	can_chassis_data.speed_mode = speed_mode;
 	can_chassis_data.chassis_mode = chassis_mode;
 	can_chassis_data.yaw_Encoder_ecd_angle = (int64_t)(yaw_encoder_angle*10000);
-	can_chassis_data.yaw_Encoder_filter_rate = yaw_encoder_filter_rate;
+	can_chassis_data.cmd_leg_length = cmd_leg_length;
 	can_chassis_data.x = x;
 	can_chassis_data.y = y;
 	can_chassis_data.rotate_speed = rotate_speed;
@@ -109,7 +109,7 @@ void can_chassis_receive_task(CanRxMsg * msg)
 			can_chassis_data.speed_mode																			=(msg->Data[1]);
 			can_chassis_data.chassis_mode																		=(msg->Data[2]);
 			can_chassis_data.rotate_speed 																	=((msg->Data[3]<<8)|msg->Data[4]);
-			can_chassis_data.yaw_Encoder_filter_rate												=(msg->Data[5]<<8)|msg->Data[6];
+			can_chassis_data.cmd_leg_length												=(msg->Data[5]<<8)|msg->Data[6];
 			judge_rece_mesg.game_robot_state.chassis_power_limit						=(msg->Data[7]);	
 		}break;
 			case UP_CAN2_TO_DOWN_CAN1_2:

@@ -429,11 +429,6 @@
               <FileType>1</FileType>
               <FilePath>..\APP\TASK\CHASSIS_TASK\Src\Mileage.c</FilePath>
             </File>
-            <File>
-              <FileName>balance_mode_switch_task.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\APP\TASK\MODE_SWITCH_TASK\Sor\balance_mode_switch_task.c</FilePath>
-            </File>
           </Files>
         </Group>
         <Group>

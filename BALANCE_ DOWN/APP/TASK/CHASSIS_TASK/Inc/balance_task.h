@@ -9,7 +9,7 @@
 #define WARNING_VOLTAGE 10
 #define POWER_LIMIT 0
 #define TIME_STEP 2
-
+#define YAW_POLARITY 					-1 //逆正      舵轮要顺正，改-1；麦轮1
 
 /**
 ************************************************************************************************************************
@@ -138,10 +138,16 @@ typedef struct
 	pid_t leg_harmonize_pid;
 	pid_t vw_pid;
 	pid_t roll_pid;
+	pid_t pid_follow_gim;
 	
 	pid_t Init_Tp_pid;
     
 	u16 Max_power_to_PM01;
+	
+	double yaw_encoder_ecd_angle;
+	float yaw_angle_0_2pi;
+	float yaw_angle__pi_pi;
+	
 	float predict_power;
 	float max_speed;
 	float min_speed;
@@ -153,6 +159,8 @@ typedef struct
 void chassis_Init_handle(void);
 void balance_cmd_select(void);
 void chassis_standup_handle(void);
+void follow_gimbal_handle(void);
+void chassis_rotate_handle(void);
 void chassis_seperate_handle(void);
 void balance_chassis_task(void);
 void balance_task(void);
@@ -167,6 +175,7 @@ void Vmax_cal(float Kv, float Pmax, float bT_gain, float k1, float k2,
 
 void balance_param_init(void);
 void lqr_k(double L0, double K[12]);
+double convert_ecd_angle_to_0_2pi(double ecd_angle,float _0_2pi_angle);
 uint8_t wheel_state_estimate(leg_state_t* leg);
 
 extern Balance_chassis_t b_chassis;

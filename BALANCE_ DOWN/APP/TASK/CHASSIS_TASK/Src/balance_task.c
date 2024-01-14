@@ -32,9 +32,20 @@ void balance_param_init(void)
     PID_struct_init(&b_chassis.vw_pid, POSITION_PID,5,5,2,0,0);
     PID_struct_init(&b_chassis.roll_pid, POSITION_PID, 500, 200, 1000, 0, 0);
 	
+		PID_struct_init(&b_chassis.pid_follow_gim, POSITION_PID, 500, 200, 1000, 0, 0);
+	
 	PID_struct_init(&b_chassis.Init_Tp_pid, POSITION_PID, 500, 200, 40, 0, 60);
 }
 
+/**
+************************************************************************************************************************
+* @Name     : balance_chassis_task
+* @brief    : 平衡底盘总控制任务
+* @param		: void
+* @retval   : void
+* @Note     :
+************************************************************************************************************************
+**/
 void balance_chassis_task(void)
 {
     balance_cmd_select();
@@ -72,18 +83,30 @@ void balance_chassis_task(void)
     break;
     case MANUAL_FOLLOW_GIMBAL:
     {
-
+				follow_gimbal_handle();
         balance_task();
     }
     break;
     case CHASSIS_ROTATE:
     {
+			chassis_rotate_handle();
+			balance_task();
     }break;
     default:
         break;
     }
 }
 
+
+/**
+************************************************************************************************************************
+* @Name     : balance_cmd_select
+* @brief    : 平衡底盘模式与命令处理
+* @param		: void
+* @retval   : void
+* @Note     :
+************************************************************************************************************************
+**/
 void balance_cmd_select(void)
 {
     b_chassis.last_ctrl_mode = b_chassis.ctrl_mode;
@@ -110,8 +133,22 @@ void balance_cmd_select(void)
         {
             b_chassis.ctrl_mode = CHASSIS_INIT;
         }
+				b_chassis.chassis_dynemic_ref.leglength = can_chassis_data.cmd_leg_length/100.0f;
+				
+				b_chassis.yaw_encoder_ecd_angle = can_chassis_data.yaw_Encoder_ecd_angle/10000.0f;
+				b_chassis.yaw_angle_0_2pi = convert_ecd_angle_to_0_2pi(b_chassis.yaw_encoder_ecd_angle,b_chassis.yaw_angle_0_2pi);
 }
 
+
+/**
+************************************************************************************************************************
+* @Name     : chassis_standup_handle
+* @brief    : 起立模式
+* @param		: void
+* @retval   : void
+* @Note     :
+************************************************************************************************************************
+**/
 void chassis_standup_handle(void)
 {
 	b_chassis.chassis_ref.leglength = 0.15f;
@@ -122,6 +159,16 @@ void chassis_standup_handle(void)
 		b_chassis.ctrl_mode = can_chassis_data.chassis_mode;
 }
 
+
+/**
+************************************************************************************************************************
+* @Name     : chassis_Init_handle
+* @brief    : 初始化收腿
+* @param		: void
+* @retval   : void
+* @Note     :
+************************************************************************************************************************
+**/
 void chassis_Init_handle(void)
 {
 		Init_cnt++;
@@ -180,6 +227,16 @@ void chassis_Init_handle(void)
 
 }
 
+
+/**
+************************************************************************************************************************
+* @Name     : chassis_seperate_handle
+* @brief    : 单个底盘模式，测试用
+* @param		: void
+* @retval   : void
+* @Note     :
+************************************************************************************************************************
+**/
 void chassis_seperate_handle(void)
 {
     b_chassis.chassis_ref.leglength = b_chassis.chassis_dynemic_ref.leglength;
@@ -189,9 +246,72 @@ void chassis_seperate_handle(void)
 	b_chassis.chassis_ref.y_position += b_chassis.chassis_ref.vy*0.001*TIME_STEP;
 }
 
-//到时候一定要注意弧度制的转化啊
-//电机极性要仔细检查
-//检查好各个传感器的单位与性能
+
+/**
+************************************************************************************************************************
+* @Name     : follow_gimbal_handle
+* @brief    : 底盘跟随云台
+* @param		: void
+* @retval   : void
+* @Note     :
+************************************************************************************************************************
+**/
+void follow_gimbal_handle(void)
+{
+	if(b_chassis.yaw_angle_0_2pi>=PI)
+		{b_chassis.yaw_angle__pi_pi=b_chassis.yaw_angle_0_2pi-(2*PI);}
+		else
+		{b_chassis.yaw_angle__pi_pi=b_chassis.yaw_angle_0_2pi;}
+		
+		b_chassis.chassis_ref.leglength = b_chassis.chassis_dynemic_ref.leglength;
+    b_chassis.chassis_ref.vy = b_chassis.chassis_dynemic_ref.vy;
+    b_chassis.chassis_ref.vx = b_chassis.chassis_dynemic_ref.vx;
+		b_chassis.chassis_ref.y_position += b_chassis.chassis_ref.vy*0.001*TIME_STEP;
+		
+		b_chassis.chassis_ref.vw = pid_calc(&b_chassis.pid_follow_gim,b_chassis.yaw_angle__pi_pi,0); 
+		VAL_LIMIT(b_chassis.chassis_dynemic_ref.vw,-5,5);
+		
+		
+}
+
+
+/**
+************************************************************************************************************************
+* @Name     : chassis_rotate_handle
+* @brief    : 小陀螺
+* @param		: void
+* @retval   : void
+* @Note     :
+************************************************************************************************************************
+**/
+void chassis_rotate_handle(void)
+{
+	if(b_chassis.yaw_angle_0_2pi>=PI)
+		{b_chassis.yaw_angle__pi_pi=b_chassis.yaw_angle_0_2pi-(2*PI);}
+		else
+		{b_chassis.yaw_angle__pi_pi=b_chassis.yaw_angle_0_2pi;}
+		
+		b_chassis.chassis_ref.leglength = b_chassis.chassis_dynemic_ref.leglength;
+    b_chassis.chassis_ref.vy = 0;
+    b_chassis.chassis_ref.vx = 0;
+		b_chassis.chassis_ref.y_position += b_chassis.chassis_ref.vy*0.001*TIME_STEP;
+		
+		b_chassis.chassis_ref.vw = 5; 
+		VAL_LIMIT(b_chassis.chassis_dynemic_ref.vw,-5,5);
+}
+
+
+/**
+************************************************************************************************************************
+* @Name     : balance_task
+* @brief    : 平衡底盘解算
+* @param		: void
+* @retval   : void
+* @Note     :	一定要注意弧度制的转化啊
+							电机极性要仔细检查
+							检查好各个传感器的单位与性能
+************************************************************************************************************************
+**/
 void balance_task(void)
 {
     /********************各个计算量的更新************************************/
@@ -593,4 +713,23 @@ void lqr_k(double L0, double K[12])
  * [EOF]
  */
 
+
+/**
+************************************************************************************************************************
+* @Name     : convert_ecd_angle_to_0_2pi
+* @brief    : 将电机编码器的机械角度值（范围正负无穷大）解算为范围在0~2pi的角度值      
+* @param		: ecd_angle 电机编码器的机械角度值  类型  double
+* @param		: _0_2pi_angle 范围在0~2pi的角度值  类型  float
+* @retval   : _0_2pi_angle 范围在0~2pi的角度值  类型  float
+* @Note     : 
+************************************************************************************************************************
+**/
+double convert_ecd_angle_to_0_2pi(double ecd_angle,float _0_2pi_angle)
+{
+	_0_2pi_angle=fmod(YAW_POLARITY*ecd_angle*ANGLE_TO_RAD,2*PI);	
+	if(_0_2pi_angle<0)
+		 _0_2pi_angle+=2*PI;
+
+	return _0_2pi_angle;
+}
 
