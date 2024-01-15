@@ -64,6 +64,11 @@ void balance_chassis_task(void)
 			b_chassis.chassis_ref.y_position = b_chassis.balance_loop.x;
     }
     break;
+		case CHASSIS_STOP:
+		{
+			chassis_stop_handle();
+			balance_task();
+		}break;
     case CHASSIS_INIT:
     {
         chassis_Init_handle();
@@ -95,6 +100,13 @@ void balance_chassis_task(void)
     default:
         break;
     }
+#if POWER_LIMIT == 1
+    power_limit_handle();
+#else
+    b_chassis.max_speed = 3;
+    b_chassis.min_speed = -3;
+		b_chassis.Max_power_to_PM01 = 150;
+#endif 
 }
 
 
@@ -114,14 +126,14 @@ void balance_cmd_select(void)
 
     if (b_chassis.ctrl_mode != CHASSIS_INIT)
         {
-            b_chassis.chassis_dynemic_ref.vy = can_chassis_data.y;
-            b_chassis.chassis_dynemic_ref.vx = can_chassis_data.x;
+            b_chassis.chassis_dynemic_ref.vy = can_chassis_data.y/100.0f;
+            b_chassis.chassis_dynemic_ref.vx = can_chassis_data.x/100.0f;
             b_chassis.chassis_dynemic_ref.vw = can_chassis_data.rotate_speed;
             VAL_LIMIT(b_chassis.chassis_dynemic_ref.vy,b_chassis.min_speed,b_chassis.max_speed);
             VAL_LIMIT(b_chassis.chassis_dynemic_ref.vx,-2,2);
             VAL_LIMIT(b_chassis.chassis_dynemic_ref.vw,-5,5);
         }
-        if(b_chassis.ctrl_mode != CHASSIS_INIT&&can_chassis_data.chassis_mode != CHASSIS_RELAX&&b_chassis.last_ctrl_mode == CHASSIS_RELAX)
+        if(b_chassis.ctrl_mode != CHASSIS_INIT&&can_chassis_data.chassis_mode != CHASSIS_RELAX&&b_chassis.last_ctrl_mode == CHASSIS_RELAX&&can_chassis_data.if_follow_gim)
         {
             b_chassis.ctrl_mode = can_chassis_data.chassis_mode;
         }
@@ -296,10 +308,27 @@ void chassis_rotate_handle(void)
     b_chassis.chassis_ref.vx = 0;
 		b_chassis.chassis_ref.y_position += b_chassis.chassis_ref.vy*0.001*TIME_STEP;
 		
-		b_chassis.chassis_ref.vw = 5; 
+		b_chassis.chassis_ref.vw = can_chassis_data.rotate_speed; 
 		VAL_LIMIT(b_chassis.chassis_dynemic_ref.vw,-5,5);
 }
 
+/**
+************************************************************************************************************************
+* @Name     : chassis_stop_handle
+* @brief    : 停止模式，大幅用
+* @param		: void
+* @retval   : void
+* @Note     :
+************************************************************************************************************************
+**/
+void chassis_stop_handle(void)
+{
+    b_chassis.chassis_ref.leglength = b_chassis.chassis_dynemic_ref.leglength;
+    b_chassis.chassis_ref.vy = 0;
+    b_chassis.chassis_ref.vx = 0;
+    b_chassis.chassis_ref.vw = 0;
+	b_chassis.chassis_ref.y_position += b_chassis.chassis_ref.vy*0.001*TIME_STEP;
+}
 
 /**
 ************************************************************************************************************************
@@ -380,13 +409,7 @@ void balance_task(void)
     b_chassis.balance_loop.lqrOutT = balance_Tgain + V_T_gain;
     b_chassis.balance_loop.lqrOutTp = balance_Tpgain + V_Tp_gain;
 
-#if POWER_LIMIT == 1
-    power_limit_handle();
-#else
-    b_chassis.max_speed = 3;
-    b_chassis.min_speed = -3;
-		b_chassis.Max_power_to_PM01 = 150;
-#endif    
+   
     //双腿协调pid
     float harmonize_output = pid_calc(&b_chassis.leg_harmonize_pid, (b_chassis.right_leg.phi0 - b_chassis.left_leg.phi0), 0);
     //转向pid

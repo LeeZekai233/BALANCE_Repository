@@ -15,7 +15,7 @@ void control_task_Init(void);
 
 
 extern float test;
-extern float aab;
+extern int time_tick;
 
 
 

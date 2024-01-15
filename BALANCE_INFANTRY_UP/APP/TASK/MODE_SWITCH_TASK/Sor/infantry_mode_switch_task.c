@@ -2,7 +2,7 @@
 
 chassis_t chassis;
 int16_t chassis_speed = 0;
-
+int16_t leg_length;
 u8 this_input_mode = 0;
 u8 last_input_mode = 0;
 
@@ -25,8 +25,8 @@ void infantry_mode_switch_task(void)
         /*******************************底盘云台遥感数据接收******************************************/
         if(gimbal_data.ctrl_mode != GIMBAL_INIT)
         {
-            chassis.ChassisSpeed_Ref.forward_back_ref = (RC_CtrlData.rc.ch1- (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * STICK_TO_CHASSIS_SPEED_REF_FACT;
-            chassis.ChassisSpeed_Ref.left_right_ref   = (RC_CtrlData.rc.ch0- (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * STICK_TO_CHASSIS_SPEED_REF_FACT;
+            chassis.ChassisSpeed_Ref.forward_back_ref = (RC_CtrlData.rc.ch1- (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * 0.3f;
+            chassis.ChassisSpeed_Ref.left_right_ref   = (RC_CtrlData.rc.ch0- (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * 0.1f;
         }
         if(gimbal_data.ctrl_mode == GIMBAL_FOLLOW_ZGYRO)
         {
@@ -64,7 +64,7 @@ void infantry_mode_switch_task(void)
         {
 
             chassis.ctrl_mode = CHASSIS_ROTATE;
-					chassis.ChassisSpeed_Ref.rotate_ref = 550;
+					chassis.ChassisSpeed_Ref.rotate_ref = 5;
         }
         else
         {
@@ -85,13 +85,22 @@ void infantry_mode_switch_task(void)
             /************************底盘键位赋值******************************/
             if (RC_CtrlData.Key_Flag.Key_SHIFT_Flag)
             {
-                chassis.chassis_speed_mode = HIGH_SPEED_MODE;
-                chassis_speed = HIGH_SPEED;
+//                chassis.chassis_speed_mode = HIGH_SPEED_MODE;
+                chassis_speed = HIGH_SPEED*100;
             }else
             {
-                chassis.chassis_speed_mode = NORMAL_SPEED_MODE;
-                chassis_speed = NORMAL_SPEED;
+//                chassis.chassis_speed_mode = NORMAL_SPEED_MODE;
+                chassis_speed = NORMAL_SPEED*100;
             }
+						
+						if(RC_CtrlData.Key_Flag.Key_CTRL_Flag)
+						{
+							leg_length = 30;
+						}else
+						{
+							leg_length = 23;
+						}
+						
             if(RC_CtrlData.Key_Flag.Key_W_Flag)
             {
                 chassis.ChassisSpeed_Ref.forward_back_ref = chassis_speed;

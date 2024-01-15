@@ -83,8 +83,6 @@ else if(val>=max)\
 
 #include "buff_karman_filter.h"
 
-#include "CHASSIS_TASK.H"
-
 #include "infantry_mode_switch_task.h"
 
 

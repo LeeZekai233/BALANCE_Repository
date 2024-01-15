@@ -5,29 +5,40 @@
 #include "public.h"
 /*----------------------------------------------------------------------------*/
 //底盘类型 1舵轮 2麦轮 3全向轮 4新舵轮
-#define CHASSIS_TYPE  1
+#define CHASSIS_TYPE  4
+#define POWER_LIMIT_HANDLE   1//0不开 1为舵轮 2为英雄(麦轮)以及全向轮
 
 /*******************************CONFIG********************************/
-#define STANDARD              3
-#define YAW_POLARITY 					-1 //逆正  舵轮要顺正，改-1；麦轮1
-
-#define POWER_LIMIT_HANDLE    0
+#define STANDARD              3  //参数选择  1英雄 2工程(None) 3456步兵 7烧饼
+#define YAW_POLARITY 					-1 //逆正      舵轮要顺正，改-1；麦轮1
 
 
 
-#if     CHASSIS_TYPE == 1//舵轮
-#define RIGHT_FRONT_REVERSE    1
+
+#if     CHASSIS_TYPE == 1 //舵轮
+#define RIGHT_FRONT_REVERSE   -1 
 #define LEFT_FRONT_REVERSE    -1
 #define LEFT_BEHIND_REVERSE    1
 #define RIGHT_BEHIND_REVERSE   1
-
+#define  WARNING_VOLTAGE       12.5
+#define STEERING_POLARITY      1 //6020电机的输出极性 解算已考虑 故置1
 
 #elif		CHASSIS_TYPE == 2//麦轮
-#define MAX_WHEEL_RPM 					  7400
-
+#define MAX_WHEEL_RPM 				 7400
+#define  WARNING_VOLTAGE       13
 
 
 #elif   CHASSIS_TYPE == 3//全向轮
+#define MAX_WHEEL_RPM 				 7400
+#define  WARNING_VOLTAGE       12.5
+
+#elif   CHASSIS_TYPE == 4//新舵轮
+#define RIGHT_FRONT_REVERSE   -1 
+#define LEFT_FRONT_REVERSE    1
+#define LEFT_BEHIND_REVERSE   1
+#define RIGHT_BEHIND_REVERSE  1
+#define  WARNING_VOLTAGE       12.5
+#define STEERING_POLARITY      -1 //6020电机的输出极性 解算不考虑 故置-1
 #endif
 /*******************************CONFIG********************************/
 
@@ -41,7 +52,7 @@
 #define FACTOR_0  0.458f
 //#define TOTATE_PARA    PI/180.0f
 
-#define  WARNING_VOLTAGE       12.5
+
 
 #define  TARGET_VOLTAGE        12
 
@@ -79,11 +90,11 @@ else if(val>=max)\
 {\
  if((fdb - ref) >= 180)\
 {\
-	ref = ref + 360;\
+	fdb = fdb - 360;\
 }\
  else if((fdb - ref) <= -180)\
 {\
-	ref = ref - 360;\
+	fdb = fdb + 360;\
 }\
 }\
 /**
@@ -240,7 +251,7 @@ void Motion_resolution(void);
 void Chassis_PID_handle(void);
 void mecanum_calc(float vx, float vy, float vw, int16_t *speed);
 void chassis_param_init(void);
-void  chassis_task(void);
+void chassis_task(void);
 float limit_angle_to_0_2pi(float angle);
 void chassis_stop_handle(void);
 void get_remote_set(void);
@@ -259,17 +270,18 @@ void follow_gimbal_handle(void);
 void separate_gimbal_handle(void);
 void rotate_follow_gimbal_handle(void);
 void reverse_follow_gimbal_handle(void);
- 
- 
- 
+void buffer_power(void);
+float get_max_power(float voltage);
+void steering_wheel_calc(double Length,double Weight); 
 double convert_ecd_angle_to_0_2pi(double ecd_angle,float _0_2pi_angle);
-
+void omni_calc1(float vx,float vy,float vw,int16_t *speed);
+void omni_calc2(float vx,float vy,float vw,int16_t *speed);
 
 
 
 extern Chassis_angle_t 	 Chassis_angle;
 extern chassis_t 		 		 chassis;
-
+extern u16 Max_Power;
 
 
 

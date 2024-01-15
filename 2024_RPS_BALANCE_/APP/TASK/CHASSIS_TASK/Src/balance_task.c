@@ -81,6 +81,13 @@ void balance_chassis_task(void)
     default:
         break;
     }
+#if POWER_LIMIT == 1
+    power_limit_handle();
+#else
+    b_chassis.max_speed = 3;
+    b_chassis.min_speed = -3;
+		b_chassis.Max_power_to_PM01 = 150;
+#endif    
 }
 
 void chasis_standup_handle(void)
@@ -231,13 +238,7 @@ void balance_task(void)
     b_chassis.balance_loop.lqrOutT = balance_Tgain + V_T_gain;
     b_chassis.balance_loop.lqrOutTp = balance_Tpgain + V_Tp_gain;
 
-#if POWER_LIMIT == 1
-    power_limit_handle();
-#else
-    b_chassis.max_speed = 3;
-    b_chassis.min_speed = -3;
-		b_chassis.Max_power_to_PM01 = 150;
-#endif    
+
     //双腿协调pid
     float harmonize_output = pid_calc(&b_chassis.leg_harmonize_pid, (b_chassis.right_leg.phi0 - b_chassis.left_leg.phi0), 0);
     //转向pid

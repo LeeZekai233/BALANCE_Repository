@@ -10,10 +10,10 @@ void control_task(void)
 
 	if(time_tick%2==1)
 	{
-		can_chassis_task(CAN2,chassis.follow_gimbal,
+		can_chassis_task(CAN1,chassis.follow_gimbal,
 							chassis.chassis_speed_mode ,
 							chassis.ctrl_mode,yaw_Encoder.ecd_angle,
-							yaw_Encoder.filter_rate,
+							leg_length,
 							chassis.ChassisSpeed_Ref.left_right_ref,
 							chassis.ChassisSpeed_Ref.forward_back_ref,
 							chassis.ChassisSpeed_Ref.rotate_ref,
