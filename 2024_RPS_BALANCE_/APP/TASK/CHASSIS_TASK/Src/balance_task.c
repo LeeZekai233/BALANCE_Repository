@@ -84,9 +84,9 @@ void balance_chassis_task(void)
 #if POWER_LIMIT == 1
     power_limit_handle();
 #else
-    b_chassis.max_speed = 3;
-    b_chassis.min_speed = -3;
-		b_chassis.Max_power_to_PM01 = 150;
+    b_chassis.max_speed = 2.5;
+    b_chassis.min_speed = -2.5;
+		b_chassis.Max_power_to_PM01 = 100;
 #endif    
 }
 

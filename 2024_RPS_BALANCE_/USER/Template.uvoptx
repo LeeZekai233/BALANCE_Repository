@@ -263,6 +263,11 @@
           <WinNumber>1</WinNumber>
           <ItemText>time_tick,0x0A</ItemText>
         </Ww>
+        <Ww>
+          <count>21</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>\\Template\../EMBEDDED/senior/PM01/PM01.c\capacitance_message</ItemText>
+        </Ww>
       </WatchWindow1>
       <WatchWindow2>
         <Ww>

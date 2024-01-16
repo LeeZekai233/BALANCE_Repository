@@ -24,6 +24,13 @@ void Can1ReceiveMsgProcess(CanRxMsg * msg)
 {
     switch (msg->StdId)
     {
+			case JM1Encoder_MOTOR:
+		{
+			MG_18bit_EncoderTask(&balance_chassis.joint_Encoder[0],msg,JM1Encoder_Offset,0.017368678);
+			
+		}
+        break;
+    
 			case JM2Encoder_MOTOR:
 		{
 			MG_18bit_EncoderTask(&balance_chassis.joint_Encoder[1],msg,JM2Encoder_Offset,0.017368678);
@@ -36,38 +43,29 @@ void Can1ReceiveMsgProcess(CanRxMsg * msg)
 			
 		}
         break;
-    case TM1Encoder_MOTOR:
-		{
-			MF_18bit_EncoderTask(&balance_chassis.Driving_Encoder[0],msg,TM1Encoder_Offset,0.002597741);
-			
-		}break;
-    
-    default:
-        break;
-    }
-		can_chassis_receive_task(msg);
-}
-
-void Can2ReceiveMsgProcess(CanRxMsg * msg)
-{
-    switch (msg->StdId)
-    {
-    case JM1Encoder_MOTOR:
-		{
-			MG_18bit_EncoderTask(&balance_chassis.joint_Encoder[0],msg,JM1Encoder_Offset,0.017368678);
-			
-		}
-        break;
-    
-		
-    
+   
     case JM4Encoder_MOTOR:
 		{
 			MG_18bit_EncoderTask(&balance_chassis.joint_Encoder[3],msg,JM4Encoder_Offset,0.017368678);
 			
 		}
         break;
-		
+    default:
+        break;
+    }
+		PM01_message_Process(&capacitance_message,msg);
+}
+
+void Can2ReceiveMsgProcess(CanRxMsg * msg)
+{
+    switch (msg->StdId)
+    {
+    
+		case TM1Encoder_MOTOR:
+		{
+			MF_18bit_EncoderTask(&balance_chassis.Driving_Encoder[0],msg,TM1Encoder_Offset,0.002597741);
+			
+		}break;
 		case TM2Encoder_MOTOR:
 		{
 			MF_18bit_EncoderTask(&balance_chassis.Driving_Encoder[1],msg,TM2Encoder_Offset,0.002597741);
@@ -78,7 +76,7 @@ void Can2ReceiveMsgProcess(CanRxMsg * msg)
     default:
         break;
     }
-	PM01_message_Process(&capacitance_message,msg);
+	can_chassis_receive_task(msg);
 }
 
 
@@ -90,13 +88,15 @@ void Can2ReceiveMsgProcess(CanRxMsg * msg)
 
 void can_bus_send_task(void)
 {
-	CAN_MG_single_torsionControl(CAN2,b_chassis.joint_T[0],0x141,0.017368678);
-	CAN_MG_single_torsionControl(CAN1,-b_chassis.joint_T[1],0x142,0.017368678);
-	CAN_MG_single_torsionControl(CAN1,-b_chassis.joint_T[2],0x143,0.017368678);
-	CAN_MG_single_torsionControl(CAN2,b_chassis.joint_T[3],0x144,0.017368678);
+//	CAN_MG_single_torsionControl(CAN2,b_chassis.joint_T[0],0x141,0.017368678);
+//	CAN_MG_single_torsionControl(CAN1,-b_chassis.joint_T[1],0x142,0.017368678);
+//	CAN_MG_single_torsionControl(CAN1,-b_chassis.joint_T[2],0x143,0.017368678);
+//	CAN_MG_single_torsionControl(CAN2,b_chassis.joint_T[3],0x144,0.017368678);
 	
-	CAN_MF_single_torsionControl(CAN1,b_chassis.driving_T[0],0x141,0.002597741);
+	CAN_MF_single_torsionControl(CAN2,b_chassis.driving_T[0],0x141,0.002597741);
 	CAN_MF_single_torsionControl(CAN2,-b_chassis.driving_T[1],0x142,0.002597741);
 	
+//	CAN_MF_multiy_torsionControl(CAN2,0.002597741,b_chassis.driving_T[0],-b_chassis.driving_T[1],0,0);
+	CAN_MG_multiy_torsionControl(CAN1,0.017368678,b_chassis.joint_T[0],-b_chassis.joint_T[1],-b_chassis.joint_T[2],b_chassis.joint_T[3]);
 }
 

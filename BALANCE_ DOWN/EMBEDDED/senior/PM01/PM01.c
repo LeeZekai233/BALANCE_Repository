@@ -96,10 +96,10 @@ void PM01_data_read(CAN_TypeDef *CANx ,uint32_t StdId)//读取数据采用远程帧访问，
 
 void power_data_read_handle(CAN_TypeDef *CANx)
 {
-    PM01_data_read(CANx,0x610); //读取模块状态
-    PM01_data_read(CANx,0x611); //读取输入电压与电流
+//    PM01_data_read(CANx,0x610); //读取模块状态
+//    PM01_data_read(CANx,0x611); //读取输入电压与电流
     PM01_data_read(CANx,0x612); //读取输出功率，电压，电流
-    PM01_data_read(CANx,0x613); //温度，累计运行时间与本次时间
+//    PM01_data_read(CANx,0x613); //温度，累计运行时间与本次时间
 }
 
 void power_data_set_handle(CAN_TypeDef *CANx,u16 Max_Power)
