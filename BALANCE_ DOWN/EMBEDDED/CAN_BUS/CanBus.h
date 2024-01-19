@@ -43,9 +43,9 @@
 #define RIGHT_POKE 0X00
 #define POKE 0X00
 /*********************************舵轮上下板通信id*********************************/
-#define UP_CAN2_TO_DOWN_CAN1_1 0X407
-#define UP_CAN2_TO_DOWN_CAN1_2 0X408
-#define UP_CAN2_TO_DOWN_CAN1_3 0X409
+#define UP_CAN2_TO_DOWN_CAN1_1 0X101
+#define UP_CAN2_TO_DOWN_CAN1_2 0X102
+#define UP_CAN2_TO_DOWN_CAN1_3 0X103
 
 
 

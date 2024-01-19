@@ -114,7 +114,7 @@ float pitch_max = 0;
     float Pitch_max = INFANTRY_PITCH_MAX;
 
     #define VISION_PITCH_MIN            -25
-    #define VISION_PITCH_MAX            30
+    #define VISION_PITCH_MAX            35
 
     #define YAW_INIT_ANGLE_FDB          -yaw_Encoder.ecd_angle   //步兵机械将电机反着装导致yaw轴电机向右编码器角度为负，与期望极性相反，需要加负号
     #define PITCH_INIT_ANGLE_FDB        gimbal_gyro.pitch_Angle
@@ -132,7 +132,7 @@ float pitch_max = 0;
     #define VISION_PITCH_SPEED_FDB      gimbal_gyro.pitch_Gyro
 
     #define YAW_MOTOR_POLARITY          -1
-    #define PITCH_MOTOR_POLARITY        -1
+    #define PITCH_MOTOR_POLARITY        1
 
     float Buff_Yaw_remain = -0.4;
     float Buff_pitch_remain=-0.5;
@@ -339,7 +339,7 @@ void gimbal_parameter_Init(void)
 #elif STANDARD == 3
     // 初始化下的参数
     PID_struct_init(&gimbal_data.pid_init_pit_Angle, POSITION_PID, 500, 4,
-                    15, 0.01f, 8); //15, 0.01f, 8
+                    20, 0.01f, 8); //15, 0.01f, 8
     PID_struct_init(&gimbal_data.pid_init_pit_speed, POSITION_PID, 27000, 20000,
                     170, 0.001, 60); //170, 0.001f, 60
     //------------------------------------------------
@@ -350,12 +350,12 @@ void gimbal_parameter_Init(void)
 
     // 跟随陀螺仪下的参数
     PID_struct_init(&gimbal_data.pid_pit_Angle, POSITION_PID, 500, 4,
-                    15, 0.01f, 8); //15, 0.01f, 8
+                    20, 0.01f, 12); //15, 0.01f, 8
     PID_struct_init(&gimbal_data.pid_pit_speed, POSITION_PID, 27000, 20000,
                     170, 0.001, 60); //170, 0.001f, 60
     //------------------------------------------------
     PID_struct_init(&gimbal_data.pid_yaw_Angle, POSITION_PID, 500, 4,
-                    7, 0.15f, 8); 
+                    13, 0.15f, 8); 
     PID_struct_init(&gimbal_data.pid_yaw_speed, POSITION_PID, 29000, 10000,
                     150, 0.8f, 40); 
 

@@ -63,6 +63,7 @@ else if(val>=max)\
 #include "PM01.h"
 #include "JUDGE.h"
 #include "can_chassis_transmit.h"
+#include "USART_chassis_transmit.h"
 
 /****************BSP**********************/
 #include "BSP.h"

@@ -65,6 +65,7 @@ else if(val>=max)\
 #include "REMOTE.h"
 #include "PM01.h"
 #include "can_chassis_transmit.h"
+#include "USART_chassis_transmit.h"
 
 #include "senior.h"
 
@@ -85,7 +86,7 @@ else if(val>=max)\
 
 #include "infantry_mode_switch_task.h"
 
-
+#include "17mm_shoot_task.h"
 
 
 

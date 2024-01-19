@@ -33,6 +33,7 @@ void PM01_command_set(CAN_TypeDef *CANx ,uint16_t data,uint32_t StdId);
 void PM01_data_read(CAN_TypeDef *CANx ,uint32_t StdId);
 void power_data_read_handle(CAN_TypeDef *CANx);
 void power_data_set_handle(CAN_TypeDef *CANx,u16 Max_Power);
+void power_data_Init(CAN_TypeDef *CANx);
 
 extern volatile capacitance_message_t capacitance_message;
 

@@ -14,8 +14,8 @@
 #define CM3Encoder_MOTOR 0x00
 #define CM4Encoder_MOTOR 0x00
 /*************************云台电机id******************************/
-#define GIMBAL_YAW_MOTOR 0x205
-#define GIMBAL_PITCH_MOTOR 0X206
+#define GIMBAL_YAW_MOTOR 0x209
+#define GIMBAL_PITCH_MOTOR 0X208
 /****************************英雄小云台电机id***********************************/
 #define SMALL_GIMBAL_MOTOR 0X00
 #define SCOPE_MOTOR 0X00
@@ -32,11 +32,11 @@
 #define UP_POKE 0X205
 #define LEFT_POKE 0X00			//右一左二，只有一个用一
 #define RIGHT_POKE 0X00
-#define POKE 0X00
+#define POKE 0X203
 /*********************************舵轮上下板通信id*********************************/
-#define UP_CAN2_TO_DOWN_CAN1_1 0X407
-#define UP_CAN2_TO_DOWN_CAN1_2 0X408
-#define UP_CAN2_TO_DOWN_CAN1_3 0X409
+#define UP_CAN2_TO_DOWN_CAN1_1 0X101
+#define UP_CAN2_TO_DOWN_CAN1_2 0X102
+#define UP_CAN2_TO_DOWN_CAN1_3 0X103
 
 
 

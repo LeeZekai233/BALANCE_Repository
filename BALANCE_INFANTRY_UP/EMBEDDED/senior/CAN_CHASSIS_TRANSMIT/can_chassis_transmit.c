@@ -93,8 +93,15 @@ void can_chassis_task(CAN_TypeDef *CANx,
 	can_chassis_data.chassis_power_buffer = chassis_power_buffer;
 	can_chassis_data.chassis_power_limit = chassis_power_limit;
 
-	can_chassis_send1(CANx);
-	can_chassis_send2(CANx);
+	if(time_tick%10 == 1)
+	{
+		can_chassis_send1(CANx);
+	}
+	if(time_tick%10 == 5)
+	{
+		can_chassis_send2(CANx);
+	}
+	if(time_tick%10 == 7)
 	can_chassis_send3(CANx);
 }
 

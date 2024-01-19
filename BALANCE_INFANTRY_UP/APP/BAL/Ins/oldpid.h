@@ -142,7 +142,7 @@ extern pid_t pid_spd[4];
 
 extern pid_t pid_chassis_angle;
 extern pid_t pid_trigger;
-extern pid_t pid_trigger_speed;
+
 extern pid_t pid_trigger_second_speed;
 extern pid_t pid_imu_tmp;
 extern pid_t pid_rotate[4];

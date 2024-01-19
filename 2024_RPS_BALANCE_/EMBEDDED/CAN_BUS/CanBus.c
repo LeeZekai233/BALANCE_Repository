@@ -52,7 +52,7 @@ void Can1ReceiveMsgProcess(CanRxMsg * msg)
     default:
         break;
     }
-		PM01_message_Process(&capacitance_message,msg);
+		
 }
 
 void Can2ReceiveMsgProcess(CanRxMsg * msg)
@@ -80,7 +80,7 @@ void Can2ReceiveMsgProcess(CanRxMsg * msg)
         break;
     }
 		
-
+		PM01_message_Process(&capacitance_message,msg);
 	
 }
 
@@ -102,12 +102,12 @@ void can_bus_send_task(void)
 //	}
 //		if(time_tick%3==0)
 //		{
-			CAN_MF_single_torsionControl(CAN2,b_chassis.driving_T[0],0x141,0.002597741);
-	CAN_MF_single_torsionControl(CAN2,-b_chassis.driving_T[1],0x142,0.002597741);
+//			CAN_MF_single_torsionControl(CAN2,b_chassis.driving_T[0],0x141,0.002597741);
+//	CAN_MF_single_torsionControl(CAN2,-b_chassis.driving_T[1],0x142,0.002597741);
 //		}
 	
 	
-//	CAN_MF_multiy_torsionControl(CAN2,0.002597741,b_chassis.driving_T[0],b_chassis.driving_T[1],0,0);
+	CAN_MF_multiy_torsionControl(CAN2,0.002597741,b_chassis.driving_T[0],-b_chassis.driving_T[1],0,0);
 	CAN_MG_multiy_torsionControl(CAN1,0.017368678,b_chassis.joint_T[0],-b_chassis.joint_T[1],-b_chassis.joint_T[2],b_chassis.joint_T[3]);
 		
 	

@@ -36,10 +36,10 @@ void infantry_mode_switch_task(void)
         }
         
         /****************************µ×ÅÌÄ¬ÈÏ×´Ì¬ÉèÖÃ**********************************************/
-        if(gimbal_data.ctrl_mode == GIMBAL_INIT||gimbal_data.ctrl_mode == GIMBAL_AUTO_BIG_BUFF||gimbal_data.ctrl_mode == GIMBAL_AUTO_SMALL_BUFF)
-        {
-            chassis.ctrl_mode = CHASSIS_STOP;
-        }
+//        if(gimbal_data.ctrl_mode == GIMBAL_INIT||gimbal_data.ctrl_mode == GIMBAL_AUTO_BIG_BUFF||gimbal_data.ctrl_mode == GIMBAL_AUTO_SMALL_BUFF)
+//        {
+//            chassis.ctrl_mode = CHASSIS_STOP;
+//        }
         /***************************ÔÆÌ¨Ä¬ÈÏ×´Ì¬ÉèÖÃ**********************************************/
         if(gimbal_data.ctrl_mode != GIMBAL_INIT&&RC_CtrlData.inputmode != STOP&&gimbal_data.last_ctrl_mode == GIMBAL_RELAX)
         {

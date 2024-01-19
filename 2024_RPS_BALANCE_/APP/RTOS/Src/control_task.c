@@ -23,11 +23,11 @@ void control_task(void)
 	
 	if(time_tick%10==9)
 	{
-		power_data_set_handle(CAN1,b_chassis.Max_power_to_PM01);
+		power_data_set_handle(CAN2,b_chassis.Max_power_to_PM01);
 	}
 	if(time_tick%10==7)
 	{
-		power_data_read_handle(CAN1);
+		power_data_read_handle(CAN2);
 	}
 	
 	

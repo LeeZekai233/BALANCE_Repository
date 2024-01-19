@@ -22,6 +22,7 @@
 
 void Can1ReceiveMsgProcess(CanRxMsg * msg)
 {
+	can_chassis_receive_task(msg);
     switch (msg->StdId)
     {
 			case JM1Encoder_MOTOR:
@@ -53,11 +54,12 @@ void Can1ReceiveMsgProcess(CanRxMsg * msg)
     default:
         break;
     }
-		PM01_message_Process(&capacitance_message,msg);
+		
 }
 
 void Can2ReceiveMsgProcess(CanRxMsg * msg)
 {
+	
     switch (msg->StdId)
     {
     
@@ -76,7 +78,8 @@ void Can2ReceiveMsgProcess(CanRxMsg * msg)
     default:
         break;
     }
-	can_chassis_receive_task(msg);
+		PM01_message_Process(&capacitance_message,msg);
+	
 }
 
 
@@ -92,11 +95,17 @@ void can_bus_send_task(void)
 //	CAN_MG_single_torsionControl(CAN1,-b_chassis.joint_T[1],0x142,0.017368678);
 //	CAN_MG_single_torsionControl(CAN1,-b_chassis.joint_T[2],0x143,0.017368678);
 //	CAN_MG_single_torsionControl(CAN2,b_chassis.joint_T[3],0x144,0.017368678);
+//	
+//	CAN_MF_single_torsionControl(CAN2,b_chassis.driving_T[0],0x141,0.002597741);
+//	CAN_MF_single_torsionControl(CAN2,-b_chassis.driving_T[1],0x142,0.002597741);
+	if(time_tick%2==0)
+	{
+		CAN_MF_multiy_torsionControl(CAN2,0.002597741,b_chassis.driving_T[0],-b_chassis.driving_T[1],0,0);
+	}
+	if(time_tick%2==0)
+	{
+		CAN_MG_multiy_torsionControl(CAN1,0.017368678,b_chassis.joint_T[0],-b_chassis.joint_T[1],-b_chassis.joint_T[2],b_chassis.joint_T[3]);
+	}
 	
-	CAN_MF_single_torsionControl(CAN2,b_chassis.driving_T[0],0x141,0.002597741);
-	CAN_MF_single_torsionControl(CAN2,-b_chassis.driving_T[1],0x142,0.002597741);
-	
-//	CAN_MF_multiy_torsionControl(CAN2,0.002597741,b_chassis.driving_T[0],-b_chassis.driving_T[1],0,0);
-	CAN_MG_multiy_torsionControl(CAN1,0.017368678,b_chassis.joint_T[0],-b_chassis.joint_T[1],-b_chassis.joint_T[2],b_chassis.joint_T[3]);
 }
 

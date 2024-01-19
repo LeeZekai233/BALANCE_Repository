@@ -751,7 +751,7 @@ void usart6_init()
 
     USART_DeInit(USART6);
 //    USART_StructInit(&usart);
-    usart.USART_BaudRate = 115200;
+    usart.USART_BaudRate = 921600;
     usart.USART_WordLength = USART_WordLength_8b;
     usart.USART_StopBits = USART_StopBits_1;
     usart.USART_Parity = USART_Parity_No;

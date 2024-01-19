@@ -265,7 +265,7 @@ pid_t pid_pit_speed     = {0};
 pid_t pid_spd[4]        = {0};
 pid_t pid_chassis_angle = {0};
 pid_t pid_trigger       = {0};
-pid_t pid_trigger_speed = {0};
+
 pid_t pid_trigger_second_speed = {0};
 pid_t pid_rotate[4]     = {0};
 pid_t pid_imu_tmp       = {0};
