@@ -125,32 +125,32 @@ void balance_cmd_select(void)
 {
     b_chassis.last_ctrl_mode = b_chassis.ctrl_mode;
 	if((b_chassis.ctrl_mode != CHASSIS_INIT&&b_chassis.ctrl_mode != CHASSIS_STAND_MODE)||can_chassis_data.chassis_mode == 0)
-    b_chassis.ctrl_mode = can_chassis_data.chassis_mode;
+    b_chassis.ctrl_mode = usart_chassis_data.chassis_mode;
 
     if (b_chassis.ctrl_mode != CHASSIS_INIT)
         {
-            b_chassis.chassis_dynemic_ref.vy = can_chassis_data.y/100.0f;
-            b_chassis.chassis_dynemic_ref.vx = can_chassis_data.x/100.0f;
-            b_chassis.chassis_dynemic_ref.vw = can_chassis_data.rotate_speed;
+            b_chassis.chassis_dynemic_ref.vy = usart_chassis_data.y/100.0f;
+            b_chassis.chassis_dynemic_ref.vx = usart_chassis_data.x/100.0f;
+            b_chassis.chassis_dynemic_ref.vw = usart_chassis_data.rotate_speed;
             VAL_LIMIT(b_chassis.chassis_dynemic_ref.vy,b_chassis.min_speed,b_chassis.max_speed);
             VAL_LIMIT(b_chassis.chassis_dynemic_ref.vx,-2,2);
             VAL_LIMIT(b_chassis.chassis_dynemic_ref.vw,-5,5);
         }
-        if(b_chassis.ctrl_mode != CHASSIS_INIT&&can_chassis_data.chassis_mode != CHASSIS_RELAX&&b_chassis.last_ctrl_mode == CHASSIS_RELAX&&can_chassis_data.if_follow_gim)
+        if(b_chassis.ctrl_mode != CHASSIS_INIT&&usart_chassis_data.chassis_mode != CHASSIS_RELAX&&b_chassis.last_ctrl_mode == CHASSIS_RELAX&&usart_chassis_data.if_follow_gim)
         {
-            b_chassis.ctrl_mode = can_chassis_data.chassis_mode;
+            b_chassis.ctrl_mode = usart_chassis_data.chassis_mode;
         }
         if (b_chassis.last_ctrl_mode == CHASSIS_RELAX && b_chassis.ctrl_mode != CHASSIS_RELAX)
 	    {
 		    b_chassis.ctrl_mode = CHASSIS_INIT;
 	    }
-        if (b_chassis.ctrl_mode == can_chassis_data.chassis_mode && fabs(chassis_gyro.pitch_Angle) > 12)
+        if (b_chassis.ctrl_mode == usart_chassis_data.chassis_mode && fabs(chassis_gyro.pitch_Angle) > 12)
         {
             b_chassis.ctrl_mode = CHASSIS_INIT;
         }
-				b_chassis.chassis_dynemic_ref.leglength = can_chassis_data.cmd_leg_length/100.0f;
+				b_chassis.chassis_dynemic_ref.leglength = usart_chassis_data.cmd_leg_length/100.0f;
 				
-				b_chassis.yaw_encoder_ecd_angle = can_chassis_data.yaw_Encoder_ecd_angle/10000.0f;
+				b_chassis.yaw_encoder_ecd_angle = usart_chassis_data.yaw_Encoder_ecd_angle;
 				b_chassis.yaw_angle_0_2pi = convert_ecd_angle_to_0_2pi(b_chassis.yaw_encoder_ecd_angle,b_chassis.yaw_angle_0_2pi);
 }
 
@@ -172,7 +172,7 @@ void chassis_standup_handle(void)
     b_chassis.chassis_ref.vw = 0;
 	b_chassis.chassis_ref.y_position = b_chassis.balance_loop.x;
 	if(fabs(chassis_gyro.pitch_Angle)<1.5)
-		b_chassis.ctrl_mode = can_chassis_data.chassis_mode;
+		b_chassis.ctrl_mode = usart_chassis_data.chassis_mode;
 }
 
 
@@ -312,7 +312,7 @@ void chassis_rotate_handle(void)
     b_chassis.chassis_ref.vx = 0;
 		b_chassis.chassis_ref.y_position += b_chassis.chassis_ref.vy*0.001*TIME_STEP;
 		
-		b_chassis.chassis_ref.vw = can_chassis_data.rotate_speed; 
+		b_chassis.chassis_ref.vw = usart_chassis_data.rotate_speed; 
 		VAL_LIMIT(b_chassis.chassis_dynemic_ref.vw,-5,5);
 }
 
@@ -397,7 +397,7 @@ void balance_task(void)
 	b_chassis.balance_loop.state_err[5] = -(b_chassis.balance_loop.dphi);
 	
     //对腿变化加速度的限制
-    VAL_LIMIT(b_chassis.balance_loop.state_err[3], -2, 2);
+    VAL_LIMIT(b_chassis.balance_loop.state_err[3], -1.9, 1.9);
 
     //lqr未离地增益计算
     V_T_gain = b_chassis.balance_loop.k[0][3] * b_chassis.balance_loop.state_err[3];
@@ -521,13 +521,13 @@ void power_limit_handle(void)
 
 float input_power_cal(void)
 {
-    float Max_Power = judge_rece_mesg.game_robot_state.chassis_power_limit +
-                      (judge_rece_mesg.power_heat_data.chassis_power_buffer - 5) * 2;
+    float Max_Power = usart_chassis_data.chassis_power_limit +
+                      (usart_chassis_data.chassis_power_buffer - 5) * 2;
 
     if (capacitance_message.cap_voltage_filte >= 23.0)
     {
         Max_Power = (23.7 - capacitance_message.cap_voltage_filte) * 150;
-        VAL_LIMIT(Max_Power, 0, judge_rece_mesg.game_robot_state.chassis_power_limit + (judge_rece_mesg.power_heat_data.chassis_power_buffer - 5) * 2);
+        VAL_LIMIT(Max_Power, 0, usart_chassis_data.chassis_power_limit + (usart_chassis_data.chassis_power_buffer - 5) * 2);
     }
     if (capacitance_message.cap_voltage_filte >= 23.7)
     {

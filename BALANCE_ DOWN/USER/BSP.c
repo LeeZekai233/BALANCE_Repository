@@ -15,7 +15,7 @@ NVIC_PriorityGroupConfig(NVIC_PriorityGroup_2);//设置系统中断优先级分组2
 	usart2_init(115200);	//初始化串口波特率为115200
 #endif
 #if EN_USART3
-	usart3_init(921600);	//初始化串口波特率为115200
+	usart3_init(115200);	//初始化串口波特率为115200
 #endif
 #if EN_UART4
 	uart4_init(115200);	//初始化串口波特率为115200

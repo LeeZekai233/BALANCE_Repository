@@ -27,8 +27,8 @@
 #define USART2_Data_Receive_Process_0				do{}while(0);
 #define USART2_Data_Receive_Process_1				do{}while(0);
 	
-#define USART3_Data_Receive_Process					do{}while(0);
-#define UART4_Data_Receive_Process					do{usart_chassis_receive(_UART4_DMA_RX_BUF);}while(0);
+#define USART3_Data_Receive_Process					do{usart_chassis_receive(_USART3_RX_BUF);}while(0);
+#define UART4_Data_Receive_Process					do{}while(0);
 	
 #define UART5_Data_Receive_Process_0				do{}while(0);
 #define UART5_Data_Receive_Process_1				do{}while(0);

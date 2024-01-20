@@ -350,7 +350,7 @@ void gimbal_parameter_Init(void)
 
     // 跟随陀螺仪下的参数
     PID_struct_init(&gimbal_data.pid_pit_Angle, POSITION_PID, 500, 4,
-                    20, 0.01f, 12); //15, 0.01f, 8
+                    15, 0.01f, 12); //15, 0.01f, 8
     PID_struct_init(&gimbal_data.pid_pit_speed, POSITION_PID, 27000, 20000,
                     170, 0.001, 60); //170, 0.001f, 60
     //------------------------------------------------
