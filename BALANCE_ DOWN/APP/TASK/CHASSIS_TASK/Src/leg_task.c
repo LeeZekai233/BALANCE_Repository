@@ -93,7 +93,7 @@ void FN_calculate(leg_state_t *leg,float MT1_torque,float MT4_torque)
     //支持力的计算
       leg->leg_FN = WHEEL_MASS * leg->ddzw + P + WHEEL_MASS * 9.81;
 
-
+      
       
 }
 

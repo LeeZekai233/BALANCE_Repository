@@ -36,7 +36,8 @@ typedef struct
 	float leg_F;
 	float ddzw;
 	float leg_FN;
-
+	float leg_final_FN;
+	
 	uint8_t wheel_state;
 
 	pid_t leglengthpid;

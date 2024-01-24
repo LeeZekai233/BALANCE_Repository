@@ -3,7 +3,7 @@
 #include "public.h"
 
 #define WHEEL_R 0.0675
-#define BODY_MASS 14.552
+#define BODY_MASS 15.652
 #define WHEEL_MASS 2.268
 #define T_MAX 10 
 #define WARNING_VOLTAGE 10
@@ -59,6 +59,7 @@ typedef struct
 	float x;
 	float dx;
 	float ddz;
+	float wheel_dx;
 
 	double L0;
 	double K[12];
@@ -112,6 +113,7 @@ typedef struct
 	float leg_F;
 	float ddzw;
 	float leg_FN;
+	float leg_final_FN;
 
 	uint8_t wheel_state;
 
@@ -163,6 +165,7 @@ void chassis_standup_handle(void);
 void follow_gimbal_handle(void);
 void chassis_rotate_handle(void);
 void chassis_seperate_handle(void);
+void chassis_side_handle(void);
 void balance_chassis_task(void);
 void balance_task(void);
 
@@ -173,7 +176,7 @@ void get_speed_err_limite_rate(float max_power);
 float all_power_cal(float T, float k1, float k2, float k3, float w);
 void Vmax_cal(float Kv, float Pmax, float bT_gain, float k1, float k2,
               float k3, float w, float Vmax[2]);
-
+void middle_angle_adjust_handle(void);
 void balance_param_init(void);
 void lqr_k(double L0, double K[12]);
 double convert_ecd_angle_to_0_2pi(double ecd_angle,float _0_2pi_angle);

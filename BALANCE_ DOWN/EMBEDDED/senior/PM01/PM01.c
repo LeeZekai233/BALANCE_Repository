@@ -106,13 +106,13 @@ void power_data_set_handle(CAN_TypeDef *CANx,u16 Max_Power)
 {
     PM01_command_set(CANx,2, 0x600); //超电控制板开机
     PM01_command_set(CANx,Max_Power * 100, 0x601); //最大输入功率设置
-    PM01_command_set(CANx,2500, 0x602); //最大输出电压设置
+    PM01_command_set(CANx,2400, 0x602); //最大输出电压设置
     PM01_command_set(CANx,7 * 100, 0x603); //最大输出电流设置
 }
 
 void power_data_Init(CAN_TypeDef *CANx)
 {
 	PM01_command_set(CANx,2, 0x600); //超电控制板开机
-	PM01_command_set(CANx,2500, 0x602); //最大输出电压设置
+	PM01_command_set(CANx,2400, 0x602); //最大输出电压设置
   PM01_command_set(CANx,7 * 100, 0x603); //最大输出电流设置
 }

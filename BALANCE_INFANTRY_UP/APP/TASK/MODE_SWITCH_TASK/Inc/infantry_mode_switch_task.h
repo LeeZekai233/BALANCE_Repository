@@ -5,8 +5,8 @@
 #include "CHASSIS_TASK.H"
 
 /*************************************************/
-#define HIGH_SPEED 2.5
-#define NORMAL_SPEED 2.5 
+#define HIGH_SPEED 2
+#define NORMAL_SPEED 1.5 
 
 
 
