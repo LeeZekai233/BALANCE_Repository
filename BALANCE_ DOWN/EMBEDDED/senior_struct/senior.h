@@ -15,7 +15,7 @@
 #define  JM1Encoder_Offset   52321
 #define  JM2Encoder_Offset   6143
 #define  JM3Encoder_Offset   7456
-#define  JM4Encoder_Offset   25928
+#define  JM4Encoder_Offset   4570
 
 #define  TM1Encoder_Offset   0
 #define  TM2Encoder_Offset   0

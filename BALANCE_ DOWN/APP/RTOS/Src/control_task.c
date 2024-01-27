@@ -3,7 +3,7 @@
 
 int time_tick = 0;
 float lp_data = 0;
-float data;
+
 void control_task(void)
 {
 	time_tick++;

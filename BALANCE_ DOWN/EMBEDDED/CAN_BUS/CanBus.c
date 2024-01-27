@@ -18,7 +18,7 @@
  ===============================================================================
  **/
  
- 
+
 
 void Can1ReceiveMsgProcess(CanRxMsg * msg)
 {
@@ -27,6 +27,7 @@ void Can1ReceiveMsgProcess(CanRxMsg * msg)
     {
 			case JM1Encoder_MOTOR:
 		{
+
 			MG_18bit_EncoderTask(&balance_chassis.joint_Encoder[0],msg,JM1Encoder_Offset,0.017368678);
 			
 		}
@@ -34,12 +35,14 @@ void Can1ReceiveMsgProcess(CanRxMsg * msg)
     
 			case JM2Encoder_MOTOR:
 		{
+
 			MG_18bit_EncoderTask(&balance_chassis.joint_Encoder[1],msg,JM2Encoder_Offset,0.017368678);
 			
 		}
         break;
 			case JM3Encoder_MOTOR:
 		{
+
 			MG_18bit_EncoderTask(&balance_chassis.joint_Encoder[2],msg,JM3Encoder_Offset,0.017368678);
 			
 		}
@@ -47,6 +50,7 @@ void Can1ReceiveMsgProcess(CanRxMsg * msg)
    
     case JM4Encoder_MOTOR:
 		{
+
 			MG_18bit_EncoderTask(&balance_chassis.joint_Encoder[3],msg,JM4Encoder_Offset,0.017368678);
 			
 		}
