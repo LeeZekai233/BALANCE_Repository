@@ -8,11 +8,13 @@ Balance_chassis_t b_chassis = { 0 };
     float V_Tp_gain;
     float balance_Tgain;
     float balance_Tpgain;
+		float balance_Tp_Intergate;
 
     float V_T_outlandgain ;
     float V_Tp_outlandgain ;
     float balance_Toutlandgain ;
     float balance_Tpoutlandgain ;
+		float balance_Tp_outlandIntergate;
 /**
 ************************************************************************************************************************
 * @Name     : balance_param_init
@@ -62,6 +64,8 @@ void balance_chassis_task(void)
 				b_chassis.driving_T[0] = 0;
 			  b_chassis.driving_T[1] = 0;
 			Init_cnt = 0;
+			balance_Tpgain = 0;
+			balance_Tpoutlandgain = 0;
 			b_chassis.chassis_ref.y_position = b_chassis.balance_loop.x;
     }
     break;
@@ -312,7 +316,7 @@ void chassis_rotate_handle(void)
 		{b_chassis.yaw_angle__pi_pi=b_chassis.yaw_angle_0_2pi;}
 		
 		b_chassis.chassis_ref.leglength = b_chassis.chassis_dynemic_ref.leglength;
-    b_chassis.chassis_ref.vy = 0;
+    b_chassis.chassis_ref.vy = b_chassis.chassis_dynemic_ref.vy*cosf(b_chassis.yaw_angle__pi_pi)+b_chassis.chassis_dynemic_ref.vx*sinf(b_chassis.yaw_angle__pi_pi);
     b_chassis.chassis_ref.vx = 0;
 		b_chassis.chassis_ref.y_position += b_chassis.chassis_ref.vy*0.001*TIME_STEP;
 		
@@ -436,17 +440,22 @@ void balance_task(void)
     VAL_LIMIT(b_chassis.balance_loop.state_err[3], -1.7, 1.7);
 
     //lqr未离地增益计算
+		
     V_T_gain = b_chassis.balance_loop.k[0][3] * b_chassis.balance_loop.state_err[3];
     V_Tp_gain = b_chassis.balance_loop.k[1][3] * b_chassis.balance_loop.state_err[3];
     balance_Tgain = b_chassis.balance_loop.k[0][0] * b_chassis.balance_loop.state_err[0] + b_chassis.balance_loop.k[0][1] * b_chassis.balance_loop.state_err[1] + b_chassis.balance_loop.k[0][2] * b_chassis.balance_loop.state_err[2] + b_chassis.balance_loop.k[0][4] * b_chassis.balance_loop.state_err[4] + b_chassis.balance_loop.k[0][5] * b_chassis.balance_loop.state_err[5];
     balance_Tpgain = b_chassis.balance_loop.k[1][0] * b_chassis.balance_loop.state_err[0] + b_chassis.balance_loop.k[1][1] * b_chassis.balance_loop.state_err[1] + b_chassis.balance_loop.k[1][2] * b_chassis.balance_loop.state_err[2] + b_chassis.balance_loop.k[1][4] * b_chassis.balance_loop.state_err[4] + b_chassis.balance_loop.k[1][5] * b_chassis.balance_loop.state_err[5];
-
+		
+		
+		
+		
+		
     //lqr离地增益计算
     V_T_outlandgain = 0;
     V_Tp_outlandgain = 0;
     balance_Toutlandgain = 0;
     balance_Tpoutlandgain = b_chassis.balance_loop.k[1][0] * b_chassis.balance_loop.state_err[0] + b_chassis.balance_loop.k[1][1] * b_chassis.balance_loop.state_err[1] ;
-    
+		
     //lqr输出
     b_chassis.balance_loop.lqrOutT = balance_Tgain + V_T_gain;
     b_chassis.balance_loop.lqrOutTp = balance_Tpgain + V_Tp_gain;
@@ -493,7 +502,7 @@ void balance_task(void)
     else
     {
 			b_chassis.chassis_ref.y_position = b_chassis.balance_loop.x;
-        leg_conv(b_chassis.left_leg.leg_F, balance_Tpoutlandgain + harmonize_output, b_chassis.left_leg.phi1, b_chassis.left_leg.phi4, b_chassis.left_leg.T);
+        leg_conv(b_chassis.left_leg.leg_F, balance_Tpoutlandgain - harmonize_output, b_chassis.left_leg.phi1, b_chassis.left_leg.phi4, b_chassis.left_leg.T);
         b_chassis.joint_T[1] = b_chassis.left_leg.T[1];
         b_chassis.joint_T[2] = b_chassis.left_leg.T[0];
         b_chassis.driving_T[0] = 0;
@@ -510,7 +519,7 @@ void balance_task(void)
     else
     {
 			b_chassis.chassis_ref.y_position = b_chassis.balance_loop.x;
-        leg_conv(b_chassis.right_leg.leg_F, balance_Tpoutlandgain - harmonize_output, b_chassis.right_leg.phi1, b_chassis.right_leg.phi4, b_chassis.right_leg.T);
+        leg_conv(b_chassis.right_leg.leg_F, balance_Tpoutlandgain + harmonize_output, b_chassis.right_leg.phi1, b_chassis.right_leg.phi4, b_chassis.right_leg.T);
         b_chassis.joint_T[0] = b_chassis.right_leg.T[1];
         b_chassis.joint_T[3] = b_chassis.right_leg.T[0];
         b_chassis.driving_T[1] = 0;
@@ -800,7 +809,6 @@ void lqr_k(double L0, double K[12])
   K[11] = ((L0 * 1.9280559935233319 - t2 * 3.4074293450274449) +
            t3 * 2.539072311431632) +
           4.3033026901382572;
-					
 
 }
 
