@@ -53,7 +53,7 @@
 #define BSP_UART5_DMA_RX_BUF_LEN  512
 #define BSP_USART6_RX_BUF_LENGTH  100
 
-
+#define USART3_TX_BUF_LENGTH  		100
 #define UART4_TX_BUF_LENGTH       100
 #define UART5_TX_BUF_LENGTH       150
 
@@ -108,10 +108,16 @@
   #define USART_CH100_RX_DMA_FLAG_HTIF          DMA_FLAG_HTIF1
   #define USART_CH100_RX_DMA_FLAG_TCIF          DMA_FLAG_TCIF1
 
-//  #define USART_CH100_DMA_TX_IRQn               DMA2_Stream6_IRQn
+  #define USART_CH100_DMA_TX_IRQn               DMA1_Stream3_IRQn
 //  #define USART_CH100_DMA_RX_IRQn               DMA2_Stream1_IRQn
 //  #define USART_CH100_DMA_TX_IRQHandler         DMA2_Stream6_IRQHandler
 //  #define USART_CH100_DMA_RX_IRQHandler         DMA2_Stream1_IRQHandler
+
+void Uart3DmaSendDataProc(DMA_Stream_TypeDef *DMA_Streamx,u16 ndtr);
+//发送单字节
+void Uart3SendByteInfoProc(u8 nSendInfo);
+//发送多字节
+void Uart3SendBytesInfoProc(u8* pSendInfo, u16 nSendCount);
 #endif
 
 

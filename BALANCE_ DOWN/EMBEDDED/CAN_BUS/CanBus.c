@@ -107,7 +107,9 @@ void can_bus_send_task(void)
 	
 
 		CAN_MG_multiy_torsionControl(CAN1,0.017368678,b_chassis.joint_T[0],-b_chassis.joint_T[1],-b_chassis.joint_T[2],b_chassis.joint_T[3]);
-
+	
+		
+	
 	
 }
 

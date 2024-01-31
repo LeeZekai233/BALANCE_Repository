@@ -36,7 +36,9 @@ void usart_chassis_send(
 	 databuff[16] = (uint8_t)(data >> 16);
 	 databuff[17] = (uint8_t)(data >> 8);
 	 databuff[18] = (uint8_t)(data);
-	Uart4SendBytesInfoProc(databuff,19);
+	databuff[19] = (uint8_t)(chassis_power_limit);
+
+	Uart4SendBytesInfoProc(databuff,20);
 }
 
 
@@ -52,4 +54,5 @@ void usart_chassis_receive(uint8_t *DataAddress)
 	usart_chassis_data.rotate_speed = ((DataAddress[9]<<8)|DataAddress[10]);
 	usart_chassis_data.chassis_power = ((DataAddress[11]<<8)|DataAddress[12]);
 	usart_chassis_data.chassis_power_buffer = ((DataAddress[13]<<8)|DataAddress[14]);
+	usart_chassis_data.chassis_power_limit = DataAddress[19];
 }

@@ -31,7 +31,7 @@ void control_task(void)
 	}
 	if(time_tick%3 == 0)
 	{
-//		send_protocol(gimbal_gyro.yaw_Angle,gimbal_gyro.pitch_Angle,gimbal_gyro.roll_Angle,0,27,0,UART4_DMA_TX_BUF);
+		send_protocol(gimbal_gyro.yaw_Angle,gimbal_gyro.pitch_Angle,gimbal_gyro.roll_Angle,judge_rece_mesg.game_robot_state.robot_id,24,0,UART4_DMA_TX_BUF);
 	}
 }
 

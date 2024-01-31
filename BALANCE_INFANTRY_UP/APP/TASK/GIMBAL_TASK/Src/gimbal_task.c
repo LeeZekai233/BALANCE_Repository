@@ -138,7 +138,7 @@ float pitch_max = 0;
     float Buff_pitch_remain=-0.5;
 
     float auto_aim_Yaw_remain = 0;
-    float auto_aim_pitch_remain = 0;
+    float auto_aim_pitch_remain = 3;
 #elif STANDARD == 4
 		
 		#define INFANTRY_PITCH_MAX 35.0f
@@ -365,7 +365,7 @@ void gimbal_parameter_Init(void)
     PID_struct_init ( &gimbal_data.pid_pit_speed_follow, POSITION_PID, 27000, 25000, 180.0f, 0.2f, 0 ); 
 
     PID_struct_init ( &gimbal_data.pid_yaw_follow, POSITION_PID,  150,200,
-                    20, 0.09f, 40 );
+                    10, 0.09f, 40 );
     PID_struct_init ( &gimbal_data.pid_yaw_speed_follow, POSITION_PID, 29800, 29800,
                     350.0f, 0, 100 ); //I太大时，陀螺开启云台抖动严重
 
@@ -625,8 +625,8 @@ void gimbal_follow_gyro_handle(void)
                     gimbal_data.gim_ref_and_fdb.pit_speed_fdb = VISION_PITCH_SPEED_FDB;
                     gimbal_data.gim_ref_and_fdb.yaw_speed_fdb = VISION_YAW_SPEED_FDB;
 										//切换云台输入
-                    gimbal_data.gim_ref_and_fdb.pit_angle_ref = new_location.y;
-                    gimbal_data.gim_ref_and_fdb.yaw_angle_ref = new_location.x;
+                    gimbal_data.gim_ref_and_fdb.pit_angle_ref = new_location.y + auto_aim_pitch_remain;
+                    gimbal_data.gim_ref_and_fdb.yaw_angle_ref = new_location.x + auto_aim_Yaw_remain;
 										//视觉模式下云台限位
                     VAL_LIMIT(gimbal_data.gim_ref_and_fdb.pit_angle_ref, VISION_PITCH_MIN , VISION_PITCH_MAX );
                 }
