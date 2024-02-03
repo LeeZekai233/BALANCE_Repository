@@ -5,7 +5,7 @@ u8 databuff[100];
 
 void usart_chassis_send(
 												u8 if_follow_gim,
-										u8 speed_mode,
+										u8 jump_cmd,
 										u8 chassis_mode,
 										float yaw_encoder_angle,
 										int16_t cmd_leg_length,
@@ -18,7 +18,7 @@ void usart_chassis_send(
 {
 	 int32_t data = (int32_t)(yaw_encoder_angle*10000);
 	 databuff[0] = if_follow_gim;
-	 databuff[1] = speed_mode;
+	 databuff[1] = jump_cmd;
 	 databuff[2] = chassis_mode;
 	 databuff[3] = (uint8_t)((cmd_leg_length) >> 8);
 	 databuff[4] = (uint8_t)(cmd_leg_length);
@@ -46,7 +46,7 @@ void usart_chassis_receive(uint8_t *DataAddress)
 {
 	usart_chassis_data.yaw_Encoder_ecd_angle = ((int32_t)(((DataAddress[15]<<24)|(DataAddress[16]<<16)|(DataAddress[17]<<8)|DataAddress[18])))/10000.0f;
 	usart_chassis_data.if_follow_gim = DataAddress[0];
-	usart_chassis_data.speed_mode = DataAddress[1];
+	usart_chassis_data.jump_cmd = DataAddress[1];
 	usart_chassis_data.chassis_mode = DataAddress[2];
 	usart_chassis_data.cmd_leg_length = ((DataAddress[3]<<8)|DataAddress[4]);
 	usart_chassis_data.x = ((DataAddress[5]<<8)|DataAddress[6]);

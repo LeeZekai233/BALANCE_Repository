@@ -129,6 +129,7 @@ typedef struct
 {
 	chassis_mode_e ctrl_mode;
 	chassis_mode_e last_ctrl_mode;
+	u8 jump_flag;
 
 	lqr_system balance_loop;
 	chassis_ref_t chassis_ref;
@@ -163,6 +164,7 @@ void chassis_stop_handle(void);
 void balance_cmd_select(void);
 void chassis_standup_handle(void);
 void follow_gimbal_handle(void);
+void balance_jump_handle(void);
 void chassis_rotate_handle(void);
 void chassis_seperate_handle(void);
 void chassis_side_handle(void);

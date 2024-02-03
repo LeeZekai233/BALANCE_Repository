@@ -138,7 +138,7 @@ float pitch_max = 0;
     float Buff_pitch_remain=-0.5;
 
     float auto_aim_Yaw_remain = 0;
-    float auto_aim_pitch_remain = 3;
+    float auto_aim_pitch_remain = 0;
 #elif STANDARD == 4
 		
 		#define INFANTRY_PITCH_MAX 35.0f
@@ -355,7 +355,7 @@ void gimbal_parameter_Init(void)
                     170, 0.001, 60); //170, 0.001f, 60
     //------------------------------------------------
     PID_struct_init(&gimbal_data.pid_yaw_Angle, POSITION_PID, 500, 4,
-                    13, 0.15f, 8); 
+                    13, 0.15f, 20); 
     PID_struct_init(&gimbal_data.pid_yaw_speed, POSITION_PID, 29000, 10000,
                     150, 0.8f, 40); 
 
@@ -365,7 +365,7 @@ void gimbal_parameter_Init(void)
     PID_struct_init ( &gimbal_data.pid_pit_speed_follow, POSITION_PID, 27000, 25000, 180.0f, 0.2f, 0 ); 
 
     PID_struct_init ( &gimbal_data.pid_yaw_follow, POSITION_PID,  150,200,
-                    10, 0.09f, 40 );
+                    15, 0.09f, 40 );
     PID_struct_init ( &gimbal_data.pid_yaw_speed_follow, POSITION_PID, 29800, 29800,
                     350.0f, 0, 100 ); //I太大时，陀螺开启云台抖动严重
 

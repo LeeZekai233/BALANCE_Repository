@@ -98,7 +98,7 @@ void vision_process_general_message(unsigned char* address, unsigned int length)
 		new_location.lost_cnt = 3;
 	}
 		
-	
+		
 	if(new_location.lost_cnt == 3)
 	{
 		new_location.control_flag = 1;

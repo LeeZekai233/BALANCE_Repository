@@ -10,7 +10,7 @@ void control_task(void)
 
 		if(time_tick%10 == 0)
 		usart_chassis_send(chassis.follow_gimbal,
-							chassis.chassis_speed_mode ,
+							RC_CtrlData.Key_Flag.Key_E_Flag ,
 							chassis.ctrl_mode,
 							yaw_Encoder.ecd_angle,
 							leg_length,
@@ -29,7 +29,7 @@ void control_task(void)
 			gimbal_task();
 			can_bus_send_task();
 	}
-	if(time_tick%3 == 0)
+	if(time_tick%5 == 0)
 	{
 		send_protocol(gimbal_gyro.yaw_Angle,gimbal_gyro.pitch_Angle,gimbal_gyro.roll_Angle,judge_rece_mesg.game_robot_state.robot_id,24,0,UART4_DMA_TX_BUF);
 	}

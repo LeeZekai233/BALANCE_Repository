@@ -318,42 +318,32 @@
         <Ww>
           <count>10</count>
           <WinNumber>2</WinNumber>
-          <ItemText>yaw_Encoder,0x0A</ItemText>
+          <ItemText>\\Template\../APP/TASK/GIMBAL_TASK/Src/gimbal_task.c\gimbal_data.pid_yaw_speed.d</ItemText>
         </Ww>
         <Ww>
           <count>11</count>
           <WinNumber>2</WinNumber>
-          <ItemText>can_chassis_data,0x0A</ItemText>
+          <ItemText>new_location,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>12</count>
           <WinNumber>2</WinNumber>
-          <ItemText>remote_flagW1,0x0A</ItemText>
+          <ItemText>\\Template\../EMBEDDED/senior/Auto_Shoot/Auto_shoot.c\new_location.x</ItemText>
         </Ww>
         <Ww>
           <count>13</count>
           <WinNumber>2</WinNumber>
-          <ItemText>remote_flagW2,0x0A</ItemText>
+          <ItemText>\\Template\../EMBEDDED/senior/Auto_Shoot/Auto_shoot.c\new_location.x</ItemText>
         </Ww>
         <Ww>
           <count>14</count>
           <WinNumber>2</WinNumber>
-          <ItemText>can2_count,0x10</ItemText>
+          <ItemText>\\Template\../APP/TASK/GIMBAL_TASK/Src/gimbal_task.c\gimbal_data.pid_yaw_Angle</ItemText>
         </Ww>
         <Ww>
           <count>15</count>
           <WinNumber>2</WinNumber>
-          <ItemText>\\Template\../EMBEDDED/senior_struct/senior.c\yaw_Encoder,0x0A</ItemText>
-        </Ww>
-        <Ww>
-          <count>16</count>
-          <WinNumber>2</WinNumber>
-          <ItemText>RC_CtrlData,0x0A</ItemText>
-        </Ww>
-        <Ww>
-          <count>17</count>
-          <WinNumber>2</WinNumber>
-          <ItemText>\\Template\../APP/TASK/GIMBAL_TASK/Src/gimbal_task.c\gimbal_data.pid_yaw_speed.d</ItemText>
+          <ItemText>gimbal_gyro.yaw_Angle</ItemText>
         </Ww>
       </WatchWindow2>
       <Tracepoint>

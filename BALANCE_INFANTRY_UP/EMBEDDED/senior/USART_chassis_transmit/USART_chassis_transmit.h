@@ -6,7 +6,7 @@
 typedef struct
 {
 	u8 if_follow_gim;
-	u8 speed_mode;
+	u8 jump_cmd;
 	u8 chassis_mode;
 	float yaw_Encoder_ecd_angle;
 	int16_t cmd_leg_length;
@@ -22,7 +22,7 @@ typedef struct
 
 void usart_chassis_send(
 												u8 if_follow_gim,
-										u8 speed_mode,
+										u8 jump_cmd,
 										u8 chassis_mode,
 										float yaw_encoder_angle,
 										int16_t cmd_leg_length,
