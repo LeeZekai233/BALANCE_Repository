@@ -19,8 +19,8 @@
 #define JM3Encoder_MOTOR 0x143
 #define JM4Encoder_MOTOR 0x144
 
-#define TM1Encoder_MOTOR 0x141   //左一右二
-#define TM2Encoder_MOTOR 0x142
+#define TM1Encoder_MOTOR 0x142   //左一右二
+#define TM2Encoder_MOTOR 0x141
 
 /*************************云台电机id******************************/
 #define GIMBAL_YAW_MOTOR 0x00

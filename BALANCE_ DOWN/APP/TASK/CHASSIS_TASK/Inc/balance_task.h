@@ -3,7 +3,7 @@
 #include "public.h"
 
 #define WHEEL_R 0.0675
-#define BODY_MASS 15.652
+#define BODY_MASS 15.342
 #define WHEEL_MASS 2.268
 #define T_MAX 10 
 #define WARNING_VOLTAGE 10
