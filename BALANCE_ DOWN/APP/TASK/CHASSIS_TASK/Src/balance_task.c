@@ -14,6 +14,7 @@ Balance_chassis_t b_chassis = { 0 };
     float balance_Toutlandgain ;
     float balance_Tpoutlandgain ;
 
+
 		
 /**
 ************************************************************************************************************************
@@ -34,7 +35,7 @@ void balance_param_init(void)
     PID_struct_init(&b_chassis.vw_pid, POSITION_PID,5,5,2,0,0);
     PID_struct_init(&b_chassis.roll_pid, POSITION_PID, 500, 200, 1000, 0, 2000);
 	
-		PID_struct_init(&b_chassis.pid_follow_gim, POSITION_PID, 500, 200, 9, 0, 5);
+		PID_struct_init(&b_chassis.pid_follow_gim, POSITION_PID, 500, 200, 7, 0, 10);
 	
 	PID_struct_init(&b_chassis.Init_Tp_pid, POSITION_PID, 500, 200, 40, 0, 60);
 	
@@ -68,6 +69,7 @@ void balance_chassis_task(void)
 			balance_Tpoutlandgain = 0;
 			b_chassis.chassis_ref.pitch = 0;
 			b_chassis.chassis_ref.y_position = b_chassis.balance_loop.x;
+
     }
     break;
 		case CHASSIS_STOP:
@@ -121,8 +123,8 @@ void balance_chassis_task(void)
 #if POWER_LIMIT == 1
     power_limit_handle();
 #else
-    b_chassis.max_speed = 1.5;
-    b_chassis.min_speed = -1.5;
+    b_chassis.max_speed = 2;
+    b_chassis.min_speed = -2;
 		b_chassis.Max_power_to_PM01 = input_power_cal();
 		b_chassis.predict_power = all_power_cal(balance_chassis.Driving_Encoder[0].Torque,-2.528,0.000494,1,balance_chassis.Driving_Encoder[0].rate_rpm) + all_power_cal(balance_chassis.Driving_Encoder[1].Torque,-2.528,0.000494,1,balance_chassis.Driving_Encoder[1].rate_rpm);
 
@@ -162,7 +164,7 @@ void balance_cmd_select(void)
 	    {
 		    b_chassis.ctrl_mode = CHASSIS_INIT;
 	    }
-        if (b_chassis.ctrl_mode == usart_chassis_data.chassis_mode && fabs(chassis_gyro.pitch_Angle) > 12 &&usart_chassis_data.chassis_mode != CHASSIS_RELAX)
+        if (b_chassis.ctrl_mode == usart_chassis_data.chassis_mode && fabs(chassis_gyro.pitch_Angle) > 15 &&usart_chassis_data.chassis_mode != CHASSIS_RELAX)
         {
             b_chassis.ctrl_mode = CHASSIS_INIT;
         }
@@ -307,7 +309,9 @@ void follow_gimbal_handle(void)
 		b_chassis.chassis_ref.leglength = b_chassis.chassis_dynemic_ref.leglength;
     b_chassis.chassis_ref.vy = b_chassis.chassis_dynemic_ref.vy;
     b_chassis.chassis_ref.vx = b_chassis.chassis_dynemic_ref.vx;
-		b_chassis.chassis_ref.y_position += b_chassis.chassis_ref.vy*0.001*TIME_STEP;
+//		b_chassis.chassis_ref.y_position += b_chassis.chassis_ref.vy*0.001*TIME_STEP;
+		if(fabs(b_chassis.balance_loop.dx) > 0.2||b_chassis.chassis_ref.vy != 0)
+			b_chassis.chassis_ref.y_position = b_chassis.balance_loop.x;
 		
 		b_chassis.chassis_ref.vw = -pid_calc(&b_chassis.pid_follow_gim,b_chassis.yaw_angle__pi_pi,0); 
 		VAL_LIMIT(b_chassis.chassis_ref.vw,-5,5);
@@ -377,12 +381,13 @@ void chassis_rotate_handle(void)
 		{b_chassis.yaw_angle__pi_pi=b_chassis.yaw_angle_0_2pi;}
 		
 		b_chassis.chassis_ref.leglength = b_chassis.chassis_dynemic_ref.leglength;
-    b_chassis.chassis_ref.vy = b_chassis.chassis_dynemic_ref.vy*cosf(b_chassis.yaw_angle__pi_pi)+b_chassis.chassis_dynemic_ref.vx*sinf(b_chassis.yaw_angle__pi_pi);
+    b_chassis.chassis_ref.vy = b_chassis.chassis_dynemic_ref.vy*sinf(b_chassis.yaw_angle__pi_pi)+b_chassis.chassis_dynemic_ref.vx*cosf(b_chassis.yaw_angle__pi_pi);
     b_chassis.chassis_ref.vx = 0;
-		b_chassis.chassis_ref.y_position += b_chassis.chassis_ref.vy*0.001*TIME_STEP;
+		//b_chassis.chassis_ref.y_position += b_chassis.chassis_ref.vy*0.001*TIME_STEP;
 		
 		b_chassis.chassis_ref.vw = usart_chassis_data.rotate_speed; 
 		VAL_LIMIT(b_chassis.chassis_dynemic_ref.vw,-7,7);
+		VAL_LIMIT(b_chassis.chassis_ref.vy,-0.5,0.5);
 }
 
 
@@ -406,7 +411,8 @@ void chassis_side_handle(void)
 		b_chassis.chassis_ref.leglength = b_chassis.chassis_dynemic_ref.leglength;
     b_chassis.chassis_ref.vy = b_chassis.chassis_dynemic_ref.vy;
     b_chassis.chassis_ref.vx = b_chassis.chassis_dynemic_ref.vx;
-		b_chassis.chassis_ref.y_position += b_chassis.chassis_ref.vy*0.001*TIME_STEP;
+		if(fabs(b_chassis.balance_loop.dx) > 0.2||b_chassis.chassis_ref.vy != 0)
+			b_chassis.chassis_ref.y_position = b_chassis.balance_loop.x;
 		
 		b_chassis.chassis_ref.vw = -pid_calc(&b_chassis.pid_follow_gim,b_chassis.yaw_angle_0_2pi,side_angle); 
 		VAL_LIMIT(b_chassis.chassis_ref.vw,-5,5);
@@ -471,8 +477,7 @@ void balance_task(void)
     FN_calculate(&b_chassis.left_leg,-balance_chassis.joint_Encoder[2].Torque,-balance_chassis.joint_Encoder[1].Torque);//capacitance_message.out_power
     FN_calculate(&b_chassis.right_leg,balance_chassis.joint_Encoder[3].Torque,balance_chassis.joint_Encoder[0].Torque);//balance_chassis.Driving_Encoder[0].rate_rpm
 																																																											 //balance_chassis.Driving_Encoder[0].Torque
-//		b_chassis.left_leg.leg_final_FN = Lpf_1st_calcu(&LEFTLEG_LPF,b_chassis.left_leg.leg_FN,30,0.002);
-//		b_chassis.right_leg.leg_final_FN = Lpf_1st_calcu(&RIGHTLEG_LPF,b_chassis.right_leg.leg_FN,30,0.002);
+
     /*****************************************************************/
 
     //lqr参数根据腿长的变化获取
@@ -492,18 +497,34 @@ void balance_task(void)
    //误差计算
     b_chassis.balance_loop.state_err[0] = -(b_chassis.balance_loop.theta);
 	b_chassis.balance_loop.state_err[1] = -(b_chassis.balance_loop.dtheta);
-	b_chassis.balance_loop.state_err[2] = -(b_chassis.balance_loop.x -b_chassis.chassis_ref.y_position);
+	if(b_chassis.ctrl_mode == CHASSIS_ROTATE)
+	{
+		b_chassis.balance_loop.state_err[2] = -(b_chassis.balance_loop.x -b_chassis.chassis_ref.y_position)-1.2;
+	}else
+	{
+		b_chassis.balance_loop.state_err[2] = -(b_chassis.balance_loop.x -b_chassis.chassis_ref.y_position);
+	}
+	
 	b_chassis.balance_loop.state_err[3] = -(b_chassis.balance_loop.dx - b_chassis.chassis_ref.vy);
 	b_chassis.balance_loop.state_err[4] = b_chassis.chassis_ref.pitch-(b_chassis.balance_loop.phi);
 	b_chassis.balance_loop.state_err[5] = -(b_chassis.balance_loop.dphi);
 	
     //对腿变化加速度的限制
-    VAL_LIMIT(b_chassis.balance_loop.state_err[3], -1.6, 1.6);
+	if(b_chassis.chassis_dynemic_ref.vy == 1.6)
+	{
+    VAL_LIMIT(b_chassis.balance_loop.state_err[3], -1.4, 1.4);
+	}else if(b_chassis.chassis_dynemic_ref.vy == 2)
+	{
+		VAL_LIMIT(b_chassis.balance_loop.state_err[3], -1.6, 1.6);
+	}else
+	{
+		VAL_LIMIT(b_chassis.balance_loop.state_err[3], -1.4, 1.4);
+	}
 
     //lqr未离地增益计算
 		
     V_T_gain = b_chassis.balance_loop.k[0][3] * b_chassis.balance_loop.state_err[3];
-    V_Tp_gain = b_chassis.balance_loop.k[1][3] * b_chassis.balance_loop.state_err[3];
+    V_Tp_gain = b_chassis.balance_loop.k[1][3] * b_chassis.balance_loop.state_err[3] ;
     balance_Tgain = b_chassis.balance_loop.k[0][0] * b_chassis.balance_loop.state_err[0] + b_chassis.balance_loop.k[0][1] * b_chassis.balance_loop.state_err[1] + b_chassis.balance_loop.k[0][2] * b_chassis.balance_loop.state_err[2] + b_chassis.balance_loop.k[0][4] * b_chassis.balance_loop.state_err[4] + b_chassis.balance_loop.k[0][5] * b_chassis.balance_loop.state_err[5];
     balance_Tpgain = b_chassis.balance_loop.k[1][0] * b_chassis.balance_loop.state_err[0] + b_chassis.balance_loop.k[1][1] * b_chassis.balance_loop.state_err[1] + b_chassis.balance_loop.k[1][2] * b_chassis.balance_loop.state_err[2] + b_chassis.balance_loop.k[1][4] * b_chassis.balance_loop.state_err[4] + b_chassis.balance_loop.k[1][5] * b_chassis.balance_loop.state_err[5];
 		
@@ -529,27 +550,11 @@ void balance_task(void)
     //roll平衡pid
     float roll_F_output = pid_calc(&b_chassis.roll_pid,chassis_gyro.roll_Angle*PI/180.0f,0);
     
-    //如果pitch角控制不住，下蹲获取平衡
-//    if (fabs(b_chassis.balance_loop.phi*180/PI)>5)
-//    {
-//        
-//        b_chassis.chassis_ref.leglength = 0.15;
-//    }
-//    else
-//    {
-//       
-//       b_chassis.chassis_ref.leglength = b_chassis.chassis_dynemic_ref.leglength;
-//    }
+    
     //腿部竖直力F的计算
     b_chassis.left_leg.leg_F = pid_calc(&b_chassis.left_leg.leglengthpid, b_chassis.left_leg.l0, b_chassis.chassis_ref.leglength)+ (BODY_MASS/2) * 9.8 + roll_F_output;
     b_chassis.right_leg.leg_F = pid_calc(&b_chassis.right_leg.leglengthpid, b_chassis.right_leg.l0, b_chassis.chassis_ref.leglength) + (BODY_MASS/2)*9.8 - roll_F_output;
-    /*test*/
- 
-    /*float ddl = (b_chassis.left_leg.ddl0 + b_chassis.right_leg.ddl0) / 2;
-    float dl = (b_chassis.left_leg.dl0 + b_chassis.right_leg.dl0) / 2;
-    float ddXw = chassis_gyro.y_Acc - ddl * sinf(b_chassis.balance_loop.theta) - 2 * b_chassis.balance_loop.dtheta * cosf(b_chassis.balance_loop.theta) * dl - b_chassis.balance_loop.L0 * b_chassis.balance_loop.ddtheta * cosf(b_chassis.balance_loop.theta) + b_chassis.balance_loop.L0 * (b_chassis.balance_loop.dtheta) * (b_chassis.balance_loop.dtheta) * sinf((b_chassis.balance_loop.theta));
-    float max_F = ((-b_chassis.balance_loop.lqrOutT * WHEEL_R + (-b_chassis.balance_loop.lqrOutTp) * b_chassis.balance_loop.L0 * cosf(b_chassis.balance_loop.theta)  ) - ddXw * WHEEL_MASS) / sinf(b_chassis.balance_loop.theta);
-    */
+    
    
     //此处的T0为phi1电机的扭矩，另一个是phi4的
     if (wheel_state_estimate(&b_chassis.left_leg)||(b_chassis.ctrl_mode==CHASSIS_INIT))
@@ -567,6 +572,7 @@ void balance_task(void)
         b_chassis.joint_T[1] = b_chassis.left_leg.T[1];
         b_chassis.joint_T[2] = b_chassis.left_leg.T[0];
         b_chassis.driving_T[0] = 0;
+			
 			
     }
 
@@ -655,9 +661,9 @@ void power_limit_handle(void)
 
 float input_power_cal(void)
 {
-//	  float judge_power = usart_chassis_data.chassis_power_limit +
-//                      (usart_chassis_data.chassis_power_buffer - 5) * 2;
-		float judge_power = 80;
+	  float judge_power = usart_chassis_data.chassis_power_limit +
+                      (usart_chassis_data.chassis_power_buffer - 5) * 2;
+//		float judge_power = 80;
     float Max_Power = judge_power;
 
     if (capacitance_message.cap_voltage_filte >= 23.0)
@@ -804,6 +810,7 @@ uint8_t wheel_state_estimate(leg_state_t *leg)
 {
     if (leg->leg_FN < 15)
     {
+			
         leg->wheel_state = 0;
         return 0;
     }
@@ -836,44 +843,122 @@ void lqr_k(double L0, double K[12])
     t3 = L0 * L0 * L0;
 
 
-	K[0] = ((L0 * -144.83990606725689 + t2 * 260.35381668959712) -
-          t3 * 207.2415754313476) -
-         1.0646405997270481;
-  K[1] = ((L0 * 143.820529858159 - t2 * 601.27313014569586) +
-          t3 * 689.03705255731461) +
-         14.614868416776449;
-  K[2] = ((L0 * -11.37577779905696 - t2 * 1.000321333816232) +
-          t3 * 3.4777287637548491) -
-         0.0638674999449936;
-  K[3] = ((L0 * 12.264065298333239 - t2 * 46.676508037525643) +
-          t3 * 50.696495539447263) +
-         2.34719193579017;
-  K[4] = ((L0 * -5.0769377447349413 + t2 * 13.006254919590731) -
-          t3 * 11.8896177762487) -
-         0.21541888509393811;
-  K[5] = ((L0 * -5.8486792755431223 - t2 * 1.1123516501724691) +
-          t3 * 10.858340889453491) +
-         2.632923840296729;
-  K[6] = ((L0 * -24.80199350746085 + t2 * 62.27189517952597) -
-          t3 * 56.634779986455008) -
-         1.117243871307771;
-  K[7] = ((L0 * -29.63976541227327 - t2 * 1.8538735688679839) +
-          t3 * 48.984212018404271) +
-         13.07099178106748;
-  K[8] = ((L0 * -167.1288562300854 + t2 * 218.93774769335491) -
-          t3 * 83.393508735184739) +
-         51.830453624521937;
-  K[9] = ((L0 * 721.30833736035515 - t2 * 1825.56963763793) +
-          t3 * 1651.583395449934) +
-         34.11758308898802;
-  K[10] = ((L0 * -15.05443876428453 + t2 * 19.229556807383609) -
-           t3 * 8.0197891278185462) +
-          5.5397312395151967;
-  K[11] = ((L0 * 57.4352247491441 - t2 * 127.947738212424) +
-           t3 * 104.3235153001704) +
-          0.56587601849597657;
+//		K[0] = ((L0 * -224.8656362888122 + t2 * 287.28601354985511) -
+//          t3 * 167.080125914703) -
+//         2.2708328063653309;
+//  K[1] = ((L0 * 799.62215955328907 - t2 * 2421.0071871579148) +
+//          t3 * 2369.2356209053869) -
+//         18.715545190698261;
+//  K[2] = ((L0 * -40.38018715277537 + t2 * 32.521969964233293) -
+//          t3 * 21.552686854980259) +
+//         0.78425211175398291;
+//  K[3] = ((L0 * 141.5900544765947 - t2 * 419.48263098475292) +
+//          t3 * 411.93317206269018) -
+//         0.46043751213191358;
+//  K[4] = ((L0 * -17.15704148443394 + t2 * 10.446769679445049) +
+//          t3 * 12.03299467720135) -
+//         2.279837861427144;
+//  K[5] = ((L0 * 161.6106764263622 - t2 * 545.89886715268119) +
+//          t3 * 568.97639790267169) -
+//         4.3911422530775761;
+//  K[6] = ((L0 * -23.559263858644151 - t2 * 0.25207525679081089) +
+//          t3 * 36.613891289564663) -
+//         5.0130786727043821;
+//  K[7] = ((L0 * 271.99755480600669 - t2 * 928.21025842917868) +
+//          t3 * 975.53282181648024) -
+//         6.4120436957134306;
+//  K[8] = ((L0 * -72.738997754922465 + t2 * 71.495363483826637) -
+//          t3 * 27.011943732562759) +
+//         37.21816652483988;
+//  K[9] = ((L0 * 248.84544086263139 - t2 * 351.82171741912708) +
+//          t3 * 163.43913537877319) +
+//         34.99279463955817;
+//  K[10] = ((L0 * -15.502668700859459 + t2 * 33.523719735351087) -
+//           t3 * 31.186727381276171) +
+//          5.6619913186474813;
+//  K[11] = ((L0 * -10.663987348138379 + t2 * 80.881742458802307) -
+//           t3 * 106.2776716888919) +
+//          5.1536359190828316;
 
-
+  
+				
+ if(b_chassis.ctrl_mode == CHASSIS_REVERSE)
+ {
+	K[0] = ((L0 * -164.21187446705741 + t2 * 333.27820048959512) -
+          t3 * 290.16809333992671) -
+         5.1206310043709564;
+  K[1] = ((L0 * 89.49371109349967 - t2 * 346.09241702160728) +
+          t3 * 383.610068918057) +
+         9.7034793225372926;
+  K[2] = ((L0 * -16.79114731066824 + t2 * 19.69386230401766) -
+          t3 * 19.65858973774041) -
+         0.80312713828875615;
+  K[3] = ((L0 * 2.065544673417532 - t2 * 18.184763940192038) +
+          t3 * 23.039726058905359) +
+         2.599836187365606;
+  K[4] = ((L0 * -19.701004773081081 + t2 * 48.415038801143361) -
+          t3 * 43.452820262805) -
+         2.44692532013582;
+  K[5] = ((L0 * 0.35768472816694807 - t2 * 42.320916699973431) +
+          t3 * 62.731181599873238) +
+         4.7814071836321892;
+  K[6] = ((L0 * -14.104823289185029 + t2 * 30.07134135094627) -
+          t3 * 25.797390003849841) -
+         3.570061632837104;
+  K[7] = ((L0 * -6.9062378825656277 - t2 * 19.932846563720329) +
+          t3 * 39.526916596188173) +
+         5.6106681292998379;
+  K[8] = ((L0 * -76.986765750688534 + t2 * 137.05658267993471) -
+          t3 * 100.3414748531177) +
+         22.228359887381661;
+  K[9] = ((L0 * 113.1194124260669 - t2 * 272.89042610873332) +
+          t3 * 242.16034253946171) +
+         16.511505493436012;
+  K[10] = ((L0 * -16.17794241325295 + t2 * 30.742057413672271) -
+           t3 * 24.128403933004979) +
+          4.8022621963146923;
+  K[11] = ((L0 * 21.568035174876272 - t2 * 48.749030886242032) +
+           t3 * 41.221623960507863) +
+          2.35016748065256;
+				}else
+ {
+	 K[0] = ((L0 * -186.74038705721131 + t2 * 201.97420397139749) -
+          t3 * 108.3922719160114) -
+         3.8868512085748912;
+  K[1] = ((L0 * 866.963134767256 - t2 * 2557.5602592201781) +
+          t3 * 2480.8038486245782) -
+         13.96005646527167;
+  K[2] = ((L0 * -27.184527508222011 + t2 * 5.4123157156028769) -
+          t3 * 2.7363022656833622) +
+         0.33232099020438249;
+  K[3] = ((L0 * 135.0619938974605 - t2 * 369.51279819148158) +
+          t3 * 355.004964540673) +
+         0.57542436237342309;
+  K[4] = ((L0 * -14.18588549123702 + t2 * 5.4735137000306606) +
+          t3 * 13.73146407261625) -
+         1.5295186838771559;
+  K[5] = ((L0 * 160.7539783640141 - t2 * 563.88135325153826) +
+          t3 * 595.66172507388114) -
+         0.31967692492001731;
+  K[6] = ((L0 * -21.101555682817771 - t2 * 7.4757065527223174) +
+          t3 * 41.4083515635957) -
+         3.9113935989267179;
+  K[7] = ((L0 * 291.97127701953679 - t2 * 1026.339390410207) +
+          t3 * 1088.270524848502) +
+         0.41230278922931268;
+  K[8] = ((L0 * -49.217478963434921 + t2 * 45.074543332746387) -
+          t3 * 21.222317620313671) +
+         29.707795474857338;
+  K[9] = ((L0 * 150.50567379259061 - t2 * 0.69384412831275666) -
+          t3 * 215.3668996951227) +
+         22.524431646835819;
+  K[10] = ((L0 * -15.679105646817719 + t2 * 34.796814060222538) -
+           t3 * 33.3670837524549) +
+          5.8739300117464914;
+  K[11] = ((L0 * -15.1059497692952 + t2 * 119.6899044038893) -
+           t3 * 157.75263393578209) +
+          3.37703257938664;
+ }
 }
 
 /*

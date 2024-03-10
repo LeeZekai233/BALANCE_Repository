@@ -6,7 +6,7 @@
 
 /*************************************************/
 #define HIGH_SPEED 2
-#define NORMAL_SPEED 1.5 
+#define NORMAL_SPEED 1.6 
 
 
 

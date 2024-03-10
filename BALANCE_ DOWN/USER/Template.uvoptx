@@ -425,6 +425,11 @@
           <WinNumber>2</WinNumber>
           <ItemText>balance_chassis,0x0A</ItemText>
         </Ww>
+        <Ww>
+          <count>28</count>
+          <WinNumber>2</WinNumber>
+          <ItemText>pitch_intergrate</ItemText>
+        </Ww>
       </WatchWindow2>
       <Tracepoint>
         <THDelay>0</THDelay>

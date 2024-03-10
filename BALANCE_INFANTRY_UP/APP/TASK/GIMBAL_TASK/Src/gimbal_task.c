@@ -339,9 +339,9 @@ void gimbal_parameter_Init(void)
 #elif STANDARD == 3
     // 初始化下的参数
     PID_struct_init(&gimbal_data.pid_init_pit_Angle, POSITION_PID, 500, 4,
-                    10, 0.01f, 8); //15, 0.01f, 8
+                    15, 0.01f, 8); //15, 0.01f, 8
     PID_struct_init(&gimbal_data.pid_init_pit_speed, POSITION_PID, 27000, 20000,
-                    170, 0.001, 60); //170, 0.001f, 60
+                    150, 0.001, 60); //170, 0.001f, 60
     //------------------------------------------------
     PID_struct_init(&gimbal_data.pid_init_yaw_Angle, POSITION_PID, 500, 4,
                     7, 0.15f, 8); 
@@ -349,10 +349,10 @@ void gimbal_parameter_Init(void)
                     150, 0.8f, 40); 
 
     // 跟随陀螺仪下的参数
-    PID_struct_init(&gimbal_data.pid_pit_Angle, POSITION_PID, 500, 4,
+    PID_struct_init(&gimbal_data.pid_pit_Angle, POSITION_PID, 500, 15,
                     12, 0.01f, 15); //15, 0.01f, 8
     PID_struct_init(&gimbal_data.pid_pit_speed, POSITION_PID, 27000, 20000,
-                    170, 0.001, 60); //170, 0.001f, 60
+                    150, 0.001, 60); //170, 0.001f, 60
     //------------------------------------------------
     PID_struct_init(&gimbal_data.pid_yaw_Angle, POSITION_PID, 500, 4,
                     13, 0.15f, 20); 

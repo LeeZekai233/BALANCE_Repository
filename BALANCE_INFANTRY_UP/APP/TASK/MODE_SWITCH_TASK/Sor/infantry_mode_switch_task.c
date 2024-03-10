@@ -25,7 +25,7 @@ void infantry_mode_switch_task(void)
         /*******************************底盘云台遥感数据接收******************************************/
         if(gimbal_data.ctrl_mode != GIMBAL_INIT)
         {
-            chassis.ChassisSpeed_Ref.forward_back_ref = (RC_CtrlData.rc.ch1- (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * 0.3f;
+            chassis.ChassisSpeed_Ref.forward_back_ref = (RC_CtrlData.rc.ch1- (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * 0.4f;
             chassis.ChassisSpeed_Ref.left_right_ref   = (RC_CtrlData.rc.ch0- (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * 0.1f;
         }
         if(gimbal_data.ctrl_mode == GIMBAL_FOLLOW_ZGYRO)
