@@ -36,10 +36,8 @@ typedef enum
 	GAME_STATE_ID                      =0x0001,// 比赛状态数据：0x0001。发送频率：1Hz 
 	GAME_RESULT_ID                     =0x0002,//比赛结果数据：0x0002。发送频率：比赛结束后发送 
 	GAME_ROBOT_SURVIVORS_ID            =0x0003,//机器人存活数据：0x0003。发送频率：1Hz 
-	GAME_ROBOT_HP_ID                   =0x0003,//机器人存活数据：0x0003。发送频率：1Hz 
 	EVENT_DADA_ID                      =0x0101,//场地事件数据：0x0101。发送频率：事件改变后发送 
 	SUPPLY_PROJECTILE_ACTION_ID        =0x0102,//补给站动作标识：0x0102。发送频率：动作改变后发送 
-	SUPPLY_PROJECTILE_BOOKING_ID       =0x0103,//请求补给站补弹子弹：cmd_id (0x0103)。发送频率：上限 10Hz
 	REFEREE_WARNING_ID                 =0x0104,//裁判警告信息：cmd_id (0x0104)。发送频率：警告发生后发送 
 	GAME_ROBOT_STATE_ID                =0x0201,// 比赛机器人状态：0x0201。发送频率：10Hz 
 	POWER_HEAT_DATA_ID                 =0x0202,//实时功率热量数据：0x0202。发送频率：50Hz 
@@ -60,16 +58,16 @@ typedef enum
   */
 typedef __packed struct
 {
-	 uint8_t game_type : 4;
-	 uint8_t game_progress : 4;
-	 uint16_t stage_remain_time;
-	 int64_t SyncTimeStamp;
-} ext_game_state_t;
+	uint8_t game_type : 4;
+	uint8_t game_progress : 4;
+	uint16_t stage_remain_time;
+	uint64_t SyncTimeStamp;
+}game_status_t;
 	
 	typedef __packed struct //比赛结果数据：0x0002。发送频率：比赛结束后发送 
 	{ 
 		uint8_t winner;
-	} ext_game_result_t; 
+	} game_result_t; 
 	
 typedef __packed struct
 {
@@ -89,56 +87,44 @@ typedef __packed struct
  uint16_t blue_7_robot_HP; 
  uint16_t blue_outpost_HP;
  uint16_t blue_base_HP;
-} ext_game_robot_HP_t;
+} game_robot_HP_t;
 
 	
 	
 	typedef __packed struct //场地事件数据：0x0101。发送频率：事件改变后发送 
 	{  
 	     uint32_t event_type; 
-	} ext_event_data_t; 
+	} event_data_t; 
 	
 	typedef __packed struct //补给站动作标识：0x0102。发送频率：动作改变后发送 
 	{  
-		uint8_t supply_projectile_id;   
-		uint8_t supply_robot_id;    
-		uint8_t supply_projectile_step; 
+		uint8_t reserved;
+		uint8_t supply_robot_id;
+		uint8_t supply_projectile_step;
 		uint8_t supply_projectile_num;
-	} ext_supply_projectile_action_t; 
+	} ext_supply_projectile_action_t;
 	
 
-	typedef __packed struct //请求补给站补弹子弹：cmd_id (0x0103)。发送频率：上限 10Hz。RM 对抗赛尚未开放 
-	{
-		uint8_t supply_projectile_id;  
-		uint8_t supply_robot_id; 
-		uint8_t supply_num;  
-	} ext_supply_projectile_booking_t; 
 	typedef __packed struct //裁判警告信息：cmd_id (0x0104)。发送频率：警告发生后发送 
-	{   
-		uint8_t level; 
-		uint8_t foul_robot_id; 
-	} ext_referee_warning_t; 
+{
+		uint8_t level;
+		uint8_t offending_robot_id;
+		uint8_t count;
+}referee_warning_t;
 
 	typedef __packed struct
 {
-	 uint8_t robot_id;
-	 uint8_t robot_level;
-	 uint16_t remain_HP;
-	 uint16_t max_HP;
-	 uint16_t shooter_id1_17mm_cooling_rate;
-	 uint16_t shooter_id1_17mm_cooling_limit;
-	 uint16_t shooter_id1_17mm_speed_limit;
-	 uint16_t shooter_id2_17mm_cooling_rate;
-	 uint16_t shooter_id2_17mm_cooling_limit;
-	 uint16_t shooter_id2_17mm_speed_limit;
-	 uint16_t shooter_id1_42mm_cooling_rate;
-	 uint16_t shooter_id1_42mm_cooling_limit;
-	 uint16_t shooter_id1_42mm_speed_limit;
-	 uint16_t chassis_power_limit;
-	 uint8_t mains_power_gimbal_output : 1;
-	 uint8_t mains_power_chassis_output : 1;
-	 uint8_t mains_power_shooter_output : 1;
-}ext_game_robot_state_t;
+	uint8_t robot_id;
+	uint8_t robot_level;
+	uint16_t current_HP;
+	uint16_t maximum_HP;
+	uint16_t shooter_barrel_cooling_value;
+	uint16_t shooter_barrel_heat_limit;
+	uint16_t chassis_power_limit;
+	uint8_t power_management_gimbal_output : 1;
+	uint8_t power_management_chassis_output : 1;
+	uint8_t power_management_shooter_output : 1;
+}robot_status_t;
 
 	typedef __packed struct//实时功率热量数据：0x0202。发送频率：50Hz 
 	{   
@@ -149,31 +135,37 @@ typedef __packed struct
      uint16_t shooter_id1_17mm_cooling_heat;
      uint16_t shooter_id2_17mm_cooling_heat;
      uint16_t shooter_id1_42mm_cooling_heat;
-	} ext_power_heat_data_t; 
+	} power_heat_data_t; 
  
 	typedef __packed struct //机器人位置：0x0203。发送频率：10Hz 
 	{ 
 		float x;  
 		float y; 
 		float z;  
-		float yaw; 
-	} ext_game_robot_pos_t; 
+		float angle; 
+	} robot_pos_t; 
+	
+	typedef __packed struct
+{
+		uint8_t recovery_buff;
+		uint8_t cooling_buff;
+		uint8_t defence_buff;
+		uint8_t vulnerability_buff;
+		uint16_t attack_buff;
+}buff_t;
 
-	typedef __packed struct// 机器人增益：0x0204。发送频率：状态改变后发送 
-	{   
-		uint8_t power_rune_buff; 
-	}ext_buff_musk_t; 
 
-	typedef __packed struct//空中机器人能量状态：0x0205。发送频率：10Hz 
-	{  
-		uint8_t attack_time;
-	} aerial_robot_energy_t; 
+	typedef __packed struct    //空中机器人能量状态：0x0205。发送频率：10Hz 
+{
+		uint8_t airforce_status;
+		uint8_t time_remain;
+}air_support_data_t; 
 
 	typedef __packed struct //伤害状态：0x0206。发送频率：伤害发生后发送 
-	{   
-		uint8_t armor_id : 4; 
-		uint8_t hurt_type : 4; 
-	} ext_robot_hurt_t; 
+	{
+		uint8_t armor_id : 4;
+		uint8_t HP_deduction_reason : 4;
+	}hurt_data_t;
  
 	typedef __packed struct// 实时射击信息：0x0207。发送频率：射击后发送 
 	{   
@@ -312,19 +304,18 @@ typedef enum
   */
 typedef struct
 { 
-		ext_game_state_t                      game_state;//比赛状态数据
-		ext_game_result_t                     game_result;//比赛结果数据
-		ext_game_robot_HP_t                   game_robot_HP;//机器人存活数据
-		ext_event_data_t                      event_data;//场地事件数据
+		game_status_t                      game_state;//比赛状态数据
+		game_result_t                     game_result;//比赛结果数据
+		game_robot_HP_t                   game_robot_HP;//机器人存活数据
+		event_data_t                      event_data;//场地事件数据
 		ext_supply_projectile_action_t        supply_projectile_action;//补给站动作标识
-	  ext_referee_warning_t                 referee_warning;//裁判警告信息
-		ext_supply_projectile_booking_t       supply_projectile_booking;//请求补给站补弹子弹
-		ext_game_robot_state_t                game_robot_state;//比赛机器人状态
-		ext_power_heat_data_t                 power_heat_data;//实时功率热量数据
-		ext_game_robot_pos_t                  game_robot_pos;//机器人位置
-		ext_buff_musk_t                       buff_musk;//机器人增益
-		aerial_robot_energy_t                 aerial_robot_energy;//空中机器人能量状态
-		ext_robot_hurt_t                      robot_hurt;//伤害状态
+	  referee_warning_t                 referee_warning;//裁判警告信息
+		robot_status_t                game_robot_state;//比赛机器人状态
+		power_heat_data_t                 power_heat_data;//实时功率热量数据
+		robot_pos_t                  game_robot_pos;//机器人位置
+		buff_t                       buff_musk;//机器人增益
+		air_support_data_t                 aerial_robot_energy;//空中机器人能量状态
+		hurt_data_t                      robot_hurt;//伤害状态
 		ext_shoot_data_t                      shoot_data;// 实时射击信息
 	  ext_bullet_remaining_t                ext_bullet_remaining;
 

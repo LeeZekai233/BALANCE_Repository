@@ -16,6 +16,7 @@ typedef struct
 	int16_t chassis_power;
 	uint16_t chassis_power_buffer;
 	u8 chassis_power_limit;
+	u8 ctrl_mode;
 } usart_chassis_data_t;
 
 
@@ -31,7 +32,8 @@ void usart_chassis_send(
 										int16_t rotate_speed,
 										int16_t chassis_power,
 										uint16_t chassis_power_buffer,
-										u8 chassis_power_limit);
+										u8 chassis_power_limit,
+										u8 ctrl_mode);
 void usart_chassis_receive(uint8_t *DataAddress);
 										
 extern usart_chassis_data_t usart_chassis_data;

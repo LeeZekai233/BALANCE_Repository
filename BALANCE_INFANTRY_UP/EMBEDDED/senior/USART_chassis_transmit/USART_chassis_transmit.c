@@ -14,7 +14,8 @@ void usart_chassis_send(
 										int16_t rotate_speed,
 										int16_t chassis_power,
 										uint16_t chassis_power_buffer,
-										u8 chassis_power_limit)
+										u8 chassis_power_limit,
+										u8 ctrl_mode)
 {
 	 int32_t data = (int32_t)(yaw_encoder_angle*10000);
 	 databuff[0] = if_follow_gim;
@@ -37,7 +38,9 @@ void usart_chassis_send(
 	 databuff[17] = (uint8_t)(data >> 8);
 	 databuff[18] = (uint8_t)(data);
 	databuff[19] = (uint8_t)(chassis_power_limit);
-	Uart3SendBytesInfoProc(databuff,20);
+	databuff[20] = (uint8_t)(ctrl_mode);
+	
+	Uart3SendBytesInfoProc(databuff,21);
 }
 
 
@@ -54,4 +57,5 @@ void usart_chassis_receive(uint8_t *DataAddress)
 	usart_chassis_data.chassis_power = ((DataAddress[11]<<8)|DataAddress[12]);
 	usart_chassis_data.chassis_power_buffer = ((DataAddress[13]<<8)|DataAddress[14]);
 	usart_chassis_data.chassis_power_limit = DataAddress[19];
+	usart_chassis_data.ctrl_mode = DataAddress[20];
 }

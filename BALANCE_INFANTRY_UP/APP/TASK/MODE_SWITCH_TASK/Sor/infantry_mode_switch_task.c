@@ -26,7 +26,7 @@ void infantry_mode_switch_task(void)
         if(gimbal_data.ctrl_mode != GIMBAL_INIT)
         {
             chassis.ChassisSpeed_Ref.forward_back_ref = (RC_CtrlData.rc.ch1- (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * 0.4f;
-            chassis.ChassisSpeed_Ref.left_right_ref   = (RC_CtrlData.rc.ch0- (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * 0.1f;
+            chassis.ChassisSpeed_Ref.left_right_ref   = (RC_CtrlData.rc.ch0- (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * 0.4f;
         }
         if(gimbal_data.ctrl_mode == GIMBAL_FOLLOW_ZGYRO)
         {

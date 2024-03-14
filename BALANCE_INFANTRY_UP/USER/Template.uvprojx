@@ -429,11 +429,6 @@
               <FileType>1</FileType>
               <FilePath>..\APP\TASK\MODE_SWITCH_TASK\Sor\infantry_mode_switch_task.c</FilePath>
             </File>
-            <File>
-              <FileName>17mm_shoot_task.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\APP\TASK\SHOOT_TASK\Src\17mm_shoot_task.c</FilePath>
-            </File>
           </Files>
         </Group>
         <Group>

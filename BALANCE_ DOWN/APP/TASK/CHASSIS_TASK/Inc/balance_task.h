@@ -76,6 +76,8 @@ typedef struct
 	float y_position;
 	float vy;
 	float vw;
+	float remote_angle;
+	float remote_speed;
 	float roll;
 	float pitch;
 	float leglength;
@@ -159,6 +161,7 @@ typedef struct
 	double driving_T[2];
 }Balance_chassis_t;
 
+void get_remote_angle(void);
 void chassis_Init_handle(void);
 void chassis_stop_handle(void);
 void balance_cmd_select(void);

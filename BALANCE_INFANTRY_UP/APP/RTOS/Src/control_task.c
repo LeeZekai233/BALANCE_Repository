@@ -19,13 +19,14 @@ void control_task(void)
 							chassis.ChassisSpeed_Ref.rotate_ref,
 							judge_rece_mesg.power_heat_data.chassis_power,
 							judge_rece_mesg.power_heat_data.chassis_power_buffer,
-							judge_rece_mesg.game_robot_state.chassis_power_limit);
+							judge_rece_mesg.game_robot_state.chassis_power_limit,
+							RC_CtrlData.inputmode);
 	
 		
 		
 	if(time_tick%2 == 0)
 	{
-		 shoot_task();
+//		 shoot_task();
 			gimbal_task();
 			can_bus_send_task();
 	}
@@ -38,5 +39,5 @@ void control_task(void)
 void control_task_Init(void)
 {
 		gimbal_parameter_Init();
-	shot_param_init();
+//	shot_param_init();
 }

@@ -234,16 +234,16 @@ void judgement_data_handle(uint8_t *p_frame, u16 rec_len)
 				}
 				break;
 
-				case SUPPLY_PROJECTILE_BOOKING_ID: // 请求补给站补弹子弹：cmd_id (0x0103)。发送频率：上限 10Hz
+				case SUPPLY_PROJECTILE_ACTION_ID: // 请求补给站补弹子弹：cmd_id (0x0102)。发送频率：上限 10Hz
 				{
-					memcpy(&judge_rece_mesg.supply_projectile_booking, data_addr, data_length);
+					memcpy(&judge_rece_mesg.supply_projectile_action, data_addr, data_length);
 					
 				}
 				break;
 
 				case GAME_ROBOT_STATE_ID: // 比赛机器人状态：0x0201。发送频率：10Hz
 
-					if (data_length == 27)
+					if (data_length == 13)
 					{
 						memcpy(&judge_rece_mesg.game_robot_state, data_addr, data_length);
 
@@ -272,9 +272,9 @@ void judgement_data_handle(uint8_t *p_frame, u16 rec_len)
 
 				case BUFF_MUSK_ID: // 机器人增益：0x0204。发送频率：状态改变后发送
 								   // memcpy(&data, data_addr, data_length)
-					if (data_length == 1)
+					if (data_length == 5)
 					{
-						judge_rece_mesg.buff_musk.power_rune_buff = data_addr[0];
+						memcpy(&judge_rece_mesg.buff_musk, data_addr, data_length);
 					}
 					break;
 				case ROBOT_HURT_ID: // 伤害状态：0x0206。发送频率：伤害发生后发送
