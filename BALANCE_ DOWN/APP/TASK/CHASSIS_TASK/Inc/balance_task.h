@@ -8,6 +8,8 @@
 #define T_MAX 10 
 #define WARNING_VOLTAGE 10
 #define POWER_LIMIT 0
+#define ROTATE_Y_ERROFFSET -1.2f
+#define NORMAL_Y_ERROFFSET +0.09f
 #define TIME_STEP 2
 #define YAW_POLARITY 					-1 //逆正      舵轮要顺正，改-1；麦轮1
 
@@ -60,6 +62,7 @@ typedef struct
 	float dx;
 	float ddz;
 	float wheel_dx;
+	float Fm;
 
 	double L0;
 	double K[12];

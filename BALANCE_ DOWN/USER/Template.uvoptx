@@ -283,6 +283,11 @@
           <WinNumber>1</WinNumber>
           <ItemText>b_chassis.joint_T[0]/0.017368678</ItemText>
         </Ww>
+        <Ww>
+          <count>25</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>b_chassis</ItemText>
+        </Ww>
       </WatchWindow1>
       <WatchWindow2>
         <Ww>
