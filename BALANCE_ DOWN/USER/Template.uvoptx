@@ -286,7 +286,12 @@
         <Ww>
           <count>25</count>
           <WinNumber>1</WinNumber>
-          <ItemText>b_chassis</ItemText>
+          <ItemText>b_chassis,0x0A</ItemText>
+        </Ww>
+        <Ww>
+          <count>26</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>\\Template\../APP/TASK/CHASSIS_TASK/Src/balance_task.c\b_chassis.last_ctrl_mode</ItemText>
         </Ww>
       </WatchWindow1>
       <WatchWindow2>

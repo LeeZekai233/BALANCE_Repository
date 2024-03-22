@@ -21,7 +21,7 @@ void shot_param_init()
   PID_struct_init(&pid_rotate[1], POSITION_PID,15500,11500,50,0,0);
   PID_struct_init(&pid_rotate[0], POSITION_PID,15500,11500,50,0,0);
 
-//	shoot.friction_pid.speed_ref[0] =FRICTION_SPEED_15;            //没装裁判系统，因此先进行摩擦轮速度赋值
+	shoot.friction_pid.speed_ref[0] =FRICTION_SPEED_30;            //没装裁判系统，因此先进行摩擦轮速度赋值
 	
   shoot.ctrl_mode=1;
   shoot.limit_heart0=80;
@@ -53,47 +53,15 @@ void shot_param_init(void)
 
 
 #if SHOOT_TYPE == 3//步兵发射模式选择
-void performance_select()
-{
-		shoot_mode_switch();
-		speed_switch();
-}
 
-void shoot_mode_switch()
-{
-		//弹速限制来改变不同的模式 
-  if(judge_rece_mesg.game_robot_state.shooter_id1_17mm_speed_limit==30)          //弹速限制在30为速度模式
-	{shoot.shoot_mode_selection=ZOOM;}
-  else if(judge_rece_mesg.game_robot_state.shooter_id1_17mm_speed_limit==15&judge_rece_mesg.game_robot_state.shooter_id1_17mm_cooling_limit==50)    //弹速限制为15，但是冷却限制为50
-	{shoot.shoot_mode_selection=COOLING;}
-  else if(judge_rece_mesg.game_robot_state.shooter_id1_17mm_speed_limit==15&judge_rece_mesg.game_robot_state.shooter_id1_17mm_cooling_limit==150)   //弹速限制为15，但是冷却限制为150
-	{shoot.shoot_mode_selection=OUTBURST;}
-}
-
-void speed_switch()
-{
-		static float last_speed_limit;
-		if(judge_rece_mesg.game_robot_state.shooter_id1_17mm_speed_limit!=last_speed_limit)
-		{ 
-			if(judge_rece_mesg.game_robot_state.shooter_id1_17mm_speed_limit<16)
-			{shoot.friction_pid.speed_ref[0] = FRICTION_SPEED_15;}
-			else if(judge_rece_mesg.game_robot_state.shooter_id1_17mm_speed_limit>16&judge_rece_mesg.game_robot_state.shooter_id1_17mm_speed_limit<19)
-			{shoot.friction_pid.speed_ref[0] = FRICTION_SPEED_18;}
-			else if(judge_rece_mesg.game_robot_state.shooter_id1_17mm_speed_limit>19&judge_rece_mesg.game_robot_state.shooter_id1_17mm_speed_limit<31)
-			{shoot.friction_pid.speed_ref[0] = FRICTION_SPEED_30;}
-			else
-			{shoot.friction_pid.speed_ref[0] = FRICTION_SPEED_15;}               
-		}
-		last_speed_limit=judge_rece_mesg.game_robot_state.shooter_id1_17mm_speed_limit;     //数据更新
-}
 
 void heat_switch()
 {
 											//+\0.002*shoot.cooling_ratio
 	//剩余发弹量=（热量上限-热量值）/10      ————一个弹丸的热量为10
-  shoot.remain_bullets=(judge_rece_mesg.game_robot_state.shooter_id1_17mm_cooling_limit-\
-										 judge_rece_mesg.power_heat_data.shooter_id1_17mm_cooling_heat)/10;    //剩余发射量
-  shoot.cooling_ratio=judge_rece_mesg.game_robot_state.shooter_id1_17mm_cooling_rate;      //冷却速率
+//  shoot.remain_bullets=(judge_rece_mesg.game_robot_state.shooter_id1_17mm_cooling_limit-\
+//										 judge_rece_mesg.power_heat_data.shooter_id1_17mm_cooling_heat)/10;    //剩余发射量
+//  shoot.cooling_ratio=judge_rece_mesg.game_robot_state.shooter_id1_17mm_cooling_rate;      //冷却速率
       
 	//计算射频
 		if(judge_rece_mesg.game_robot_state.robot_level==1)//level_冷却
@@ -174,7 +142,7 @@ void bullets_spilling()//步兵射频限制部分
 }
 void heat0_limit(void)           //热量限制
 {  //由于发送的数据为50hz，而且每次进入该操作需要5次循环，因此计算时 公式为：冷却上限-热量值+0.1*冷却值
-  shoot.limit_heart0 = judge_rece_mesg.game_robot_state.shooter_id1_17mm_cooling_limit-judge_rece_mesg.power_heat_data.shooter_id1_17mm_cooling_heat+0.002*judge_rece_mesg.game_robot_state.shooter_id1_17mm_cooling_rate;
+//  shoot.limit_heart0 = judge_rece_mesg.game_robot_state.shooter_id1_17mm_cooling_limit-judge_rece_mesg.power_heat_data.shooter_id1_17mm_cooling_heat+0.002*judge_rece_mesg.game_robot_state.shooter_id1_17mm_cooling_rate;
 	if(shoot.limit_heart0>15)//residual_heat)
     shoot.ctrl_mode=1;
   else
@@ -217,23 +185,22 @@ void shoot_bullet_handle(void)
 	if(gimbal_data.ctrl_mode!=GIMBAL_AUTO_SMALL_BUFF&&
 		 gimbal_data.ctrl_mode!=GIMBAL_AUTO_BIG_BUFF)//正常模式   
 	  {//热量限制
-		  if(shoot.will_time_shoot>0&&
-				 shoot.fric_wheel_run==1&&
-							 shoot.poke_run==1&&				
-						  shoot.ctrl_mode==1)
-//			if(shoot.poke_run==1)
+//		  if(
+//							 shoot.poke_run==1&&				
+//						  shoot.ctrl_mode==1)
+			if(shoot.poke_run==1)
 		{
 			shoot.poke_pid.angle_ref[0]=shoot.poke_pid.angle_fdb[0]-shoot.shoot_frequency*45*36/500;		//一秒shoot_frequency发，一发拨盘转45°，减速比是1：36。每两毫秒执行一次故除以500。	
 
 			shoot.poke_pid.angle_fdb[0]=general_poke.poke.ecd_angle;
 			shoot.poke_pid.speed_fdb[0]=general_poke.poke.filter_rate;
-			shoot.poke_current[0]=pid_double_loop_cal(&pid_trigger_angle[0],&pid_trigger_speed[0],
-																								  shoot.poke_pid.angle_ref[0],
-																								  shoot.poke_pid.angle_fdb[0],
-																								 &shoot.poke_pid.speed_ref[0],
-																								  shoot.poke_pid.speed_fdb[0],0);			
-//			shoot.poke_pid.speed_ref[0]=-450;
-//			shoot.poke_current[0]=pid_calc(&pid_trigger_speed[0],shoot.poke_pid.speed_fdb[0],shoot.poke_pid.speed_ref[0]);
+//			shoot.poke_current[0]=pid_double_loop_cal(&pid_trigger_angle[0],&pid_trigger_speed[0],
+//																								  shoot.poke_pid.angle_ref[0],
+//																								  shoot.poke_pid.angle_fdb[0],
+//																								 &shoot.poke_pid.speed_ref[0],
+//																								  shoot.poke_pid.speed_fdb[0],0);			
+			shoot.poke_pid.speed_ref[0]=450;
+			shoot.poke_current[0]=pid_calc(&pid_trigger_speed[0],shoot.poke_pid.speed_fdb[0],shoot.poke_pid.speed_ref[0]);
 		}
 		else
 		{
@@ -416,7 +383,7 @@ void shoot_state_mode_switch()
 					 else
 							shoot.fric_wheel_run=0;
 				
-					if(RC_CtrlData.rc.ch4>1400&&shoot.fric_wheel_run==1)
+					if(1)
 						  shoot.poke_run=1;
 					else
 							shoot.poke_run=0;
@@ -443,6 +410,7 @@ void shoot_state_mode_switch()
 					default:
 					break;		
 			}
+			shoot.poke_run=1;
 }
 
 /**
@@ -458,7 +426,6 @@ void shoot_task()
 
 	shoot_state_mode_switch();
 #if SHOOT_TYPE == 3
-	performance_select();
 #endif
 
 	shoot_bullet_handle();

@@ -9,7 +9,7 @@
 #define WARNING_VOLTAGE 10
 #define POWER_LIMIT 0
 #define ROTATE_Y_ERROFFSET -1.2f
-#define NORMAL_Y_ERROFFSET +0.09f
+#define NORMAL_Y_ERROFFSET +0.23f
 #define TIME_STEP 2
 #define YAW_POLARITY 					-1 //逆正      舵轮要顺正，改-1；麦轮1
 
@@ -155,6 +155,7 @@ typedef struct
 	double yaw_encoder_ecd_angle;
 	float yaw_angle_0_2pi;
 	float yaw_angle__pi_pi;
+	float normal_Y_erroffset;
 	
 	float predict_power;
 	float max_speed;
