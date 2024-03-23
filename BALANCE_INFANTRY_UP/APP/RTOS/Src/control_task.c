@@ -26,10 +26,11 @@ void control_task(void)
 		
 	if(time_tick%2 == 0)
 	{
-//		 shoot_task();
+		 shoot_task();
 			gimbal_task();
 			can_bus_send_task();
 	}
+
 	if(time_tick%5 == 0)
 	{
 		send_protocol(gimbal_gyro.yaw_Angle,gimbal_gyro.pitch_Angle,gimbal_gyro.roll_Angle,judge_rece_mesg.game_robot_state.robot_id,24,0,UART4_DMA_TX_BUF);
@@ -39,5 +40,5 @@ void control_task(void)
 void control_task_Init(void)
 {
 		gimbal_parameter_Init();
-//	shot_param_init();
+	shot_param_init();
 }

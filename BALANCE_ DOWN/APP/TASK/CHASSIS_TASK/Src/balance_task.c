@@ -70,6 +70,7 @@ void balance_chassis_task(void)
 			b_chassis.chassis_ref.pitch = 0;
 			b_chassis.chassis_ref.y_position = b_chassis.balance_loop.x;
 			b_chassis.normal_Y_erroffset = NORMAL_Y_ERROFFSET;
+			b_chassis.roll_pid.iout = 0;
 
     }
     break;
@@ -97,7 +98,7 @@ void balance_chassis_task(void)
     break;
     case MANUAL_FOLLOW_GIMBAL:
     {
-			if(b_chassis.jump_flag)
+			if(b_chassis.jump_flag==1)
 			{
 				balance_jump_handle();
 				balance_task();
@@ -124,8 +125,8 @@ void balance_chassis_task(void)
 #if POWER_LIMIT == 1
     power_limit_handle();
 #else
-    b_chassis.max_speed = 2.4;
-    b_chassis.min_speed = -2.4;
+    b_chassis.max_speed = 2.2;
+    b_chassis.min_speed = -2.2;
 		b_chassis.Max_power_to_PM01 = input_power_cal();
 //		b_chassis.predict_power = all_power_cal(balance_chassis.Driving_Encoder[0].Torque,-2.528,0.000494,1,balance_chassis.Driving_Encoder[0].rate_rpm) + all_power_cal(balance_chassis.Driving_Encoder[1].Torque,-2.528,0.000494,1,balance_chassis.Driving_Encoder[1].rate_rpm);
 
@@ -347,7 +348,8 @@ float target_angle;
 void follow_gimbal_handle(void)
 {
 		
-		    
+		   PID_struct_init(&b_chassis.roll_pid, POSITION_PID, 50000, 20000, 800, 0, 12000);
+	     b_chassis.roll_pid.iout = 0;
     b_chassis.chassis_ref.vx = b_chassis.chassis_dynemic_ref.vx;
 //		b_chassis.chassis_ref.y_position += b_chassis.chassis_ref.vy*0.001*TIME_STEP;
 		if(fabs(b_chassis.balance_loop.dx) > 0.1||b_chassis.chassis_ref.vy != 0)
@@ -443,18 +445,20 @@ void balance_jump_handle(void)
 **/
 void chassis_rotate_handle(void)
 {
+	PID_struct_init(&b_chassis.roll_pid, POSITION_PID, 50000, 30, 2000, 10, 12000);
 	if(b_chassis.yaw_angle_0_2pi>=PI)
 		{b_chassis.yaw_angle__pi_pi=b_chassis.yaw_angle_0_2pi-(2*PI);}
 		else
 		{b_chassis.yaw_angle__pi_pi=b_chassis.yaw_angle_0_2pi;}
 		
 		b_chassis.chassis_ref.leglength = b_chassis.chassis_dynemic_ref.leglength;
-    b_chassis.chassis_ref.vy = b_chassis.chassis_dynemic_ref.vy*sinf(b_chassis.yaw_angle__pi_pi)+b_chassis.chassis_dynemic_ref.vx*cosf(b_chassis.yaw_angle__pi_pi);
+    b_chassis.chassis_ref.vy = b_chassis.balance_loop.dx;//b_chassis.chassis_dynemic_ref.vy*sinf(b_chassis.yaw_angle__pi_pi)+b_chassis.chassis_dynemic_ref.vx*cosf(b_chassis.yaw_angle__pi_pi);
     b_chassis.chassis_ref.vx = 0;
+		
 		//b_chassis.chassis_ref.y_position += b_chassis.chassis_ref.vy*0.001*TIME_STEP;
 		
 		b_chassis.chassis_ref.vw = usart_chassis_data.rotate_speed; 
-		VAL_LIMIT(b_chassis.chassis_dynemic_ref.vw,-7,7);
+		VAL_LIMIT(b_chassis.chassis_dynemic_ref.vw,-15,15);
 		VAL_LIMIT(b_chassis.chassis_ref.vy,-0.5,0.5);
 }
 
@@ -541,6 +545,7 @@ void balance_task(void)
 
     b_chassis.balance_loop.L0 = (b_chassis.left_leg.l0 + b_chassis.right_leg.l0)/2.0f;
 		
+		
 		b_chassis.balance_loop.Fm = b_chassis.chassis_ref.vw*b_chassis.chassis_ref.vy*BODY_MASS;
     
     //计算支持力
@@ -567,14 +572,7 @@ void balance_task(void)
    //误差计算
     b_chassis.balance_loop.state_err[0] = -(b_chassis.balance_loop.theta);
 	b_chassis.balance_loop.state_err[1] = -(b_chassis.balance_loop.dtheta);
-	if(b_chassis.ctrl_mode == CHASSIS_ROTATE)
-	{
-		b_chassis.balance_loop.state_err[2] = -(b_chassis.balance_loop.x -b_chassis.chassis_ref.y_position)+ROTATE_Y_ERROFFSET;
-	}else
-	{
-		b_chassis.balance_loop.state_err[2] = -(b_chassis.balance_loop.x -b_chassis.chassis_ref.y_position);
-	}
-	
+	b_chassis.balance_loop.state_err[2] = -(b_chassis.balance_loop.x -b_chassis.chassis_ref.y_position);
 	b_chassis.balance_loop.state_err[3] = -(b_chassis.balance_loop.dx - b_chassis.chassis_ref.vy);
 	b_chassis.balance_loop.state_err[4] = b_chassis.chassis_ref.pitch-(b_chassis.balance_loop.phi);
 	b_chassis.balance_loop.state_err[5] = -(b_chassis.balance_loop.dphi);
@@ -582,13 +580,13 @@ void balance_task(void)
     //对腿变化加速度的限制
 	if(b_chassis.chassis_dynemic_ref.vy == 1.6)
 	{
-    VAL_LIMIT(b_chassis.balance_loop.state_err[3], -1.4, 1.4);
-	}else if(b_chassis.chassis_dynemic_ref.vy == 2.4)
+    VAL_LIMIT(b_chassis.balance_loop.state_err[3], -1.2, 1.2);
+	}else if(b_chassis.chassis_dynemic_ref.vy == 2.2)
 	{
-		VAL_LIMIT(b_chassis.balance_loop.state_err[3], -1.2, 1.2);
+		VAL_LIMIT(b_chassis.balance_loop.state_err[3], -1.0, 1.0);
 	}else
 	{
-		VAL_LIMIT(b_chassis.balance_loop.state_err[3], -1.4, 1.4);
+		VAL_LIMIT(b_chassis.balance_loop.state_err[3], -1.2, 1.2);
 	}
 
     //lqr未离地增益计算

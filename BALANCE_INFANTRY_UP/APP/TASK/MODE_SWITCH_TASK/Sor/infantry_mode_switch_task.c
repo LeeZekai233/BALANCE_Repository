@@ -64,14 +64,17 @@ void infantry_mode_switch_task(void)
         {
 
             chassis.ctrl_mode = CHASSIS_ROTATE;
-					chassis.ChassisSpeed_Ref.rotate_ref = 7;
+					chassis.ChassisSpeed_Ref.rotate_ref = 10;
+				
         }
         else
         {
             chassis.ctrl_mode = MANUAL_FOLLOW_GIMBAL;
 					chassis.ChassisSpeed_Ref.rotate_ref = 0;
+			
         }
 			}
+			leg_length = 16;
 			/*****************************************************************************************/
 			
 			
@@ -95,10 +98,10 @@ void infantry_mode_switch_task(void)
 						
 						if(RC_CtrlData.Key_Flag.Key_CTRL_Flag)
 						{
-							leg_length = 30;
+							leg_length = 21;
 						}else
 						{
-							leg_length = 21;
+							leg_length = 16;
 						}
 						
             if(RC_CtrlData.Key_Flag.Key_W_Flag)
@@ -187,7 +190,7 @@ void infantry_mode_switch_task(void)
             {
 
                 chassis.ctrl_mode = CHASSIS_ROTATE;
-							chassis.ChassisSpeed_Ref.rotate_ref = 7;
+							chassis.ChassisSpeed_Ref.rotate_ref = 10;
             }
             else if(RC_CtrlData.Key_Flag.Key_F_TFlag)
             {

@@ -18,9 +18,9 @@ void usart_chassis_send(
 										u8 ctrl_mode)
 {
 	 int32_t data = (int32_t)(yaw_encoder_angle*10000);
-	 databuff[0] = if_follow_gim;
-	 databuff[1] = jump_cmd;
-	 databuff[2] = chassis_mode;
+	 databuff[0] = (uint8_t)if_follow_gim;
+	 databuff[1] = (uint8_t)jump_cmd;
+	 databuff[2] = (uint8_t)chassis_mode;
 	 databuff[3] = (uint8_t)((cmd_leg_length) >> 8);
 	 databuff[4] = (uint8_t)(cmd_leg_length);
 	 databuff[5] = (uint8_t)((x) >> 8);

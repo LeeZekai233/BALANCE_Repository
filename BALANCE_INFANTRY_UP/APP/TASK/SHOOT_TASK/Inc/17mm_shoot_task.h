@@ -4,7 +4,7 @@
 
 #define SHOOT_TYPE 3//3²½±ø 6ÎÞÈË»ú  7ÉÚ±ø
 
-#define SHOOT_MOTOR_SPEED 550.0f //ÉÚ±ø²¦ÅÌ
+#define SHOOT_MOTOR_SPEED 200.0f //ÉÚ±ø²¦ÅÌ
 #define FRICTION_SPEED    950// 950
 
 #if  STANDARD == 3
@@ -67,8 +67,8 @@ typedef struct
   shoot_mode_e 						ctrl_mode;
 	shoot_pid_poke_t        poke_pid;
 	shoot_pid_friction_t		friction_pid;
-	float        poke_current[2];
-	float        fric_current[4];
+	int16_t        poke_current[2];
+	int16_t        fric_current[4];
 	uint8_t      poke_run;
 	uint8_t      bulletspead_level;
   uint8_t      fric_wheel_run; //run or not

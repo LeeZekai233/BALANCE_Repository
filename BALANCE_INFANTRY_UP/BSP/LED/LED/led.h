@@ -22,5 +22,7 @@
 #define LED0_OFF GPIO_SetBits(GPIOC,GPIO_Pin_1)
 #define LED1_OFF GPIO_SetBits(GPIOC,GPIO_Pin_2)	 
 
+#define LASER_ON()   GPIO_SetBits(GPIOA, GPIO_Pin_8)
+#define LASER_OFF()  GPIO_ResetBits(GPIOA, GPIO_Pin_8)
 void LED_Init(void);//≥ı ºªØ		 				    
 #endif
