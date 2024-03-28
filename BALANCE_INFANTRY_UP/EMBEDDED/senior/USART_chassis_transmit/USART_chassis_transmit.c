@@ -17,7 +17,12 @@ void usart_chassis_send(
 										u8 chassis_power_limit,
 										u8 ctrl_mode)
 {
-	 int32_t data = (int32_t)(yaw_encoder_angle*10000);
+	float yaw_0_2pi;
+	yaw_0_2pi=fmod(-1*yaw_encoder_angle*ANGLE_TO_RAD,2*PI);	
+	if(yaw_0_2pi<0)
+		 yaw_0_2pi+=2*PI;
+	
+	 int32_t data = (int32_t)(yaw_0_2pi*10000);
 	 databuff[0] = (uint8_t)if_follow_gim;
 	 databuff[1] = (uint8_t)jump_cmd;
 	 databuff[2] = (uint8_t)chassis_mode;

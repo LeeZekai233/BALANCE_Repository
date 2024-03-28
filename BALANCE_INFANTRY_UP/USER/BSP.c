@@ -63,7 +63,26 @@ CAN2_Mode_Init(CAN_BS2_4tq,CAN_BS1_9tq,3,CAN_Mode_Normal);//CAN初始化正常模式,波
 	
 
 	
-	
+float convert_ecd_angle_to_0_2pi(double ecd_angle,float _0_2pi_angle)
+{
+	_0_2pi_angle=fmod(ecd_angle,2*180.0);	
+	if(_0_2pi_angle<0)
+		 _0_2pi_angle+=2*180.0;
+
+	return _0_2pi_angle;
+}
+
+float convert_ecd_angle_to__pi_pi(double ecd_angle,float __pi_pi_angle)
+{
+	float temp1;
+	temp1 = convert_ecd_angle_to_0_2pi(ecd_angle,temp1);
+		if(temp1>180.0)
+		{__pi_pi_angle=temp1-(2*180.0);}
+		else
+		{__pi_pi_angle=temp1;}
+		
+		return __pi_pi_angle;
+}	
 
 
 

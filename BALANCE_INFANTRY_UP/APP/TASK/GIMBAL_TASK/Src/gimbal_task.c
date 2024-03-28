@@ -16,7 +16,6 @@
 										自瞄或吊射云台反馈设置
 										电机输出极性设置
 										自瞄角度补偿
-										
 										pid设置
 						 头文件：大幅部分参数设置
 						 
@@ -107,8 +106,8 @@ float pitch_max = 0;
     float auto_aim_pitch_remain = 0;
 #elif STANDARD == 3
 
-		#define INFANTRY_PITCH_MAX 35.0f
-		#define INFANTRY_PITCH_MIN -25.0f
+		#define INFANTRY_PITCH_MAX 25.0f
+		#define INFANTRY_PITCH_MIN -21.5f
     float pitch_middle = 0;
     float Pitch_min = INFANTRY_PITCH_MIN;
     float Pitch_max = INFANTRY_PITCH_MAX;
@@ -138,7 +137,7 @@ float pitch_max = 0;
     float Buff_pitch_remain=-0.5;
 
     float auto_aim_Yaw_remain = 0;
-    float auto_aim_pitch_remain = 0;
+    float auto_aim_pitch_remain = 1;
 #elif STANDARD == 4
 		
 		#define INFANTRY_PITCH_MAX 35.0f
@@ -349,15 +348,15 @@ void gimbal_parameter_Init(void)
                     150, 0.8f, 40); 
 
     // 跟随陀螺仪下的参数
-    PID_struct_init(&gimbal_data.pid_pit_Angle, POSITION_PID, 500, 15,
-                    12, 0.01f, 15); //15, 0.01f, 8
+    PID_struct_init(&gimbal_data.pid_pit_Angle, POSITION_PID, 500, 30,
+                    20, 0.01f, 15); //15, 0.01f, 8
     PID_struct_init(&gimbal_data.pid_pit_speed, POSITION_PID, 27000, 20000,
                     150, 0.001, 60); //170, 0.001f, 60
     //------------------------------------------------
     PID_struct_init(&gimbal_data.pid_yaw_Angle, POSITION_PID, 500, 4,
-                    13, 0.15f, 20); 
+                    13, 0.15f, 40); 
     PID_struct_init(&gimbal_data.pid_yaw_speed, POSITION_PID, 29000, 10000,
-                    150, 0.8f, 40); 
+                    160, 0.8f, 40); 
 
     //自瞄下参数
     PID_struct_init ( &gimbal_data.pid_pit_follow, POSITION_PID, 200, 10, 8
@@ -620,6 +619,21 @@ void gimbal_follow_gyro_handle(void)
                 if (new_location.flag)//视觉完成识别
                 {
 										//切换云台反馈
+									/**/
+//										float pitch,yaw;
+//										pitch = convert_ecd_angle_to__pi_pi(VISION_PITCH_ANGLE_FDB,pitch);
+//										yaw = convert_ecd_angle_to__pi_pi(VISION_YAW_ANGLE_FDB,yaw);
+//										gimbal_data.gim_ref_and_fdb.pit_angle_fdb = pitch;
+//                    gimbal_data.gim_ref_and_fdb.yaw_angle_fdb = yaw;
+									/**/
+									if(fabs(gimbal_data.gim_ref_and_fdb.yaw_angle_ref - gimbal_data.gim_ref_and_fdb.yaw_angle_fdb) < 2)
+									{
+										gimbal_data.if_auto_shoot = 1;
+									}else
+									{
+										gimbal_data.if_auto_shoot = 0;
+									}
+									
                     gimbal_data.gim_ref_and_fdb.pit_angle_fdb = VISION_PITCH_ANGLE_FDB;
                     gimbal_data.gim_ref_and_fdb.yaw_angle_fdb = VISION_YAW_ANGLE_FDB;
                     gimbal_data.gim_ref_and_fdb.pit_speed_fdb = VISION_PITCH_SPEED_FDB;
@@ -637,7 +651,7 @@ void gimbal_follow_gyro_handle(void)
                                                                       gimbal_data.gim_ref_and_fdb.yaw_angle_fdb,
 																																			&gimbal_data.gim_ref_and_fdb.yaw_speed_ref,
                                                                       gimbal_data.gim_ref_and_fdb.yaw_speed_fdb,
-                                                                      new_location.yaw_speed)*YAW_MOTOR_POLARITY;
+                                                                      0)*YAW_MOTOR_POLARITY;
         gimbal_data.gim_ref_and_fdb.pitch_motor_input = pid_double_loop_cal(&gimbal_data.pid_pit_Angle,
                                                                       &gimbal_data.pid_pit_speed,
                                                                       gimbal_data.gim_ref_and_fdb.pit_angle_ref,                     
@@ -693,29 +707,29 @@ void auto_small_buff_handle(void)
     gimbal_data.gim_ref_and_fdb.yaw_angle_fdb = VISION_YAW_ANGLE_FDB;
     gimbal_data.gim_ref_and_fdb.pit_speed_fdb = VISION_PITCH_SPEED_FDB;
     gimbal_data.gim_ref_and_fdb.yaw_speed_fdb = VISION_YAW_SPEED_FDB;
-    if(new_location.xy_0_flag)
+    if(My_Auto_Shoot.Buff.Flag_Get_Target)
     {
-        new_location.xy_o_time++;
+        My_Auto_Shoot.Buff.Lost_Cnt++;
     }else
     {
-        new_location.xy_o_time=0;
+        My_Auto_Shoot.Buff.Lost_Cnt=0;
     }
-    if(new_location.xy_o_time<1)
+    if(My_Auto_Shoot.Buff.Lost_Cnt<1)
     {
         ved = 1;
-        if(last_yaw==new_location.x1&&last_pit==new_location.y1)
+        if(last_yaw==My_Auto_Shoot.Buff.Yaw_Angle_Last&&last_pit==My_Auto_Shoot.Buff.Pitch_Angle_Last)
         {
-            Delta_Dect_Angle_Yaw = RAD_TO_ANGLE * atan2 ( ( (double) new_location.x1 ) * TARGET_SURFACE_LENGTH,FOCAL_LENGTH);
-            Delta_Dect_Angle_Pit = RAD_TO_ANGLE * atan2 ( ( (double) new_location.y1 ) * TARGET_SURFACE_WIDTH,FOCAL_LENGTH);
+            Delta_Dect_Angle_Yaw = RAD_TO_ANGLE * atan2 ( ( (double) My_Auto_Shoot.Buff.Yaw_Angle_Last ) * TARGET_SURFACE_LENGTH,FOCAL_LENGTH);
+            Delta_Dect_Angle_Pit = RAD_TO_ANGLE * atan2 ( ( (double) My_Auto_Shoot.Buff.Pitch_Angle_Last ) * TARGET_SURFACE_WIDTH,FOCAL_LENGTH);
 				
-			yaw_angle_ref_aim=Delta_Dect_Angle_Yaw + new_location.x + Buff_Yaw_remain;
-			pit_angle_ref_aim=Delta_Dect_Angle_Pit + new_location.y + Buff_pitch_remain;
+			yaw_angle_ref_aim=Delta_Dect_Angle_Yaw + My_Auto_Shoot.Buff.Yaw_Angle + Buff_Yaw_remain;
+			pit_angle_ref_aim=Delta_Dect_Angle_Pit + My_Auto_Shoot.Buff.Pitch_Angle + Buff_pitch_remain;
         }
-        last_yaw=new_location.x1;
-		last_pit=new_location.y1;
+        last_yaw=My_Auto_Shoot.Buff.Yaw_Angle_Last ;
+		last_pit=My_Auto_Shoot.Buff.Pitch_Angle_Last;
 
-        gimbal_data.gim_ref_and_fdb.yaw_angle_ref = buff_kalman_filter.buff_yaw_angle;
-        gimbal_data.gim_ref_and_fdb.pit_angle_ref = raw_data_to_pitch_angle(buff_kalman_filter.buff_pitch_angle)+Buff_pitch_remain;;
+        gimbal_data.gim_ref_and_fdb.yaw_angle_ref = My_Auto_Shoot.Buff.Yaw_Angle;
+        gimbal_data.gim_ref_and_fdb.pit_angle_ref = raw_data_to_pitch_angle(My_Auto_Shoot.Buff.Pitch_Angle)+Buff_pitch_remain;;
     }
     VAL_LIMIT(gimbal_data.gim_ref_and_fdb.pit_angle_ref, VISION_PITCH_MIN , VISION_PITCH_MAX );
     if(ved==0)
@@ -763,29 +777,29 @@ void auto_big_buff_handle(void)
     gimbal_data.gim_ref_and_fdb.yaw_angle_fdb = VISION_YAW_ANGLE_FDB;
     gimbal_data.gim_ref_and_fdb.pit_speed_fdb = VISION_PITCH_SPEED_FDB;
     gimbal_data.gim_ref_and_fdb.yaw_speed_fdb = VISION_YAW_SPEED_FDB;
-    if(new_location.xy_0_flag)
+    if(My_Auto_Shoot.Buff.Flag_Get_Target)
     {
-        new_location.xy_o_time++;
+        My_Auto_Shoot.Buff.Lost_Cnt++;
     }else
     {
-        new_location.xy_o_time=0;
+        My_Auto_Shoot.Buff.Lost_Cnt=0;
     }
-    if(new_location.xy_o_time<1)
+    if(My_Auto_Shoot.Buff.Lost_Cnt<1)
     {
         ved = 1;
-        if(last_yaw==new_location.x1&&last_pit==new_location.y1)
+        if(last_yaw==My_Auto_Shoot.Buff.Yaw_Angle_Last&&last_pit==My_Auto_Shoot.Buff.Pitch_Angle_Last)
         {
-            Delta_Dect_Angle_Yaw = RAD_TO_ANGLE * atan2 ( ( (double) new_location.x1 ) * TARGET_SURFACE_LENGTH,FOCAL_LENGTH);
-            Delta_Dect_Angle_Pit = RAD_TO_ANGLE * atan2 ( ( (double) new_location.y1 ) * TARGET_SURFACE_WIDTH,FOCAL_LENGTH);
+            Delta_Dect_Angle_Yaw = RAD_TO_ANGLE * atan2 ( ( (double) My_Auto_Shoot.Buff.Yaw_Angle_Last ) * TARGET_SURFACE_LENGTH,FOCAL_LENGTH);
+            Delta_Dect_Angle_Pit = RAD_TO_ANGLE * atan2 ( ( (double) My_Auto_Shoot.Buff.Pitch_Angle_Last ) * TARGET_SURFACE_WIDTH,FOCAL_LENGTH);
 				
-			yaw_angle_ref_aim=Delta_Dect_Angle_Yaw + new_location.x + Buff_Yaw_remain;
-			pit_angle_ref_aim=Delta_Dect_Angle_Pit + new_location.y + Buff_pitch_remain;
+			yaw_angle_ref_aim=Delta_Dect_Angle_Yaw + My_Auto_Shoot.Buff.Yaw_Angle + Buff_Yaw_remain;
+			pit_angle_ref_aim=Delta_Dect_Angle_Pit + My_Auto_Shoot.Buff.Pitch_Angle + Buff_pitch_remain;
         }
-        last_yaw=new_location.x1;
-		last_pit=new_location.y1;
+        last_yaw=My_Auto_Shoot.Buff.Yaw_Angle_Last ;
+		last_pit=My_Auto_Shoot.Buff.Pitch_Angle_Last;
 
-        gimbal_data.gim_ref_and_fdb.yaw_angle_ref = buff_kalman_filter.buff_yaw_angle;
-        gimbal_data.gim_ref_and_fdb.pit_angle_ref = raw_data_to_pitch_angle(buff_kalman_filter.buff_pitch_angle)+Buff_pitch_remain;
+        gimbal_data.gim_ref_and_fdb.yaw_angle_ref = My_Auto_Shoot.Buff.Yaw_Angle;
+        gimbal_data.gim_ref_and_fdb.pit_angle_ref = raw_data_to_pitch_angle(My_Auto_Shoot.Buff.Pitch_Angle)+Buff_pitch_remain;;
     }
     VAL_LIMIT(gimbal_data.gim_ref_and_fdb.pit_angle_ref, VISION_PITCH_MIN , VISION_PITCH_MAX );
     if(ved==0)

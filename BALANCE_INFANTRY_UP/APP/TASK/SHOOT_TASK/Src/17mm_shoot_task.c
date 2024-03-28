@@ -187,7 +187,7 @@ void shoot_bullet_handle(void)
 		{	
 /**/
 //			start_shooting_count++;
-//			if((start_shooting_count >= 250)&&(abs(general_poke.poke.filter_rate) < 3))
+//			if((start_shooting_count >= 100)&&(abs(general_poke.poke.filter_rate) < 3))
 //			{
 //				lock_rotor1 = 1;
 //				start_shooting_count = 0;
@@ -195,7 +195,7 @@ void shoot_bullet_handle(void)
 //			if(lock_rotor1 == 1)
 //			{
 //				start_reversal_count1++;
-//			if(start_reversal_count1 > 150)
+//			if(start_reversal_count1 > 100)
 //			{
 //				lock_rotor1 = 0;
 //				start_reversal_count1 = 0;
@@ -342,8 +342,8 @@ void shoot_friction_handle()
 {  
 	if(shoot.fric_wheel_run==1)
 	{
-		pid_rotate[0].set=-shoot.friction_pid.speed_ref[0];
-    pid_rotate[1].set= shoot.friction_pid.speed_ref[0];	
+		pid_rotate[0].set= shoot.friction_pid.speed_ref[0];
+    pid_rotate[1].set= -shoot.friction_pid.speed_ref[0];	
 	}
 	else
 	{
@@ -418,10 +418,20 @@ void shoot_state_mode_switch()
 				}break;
 					case KEY_MOUSE_INPUT:
 				{
-					if(RC_CtrlData.mouse.press_l==1)
+					if(RC_CtrlData.mouse.press_r==1)
+					{
+						if(RC_CtrlData.mouse.press_l==1&&gimbal_data.if_auto_shoot==1)
 							shoot.poke_run=1;
 					else
 							shoot.poke_run=0;
+					}else
+					{
+						if(RC_CtrlData.mouse.press_l==1)
+							shoot.poke_run=1;
+					else
+							shoot.poke_run=0;
+					}
+					
 					 
 					if(RC_CtrlData.Key_Flag.Key_C_TFlag)
 							shoot.fric_wheel_run=1;
@@ -433,6 +443,11 @@ void shoot_state_mode_switch()
 					else
 						 {shoot.bulletspead_level=0;}
 				 }break;
+				case STOP:
+				{
+					shoot.fric_wheel_run=0;
+					shoot.poke_run=0;
+				}break;
 
 					default:
 					break;		

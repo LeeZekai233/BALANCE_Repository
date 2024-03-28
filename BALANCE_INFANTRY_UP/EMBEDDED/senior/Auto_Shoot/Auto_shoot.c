@@ -4,7 +4,7 @@
 /**
   ******************************************************************************
   * @file    Auto_shoot.c
-  * @author  Lee_ZEKAI
+  * @author  HDW
   * @version V1.1.0
   * @date    03-October-2023
   * @brief   此文件编写了与视觉通信的内容，包含自瞄数据的接收，大小福
@@ -15,151 +15,103 @@
  **/
  
 /******************************************auto_shoot_define***************************************/
-location new_location;
-
-HostToDevice__Frame *Uart4_Protobuf_Receive_Gimbal_Angle;
 
 
-/**********************************************auto_shoot_handle*****************************************/
-void vision_process_general_message(unsigned char* address, unsigned int length)
+Auto_Shoot_t My_Auto_Shoot;
+New_Auto_Aim_t New_Auto_Aim;
+New_Auto_Aim_Send_t New_Auto_Aim_Send;
+
+u16 AUTO_CRC;
+void Vision_Process_General_Message_New(unsigned char* address, unsigned int length, Auto_Shoot_t *Auto_Shoot)
 {
-	int i = 0;
-	static u8 first_len[4];
-	static unsigned short content_size;
-	static unsigned char getaddress[100];
-	if(address[0] != 0xBE)
-	return;
-	for(u8 k = 0;k < length;k++)
+	
+	New_Auto_Aim_t New_Auto_Aim_Medium;
+	memcpy(&New_Auto_Aim_Medium.Header,&address[0],1);
+	memcpy(&New_Auto_Aim_Medium.Pitch_Angle,&address[0]+1,8);
+	memcpy(&New_Auto_Aim_Medium.Priority,&address[0]+9,2);
+	memcpy(&New_Auto_Aim_Medium.Check_Sum,&address[0]+11,2);
+	
+	if(New_Auto_Aim_Medium.Header!=0xbe)
+	 return;
+	AUTO_CRC=Verify_CRC16_Check_Sum(address,length-1);
+	if(!Verify_CRC16_Check_Sum(address,length-1))
+		return;
+	
+	memcpy(&New_Auto_Aim.Header,&address[0],1);
+	memcpy(&New_Auto_Aim.Pitch_Angle,&address[0]+1,8);
+	memcpy(&New_Auto_Aim.Priority,&address[0]+9,2);
+	memcpy(&New_Auto_Aim.Check_Sum,&address[0]+11,2);
+	
+	/**************************↓自瞄模式下的位置识别↓***************************/
+	float Auto_Aim_Yaw_Angle_Medium=New_Auto_Aim.Yaw_Angle;
+	float Auto_Aim_Pitch_Angle_Medium=New_Auto_Aim.Pitch_Angle;
+	//单片机没法存储bull型变量，当视觉数据为bull型变量时，不进行数据处理
+	if(Auto_Aim_Pitch_Angle_Medium==New_Auto_Aim.Pitch_Angle&&Auto_Aim_Yaw_Angle_Medium==New_Auto_Aim.Yaw_Angle)
 	{
-		if(address[k]==0xED)
+		if(Auto_Aim_Pitch_Angle_Medium!=0&&Auto_Aim_Pitch_Angle_Medium!=0)
 		{
-			first_len[i] = k;
-			i++;
-		}
-	}
-	content_size = first_len[0]-3;
+			Auto_Shoot->Auto_Aim.Yaw_Angle_Last = Auto_Shoot->Auto_Aim.Yaw_Angle;
+			Auto_Shoot->Auto_Aim.Pitch_Angle_Last = Auto_Shoot->Auto_Aim.Pitch_Angle;
+			Auto_Shoot->Auto_Aim.Yaw_Angle = New_Auto_Aim.Yaw_Angle;
+			Auto_Shoot->Auto_Aim.Pitch_Angle = New_Auto_Aim.Pitch_Angle;
+			Auto_Shoot->Auto_Aim.Priority=New_Auto_Aim.Priority;
+			Auto_Shoot->Auto_Aim.Attack_Choice=New_Auto_Aim.Attack_Choice;
+			Auto_Shoot->Auto_Aim.Flag_Get_Target = 1;
+			
+			Auto_Shoot->Auto_Aim.Lost_Cnt=0;
+			//gimbal_gyro.yaw_Angle还没定义先注释
+//			if (fabs(new_location.x - gimbal_gyro.yaw_Angle) > 45 || fabs(new_location.y - gimbal_gyro.pitch_Angle) > 70)
+//			{
 
-	for(int k = 0;k<content_size;k++)
-	{
-		getaddress[k] = address[k+2];
-	}
-	if(address[content_size + 3] != 0xED)
-	return;
-
-	unsigned char* content_address;
-		content_address = getaddress;
-
-	unsigned char crc8 = address[2 + content_size];
-
-	if(crc8 != get_crc8(content_address,content_size))
-	return;
-
-	Uart4_Protobuf_Receive_Gimbal_Angle=host_to_device__frame__unpack(NULL,content_size,content_address);
-
-	float flag_x = Uart4_Protobuf_Receive_Gimbal_Angle->target_yaw_;
-	float flag_y = Uart4_Protobuf_Receive_Gimbal_Angle->target_pitch_;
-	if(flag_y==Uart4_Protobuf_Receive_Gimbal_Angle->target_pitch_&&flag_x==Uart4_Protobuf_Receive_Gimbal_Angle->target_yaw_)
-	{
-		if(flag_x!=0&&flag_y!=0)
-		{
-			new_location.last_x = new_location.x;
-			new_location.last_y = new_location.y;
-			new_location.x = Uart4_Protobuf_Receive_Gimbal_Angle->target_yaw_;
-			new_location.y = Uart4_Protobuf_Receive_Gimbal_Angle->target_pitch_;
-			new_location.pitch_speed = Uart4_Protobuf_Receive_Gimbal_Angle->pitch_speed;
-			new_location.yaw_speed = Uart4_Protobuf_Receive_Gimbal_Angle->yaw_speed;
-			new_location.flag = 1;
-			if (fabs(new_location.x - gimbal_gyro.yaw_Angle) > 45 || fabs(new_location.y - gimbal_gyro.pitch_Angle) > 70)
-			{
-
-					new_location.flag = 0;
-			}
-		}else
-		{
-			new_location.flag = 0;
-			new_location.yaw_speed = 0;
-			new_location.pitch_speed = 0;
-		}
-	}
-	//为防止神经网络误识别导致哨兵不跟随直接进入巡逻，需要做此处理
-	if(new_location.flag)
-	{
-		new_location.lost_cnt++;
-	}else
-	{
-		new_location.lost_cnt--;
-	}
-  if(new_location.lost_cnt<=0)
-	{
-		new_location.lost_cnt = 0;
-	}
-	if(new_location.lost_cnt>=3)
-	{
-		new_location.lost_cnt = 3;
-	}
-		
-		
-	if(new_location.lost_cnt == 3)
-	{
-		new_location.control_flag = 1;
-	}else if(new_location.lost_cnt == 0)
-	{
-		new_location.control_flag = 0;
-	}
-    /*****************************************************/
-	float flagg_x = Uart4_Protobuf_Receive_Gimbal_Angle->x_;
-	float flagg_y = Uart4_Protobuf_Receive_Gimbal_Angle->y_;
-	if (flagg_x == Uart4_Protobuf_Receive_Gimbal_Angle->x_ && flagg_y == Uart4_Protobuf_Receive_Gimbal_Angle->y_)
-	{
-		if (flagg_x != 0 && flagg_y != 0)
-		{
-			new_location.xy_0_flag = 0;
-			new_location.buff_kf_flag = 1;
-			new_location.x1 = Uart4_Protobuf_Receive_Gimbal_Angle->x_;
-			new_location.y1 = Uart4_Protobuf_Receive_Gimbal_Angle->y_;
+//					new_location.flag = 0;
+//			}
 		}
 		else
 		{
-			new_location.xy_0_flag = 1;
+			if(Auto_Shoot->Auto_Aim.Lost_Cnt<100)
+				Auto_Shoot->Auto_Aim.Lost_Cnt++;
+			else
+			{
+				Auto_Shoot->Auto_Aim.Flag_Get_Target = 0;
+				Auto_Shoot->Auto_Aim.Yaw_Angle = 0;
+				Auto_Shoot->Auto_Aim.Pitch_Angle = 0;
+			}
 		}
 	}
-	host_to_device__frame__free_unpacked(Uart4_Protobuf_Receive_Gimbal_Angle, NULL);
+	
+	
 }
 
-DeviceToHost__Frame msg;
-u8 DateLength;
-#define GIMBAL_AUTO_SMALL_BUFF 11
-#define GIMBAL_AUTO_BIG_BUFF 12
-void send_protocol(float x, float y, float r, int id, float ammo_speed, int gimbal_mode, u8 *data)
+
+float yaw_angle__pi_pi;
+void send_protocol_New(float Yaw, float Pitch, float Roll, int id, float ammo_speed, int Attack_Engineer_Flag, u8* data)
 {
-	device_to_host__frame__init(&msg);
-
-	if (gimbal_mode == GIMBAL_AUTO_SMALL_BUFF)
-	{
-		msg.mode_ = 2;
-	}
-	else if (gimbal_mode == GIMBAL_AUTO_BIG_BUFF)
-	{
-		msg.mode_ = 1;
-	}
+	
+	yaw_angle__pi_pi = convert_ecd_angle_to__pi_pi(Yaw,yaw_angle__pi_pi);
+	New_Auto_Aim_Send.Pitch=Pitch;
+	New_Auto_Aim_Send.Roll=Roll;
+	New_Auto_Aim_Send.Yaw=yaw_angle__pi_pi;
+	if(id>100)
+		New_Auto_Aim_Send.Current_Color=1;
 	else
-	{
-		msg.mode_ = 0;
-	}
-	//	msg.mode_= 1;
-
-	msg.current_pitch_ = y;
-	msg.current_yaw_ = x;
-	msg.current_color_ = id;
-	msg.bullet_speed_ = ammo_speed;
-	msg.current_roll_ = r;
-
-	device_to_host__frame__pack(&msg, data + 2);
-	DateLength = device_to_host__frame__get_packed_size(&msg);
-	data[0] = 0xBE;
-	data[1] = DateLength;
-	Append_CRC8_Check_Sum(&data[2], DateLength + 1);
-	data[DateLength + 3] = 0xED;
-	Uart4SendBytesInfoProc(data, DateLength + 4);
+		New_Auto_Aim_Send.Current_Color=0;
+	New_Auto_Aim_Send.Another_Priority=1;
+	New_Auto_Aim_Send.Shoot_Speed=ammo_speed;
+	
+//	New_Auto_Aim_Send.Current_Color=Sentry_Decision_Data.Current_Color;
+//	New_Auto_Aim_Send.Enemy_Survical_State_1=Sentry_Decision_Data.Enemy_Survical_State_1;
+//	New_Auto_Aim_Send.Enemy_Survical_State_2=Sentry_Decision_Data.Enemy_Survical_State_2;
+//	New_Auto_Aim_Send.Enemy_Survical_State_3=Sentry_Decision_Data.Enemy_Survical_State_3;
+//	New_Auto_Aim_Send.Enemy_Survical_State_4=Sentry_Decision_Data.Enemy_Survical_State_4;
+//	New_Auto_Aim_Send.Enemy_Survical_State_5=Sentry_Decision_Data.Enemy_Survical_State_5;
+//	New_Auto_Aim_Send.Enemy_Survical_State_7=Sentry_Decision_Data.Enemy_Survical_State_7;
+	
+	
+	data[0]=0xbe;
+	memcpy(&data[1],&New_Auto_Aim_Send,25);
+	Append_CRC16_Check_Sum(&data[0],25+3);
+//	data[52]=0xed;
+	Uart4SendBytesInfoProc(data, 25+3);
 }
+
 

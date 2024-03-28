@@ -90,6 +90,7 @@ typedef struct
   gim_dynamic_ref_t gim_dynamic_ref;
 	
 	u8 if_finish_Init;
+	u8 if_auto_shoot;
 	
   pid_t pid_init_yaw_Angle; 
   pid_t pid_init_pit_Angle; 

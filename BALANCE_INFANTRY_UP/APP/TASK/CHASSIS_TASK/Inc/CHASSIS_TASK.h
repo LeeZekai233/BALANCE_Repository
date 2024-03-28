@@ -273,7 +273,6 @@ void reverse_follow_gimbal_handle(void);
 void buffer_power(void);
 float get_max_power(float voltage);
 void steering_wheel_calc(double Length,double Weight); 
-double convert_ecd_angle_to_0_2pi(double ecd_angle,float _0_2pi_angle);
 void omni_calc1(float vx,float vy,float vw,int16_t *speed);
 void omni_calc2(float vx,float vy,float vw,int16_t *speed);
 

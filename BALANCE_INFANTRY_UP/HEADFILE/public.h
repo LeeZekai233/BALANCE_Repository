@@ -61,6 +61,7 @@ else if(val>=max)\
 #include "HI220.h"
 #include "HT430.h"
 #include "Auto_shoot.h"
+#include "OLD_Auto_shoot.h"
 #include "LK_TECH.h"
 #include "REMOTE.h"
 #include "PM01.h"

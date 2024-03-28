@@ -9,7 +9,7 @@
 #define WARNING_VOLTAGE 10
 #define POWER_LIMIT 0
 #define ROTATE_Y_ERROFFSET -1.2f
-#define NORMAL_Y_ERROFFSET +0.23f
+#define NORMAL_Y_ERROFFSET +0.15f
 #define TIME_STEP 2
 #define YAW_POLARITY 					-1 //逆正      舵轮要顺正，改-1；麦轮1
 
@@ -178,6 +178,7 @@ void chassis_side_handle(void);
 void balance_chassis_task(void);
 void balance_task(void);
 
+void Software_power_limit_handle(void);
 void power_limit_handle(void);
 float input_power_cal(void);
 float output_power_cal(float voltage);//限制电压防止电压过低导致电机复位

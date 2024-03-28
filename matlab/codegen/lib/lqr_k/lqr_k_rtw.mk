@@ -2,7 +2,7 @@
 ## Makefile generated for component 'lqr_k'. 
 ## 
 ## Makefile     : lqr_k_rtw.mk
-## Generated on : Sat Dec 16 16:57:55 2023
+## Generated on : Wed Mar 27 02:56:21 2024
 ## Final product: .\lqr_k.lib
 ## Product type : static-library
 ## 
@@ -24,7 +24,7 @@ MAKEFILE                  = lqr_k_rtw.mk
 MATLAB_ROOT               = E:\matlab
 MATLAB_BIN                = E:\matlab\bin
 MATLAB_ARCH_BIN           = $(MATLAB_BIN)\win64
-START_DIR                 = E:\电控\开源资料\foc-wheel-legged-robot-master_自用\foc-wheel-legged-robot-master\matlab
+START_DIR                 = C:\Users\HP\Desktop\MY_Repository\matlab
 TGT_FCN_LIB               = ISO_C
 SOLVER_OBJ                = 
 CLASSIC_INTERFACE         = 0

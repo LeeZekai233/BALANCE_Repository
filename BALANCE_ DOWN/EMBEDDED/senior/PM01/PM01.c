@@ -40,7 +40,7 @@ void PM01_message_Process(volatile capacitance_message_t *v,CanRxMsg * msg)
 		v->out_power = (msg->Data[0] << 8) | msg->Data[1];
 		v->out_v = (msg->Data[2] << 8) | msg->Data[3];
 		v->out_i = (msg->Data[4] << 8) | msg->Data[5];
-        v->cap_voltage_filte = v->out_v/100.0f;
+    v->cap_voltage_filte = v->out_v/100.0f;
 	}
 	break;
 	case 0x613:

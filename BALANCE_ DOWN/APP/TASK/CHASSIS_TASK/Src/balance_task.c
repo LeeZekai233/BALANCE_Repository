@@ -105,6 +105,7 @@ void balance_chassis_task(void)
 			}else
 			{
 				follow_gimbal_handle();
+				Software_power_limit_handle();
         balance_task();
 			}
     }
@@ -112,11 +113,13 @@ void balance_chassis_task(void)
     case CHASSIS_ROTATE:
     {
 			chassis_rotate_handle();
+			Software_power_limit_handle();
 			balance_task();
     }break;
 		case CHASSIS_REVERSE:
 		{
 			chassis_side_handle();
+			Software_power_limit_handle();
 			balance_task();
 		}break;
     default:
@@ -193,8 +196,7 @@ void get_remote_angle(void)
 	float vx;
 	float temp_angle;
 	
-	b_chassis.yaw_encoder_ecd_angle = usart_chassis_data.yaw_Encoder_ecd_angle;
-	b_chassis.yaw_angle_0_2pi = convert_ecd_angle_to_0_2pi(b_chassis.yaw_encoder_ecd_angle,b_chassis.yaw_angle_0_2pi);
+	b_chassis.yaw_angle_0_2pi = usart_chassis_data.yaw_Encoder_ecd_angle;
 		if(b_chassis.yaw_angle_0_2pi>PI)
 		{b_chassis.yaw_angle__pi_pi=b_chassis.yaw_angle_0_2pi-(2*PI);}
 		else
@@ -458,7 +460,7 @@ void chassis_rotate_handle(void)
 		//b_chassis.chassis_ref.y_position += b_chassis.chassis_ref.vy*0.001*TIME_STEP;
 		
 		b_chassis.chassis_ref.vw = usart_chassis_data.rotate_speed; 
-		VAL_LIMIT(b_chassis.chassis_dynemic_ref.vw,-15,15);
+		VAL_LIMIT(b_chassis.chassis_ref.vw,-15,15);
 		VAL_LIMIT(b_chassis.chassis_ref.vy,-0.5,0.5);
 }
 
@@ -476,18 +478,27 @@ void chassis_side_handle(void)
 {
 	 float side_angle;
 	if((b_chassis.yaw_angle_0_2pi>=0)&&((b_chassis.yaw_angle_0_2pi<=PI)))
-		{side_angle = PI/2;}
+		{
+			side_angle = PI/2;
+			b_chassis.chassis_ref.vy = -b_chassis.chassis_dynemic_ref.vx;
+		}
 		else
-		{side_angle = 3*PI/2;}
+		{
+			side_angle = 3*PI/2;
+			b_chassis.chassis_ref.vy = b_chassis.chassis_dynemic_ref.vx;
+		}
 		
 		b_chassis.chassis_ref.leglength = b_chassis.chassis_dynemic_ref.leglength;
-    b_chassis.chassis_ref.vy = b_chassis.chassis_dynemic_ref.vy;
-    b_chassis.chassis_ref.vx = b_chassis.chassis_dynemic_ref.vx;
-		if(fabs(b_chassis.balance_loop.dx) > 0.06||b_chassis.chassis_ref.vy != 0)
+    
+
+		if(fabs(b_chassis.balance_loop.dx) > 0.1||b_chassis.chassis_ref.vy != 0)
 			b_chassis.chassis_ref.y_position = b_chassis.balance_loop.x;
+		else
+			b_chassis.normal_Y_erroffset-=b_chassis.balance_loop.dx*0.001*TIME_STEP;
 		
 		b_chassis.chassis_ref.vw = -pid_calc(&b_chassis.pid_follow_gim,b_chassis.yaw_angle_0_2pi,side_angle); 
 		VAL_LIMIT(b_chassis.chassis_ref.vw,-5,5);
+		VAL_LIMIT(b_chassis.chassis_ref.vy,-1.0,1.0);
 }
 
 /**
@@ -701,7 +712,65 @@ void middle_angle_adjust_handle(void)
 	   
 }
 
+/**
+************************************************************************************************************************
+* @Name     : Software_power_limit_handle
+* @brief    : 功率控制的主函数
+* @param		: None
+* @retval   : void
+* @Note     : 
+************************************************************************************************************************
+**/
+	float limit_vw,limit_vy;
+void Software_power_limit_handle(void)
+{
 
+	if(capacitance_message.cap_voltage_filte < 20)
+	{
+		switch(usart_chassis_data.chassis_power_limit)
+		{
+			case 50:
+			{
+					limit_vw = 7;
+					limit_vy = 1.5;
+			}break;
+			case 60:
+			{
+				limit_vw = 8;
+					limit_vy = 1.6;
+			}break;
+			case 70:
+			{
+				limit_vw = 9;
+					limit_vy = 1.8;
+			}break;
+			case 80:
+			{
+					limit_vw = 9;
+					limit_vy = 2.0;
+			}break;
+			case 100:
+			{
+				
+			}break;
+			}
+					
+				}else if(capacitance_message.cap_voltage_filte > 22)
+				{
+					limit_vw = 10;
+					limit_vy = b_chassis.max_speed;
+				}
+		if(capacitance_message.cap_voltage_filte < 17)
+		{
+			PID_struct_init(&b_chassis.vw_pid, POSITION_PID,2,2,2,0,0);
+		}else
+		{
+			PID_struct_init(&b_chassis.vw_pid, POSITION_PID,5,5,2,0,0);
+		}
+		
+		VAL_LIMIT(b_chassis.chassis_ref.vw,-limit_vw,limit_vw);
+		VAL_LIMIT(b_chassis.chassis_ref.vy,-limit_vy,limit_vy);
+}
 /**
 ************************************************************************************************************************
 * @Name     : power_limit_handle
@@ -950,44 +1019,44 @@ void lqr_k(double L0, double K[12])
 
   
 				
- if(b_chassis.ctrl_mode == CHASSIS_REVERSE)
+ if(b_chassis.ctrl_mode == CHASSIS_REVERSE||b_chassis.chassis_ref.vx != 0)
  {
-	K[0] = ((L0 * -164.21187446705741 + t2 * 333.27820048959512) -
-          t3 * 290.16809333992671) -
-         5.1206310043709564;
-  K[1] = ((L0 * 89.49371109349967 - t2 * 346.09241702160728) +
-          t3 * 383.610068918057) +
-         9.7034793225372926;
-  K[2] = ((L0 * -16.79114731066824 + t2 * 19.69386230401766) -
-          t3 * 19.65858973774041) -
-         0.80312713828875615;
-  K[3] = ((L0 * 2.065544673417532 - t2 * 18.184763940192038) +
-          t3 * 23.039726058905359) +
-         2.599836187365606;
-  K[4] = ((L0 * -19.701004773081081 + t2 * 48.415038801143361) -
-          t3 * 43.452820262805) -
-         2.44692532013582;
-  K[5] = ((L0 * 0.35768472816694807 - t2 * 42.320916699973431) +
-          t3 * 62.731181599873238) +
-         4.7814071836321892;
-  K[6] = ((L0 * -14.104823289185029 + t2 * 30.07134135094627) -
-          t3 * 25.797390003849841) -
-         3.570061632837104;
-  K[7] = ((L0 * -6.9062378825656277 - t2 * 19.932846563720329) +
-          t3 * 39.526916596188173) +
-         5.6106681292998379;
-  K[8] = ((L0 * -76.986765750688534 + t2 * 137.05658267993471) -
-          t3 * 100.3414748531177) +
-         22.228359887381661;
-  K[9] = ((L0 * 113.1194124260669 - t2 * 272.89042610873332) +
-          t3 * 242.16034253946171) +
-         16.511505493436012;
-  K[10] = ((L0 * -16.17794241325295 + t2 * 30.742057413672271) -
-           t3 * 24.128403933004979) +
-          4.8022621963146923;
-  K[11] = ((L0 * 21.568035174876272 - t2 * 48.749030886242032) +
-           t3 * 41.221623960507863) +
-          2.35016748065256;
+	K[0] = ((L0 * -166.700655487403 + t2 * 310.40496987752272) -
+          t3 * 266.253098888401) -
+         5.1659900740138527;
+  K[1] = ((L0 * 81.818861351604454 - t2 * 325.58297699603628) +
+          t3 * 363.94896624414048) +
+         12.20307867941224;
+  K[2] = ((L0 * -14.267427353745539 + t2 * 3.7241741648246061) -
+          t3 * 4.9128674498726879) -
+         0.66270337619891273;
+  K[3] = ((L0 * 4.2691484838940381 - t2 * 18.271848489835989) +
+          t3 * 20.07906017097195) +
+         2.0771651138383529;
+  K[4] = ((L0 * -33.197238930809377 + t2 * 82.500934886222979) -
+          t3 * 74.510133215860961) -
+         3.6260383545289989;
+  K[5] = ((L0 * -15.421484000669819 - t2 * 25.135627915412819) +
+          t3 * 59.735923567667669) +
+         10.17334896132809;
+  K[6] = ((L0 * -19.271005148269111 + t2 * 38.05563556377173) -
+          t3 * 31.687940514421989) -
+         4.4878263601997563;
+  K[7] = ((L0 * -21.50885842237216 + t2 * 9.7047654367477048) +
+          t3 * 15.767316148188669) +
+         9.2267510015333478;
+  K[8] = ((L0 * -85.192936703491156 + t2 * 148.2423222620086) -
+          t3 * 104.9760724587584) +
+         25.12413278369683;
+  K[9] = ((L0 * 145.012692339202 - t2 * 356.10775862585882) +
+          t3 * 319.91533093350989) +
+         14.928284932628261;
+  K[10] = ((L0 * -17.349495174302621 + t2 * 32.807077769741987) -
+           t3 * 25.516326693488381) +
+          5.2967107669759166;
+  K[11] = ((L0 * 28.833930841075919 - t2 * 68.035599136499442) +
+           t3 * 59.619025767661952) +
+          1.517413529554708;
 				}else
  {
 	 K[0] = ((L0 * -188.0979417294775 + t2 * 196.2711201387192) -
