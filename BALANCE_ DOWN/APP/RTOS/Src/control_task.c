@@ -7,7 +7,7 @@ float lp_data = 0;
 void control_task(void)
 {
 	time_tick++;
-	
+	IWDG_ReloadCounter();            //Î¹¹·
 	lp_data = Lpf_1st_calcu(&ACC_LPF,chassis_gyro.x_Acc,15,0.001);
 	Mileage_kalman_filter_calc(&Mileage_kalman_filter,
 								((balance_chassis.Driving_Encoder[0].angle + (-balance_chassis.Driving_Encoder[1].angle))/2.0f) * WHEEL_R,
@@ -28,9 +28,17 @@ void control_task(void)
 	if(time_tick%10==5)
 	{
 		power_data_read_handle(CAN2);
+		usart_gimbal_send(capacitance_message.cap_voltage_filte);
 	}
 		
-	
+	if(time_tick%1000==0)
+		{
+			LED0_ON;
+		}
+		if(time_tick%2000==0)
+		{
+			LED0_OFF;
+		}
 	
 }
 

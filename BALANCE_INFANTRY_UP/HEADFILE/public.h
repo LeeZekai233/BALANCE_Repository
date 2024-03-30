@@ -64,6 +64,7 @@ else if(val>=max)\
 #include "OLD_Auto_shoot.h"
 #include "LK_TECH.h"
 #include "REMOTE.h"
+#include "client.h"
 #include "PM01.h"
 #include "can_chassis_transmit.h"
 #include "USART_chassis_transmit.h"
@@ -77,6 +78,7 @@ else if(val>=max)\
 #include "usart.h"
 #include "led.h"
 #include "timer.h"
+#include "iwdg.h"
 
 
 

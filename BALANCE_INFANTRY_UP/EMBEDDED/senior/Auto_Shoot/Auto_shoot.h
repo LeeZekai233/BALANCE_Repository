@@ -24,6 +24,7 @@ typedef struct
 	
 	uint8_t Priority;//识别目标优先级
 	uint8_t Attack_Choice;//击打判断
+	uint8_t enable_shoot;
 	
 	uint8_t  Flag_Get_Target;//目标锁定标志位，1：锁定目标，0：未识别到目标
 	uint16_t Lost_Cnt;//目标丢失计数器
@@ -57,9 +58,10 @@ typedef struct
 {
 	uint8_t Header;
 	float Pitch_Angle;
-	float Yaw_Angle;
+	float Yaw_Angle; 
 	uint8_t Priority;
 	uint8_t Attack_Choice;
+	uint8_t enable_shoot;
 	uint16_t Check_Sum;
 	uint8_t Tail;
 }New_Auto_Aim_t;

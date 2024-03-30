@@ -6,7 +6,7 @@ int time_tick = 0;
 void control_task(void)
 {
 	time_tick++;
-
+	  IWDG_ReloadCounter();            //喂狗
 
 		if(time_tick%10 == 0)
 		usart_chassis_send(chassis.follow_gimbal,
@@ -31,10 +31,24 @@ void control_task(void)
 			can_bus_send_task();
 	}
 
-	if(time_tick%5 == 0)
+	if(time_tick%3 == 0)
 	{
-		send_protocol(gimbal_gyro.yaw_Angle,gimbal_gyro.pitch_Angle,gimbal_gyro.roll_Angle,judge_rece_mesg.game_robot_state.robot_id,27,0,UART4_DMA_TX_BUF);
+		send_protocol(gimbal_gyro.yaw_Angle,gimbal_gyro.pitch_Angle,gimbal_gyro.roll_Angle,judge_rece_mesg.game_robot_state.robot_id,27,gimbal_data.ctrl_mode,UART4_DMA_TX_BUF);
 	}
+	
+	  if(time_tick%100 == 0) //上传用户信息
+    {
+      Client_send_handle();
+    }
+		
+		if(time_tick%1000==0)
+		{
+			LED0_ON;
+		}
+		if(time_tick%2000==0)
+		{
+			LED0_OFF;
+		}
 }
 
 void control_task_Init(void)

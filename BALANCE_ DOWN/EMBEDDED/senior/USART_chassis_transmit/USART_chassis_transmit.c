@@ -1,6 +1,7 @@
 #include "USART_chassis_transmit.h"
 
 usart_chassis_data_t usart_chassis_data;
+usart_gimbal_data_t usart_gimbal_data;
 u8 databuff[100];
 
 void usart_chassis_send(
@@ -40,8 +41,9 @@ void usart_chassis_send(
 	databuff[19] = (uint8_t)(chassis_power_limit);
 	databuff[20] = (uint8_t)(ctrl_mode);
 	
-//	Uart3SendBytesInfoProc(databuff,21);
+	Uart3SendBytesInfoProc(databuff,21);
 }
+
 
 
 void usart_chassis_receive(uint8_t *DataAddress)
@@ -58,4 +60,19 @@ void usart_chassis_receive(uint8_t *DataAddress)
 	usart_chassis_data.chassis_power_buffer = ((DataAddress[13]<<8)|DataAddress[14]);
 	usart_chassis_data.chassis_power_limit = DataAddress[19];
 	usart_chassis_data.ctrl_mode = DataAddress[20];
+}
+
+void usart_gimbal_send(float cap_v)
+{
+		int32_t data = (int32_t)(cap_v*10000);
+		databuff[0] = (uint8_t)(data >> 24);
+	 databuff[1] = (uint8_t)(data >> 16);
+	 databuff[2] = (uint8_t)(data >> 8);
+	 databuff[3] = (uint8_t)(data);
+	Uart3SendBytesInfoProc(databuff,4);
+}
+
+void usart_gimbal_receive(uint8_t *DataAddress)
+{
+	usart_gimbal_data.cap_v = ((int32_t)(((DataAddress[0]<<24)|(DataAddress[1]<<16)|(DataAddress[2]<<8)|DataAddress[3])))/10000.0f;
 }

@@ -204,7 +204,7 @@ void get_remote_angle(void)
 		
 	vy = b_chassis.chassis_dynemic_ref.vy;
 	vx = b_chassis.chassis_dynemic_ref.vx;
-	
+	VAL_LIMIT(vx,-1.5,1.5);
 	
 	if(vy==0&&vx==0)
 	{
@@ -729,6 +729,11 @@ void Software_power_limit_handle(void)
 	{
 		switch(usart_chassis_data.chassis_power_limit)
 		{
+			case 45:
+			{
+					limit_vw = 7;
+					limit_vy = 1.5;
+			}break;
 			case 50:
 			{
 					limit_vw = 7;

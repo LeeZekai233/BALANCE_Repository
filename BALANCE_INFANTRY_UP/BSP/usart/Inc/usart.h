@@ -27,7 +27,7 @@
 #define USART2_Data_Receive_Process_0				do{}while(0);
 #define USART2_Data_Receive_Process_1				do{}while(0);
 	
-#define USART3_Data_Receive_Process					do{}while(0);
+#define USART3_Data_Receive_Process					do{usart_gimbal_receive(_USART3_RX_BUF);}while(0);
 #define UART4_Data_Receive_Process					do{vision_process_general_message(_UART4_DMA_RX_BUF,length);/*Vision_Process_General_Message_New(_UART4_DMA_RX_BUF,length,&My_Auto_Shoot);*/}while(0);
 	
 #define UART5_Data_Receive_Process_0				do{judgement_data_handle(_UART5_DMA_RX_BUF[0],this_time_rx_len5);}while(0);
@@ -131,6 +131,8 @@ void usart6_init(void);
 void Uart4DmaSendDataProc(DMA_Stream_TypeDef *DMA_Streamx,u16 ndtr);
 void Uart4SendByteInfoProc(u8 nSendInfo);
 void Uart4SendBytesInfoProc(u8* pSendInfo, u16 nSendCount);
+
+void MYDMA_Enable(DMA_Stream_TypeDef *DMA_Streamx,u16 ndtr);
 
 extern uint8_t UART4_DMA_TX_BUF[UART4_TX_BUF_LENGTH];
 

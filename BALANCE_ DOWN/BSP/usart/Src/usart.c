@@ -14,10 +14,10 @@ uint8_t _UART5_DMA_RX_BUF[100];
 	static uint8_t _UART4_DMA_RX_BUF[UART4_RX_BUF_LENGTH];	
 	static uint8_t _USART6_DMA_RX_BUF[BSP_USART6_RX_BUF_LENGTH];
 
-//static uint8_t USART1_DMA_TX_BUF[USART1_TX_BUF_LENGTH];//注释不配
+//static uint8_t USART1_DMA_TX_BUF[USART1_TX_BUF_LENGTH];//未配置发送
 //static uint8_t USART2_DMA_TX_BUF[USART2_TX_BUF_LENGTH];
-//static uint8_t USART3_DMA_TX_BUF[USART3_TX_BUF_LENGTH];
-	static uint8_t UART4_DMA_TX_BUF[UART4_TX_BUF_LENGTH];
+static uint8_t USART3_DMA_TX_BUF[USART3_TX_BUF_LENGTH];
+	 uint8_t UART4_DMA_TX_BUF[UART4_TX_BUF_LENGTH];
 	static uint8_t UART5_DMA_TX_BUF[UART5_TX_BUF_LENGTH];
 //static uint8_t USART6_DMA_TX_BUF[USART6_TX_BUF_LENGTH];
 /*********************************************************************************************************/
@@ -350,6 +350,37 @@ void usart3_init(u32 bound)
   DMA_Cmd(USART_CH100_RX_DMA_STREAM,ENABLE);
   /* Enable USART DMA RX Requsts */
   USART_DMACmd(USART_CH100, USART_DMAReq_Rx, ENABLE);
+	
+	
+	//发送配置
+	USART_DMACmd(USART_CH100, USART_DMAReq_Tx, ENABLE);
+
+  DMA_Cmd(USART_CH100_TX_DMA_STREAM, DISABLE);                           // 关DMA通道
+  DMA_DeInit(USART_CH100_TX_DMA_STREAM);
+  while(DMA_GetCmdStatus(USART_CH100_TX_DMA_STREAM) != DISABLE) {}
+  DMA_InitStructure.DMA_Channel = USART_CH100_TX_DMA_CHANNEL;
+  DMA_InitStructure.DMA_PeripheralBaseAddr	= USART_CH100_DR_ADDRESS;
+  DMA_InitStructure.DMA_Memory0BaseAddr   	= (uint32_t)&USART3_DMA_TX_BUF[0];
+  DMA_InitStructure.DMA_DIR 			   				 = DMA_DIR_MemoryToPeripheral;
+  DMA_InitStructure.DMA_BufferSize					= 0;//sizeof(USART1_DMA_TX_BUF);
+  DMA_InitStructure.DMA_PeripheralInc 			= DMA_PeripheralInc_Disable;
+  DMA_InitStructure.DMA_MemoryInc 					= DMA_MemoryInc_Enable;
+  DMA_InitStructure.DMA_PeripheralDataSize 	= DMA_PeripheralDataSize_Byte;
+  DMA_InitStructure.DMA_MemoryDataSize 			= DMA_MemoryDataSize_Byte;
+  DMA_InitStructure.DMA_Mode 								= DMA_Mode_Normal;
+  DMA_InitStructure.DMA_Priority 						= DMA_Priority_Medium;
+  DMA_InitStructure.DMA_FIFOMode 						= DMA_FIFOMode_Disable;
+  DMA_InitStructure.DMA_FIFOThreshold 			= DMA_FIFOThreshold_Full;
+  DMA_InitStructure.DMA_MemoryBurst 				= DMA_MemoryBurst_Single;
+  DMA_InitStructure.DMA_PeripheralBurst 		= DMA_PeripheralBurst_Single;
+  DMA_Init(USART_CH100_TX_DMA_STREAM,&DMA_InitStructure);
+
+  NVIC_InitStructure.NVIC_IRQChannel = USART_CH100_DMA_TX_IRQn;   // 发送DMA通道的中断配置
+  NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 2;     // 优先级设置
+  NVIC_InitStructure.NVIC_IRQChannelSubPriority = 1;
+  NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+  NVIC_Init(&NVIC_InitStructure);
+  DMA_ITConfig(USART_CH100_TX_DMA_STREAM,DMA_IT_TC,ENABLE);
   /* Enable USART */
   USART_Cmd(USART_CH100, ENABLE);
 }
@@ -370,6 +401,58 @@ void USART_CH100_IRQHandler(void)
 		USART_DMACmd(USART_CH100, USART_DMAReq_Rx, ENABLE);
 		DMA_Cmd(USART_CH100_RX_DMA_STREAM,ENABLE);//重新置位后，地址指针变成0
 	}
+}
+
+void Uart3DmaSendDataProc(DMA_Stream_TypeDef *DMA_Streamx,u16 ndtr)
+
+{
+//    DMA_Cmd(DMA_Streamx, DISABLE);                      //关闭DMA传输
+//    while (DMA_GetCmdStatus(DMA_Streamx) != DISABLE){}  //确保DMA可以被设置
+  DMA_SetCurrDataCounter(DMA_Streamx,ndtr);          //数据传输量
+  DMA_Cmd(DMA_Streamx, ENABLE);                      //开启DMA传输
+}
+
+
+
+void DMA1_Stream3_IRQHandler(void)
+{
+  //清除标志
+  if(DMA_GetFlagStatus(USART_CH100_TX_DMA_STREAM,USART_CH100_TX_DMA_FLAG_TCIF)!=RESET)//等待DMA1_Steam3传输完成
+    {
+      DMA_Cmd(USART_CH100_TX_DMA_STREAM, DISABLE);                      //关闭DMA传输
+      DMA_ClearFlag(USART_CH100_TX_DMA_STREAM,USART_CH100_TX_DMA_FLAG_TCIF);//清除DMA1_Steam3传输完成标志
+    }
+}
+
+
+//发送单字节
+void Uart3SendByteInfoProc(u8 nSendInfo)
+{
+  u8 *pBuf = NULL;
+  //指向发送缓冲区
+  pBuf = USART3_DMA_TX_BUF;
+  *pBuf++ = nSendInfo;
+
+  Uart3DmaSendDataProc(USART_CH100_TX_DMA_STREAM,1); //开始一次DMA传输！
+
+}
+
+//发送多字节
+
+void Uart3SendBytesInfoProc(u8* pSendInfo, u16 nSendCount)
+{
+  u16 i = 0;
+  u8 *pBuf = NULL;
+  //指向发送缓冲区
+  pBuf = USART3_DMA_TX_BUF;
+  for (i=0; i<nSendCount; i++)
+    {
+      *(pBuf+i) = pSendInfo[i];
+    }
+
+  //DMA发送方式
+
+  Uart3DmaSendDataProc(USART_CH100_TX_DMA_STREAM,nSendCount); //开始一次DMA传输！
 }
 #endif
 
@@ -467,10 +550,10 @@ void USART_CH100_IRQHandler(void)
   USART_Cmd(UART4,ENABLE);
 
 }
+  uint8_t length=0;
 
 void UART4_IRQHandler(void)
 {
-  uint8_t length=0;
   if(USART_GetITStatus(UART4, USART_IT_IDLE) != RESET)    //接收中断
     {
       (void)UART4->SR;
@@ -751,7 +834,7 @@ void usart6_init()
 
     USART_DeInit(USART6);
 //    USART_StructInit(&usart);
-    usart.USART_BaudRate = 961200;
+    usart.USART_BaudRate = 921600;
     usart.USART_WordLength = USART_WordLength_8b;
     usart.USART_StopBits = USART_StopBits_1;
     usart.USART_Parity = USART_Parity_No;

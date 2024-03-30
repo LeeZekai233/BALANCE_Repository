@@ -19,8 +19,10 @@ typedef struct
 	u8 ctrl_mode;
 } usart_chassis_data_t;
 
-
-
+typedef struct
+{
+	float cap_v;
+} usart_gimbal_data_t;
 void usart_chassis_send(
 												u8 if_follow_gim,
 										u8 jump_cmd,
@@ -35,7 +37,8 @@ void usart_chassis_send(
 										u8 chassis_power_limit,
 										u8 ctrl_mode);
 void usart_chassis_receive(uint8_t *DataAddress);
-										
+void usart_gimbal_send(float cap_v);
+void usart_gimbal_receive(uint8_t *DataAddress);										
 extern usart_chassis_data_t usart_chassis_data;
-										
+extern usart_gimbal_data_t usart_gimbal_data;										
 #endif

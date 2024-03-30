@@ -712,7 +712,7 @@ void uart5_init(u32 bound)
   while(DMA_GetCmdStatus(DMA1_Stream7) != DISABLE) {}
   DMA_InitStructure.DMA_Channel = DMA_Channel_4;
   DMA_InitStructure.DMA_PeripheralBaseAddr	= (uint32_t)(&UART5->DR);
-  DMA_InitStructure.DMA_Memory0BaseAddr   	= (uint32_t)&UART5_DMA_TX_BUF[0];
+  DMA_InitStructure.DMA_Memory0BaseAddr   	= (uint32_t)&tx_buf[0];
   DMA_InitStructure.DMA_DIR 			    = DMA_DIR_MemoryToPeripheral;
 	DMA_InitStructure.DMA_BufferSize			= sizeof(UART5_DMA_TX_BUF);   //发送数据放在该数组中
   DMA_InitStructure.DMA_PeripheralInc 		= DMA_PeripheralInc_Disable;

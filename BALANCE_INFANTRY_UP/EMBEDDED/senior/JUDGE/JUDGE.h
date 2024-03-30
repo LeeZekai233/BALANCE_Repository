@@ -358,9 +358,9 @@ unsigned char get_crc8(unsigned char* data, unsigned int length);
 
 void judgement_data_handle(uint8_t *p_frame,u16 rec_len);
 
+uint8_t* protocol_packet_pack(uint16_t cmd_id, uint8_t *p_data, uint16_t len, uint8_t sof, uint8_t *tx_buf);
 
-
-
+void data_upload_handle(uint16_t cmd_id, uint8_t *p_data, uint16_t len, uint8_t sof, uint8_t *tx_buf);
 
 extern receive_judge_t judge_rece_mesg;
 

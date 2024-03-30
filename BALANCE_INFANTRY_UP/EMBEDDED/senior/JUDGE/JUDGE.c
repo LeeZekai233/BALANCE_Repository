@@ -313,3 +313,34 @@ void judgement_data_handle(uint8_t *p_frame, u16 rec_len)
   }
 }
 
+uint8_t* protocol_packet_pack(uint16_t cmd_id, uint8_t *p_data, uint16_t len, uint8_t sof, uint8_t *tx_buf)  //串口发送协议
+{
+  uint16_t frame_length = HEADER_LEN + CMD_LEN + len + CRC_LEN;
+  frame_header_t *p_header = (frame_header_t*)tx_buf;           //将frame_header的内容放入tx_buf中
+  p_header->sof          = sof;
+  p_header->data_length  = len;
+  p_header->seq          = 0;
+
+  Append_CRC8_Check_Sum(tx_buf, HEADER_LEN);
+  memcpy(&tx_buf[HEADER_LEN], (uint8_t*)&cmd_id, CMD_LEN);      //将ID放入tx_buf中
+  memcpy(&tx_buf[HEADER_LEN + CMD_LEN], p_data, len);           //将数据放入tx_buf中，最后两位是16位crc校验
+  Append_CRC16_Check_Sum(tx_buf, frame_length);
+
+  return tx_buf;                                                //此处的tx_buf是要发送的数据
+}
+
+void data_upload_handle(uint16_t cmd_id, uint8_t *p_data, uint16_t len, uint8_t sof, uint8_t *tx_buf)
+{
+  uint16_t frame_length = HEADER_LEN + CMD_LEN + len + CRC_LEN;
+  
+  protocol_packet_pack(cmd_id, p_data, len, sof, tx_buf);   //crc校验
+  if (sof == UP_REG_ID)
+  // write_uart_blocking(&COMPUTER_HUART, tx_buf, frame_length);
+	 {}
+  else if (sof == DN_REG_ID)
+	{
+					DMA_ClearFlag(DMA1_Stream7,DMA_FLAG_TCIF7);//清除DMA2_Steam7传输完成标志
+		      USART_DMACmd(UART5,USART_DMAReq_Tx,ENABLE);  //使能串口1的DMA发送      
+	      	MYDMA_Enable(DMA1_Stream7,frame_length);
+	}
+}

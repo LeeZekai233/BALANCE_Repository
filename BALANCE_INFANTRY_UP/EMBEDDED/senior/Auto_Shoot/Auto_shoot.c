@@ -28,8 +28,8 @@ void Vision_Process_General_Message_New(unsigned char* address, unsigned int len
 	New_Auto_Aim_t New_Auto_Aim_Medium;
 	memcpy(&New_Auto_Aim_Medium.Header,&address[0],1);
 	memcpy(&New_Auto_Aim_Medium.Pitch_Angle,&address[0]+1,8);
-	memcpy(&New_Auto_Aim_Medium.Priority,&address[0]+9,2);
-	memcpy(&New_Auto_Aim_Medium.Check_Sum,&address[0]+11,2);
+	memcpy(&New_Auto_Aim_Medium.Priority,&address[0]+9,3);
+	memcpy(&New_Auto_Aim_Medium.Check_Sum,&address[0]+12,2);
 	
 	if(New_Auto_Aim_Medium.Header!=0xbe)
 	 return;
@@ -39,8 +39,8 @@ void Vision_Process_General_Message_New(unsigned char* address, unsigned int len
 	
 	memcpy(&New_Auto_Aim.Header,&address[0],1);
 	memcpy(&New_Auto_Aim.Pitch_Angle,&address[0]+1,8);
-	memcpy(&New_Auto_Aim.Priority,&address[0]+9,2);
-	memcpy(&New_Auto_Aim.Check_Sum,&address[0]+11,2);
+	memcpy(&New_Auto_Aim.Priority,&address[0]+9,3);
+	memcpy(&New_Auto_Aim.Check_Sum,&address[0]+12,2);
 	
 	/**************************↓自瞄模式下的位置识别↓***************************/
 	float Auto_Aim_Yaw_Angle_Medium=New_Auto_Aim.Yaw_Angle;
@@ -57,6 +57,7 @@ void Vision_Process_General_Message_New(unsigned char* address, unsigned int len
 			Auto_Shoot->Auto_Aim.Priority=New_Auto_Aim.Priority;
 			Auto_Shoot->Auto_Aim.Attack_Choice=New_Auto_Aim.Attack_Choice;
 			Auto_Shoot->Auto_Aim.Flag_Get_Target = 1;
+			Auto_Shoot->Auto_Aim.enable_shoot = New_Auto_Aim.enable_shoot;
 			
 			Auto_Shoot->Auto_Aim.Lost_Cnt=0;
 			//gimbal_gyro.yaw_Angle还没定义先注释
@@ -76,6 +77,7 @@ void Vision_Process_General_Message_New(unsigned char* address, unsigned int len
 				Auto_Shoot->Auto_Aim.Yaw_Angle = 0;
 				Auto_Shoot->Auto_Aim.Pitch_Angle = 0;
 			}
+			Auto_Shoot->Auto_Aim.enable_shoot = 0;
 		}
 	}
 	

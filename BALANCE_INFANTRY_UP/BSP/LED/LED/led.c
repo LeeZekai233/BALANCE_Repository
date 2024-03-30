@@ -40,8 +40,8 @@ void LED_Init(void)
 	GPIO_Init(GPIOA, &gpioInitStruct);
   GPIO_ResetBits(GPIOA, GPIO_Pin_8);
 	
-	LED0_ON;
-	LED1_ON;
+	LED0_OFF;
+	LED1_OFF;
 }
 
 

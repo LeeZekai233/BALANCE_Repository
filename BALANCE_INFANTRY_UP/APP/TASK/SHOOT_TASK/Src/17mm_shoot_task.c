@@ -262,6 +262,9 @@ void shoot_bullet_handle(void)
 													&shoot.poke_pid.speed_ref[0],
 													 shoot.poke_pid.speed_fdb[0],0);	
 		}
+		else
+		{shoot.poke_pid.angle_ref[0]=shoot.poke_pid.angle_fdb[0];
+		shoot.poke_current[0]=0;}
 	}
 }
 
@@ -434,9 +437,16 @@ void shoot_state_mode_switch()
 					
 					 
 					if(RC_CtrlData.Key_Flag.Key_C_TFlag)
+					{
 							shoot.fric_wheel_run=1;
+						LASER_ON();
+					}
 					else
-							shoot.fric_wheel_run=0;
+					{
+						shoot.fric_wheel_run=0;
+						LASER_OFF();
+					}
+							
 					 
 					if(RC_CtrlData.Key_Flag.Key_Q_TFlag)
 						 {shoot.bulletspead_level=1;}
