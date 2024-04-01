@@ -12,15 +12,15 @@
 void shot_param_init()
 {
 
-  PID_struct_init(&pid_trigger_angle[0], POSITION_PID, 6000, 1000,5,0.2,15);
-	PID_struct_init(&pid_trigger_speed[0],POSITION_PID,19000,10000,100,0.1,4);
+  PID_struct_init(&pid_trigger_angle[0], POSITION_PID, 6000, 1000,20,0.2,0);//5 0.2 15
+	PID_struct_init(&pid_trigger_speed[0],POSITION_PID,19000,10000,30,0,0);//100 0.1 4
 	PID_struct_init(&pid_trigger_speed[1],POSITION_PID,19000,10000,50,0.1,4);
 	
 	PID_struct_init(&pid_trigger_angle_buf,POSITION_PID, 4000 , 0    ,  130, 5  , 10);
 	PID_struct_init(&pid_trigger_speed_buf,POSITION_PID,12000 , 5500 ,  30 , 0  , 0 );
 	
-  PID_struct_init(&pid_rotate[1], POSITION_PID,15500,11500,50,0,0);
-  PID_struct_init(&pid_rotate[0], POSITION_PID,15500,11500,50,0,0);
+  PID_struct_init(&pid_rotate[1], POSITION_PID,15500,30,50,0.1,0);
+  PID_struct_init(&pid_rotate[0], POSITION_PID,15500,30,50,0.1,0);
 
   shoot.friction_pid.speed_ref[0] =FRICTION_SPEED_30;            //没装裁判系统，因此先进行摩擦轮速度赋值
 	
@@ -423,7 +423,7 @@ void shoot_state_mode_switch()
 				{
 					if(RC_CtrlData.mouse.press_r==1)
 					{
-						if(RC_CtrlData.mouse.press_l==1&&gimbal_data.if_auto_shoot==1)
+						if(RC_CtrlData.mouse.press_l==1)
 							shoot.poke_run=1;
 					else
 							shoot.poke_run=0;

@@ -31,9 +31,9 @@ void control_task(void)
 			can_bus_send_task();
 	}
 
-	if(time_tick%3 == 0)
+	if(time_tick%20 == 0)
 	{
-		send_protocol(gimbal_gyro.yaw_Angle,gimbal_gyro.pitch_Angle,gimbal_gyro.roll_Angle,judge_rece_mesg.game_robot_state.robot_id,27,gimbal_data.ctrl_mode,UART4_DMA_TX_BUF);
+		send_protocol_New(gimbal_gyro.yaw_Angle,gimbal_gyro.pitch_Angle,gimbal_gyro.roll_Angle,judge_rece_mesg.game_robot_state.robot_id,27,gimbal_data.ctrl_mode,UART4_DMA_TX_BUF);
 	}
 	
 	  if(time_tick%100 == 0) //上传用户信息
@@ -44,10 +44,12 @@ void control_task(void)
 		if(time_tick%1000==0)
 		{
 			LED0_ON;
+			HARD_WDG_ON;
 		}
 		if(time_tick%2000==0)
 		{
 			LED0_OFF;
+			HARD_WDG_OFF;
 		}
 }
 

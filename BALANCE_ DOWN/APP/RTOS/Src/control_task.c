@@ -34,10 +34,12 @@ void control_task(void)
 	if(time_tick%1000==0)
 		{
 			LED0_ON;
+			HARD_WDG_ON;
 		}
 		if(time_tick%2000==0)
 		{
 			LED0_OFF;
+			HARD_WDG_OFF;
 		}
 	
 }

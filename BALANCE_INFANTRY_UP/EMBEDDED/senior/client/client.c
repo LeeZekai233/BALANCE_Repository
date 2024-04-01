@@ -3,8 +3,8 @@ u8  draw_cnt=0,draw_int=0;
 u16 draw_data_ID=0x0101;
 u16 data_ID=0xD180;
 u16 client_custom_ID=0;
-uint8_t  ddata[66];
-uint8_t  tx_buf[66];
+uint8_t  ddata[150];
+uint8_t  tx_buf[150];
 int Energy_organs_flag=0;
 
 ext_client_custom_character_t Friction_state;                                

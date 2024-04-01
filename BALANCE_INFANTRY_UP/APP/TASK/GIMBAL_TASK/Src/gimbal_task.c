@@ -137,7 +137,7 @@ float pitch_max = 0;
     float Buff_pitch_remain=-0.3;
 
     float auto_aim_Yaw_remain = 0;
-    float auto_aim_pitch_remain = 1;
+    float auto_aim_pitch_remain = 0;
 #elif STANDARD == 4
 		
 		#define INFANTRY_PITCH_MAX 35.0f
@@ -363,8 +363,8 @@ void gimbal_parameter_Init(void)
                     , 0.01, 8 );
     PID_struct_init ( &gimbal_data.pid_pit_speed_follow, POSITION_PID, 27000, 25000, 180.0f, 0.2f, 0 ); 
 
-    PID_struct_init ( &gimbal_data.pid_yaw_follow, POSITION_PID,  150,200,
-                    13, 0.15f, 40 );
+    PID_struct_init ( &gimbal_data.pid_yaw_follow, POSITION_PID,  150,3,
+                    15, 0.0, 80 );
     PID_struct_init ( &gimbal_data.pid_yaw_speed_follow, POSITION_PID, 29800, 29800,
                     160.0f, 0.8, 40 ); //I太大时，陀螺开启云台抖动严重
 
@@ -616,15 +616,15 @@ void gimbal_follow_gyro_handle(void)
     if(RC_CtrlData.mouse.press_r)//鼠标右键按下
     {
 
-                if (new_location.flag)//视觉完成识别
+                if (My_Auto_Shoot.Auto_Aim.Flag_Get_Target)//视觉完成识别
                 {
 										//切换云台反馈
 									/**/
-//										float pitch,yaw;
-//										pitch = convert_ecd_angle_to__pi_pi(VISION_PITCH_ANGLE_FDB,pitch);
-//										yaw = convert_ecd_angle_to__pi_pi(VISION_YAW_ANGLE_FDB,yaw);
-//										gimbal_data.gim_ref_and_fdb.pit_angle_fdb = pitch;
-//                    gimbal_data.gim_ref_and_fdb.yaw_angle_fdb = yaw;
+										float pitch,yaw;
+										pitch = convert_ecd_angle_to__pi_pi(VISION_PITCH_ANGLE_FDB,pitch);
+										yaw = convert_ecd_angle_to__pi_pi(VISION_YAW_ANGLE_FDB,yaw);
+										gimbal_data.gim_ref_and_fdb.pit_angle_fdb = pitch;
+                    gimbal_data.gim_ref_and_fdb.yaw_angle_fdb = yaw;
 									/**/
 									if(fabs(gimbal_data.gim_ref_and_fdb.yaw_angle_ref - gimbal_data.gim_ref_and_fdb.yaw_angle_fdb) < 2)
 									{
@@ -634,13 +634,21 @@ void gimbal_follow_gyro_handle(void)
 										gimbal_data.if_auto_shoot = 0;
 									}
 									
-                    gimbal_data.gim_ref_and_fdb.pit_angle_fdb = VISION_PITCH_ANGLE_FDB;
-                    gimbal_data.gim_ref_and_fdb.yaw_angle_fdb = VISION_YAW_ANGLE_FDB;
+//                    gimbal_data.gim_ref_and_fdb.pit_angle_fdb = VISION_PITCH_ANGLE_FDB;
+//                    gimbal_data.gim_ref_and_fdb.yaw_angle_fdb = VISION_YAW_ANGLE_FDB;
                     gimbal_data.gim_ref_and_fdb.pit_speed_fdb = VISION_PITCH_SPEED_FDB;
                     gimbal_data.gim_ref_and_fdb.yaw_speed_fdb = VISION_YAW_SPEED_FDB;
 										//切换云台输入
-                    gimbal_data.gim_ref_and_fdb.pit_angle_ref = new_location.y + auto_aim_pitch_remain;
-                    gimbal_data.gim_ref_and_fdb.yaw_angle_ref = new_location.x + auto_aim_Yaw_remain;
+                    gimbal_data.gim_ref_and_fdb.pit_angle_ref = My_Auto_Shoot.Auto_Aim.Pitch_Angle + auto_aim_pitch_remain;
+                    gimbal_data.gim_ref_and_fdb.yaw_angle_ref = My_Auto_Shoot.Auto_Aim.Yaw_Angle + auto_aim_Yaw_remain;
+									
+									if(gimbal_data.gim_ref_and_fdb.yaw_angle_ref - gimbal_data.gim_ref_and_fdb.yaw_angle_fdb > 180.0)
+									{
+										gimbal_data.gim_ref_and_fdb.yaw_angle_ref-=360;
+									}else if(gimbal_data.gim_ref_and_fdb.yaw_angle_ref - gimbal_data.gim_ref_and_fdb.yaw_angle_fdb < -180.0)
+									{
+										gimbal_data.gim_ref_and_fdb.yaw_angle_ref+=360;
+									}
 										//视觉模式下云台限位
                     VAL_LIMIT(gimbal_data.gim_ref_and_fdb.pit_angle_ref, VISION_PITCH_MIN , VISION_PITCH_MAX );
                 }

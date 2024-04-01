@@ -20,6 +20,6 @@ void delete_Coverage(u8 coverage);
 extern float pitch_remain;
 extern float Yaw_remain;
 extern double NX_time;
-extern uint8_t  tx_buf[66];
+extern uint8_t  tx_buf[150];
 
 #endif

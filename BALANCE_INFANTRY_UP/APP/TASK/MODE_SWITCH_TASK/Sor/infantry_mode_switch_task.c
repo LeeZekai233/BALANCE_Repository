@@ -6,6 +6,7 @@ int16_t leg_length;
 u8 this_input_mode = 0;
 u8 last_input_mode = 0;
 
+u8 reserve_flag = 0;
 void infantry_mode_switch_task(void)
 {
 		//切换遥控模式的时候所有任务归位重新开始
@@ -148,6 +149,18 @@ void infantry_mode_switch_task(void)
                 gimbal_data.gim_dynamic_ref.yaw_angle_dynamic_ref += RC_CtrlData.mouse.x * MOUSE_TO_YAW_ANGLE_INC_FACT;
                 gimbal_data.gim_dynamic_ref.pitch_angle_dynamic_ref -= RC_CtrlData.mouse.y * MOUSE_TO_PITCH_ANGLE_INC_FACT;
                 VAL_LIMIT(gimbal_data.gim_dynamic_ref.pitch_angle_dynamic_ref, pitch_min, pitch_max);
+							//一键反向
+							if(RC_CtrlData.Key_Flag.Key_X_Flag)
+							{
+								if(reserve_flag==0)
+								{
+									gimbal_data.gim_dynamic_ref.yaw_angle_dynamic_ref +=180.0f;
+									reserve_flag++;
+								}
+							}else
+							{
+								reserve_flag = 0;
+							}
             }
             
          }
@@ -172,15 +185,15 @@ void infantry_mode_switch_task(void)
       //键鼠模式的模式选择从这里开始
 			if(gimbal_data.if_finish_Init == 1)
 			{
-				if (RC_CtrlData.Key_Flag.Key_V_TFlag)
-                {
-                    gimbal_data.ctrl_mode = GIMBAL_AUTO_BIG_BUFF;
-                }
-                else if (RC_CtrlData.Key_Flag.Key_Z_TFlag)
-                {
-                    gimbal_data.ctrl_mode = GIMBAL_AUTO_SMALL_BUFF;
-                }
-                else
+//				if (RC_CtrlData.Key_Flag.Key_V_TFlag)
+//                {
+//                    gimbal_data.ctrl_mode = GIMBAL_AUTO_BIG_BUFF;
+//                }
+//                else if (RC_CtrlData.Key_Flag.Key_Z_TFlag)
+//                {
+//                    gimbal_data.ctrl_mode = GIMBAL_AUTO_SMALL_BUFF;
+//                }
+//                else
                 {
                     gimbal_data.ctrl_mode = GIMBAL_FOLLOW_ZGYRO;
                     chassis.ctrl_mode = MANUAL_FOLLOW_GIMBAL;
