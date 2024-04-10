@@ -19,8 +19,8 @@ void shot_param_init()
 	PID_struct_init(&pid_trigger_angle_buf,POSITION_PID, 4000 , 0    ,  130, 5  , 10);
 	PID_struct_init(&pid_trigger_speed_buf,POSITION_PID,12000 , 5500 ,  30 , 0  , 0 );
 	
-  PID_struct_init(&pid_rotate[1], POSITION_PID,15500,30,50,0.1,0);
-  PID_struct_init(&pid_rotate[0], POSITION_PID,15500,30,50,0.1,0);
+  PID_struct_init(&pid_rotate[1], POSITION_PID,15500,500,50,0,0);
+  PID_struct_init(&pid_rotate[0], POSITION_PID,15500,500,50,0,0);
 
   shoot.friction_pid.speed_ref[0] =FRICTION_SPEED_30;            //没装裁判系统，因此先进行摩擦轮速度赋值
 	
@@ -67,9 +67,9 @@ void heat_switch()
 	//计算射频
 		if(judge_rece_mesg.game_robot_state.robot_level==1)//level_冷却
 			shoot.shoot_frequency=10;						
-		else if(judge_rece_mesg.game_robot_state.robot_level==2)//level_2
+		else if(judge_rece_mesg.game_robot_state.robot_level==3)//level_2
 			shoot.shoot_frequency=14;
-		else if(judge_rece_mesg.game_robot_state.robot_level==3)//level_3
+		else if(judge_rece_mesg.game_robot_state.robot_level>=5)//level_3
 			shoot.shoot_frequency=14;
 		else
 			shoot.shoot_frequency=10;
@@ -423,7 +423,7 @@ void shoot_state_mode_switch()
 				{
 					if(RC_CtrlData.mouse.press_r==1)
 					{
-						if(RC_CtrlData.mouse.press_l==1)
+						if(RC_CtrlData.mouse.press_l==1&&My_Auto_Shoot.Auto_Aim.enable_shoot)
 							shoot.poke_run=1;
 					else
 							shoot.poke_run=0;

@@ -17,6 +17,8 @@
  
 /*************************************judge define********************************************/
 receive_judge_t judge_rece_mesg;
+u16 last_base,this_base;
+u16 last_security,this_security;
 
 
 /***********************************    ↓    DJI提供的CRC校检函数   ↓  ***********************************/
@@ -231,6 +233,36 @@ void judgement_data_handle(uint8_t *p_frame, u16 rec_len)
 				case GAME_ROBOT_SURVIVORS_ID: // 机器人存活数据：0x0003。发送频率：1Hz
 				{
 					memcpy(&judge_rece_mesg.game_robot_HP, data_addr, data_length);
+					if(judge_rece_mesg.robot_color == red)
+					{
+						last_base = this_base;
+						last_security = this_security;
+						this_base = judge_rece_mesg.game_robot_HP.red_base_HP;
+						this_security = judge_rece_mesg.game_robot_HP.red_7_robot_HP;
+						
+						if(this_base!=last_base)
+						{
+							base_attacked = 1;
+						}
+						if(this_security!=last_security)
+						{
+							security_attacked = 1;
+						}
+					}else
+					{
+						last_base = this_base;
+						last_security = this_security;
+						this_base = judge_rece_mesg.game_robot_HP.blue_base_HP;
+						this_security = judge_rece_mesg.game_robot_HP.blue_7_robot_HP;
+						if(this_base!=last_base)
+						{
+							base_attacked = 1;
+						}
+						if(this_security!=last_security)
+						{
+							security_attacked = 1;
+						}
+					}
 				}
 				break;
 

@@ -11,7 +11,7 @@
 
 #define FRICTION_SPEED_15  (-540)      //µ¯ËÙ
 #define FRICTION_SPEED_18  (-607)
-#define FRICTION_SPEED_30  (-1030)
+#define FRICTION_SPEED_30  (-1000)
 
 #endif
 

@@ -353,20 +353,21 @@ void gimbal_parameter_Init(void)
     PID_struct_init(&gimbal_data.pid_pit_speed, POSITION_PID, 27000, 20000,
                     150, 0.001, 60); //170, 0.001f, 60
     //------------------------------------------------
-    PID_struct_init(&gimbal_data.pid_yaw_Angle, POSITION_PID, 500, 4,
-                    13, 0.15f, 40); 
+		PID_struct_init(&gimbal_data.pid_yaw_Angle, POSITION_PID, 400, 16,
+                    13.8, 0.1f, 6.5);
     PID_struct_init(&gimbal_data.pid_yaw_speed, POSITION_PID, 29000, 10000,
-                    160, 0.8f, 40); 
+                    400, 0.8f, 0); 
 
     //自瞄下参数
-    PID_struct_init ( &gimbal_data.pid_pit_follow, POSITION_PID, 200, 10, 8
-                    , 0.01, 8 );
-    PID_struct_init ( &gimbal_data.pid_pit_speed_follow, POSITION_PID, 27000, 25000, 180.0f, 0.2f, 0 ); 
+    PID_struct_init ( &gimbal_data.pid_pit_follow, POSITION_PID, 200, 10, 15
+                    , 0.01, 40 );
+										
+    PID_struct_init ( &gimbal_data.pid_pit_speed_follow, POSITION_PID, 27000, 25000, 150.0f, 0.001f, 0 ); 
 
-    PID_struct_init ( &gimbal_data.pid_yaw_follow, POSITION_PID,  150,3,
-                    15, 0.0, 80 );
+    PID_struct_init ( &gimbal_data.pid_yaw_follow, POSITION_PID,  150,16,
+                    13.8, 0.1, 6.5);//15 0 80
     PID_struct_init ( &gimbal_data.pid_yaw_speed_follow, POSITION_PID, 29800, 29800,
-                    160.0f, 0.8, 40 ); //I太大时，陀螺开启云台抖动严重
+                    400.0f, 0.8, 0 ); //160 0.8 40
 
     //小幅下的参数
     PID_struct_init(&gimbal_data.pid_pit_small_buff, POSITION_PID, 70, 20,
@@ -660,8 +661,8 @@ void gimbal_follow_gyro_handle(void)
 																																			&gimbal_data.gim_ref_and_fdb.yaw_speed_ref,
                                                                       gimbal_data.gim_ref_and_fdb.yaw_speed_fdb,
                                                                       0)*YAW_MOTOR_POLARITY;
-        gimbal_data.gim_ref_and_fdb.pitch_motor_input = pid_double_loop_cal(&gimbal_data.pid_pit_Angle,
-                                                                      &gimbal_data.pid_pit_speed,
+        gimbal_data.gim_ref_and_fdb.pitch_motor_input = pid_double_loop_cal(&gimbal_data.pid_pit_follow,
+                                                                      &gimbal_data.pid_pit_speed_follow,
                                                                       gimbal_data.gim_ref_and_fdb.pit_angle_ref,                     
                                                                       gimbal_data.gim_ref_and_fdb.pit_angle_fdb,
 																																			&gimbal_data.gim_ref_and_fdb.pit_speed_ref,

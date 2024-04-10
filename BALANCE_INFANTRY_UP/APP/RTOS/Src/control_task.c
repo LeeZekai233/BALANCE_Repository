@@ -20,7 +20,7 @@ void control_task(void)
 							judge_rece_mesg.power_heat_data.chassis_power,
 							judge_rece_mesg.power_heat_data.chassis_power_buffer,
 							judge_rece_mesg.game_robot_state.chassis_power_limit,
-							RC_CtrlData.inputmode);
+							RC_CtrlData.Key_Flag.Key_G_TFlag);
 	
 		
 		

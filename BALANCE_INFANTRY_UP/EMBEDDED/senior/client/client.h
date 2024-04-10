@@ -21,5 +21,7 @@ extern float pitch_remain;
 extern float Yaw_remain;
 extern double NX_time;
 extern uint8_t  tx_buf[150];
+extern u8 security_attacked;
+extern u8 base_attacked;
 
 #endif

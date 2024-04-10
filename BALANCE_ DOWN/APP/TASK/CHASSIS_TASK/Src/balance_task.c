@@ -167,7 +167,7 @@ void balance_cmd_select(void)
 	    {
 		    b_chassis.ctrl_mode = CHASSIS_INIT;
 	    }
-        if (b_chassis.ctrl_mode == usart_chassis_data.chassis_mode && fabs(chassis_gyro.pitch_Angle) > 15 &&usart_chassis_data.chassis_mode != CHASSIS_RELAX)
+        if (b_chassis.ctrl_mode == usart_chassis_data.chassis_mode && fabs(chassis_gyro.pitch_Angle) > 15 &&usart_chassis_data.chassis_mode != CHASSIS_RELAX&&usart_chassis_data.ctrl_mode!=1)
         {
             b_chassis.ctrl_mode = CHASSIS_INIT;
         }
@@ -354,7 +354,7 @@ void follow_gimbal_handle(void)
 	     b_chassis.roll_pid.iout = 0;
     b_chassis.chassis_ref.vx = b_chassis.chassis_dynemic_ref.vx;
 //		b_chassis.chassis_ref.y_position += b_chassis.chassis_ref.vy*0.001*TIME_STEP;
-		if(fabs(b_chassis.balance_loop.dx) > 0.1||b_chassis.chassis_ref.vy != 0)
+		if(fabs(b_chassis.balance_loop.dx) > 0.1||b_chassis.chassis_ref.vy != 0||usart_chassis_data.ctrl_mode==1)
 			b_chassis.chassis_ref.y_position = b_chassis.balance_loop.x;
 		else
 			b_chassis.normal_Y_erroffset-=b_chassis.balance_loop.dx*0.001*TIME_STEP;
@@ -381,7 +381,6 @@ void follow_gimbal_handle(void)
 			target_angle = b_chassis.chassis_ref.remote_angle + PI;
 			b_chassis.chassis_ref.vy = -b_chassis.chassis_ref.remote_speed;
 		}
-		
 		
 		b_chassis.chassis_ref.vw = -pid_calc(&b_chassis.pid_follow_gim,b_chassis.yaw_angle__pi_pi,target_angle); 
 		VAL_LIMIT(b_chassis.chassis_ref.vw,-5,5);
@@ -498,7 +497,7 @@ void chassis_side_handle(void)
 		
 		b_chassis.chassis_ref.vw = -pid_calc(&b_chassis.pid_follow_gim,b_chassis.yaw_angle_0_2pi,side_angle); 
 		VAL_LIMIT(b_chassis.chassis_ref.vw,-5,5);
-		VAL_LIMIT(b_chassis.chassis_ref.vy,-1.0,1.0);
+		VAL_LIMIT(b_chassis.chassis_ref.vy,-1.4,1.4);
 }
 
 /**
@@ -607,19 +606,14 @@ void balance_task(void)
     balance_Tgain = b_chassis.balance_loop.k[0][0] * b_chassis.balance_loop.state_err[0] + b_chassis.balance_loop.k[0][1] * b_chassis.balance_loop.state_err[1] + b_chassis.balance_loop.k[0][2] * (b_chassis.balance_loop.state_err[2]+b_chassis.normal_Y_erroffset) + b_chassis.balance_loop.k[0][4] * b_chassis.balance_loop.state_err[4] + b_chassis.balance_loop.k[0][5] * b_chassis.balance_loop.state_err[5];
     balance_Tpgain = b_chassis.balance_loop.k[1][0] * b_chassis.balance_loop.state_err[0] + b_chassis.balance_loop.k[1][1] * b_chassis.balance_loop.state_err[1] + b_chassis.balance_loop.k[1][2] * (b_chassis.balance_loop.state_err[2]+b_chassis.normal_Y_erroffset) + b_chassis.balance_loop.k[1][4] * b_chassis.balance_loop.state_err[4] + b_chassis.balance_loop.k[1][5] * b_chassis.balance_loop.state_err[5];
 		
-		
-		
-		
-		
+			
     //lqr离地增益计算
     V_T_outlandgain = 0;
     V_Tp_outlandgain = 0;
     balance_Toutlandgain = 0;
     balance_Tpoutlandgain = b_chassis.balance_loop.k[1][0] * b_chassis.balance_loop.state_err[0] + b_chassis.balance_loop.k[1][1] * b_chassis.balance_loop.state_err[1] ;
 		
-    //lqr输出
-    b_chassis.balance_loop.lqrOutT = balance_Tgain + V_T_gain;
-    b_chassis.balance_loop.lqrOutTp = balance_Tpgain + V_Tp_gain;
+    
 		
 		
     //双腿协调pid
@@ -635,6 +629,18 @@ void balance_task(void)
     b_chassis.right_leg.leg_F = pid_calc(&b_chassis.right_leg.leglengthpid, b_chassis.right_leg.l0, b_chassis.chassis_ref.leglength) + (BODY_MASS/2)*9.8 - roll_F_output - b_chassis.balance_loop.Fm*0.5;
     
    
+		if(usart_chassis_data.ctrl_mode==1)
+		{
+			V_Tp_gain = 0;
+			balance_Tgain = 0;
+			balance_Tpgain = 0;
+			b_chassis.left_leg.leg_F = 0;
+			b_chassis.right_leg.leg_F = 0;
+			V_T_gain = b_chassis.balance_loop.state_err[3]*2;
+		}
+		//lqr输出
+    b_chassis.balance_loop.lqrOutT = balance_Tgain + V_T_gain;
+    b_chassis.balance_loop.lqrOutTp = balance_Tpgain + V_Tp_gain;
     //此处的T0为phi1电机的扭矩，另一个是phi4的
     if (wheel_state_estimate(&b_chassis.left_leg)||(b_chassis.ctrl_mode==CHASSIS_INIT))
     {

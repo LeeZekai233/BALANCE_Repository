@@ -6,6 +6,8 @@ u16 client_custom_ID=0;
 uint8_t  ddata[150];
 uint8_t  tx_buf[150];
 int Energy_organs_flag=0;
+u8 security_attacked;
+u8 base_attacked;
 
 ext_client_custom_character_t Friction_state;                                
 ext_client_custom_character_t Level;                         
@@ -13,6 +15,7 @@ ext_client_custom_character_t cap;                 //
 ext_client_custom_character_t speed_up;             
 
 ext_client_custom_character_t Level_sight;
+ext_client_custom_character_t security_or_base;
 
 ext_client_custom_graphic_seven_t   cap_sight;               //电量显示
 ext_client_custom_graphic_seven_t		cap_ract;										 //超级电容框
@@ -482,12 +485,65 @@ void Client_send_handle()
       *(ext_client_custom_character_t*)(&ddata[6])=Level_sight;
       data_upload_handle(STUDENT_INTERACTIVE_HEADER_DATA_ID, ddata,6+sizeof(Level_sight),DN_REG_ID,tx_buf);
 		}break;	
+		case 10:
+		{
+			ddata[0]=0x0110;
+				ddata[1]=0x0110>>8;	 //数据内容id
+				//0x0100  删除图形 0x0101 绘制一个图形 0x0102 绘制二个图形 0x0103 绘制五个图形 0x0104绘制七个图形 0x0110客户端绘制字符图形
+				ddata[2]=judge_rece_mesg.game_robot_state.robot_id;
+				ddata[3]=judge_rece_mesg.game_robot_state.robot_id>>8;    //机器人id
+				ddata[4]=client_custom_ID;
+				ddata[5]=client_custom_ID>>8;       //客户端id
+					//*************************哨兵是否被击打*******************************//
+			if(security_attacked==1)
+			{
+				security_or_base.grapic_data_struct.operate_type=1;  //1 增加 2修改图形 3删除单个图形 5删除一个图层的图形 6删除所有图形
+				security_or_base.grapic_data_struct.layer=1;   //图层
+				security_or_base.grapic_data_struct.graphic_type=7;  //0 直线 1矩形 2整圆 3椭圆 4圆弧 5浮点数 6整数型 7字符
+				security_or_base.grapic_data_struct.graphic_name[0]=0;
+				security_or_base.grapic_data_struct.graphic_name[1]=1;
+				security_or_base.grapic_data_struct.graphic_name[2]=6;
+        
+				security_or_base.grapic_data_struct.start_x=960;
+				security_or_base.grapic_data_struct.start_y=700;
+				security_or_base.grapic_data_struct.width=WIDTH;
+				security_or_base.grapic_data_struct.start_angle=24;
+				security_or_base.grapic_data_struct.end_angle=4;
+			  
+				security_or_base.grapic_data_struct.color=0;
+				security_or_base.data[0]='S';
+				security_or_base.data[1]='E';
+				security_or_base.data[2]='C';
+				security_or_base.data[3]='U';
+				security_or_base.data[4]='R';
+				security_or_base.data[5]='I';
+				security_or_base.data[6]='T';
+				security_or_base.data[7]='Y';
+				security_or_base.data[8]=' ';
+				security_or_base.data[9]='A';
+				security_or_base.data[10]='T';
+				security_or_base.data[11]='K';
+				security_attacked = 0;
+			}else
+			{
+				security_or_base.grapic_data_struct.operate_type=3;  //1 增加 2修改图形 3删除单个图形 5删除一个图层的图形 6删除所有图形
+				security_or_base.grapic_data_struct.layer=1;   //图层
+				security_or_base.grapic_data_struct.graphic_type=7;  //0 直线 1矩形 2整圆 3椭圆 4圆弧 5浮点数 6整数型 7字符
+				security_or_base.grapic_data_struct.graphic_name[0]=0;
+				security_or_base.grapic_data_struct.graphic_name[1]=1;
+				security_or_base.grapic_data_struct.graphic_name[2]=6;
+        
+				
+			}
+				*(ext_client_custom_character_t*)(&ddata[6])=security_or_base;
+		data_upload_handle(STUDENT_INTERACTIVE_HEADER_DATA_ID, ddata,6+sizeof(security_or_base),DN_REG_ID,tx_buf);
+		}break;
 		
 	
 	/*******************************************************************************************************************************/
 	/////////////////////////////////////////////////////////刷新循环////////////////////////////////////////////////////////////////
 	/*******************************************************************************************************************************/
-		case 10:  //超电条                       20
+		case 11:  //超电条                       20
 		{
 					ddata[0]=0x0104;
       ddata[1]=0x0104>>8;	 //数据内容id
@@ -525,7 +581,7 @@ void Client_send_handle()
       *(ext_client_custom_graphic_seven_t*)(&ddata[6])=cap_sight;
       data_upload_handle(STUDENT_INTERACTIVE_HEADER_DATA_ID, ddata,6+sizeof(cap_sight),DN_REG_ID,tx_buf);
 		}break;
-		case 11:  //准星                   5
+		case 12:  //准星                   5
 		{
 			ddata[0]=0x0104;
       ddata[1]=0x0104>>8;	 //数据内容id
@@ -586,7 +642,7 @@ void Client_send_handle()
       *(ext_client_custom_graphic_seven_t*)(&ddata[6])=sight_bead;
       data_upload_handle(STUDENT_INTERACTIVE_HEADER_DATA_ID, ddata,6+sizeof(sight_bead),DN_REG_ID,tx_buf);
 		}break;
-		case 12:  //底盘模式                     6
+		case 13:  //底盘模式                     6
 		{
       ddata[0]=0x0104;
 				ddata[1]=0x0104>>8;	 //数据内容id
@@ -746,7 +802,7 @@ void Client_send_handle()
 		*(ext_client_custom_graphic_seven_t*)(&ddata[6])=chassis_graphics;
       data_upload_handle(STUDENT_INTERACTIVE_HEADER_DATA_ID, ddata,6+sizeof(chassis_graphics),DN_REG_ID,tx_buf);
 		}break;
- 		case 13:  //等级                         7
+ 		case 14:  //等级                         7
 		{
 			//----------------------------------经验----------------------------------------//
       ddata[0]=0x0110;
@@ -778,7 +834,7 @@ void Client_send_handle()
       *(ext_client_custom_character_t*)(&ddata[6])=Level_sight;
       data_upload_handle(STUDENT_INTERACTIVE_HEADER_DATA_ID, ddata,6+sizeof(Level_sight),DN_REG_ID,tx_buf);
 			}break;
-		case 14:  //加速                     10-13
+		case 15:  //加速                     10-13
 		{
 			//----------------------------------加速模式----------------------------------------//
       ddata[0]=0x0110;
@@ -826,7 +882,7 @@ void Client_send_handle()
       *(ext_client_custom_character_t*)(&ddata[6])=speed_up;
       data_upload_handle(STUDENT_INTERACTIVE_HEADER_DATA_ID, ddata,6+sizeof(speed_up),DN_REG_ID,tx_buf);
 		}break;
-		case 15:  //摩擦轮                     14
+		case 16:  //摩擦轮                     14
 		{
      //----------------------------------摩擦轮模式----------------------------------------//
       ddata[0]=0x0110;
@@ -873,6 +929,59 @@ void Client_send_handle()
       *(ext_client_custom_character_t*)(&ddata[6])=Friction_state;
       data_upload_handle(STUDENT_INTERACTIVE_HEADER_DATA_ID, ddata,6+sizeof(Friction_state),DN_REG_ID,tx_buf);
 			}break;
+		case 17:
+			{
+				ddata[0]=0x0110;
+				ddata[1]=0x0110>>8;	 //数据内容id
+				//0x0100  删除图形 0x0101 绘制一个图形 0x0102 绘制二个图形 0x0103 绘制五个图形 0x0104绘制七个图形 0x0110客户端绘制字符图形
+				ddata[2]=judge_rece_mesg.game_robot_state.robot_id;
+				ddata[3]=judge_rece_mesg.game_robot_state.robot_id>>8;    //机器人id
+				ddata[4]=client_custom_ID;
+				ddata[5]=client_custom_ID>>8;       //客户端id
+					//*************************哨兵是否被击打*******************************//
+			if(security_attacked==1)
+			{
+				security_or_base.grapic_data_struct.operate_type=1;  //1 增加 2修改图形 3删除单个图形 5删除一个图层的图形 6删除所有图形
+				security_or_base.grapic_data_struct.layer=1;   //图层
+				security_or_base.grapic_data_struct.graphic_type=7;  //0 直线 1矩形 2整圆 3椭圆 4圆弧 5浮点数 6整数型 7字符
+				security_or_base.grapic_data_struct.graphic_name[0]=0;
+				security_or_base.grapic_data_struct.graphic_name[1]=1;
+				security_or_base.grapic_data_struct.graphic_name[2]=6;
+        
+				security_or_base.grapic_data_struct.start_x=960;
+				security_or_base.grapic_data_struct.start_y=700;
+				security_or_base.grapic_data_struct.width=WIDTH;
+				security_or_base.grapic_data_struct.start_angle=24;
+				security_or_base.grapic_data_struct.end_angle=4;
+			  
+				security_or_base.grapic_data_struct.color=0;
+				security_or_base.data[0]='S';
+				security_or_base.data[1]='E';
+				security_or_base.data[2]='C';
+				security_or_base.data[3]='U';
+				security_or_base.data[4]='R';
+				security_or_base.data[5]='I';
+				security_or_base.data[6]='T';
+				security_or_base.data[7]='Y';
+				security_or_base.data[8]=' ';
+				security_or_base.data[9]='A';
+				security_or_base.data[10]='T';
+				security_or_base.data[11]='K';
+				security_attacked = 0;
+			}else
+			{
+				security_or_base.grapic_data_struct.operate_type=3;  //1 增加 2修改图形 3删除单个图形 5删除一个图层的图形 6删除所有图形
+				security_or_base.grapic_data_struct.layer=1;   //图层
+				security_or_base.grapic_data_struct.graphic_type=7;  //0 直线 1矩形 2整圆 3椭圆 4圆弧 5浮点数 6整数型 7字符
+				security_or_base.grapic_data_struct.graphic_name[0]=0;
+				security_or_base.grapic_data_struct.graphic_name[1]=1;
+				security_or_base.grapic_data_struct.graphic_name[2]=6;
+        
+				
+			}
+				*(ext_client_custom_character_t*)(&ddata[6])=security_or_base;
+		data_upload_handle(STUDENT_INTERACTIVE_HEADER_DATA_ID, ddata,6+sizeof(security_or_base),DN_REG_ID,tx_buf);
+			}break;
 		
     default:
     break;
@@ -880,8 +989,10 @@ void Client_send_handle()
 
   draw_cnt++;
 	draw_int++;
-  if(draw_cnt>15)//在需要刷新的图层刷新
-    draw_cnt=10;
+ 
+  if(draw_cnt>17)//在需要刷新的图层刷新
+    draw_cnt=11;
+	
 	
 	if(RC_CtrlData.Key_Flag.Key_R_Flag)
 	{
