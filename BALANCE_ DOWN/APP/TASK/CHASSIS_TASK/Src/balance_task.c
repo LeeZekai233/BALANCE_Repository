@@ -3,7 +3,6 @@
 
 
 Balance_chassis_t b_chassis = { 0 };
-    int Init_cnt;
     float V_T_gain;
     float V_Tp_gain;
     float balance_Tgain;
@@ -64,7 +63,6 @@ void balance_chassis_task(void)
 				b_chassis.joint_T[3] = 0;
 				b_chassis.driving_T[0] = 0;
 			  b_chassis.driving_T[1] = 0;
-			Init_cnt = 0;
 			balance_Tpgain = 0;
 			balance_Tpoutlandgain = 0;
 			b_chassis.chassis_ref.pitch = 0;
@@ -157,7 +155,7 @@ void balance_cmd_select(void)
             b_chassis.chassis_dynemic_ref.vy = usart_chassis_data.y/100.0f;
             b_chassis.chassis_dynemic_ref.vx = usart_chassis_data.x/100.0f;
             VAL_LIMIT(b_chassis.chassis_dynemic_ref.vy,b_chassis.min_speed,b_chassis.max_speed);
-            VAL_LIMIT(b_chassis.chassis_dynemic_ref.vx,b_chassis.min_speed,b_chassis.max_speed);
+            VAL_LIMIT(b_chassis.chassis_dynemic_ref.vx,-1.5,1.5);
         }
         if(b_chassis.ctrl_mode != CHASSIS_INIT&&usart_chassis_data.chassis_mode != CHASSIS_RELAX&&b_chassis.last_ctrl_mode == CHASSIS_RELAX&&usart_chassis_data.if_follow_gim)
         {
@@ -204,7 +202,6 @@ void get_remote_angle(void)
 		
 	vy = b_chassis.chassis_dynemic_ref.vy;
 	vx = b_chassis.chassis_dynemic_ref.vx;
-	VAL_LIMIT(vx,-1.5,1.5);
 	
 	if(vy==0&&vx==0)
 	{
@@ -261,7 +258,6 @@ void chassis_standup_handle(void)
 **/
 void chassis_Init_handle(void)
 {
-		Init_cnt++;
     b_chassis.chassis_ref.leglength = 0.14f;
     b_chassis.chassis_ref.vy = 0;
     b_chassis.chassis_ref.vx = 0;
@@ -308,7 +304,6 @@ void chassis_Init_handle(void)
 	{
 
 		b_chassis.ctrl_mode = CHASSIS_STAND_MODE;
-		Init_cnt = 0;
 		
 	}
 
@@ -353,7 +348,6 @@ void follow_gimbal_handle(void)
 		   PID_struct_init(&b_chassis.roll_pid, POSITION_PID, 50000, 20000, 800, 0, 12000);
 	     b_chassis.roll_pid.iout = 0;
     b_chassis.chassis_ref.vx = b_chassis.chassis_dynemic_ref.vx;
-//		b_chassis.chassis_ref.y_position += b_chassis.chassis_ref.vy*0.001*TIME_STEP;
 		if(fabs(b_chassis.balance_loop.dx) > 0.1||b_chassis.chassis_ref.vy != 0||usart_chassis_data.ctrl_mode==1)
 			b_chassis.chassis_ref.y_position = b_chassis.balance_loop.x;
 		else
@@ -456,8 +450,7 @@ void chassis_rotate_handle(void)
     b_chassis.chassis_ref.vy = b_chassis.balance_loop.dx;//b_chassis.chassis_dynemic_ref.vy*sinf(b_chassis.yaw_angle__pi_pi)+b_chassis.chassis_dynemic_ref.vx*cosf(b_chassis.yaw_angle__pi_pi);
     b_chassis.chassis_ref.vx = 0;
 		
-		//b_chassis.chassis_ref.y_position += b_chassis.chassis_ref.vy*0.001*TIME_STEP;
-		
+	
 		b_chassis.chassis_ref.vw = usart_chassis_data.rotate_speed; 
 		VAL_LIMIT(b_chassis.chassis_ref.vw,-15,15);
 		VAL_LIMIT(b_chassis.chassis_ref.vy,-0.5,0.5);
@@ -588,10 +581,10 @@ void balance_task(void)
 	b_chassis.balance_loop.state_err[5] = -(b_chassis.balance_loop.dphi);
 	
     //对腿变化加速度的限制
-	if(b_chassis.chassis_dynemic_ref.vy == 1.6)
+	if(fabs(b_chassis.chassis_dynemic_ref.vy) == 1.6)
 	{
     VAL_LIMIT(b_chassis.balance_loop.state_err[3], -1.2, 1.2);
-	}else if(b_chassis.chassis_dynemic_ref.vy == 2.2)
+	}else if(fabs(b_chassis.chassis_dynemic_ref.vy) == b_chassis.max_speed)
 	{
 		VAL_LIMIT(b_chassis.balance_loop.state_err[3], -1.0, 1.0);
 	}else
