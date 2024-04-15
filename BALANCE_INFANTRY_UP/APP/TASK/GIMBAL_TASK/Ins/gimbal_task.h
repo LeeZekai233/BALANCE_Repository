@@ -102,11 +102,6 @@ typedef struct
   pid_t pid_yaw_speed; 
   pid_t pid_pit_speed;
 
-  //英雄吊射模式下的参数
-  pid_t pid_auto_yaw_Angle; 
-  pid_t pid_auto_pit_Angle; 
-  pid_t pid_auto_yaw_speed; 
-  pid_t pid_auto_pit_speed; 
 
   // 小符下的PID参数
   pid_t pid_yaw_small_buff;
@@ -138,8 +133,6 @@ void gimbal_init_handle	( void );
 void gimbal_follow_gyro_handle(void);
 void auto_small_buff_handle(void);
 void auto_big_buff_handle(void);
-void security_gimbal_handle(void);
-void gimbal_auto_angle_handle(void);
 float raw_data_to_pitch_angle(float ecd_angle_pit);
 
 extern gimbal_t gimbal_data;

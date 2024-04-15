@@ -75,7 +75,7 @@ void infantry_mode_switch_task(void)
 			
         }
 			}
-			leg_length = 16;
+			leg_length = 21;
 			/*****************************************************************************************/
 			
 			
@@ -99,10 +99,10 @@ void infantry_mode_switch_task(void)
 						
 						if(RC_CtrlData.Key_Flag.Key_CTRL_Flag)
 						{
-							leg_length = 21;
+							leg_length = 30;
 						}else
 						{
-							leg_length = 16;
+							leg_length = 21;
 						}
 						
             if(RC_CtrlData.Key_Flag.Key_W_Flag)

@@ -13,7 +13,7 @@ void usart_chassis_send(
 										int16_t x,
 										int16_t y,
 										int16_t rotate_speed,
-										int16_t chassis_power,
+										float chassis_power,
 										uint16_t chassis_power_buffer,
 										u8 chassis_power_limit,
 										u8 ctrl_mode)
@@ -24,6 +24,7 @@ void usart_chassis_send(
 		 yaw_0_2pi+=2*PI;
 	
 	 int32_t data = (int32_t)(yaw_0_2pi*10000);
+    int16_t cp= chassis_power*100;
 	 databuff[0] = (uint8_t)if_follow_gim;
 	 databuff[1] = (uint8_t)jump_cmd;
 	 databuff[2] = (uint8_t)chassis_mode;
@@ -35,8 +36,8 @@ void usart_chassis_send(
 	 databuff[8] = (uint8_t)(y);
 	 databuff[9] = (uint8_t)((rotate_speed) >> 8);
 	 databuff[10] = (uint8_t)(rotate_speed);
-	 databuff[11] = (uint8_t)((chassis_power) >> 8);
-	 databuff[12] = (uint8_t)(chassis_power);
+	 databuff[11] = (uint8_t)((cp) >> 8);
+	 databuff[12] = (uint8_t)(cp);
 	 databuff[13] = (uint8_t)((chassis_power_buffer) >> 8);
 	 databuff[14] = (uint8_t)(chassis_power_buffer);
 	 databuff[15] = (uint8_t)(data >> 24);
@@ -60,7 +61,7 @@ void usart_chassis_receive(uint8_t *DataAddress)
 	usart_chassis_data.x = ((DataAddress[5]<<8)|DataAddress[6]);
 	usart_chassis_data.y = ((DataAddress[7]<<8)|DataAddress[8]);
 	usart_chassis_data.rotate_speed = ((DataAddress[9]<<8)|DataAddress[10]);
-	usart_chassis_data.chassis_power = ((DataAddress[11]<<8)|DataAddress[12]);
+	usart_chassis_data.chassis_power = ((DataAddress[11]<<8)|DataAddress[12])/100.0;
 	usart_chassis_data.chassis_power_buffer = ((DataAddress[13]<<8)|DataAddress[14]);
 	usart_chassis_data.chassis_power_limit = DataAddress[19];
 	usart_chassis_data.ctrl_mode = DataAddress[20];

@@ -7,6 +7,12 @@ T = balance_chassisDriving_Encoder0Torque;
 w = balance_chassisDriving_Encoder0rate_rpm;
 P = usart_chassis_datachassis_power/2;
 
+k1 = -0.0496;
+k2 = -0.5992;
+k3 = 20.5621;
+ Ptest = k1.*(T.^2) + (w.*T./9.55) + k2.*(w.^2) + k3;
+
+% matlabFunction(P,'File','all_power_cal');
 
 
 % err = 2*Vmax;

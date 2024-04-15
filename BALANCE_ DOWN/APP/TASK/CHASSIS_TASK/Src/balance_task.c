@@ -103,7 +103,7 @@ void balance_chassis_task(void)
 			}else
 			{
 				follow_gimbal_handle();
-				Software_power_limit_handle();
+//				Software_power_limit_handle();
         balance_task();
 			}
     }
@@ -111,27 +111,24 @@ void balance_chassis_task(void)
     case CHASSIS_ROTATE:
     {
 			chassis_rotate_handle();
-			Software_power_limit_handle();
+//			Software_power_limit_handle();
 			balance_task();
     }break;
 		case CHASSIS_REVERSE:
 		{
 			chassis_side_handle();
-			Software_power_limit_handle();
+//			Software_power_limit_handle();
 			balance_task();
 		}break;
     default:
         break;
     }
-#if POWER_LIMIT == 1
-    power_limit_handle();
-#else
-    b_chassis.max_speed = 2.2;
-    b_chassis.min_speed = -2.2;
-		b_chassis.Max_power_to_PM01 = input_power_cal();
-//		b_chassis.predict_power = all_power_cal(balance_chassis.Driving_Encoder[0].Torque,-2.528,0.000494,1,balance_chassis.Driving_Encoder[0].rate_rpm) + all_power_cal(balance_chassis.Driving_Encoder[1].Torque,-2.528,0.000494,1,balance_chassis.Driving_Encoder[1].rate_rpm);
+b_chassis.max_speed = 2.3;
+b_chassis.min_speed = -2.3;
+b_chassis.Max_power_to_PM01 = input_power_cal();
+b_chassis.predict_power = all_power_cal(balance_chassis.Driving_Encoder[0].Torque,4.626,0.0001699,1.629,balance_chassis.Driving_Encoder[0].rate_rpm) + \
+                            all_power_cal(balance_chassis.Driving_Encoder[1].Torque,4.626,0.0001699,1.629,balance_chassis.Driving_Encoder[1].rate_rpm);
 
-#endif 
 }
 
 
@@ -573,12 +570,12 @@ void balance_task(void)
     }
    
    //误差计算
-    b_chassis.balance_loop.state_err[0] = -(b_chassis.balance_loop.theta);
-	b_chassis.balance_loop.state_err[1] = -(b_chassis.balance_loop.dtheta);
-	b_chassis.balance_loop.state_err[2] = -(b_chassis.balance_loop.x -b_chassis.chassis_ref.y_position);
-	b_chassis.balance_loop.state_err[3] = -(b_chassis.balance_loop.dx - b_chassis.chassis_ref.vy);
-	b_chassis.balance_loop.state_err[4] = b_chassis.chassis_ref.pitch-(b_chassis.balance_loop.phi);
-	b_chassis.balance_loop.state_err[5] = -(b_chassis.balance_loop.dphi);
+    b_chassis.balance_loop.state_err[0] = 0 - b_chassis.balance_loop.theta;
+	b_chassis.balance_loop.state_err[1] = 0 - b_chassis.balance_loop.dtheta;
+	b_chassis.balance_loop.state_err[2] = b_chassis.chassis_ref.y_position - b_chassis.balance_loop.x;
+	b_chassis.balance_loop.state_err[3] = b_chassis.chassis_ref.vy - b_chassis.balance_loop.dx;
+	b_chassis.balance_loop.state_err[4] = b_chassis.chassis_ref.pitch - b_chassis.balance_loop.phi;
+	b_chassis.balance_loop.state_err[5] = 0 - b_chassis.balance_loop.dphi;
 	
     //对腿变化加速度的限制
 	if(fabs(b_chassis.chassis_dynemic_ref.vy) == 1.6)
@@ -595,9 +592,18 @@ void balance_task(void)
     //lqr未离地增益计算
 		
     V_T_gain = b_chassis.balance_loop.k[0][3] * b_chassis.balance_loop.state_err[3];
-    V_Tp_gain = b_chassis.balance_loop.k[1][3] * b_chassis.balance_loop.state_err[3] ;
-    balance_Tgain = b_chassis.balance_loop.k[0][0] * b_chassis.balance_loop.state_err[0] + b_chassis.balance_loop.k[0][1] * b_chassis.balance_loop.state_err[1] + b_chassis.balance_loop.k[0][2] * (b_chassis.balance_loop.state_err[2]+b_chassis.normal_Y_erroffset) + b_chassis.balance_loop.k[0][4] * b_chassis.balance_loop.state_err[4] + b_chassis.balance_loop.k[0][5] * b_chassis.balance_loop.state_err[5];
-    balance_Tpgain = b_chassis.balance_loop.k[1][0] * b_chassis.balance_loop.state_err[0] + b_chassis.balance_loop.k[1][1] * b_chassis.balance_loop.state_err[1] + b_chassis.balance_loop.k[1][2] * (b_chassis.balance_loop.state_err[2]+b_chassis.normal_Y_erroffset) + b_chassis.balance_loop.k[1][4] * b_chassis.balance_loop.state_err[4] + b_chassis.balance_loop.k[1][5] * b_chassis.balance_loop.state_err[5];
+    V_Tp_gain = b_chassis.balance_loop.k[1][3] * b_chassis.balance_loop.state_err[3];
+    balance_Tgain = b_chassis.balance_loop.k[0][0] * b_chassis.balance_loop.state_err[0] + \
+                    b_chassis.balance_loop.k[0][1] * b_chassis.balance_loop.state_err[1] + \
+                    b_chassis.balance_loop.k[0][2] * (b_chassis.balance_loop.state_err[2]+b_chassis.normal_Y_erroffset) + \
+                    b_chassis.balance_loop.k[0][4] * b_chassis.balance_loop.state_err[4] + \
+                    b_chassis.balance_loop.k[0][5] * b_chassis.balance_loop.state_err[5];
+    
+    balance_Tpgain = b_chassis.balance_loop.k[1][0] * b_chassis.balance_loop.state_err[0] + \
+                     b_chassis.balance_loop.k[1][1] * b_chassis.balance_loop.state_err[1] + \
+                     b_chassis.balance_loop.k[1][2] * (b_chassis.balance_loop.state_err[2]+b_chassis.normal_Y_erroffset) + \
+                     b_chassis.balance_loop.k[1][4] * b_chassis.balance_loop.state_err[4] + \
+                     b_chassis.balance_loop.k[1][5] * b_chassis.balance_loop.state_err[5];
 		
 			
     //lqr离地增益计算
@@ -606,7 +612,9 @@ void balance_task(void)
     balance_Toutlandgain = 0;
     balance_Tpoutlandgain = b_chassis.balance_loop.k[1][0] * b_chassis.balance_loop.state_err[0] + b_chassis.balance_loop.k[1][1] * b_chassis.balance_loop.state_err[1] ;
 		
-    
+#if POWER_LIMIT == 1
+    power_limit_handle();
+#endif    
 		
 		
     //双腿协调pid
@@ -787,8 +795,7 @@ void Software_power_limit_handle(void)
 
 void power_limit_handle(void)
 {
-    b_chassis.Max_power_to_PM01 = input_power_cal();
-    get_speed_err_limite_rate(output_power_cal(capacitance_message.cap_voltage_filte));
+    
 }
 
 /**
@@ -842,36 +849,7 @@ float output_power_cal(float voltage)//限制电压防止电压过低导致电机复位
 }
 
 
-/**
-************************************************************************************************************************
-* @Name     : get_speed_err_limite_rate
-* @brief    : 根据给定最大功率求出最优功率限制系数
-* @param		: max_power
-* @retval   : 二次方程的根（可以优化！10.13）
-* @Note     :
-************************************************************************************************************************
-**/
 
-void get_speed_err_limite_rate(float max_power)
-{
-    static float K1 = 0.0f;
-    static float K2 = 0.0f;
-    static float K3 = 0.0f;
-    float w = ((balance_chassis.Driving_Encoder[0].rate_rpm + (-balance_chassis.Driving_Encoder[1].rate_rpm))/2.0f);
-    float Vmax[2];
-    b_chassis.predict_power = all_power_cal(b_chassis.balance_loop.lqrOutT,K1,K2,K3,w);
-    Vmax_cal(b_chassis.balance_loop.k[0][3],max_power,balance_Tgain,K1,K2,K3,w,Vmax);
-    if (Vmax[0]>0)
-    {
-        b_chassis.max_speed = Vmax[0];
-        b_chassis.min_speed = Vmax[1];
-    }else
-    {
-        b_chassis.max_speed = Vmax[1];
-        b_chassis.min_speed = Vmax[0];
-    }
-    
-}
 
 /* Function Definitions */
 /*
@@ -893,49 +871,7 @@ float all_power_cal(float T, float k1, float k2, float k3, float w)
   return ((k3 + T * w * 0.10471204188481675) + T * T * k1) + k2 * (w * w);
 }
 
-/*
- * File trailer for all_power_cal.c
- *
 
-/* Function Definitions */
-/*
- * Vmax_cal
- *     Vmax = Vmax_cal(Kv,Pmax,bT_gain,K1,K2,K3,W)
- *
- * Arguments    : float Kv
- *                float Pmax
- *                float bT_gain
- *                float k1
- *                float k2
- *                float k3
- *                float w
- *                float Vmax[2]
- * Return Type  : void
- */
-void Vmax_cal(float Kv, float Pmax, float bT_gain, float k1, float k2,
-              float k3, float w, float Vmax[2])
-{
-  float Vmax_tmp;
-  float b_Vmax_tmp;
-  float t2;
-  /*     This function was generated by the Symbolic Math Toolbox version 23.2.
-   */
-  /*     2023-12-31 01:37:29 */
-  t2 = w * w;
-  t2 = sqrt(((Pmax * k1 * 16.0 - k1 * k3 * 16.0) - k1 * k2 * t2 * 16.0) +
-            t2 * 0.043858446862750471) *
-       191.0;
-  Vmax_tmp = 1.0 / Kv * (1.0 / k1);
-  b_Vmax_tmp = w * 40.0 + bT_gain * k1 * 764.0;
-  Vmax[0] = Vmax_tmp * (b_Vmax_tmp - t2) * -0.00065445026178010475;
-  Vmax[1] = Vmax_tmp * (b_Vmax_tmp + t2) * -0.00065445026178010475;
-}
-
-/*
- * File trailer for Vmax_cal.c
- *
- * [EOF]
- */
 
 /**
 ************************************************************************************************************************
@@ -984,42 +920,7 @@ void lqr_k(double L0, double K[12])
     t3 = L0 * L0 * L0;
 
 
-//		K[0] = ((L0 * -224.8656362888122 + t2 * 287.28601354985511) -
-//          t3 * 167.080125914703) -
-//         2.2708328063653309;
-//  K[1] = ((L0 * 799.62215955328907 - t2 * 2421.0071871579148) +
-//          t3 * 2369.2356209053869) -
-//         18.715545190698261;
-//  K[2] = ((L0 * -40.38018715277537 + t2 * 32.521969964233293) -
-//          t3 * 21.552686854980259) +
-//         0.78425211175398291;
-//  K[3] = ((L0 * 141.5900544765947 - t2 * 419.48263098475292) +
-//          t3 * 411.93317206269018) -
-//         0.46043751213191358;
-//  K[4] = ((L0 * -17.15704148443394 + t2 * 10.446769679445049) +
-//          t3 * 12.03299467720135) -
-//         2.279837861427144;
-//  K[5] = ((L0 * 161.6106764263622 - t2 * 545.89886715268119) +
-//          t3 * 568.97639790267169) -
-//         4.3911422530775761;
-//  K[6] = ((L0 * -23.559263858644151 - t2 * 0.25207525679081089) +
-//          t3 * 36.613891289564663) -
-//         5.0130786727043821;
-//  K[7] = ((L0 * 271.99755480600669 - t2 * 928.21025842917868) +
-//          t3 * 975.53282181648024) -
-//         6.4120436957134306;
-//  K[8] = ((L0 * -72.738997754922465 + t2 * 71.495363483826637) -
-//          t3 * 27.011943732562759) +
-//         37.21816652483988;
-//  K[9] = ((L0 * 248.84544086263139 - t2 * 351.82171741912708) +
-//          t3 * 163.43913537877319) +
-//         34.99279463955817;
-//  K[10] = ((L0 * -15.502668700859459 + t2 * 33.523719735351087) -
-//           t3 * 31.186727381276171) +
-//          5.6619913186474813;
-//  K[11] = ((L0 * -10.663987348138379 + t2 * 80.881742458802307) -
-//           t3 * 106.2776716888919) +
-//          5.1536359190828316;
+
 
   
 				
@@ -1099,6 +1000,7 @@ void lqr_k(double L0, double K[12])
   K[11] = ((L0 * -15.9840850382652 + t2 * 124.6211686324778) -
            t3 * 163.97155244350691) +
           3.2052607282776351;
+	
  }
 }
 

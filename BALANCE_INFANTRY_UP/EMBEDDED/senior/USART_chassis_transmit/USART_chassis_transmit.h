@@ -13,7 +13,7 @@ typedef struct
 	int16_t x;
 	int16_t y;
 	int16_t rotate_speed;
-	int16_t chassis_power;
+	float chassis_power;
 	uint16_t chassis_power_buffer;
 	u8 chassis_power_limit;
 	u8 ctrl_mode;
@@ -33,7 +33,7 @@ void usart_chassis_send(
 										int16_t x,
 										int16_t y,
 										int16_t rotate_speed,
-										int16_t chassis_power,
+										float chassis_power,
 										uint16_t chassis_power_buffer,
 										u8 chassis_power_limit,
 										u8 ctrl_mode);
