@@ -99,7 +99,7 @@ void infantry_mode_switch_task(void)
 						
 						if(RC_CtrlData.Key_Flag.Key_CTRL_Flag)
 						{
-							leg_length = 30;
+							leg_length = 34;
 						}else
 						{
 							leg_length = 21;

@@ -103,21 +103,18 @@ void balance_chassis_task(void)
 			}else
 			{
 				follow_gimbal_handle();
-//				Software_power_limit_handle();
-        balance_task();
+                balance_task();
 			}
     }
     break;
     case CHASSIS_ROTATE:
     {
 			chassis_rotate_handle();
-//			Software_power_limit_handle();
 			balance_task();
     }break;
 		case CHASSIS_REVERSE:
 		{
 			chassis_side_handle();
-//			Software_power_limit_handle();
 			balance_task();
 		}break;
     default:
@@ -126,8 +123,9 @@ void balance_chassis_task(void)
 b_chassis.max_speed = 2.3;
 b_chassis.min_speed = -2.3;
 b_chassis.Max_power_to_PM01 = input_power_cal();
-b_chassis.predict_power = all_power_cal(balance_chassis.Driving_Encoder[0].Torque,4.626,0.0001699,1.629,balance_chassis.Driving_Encoder[0].rate_rpm) + \
+b_chassis.predict_power[0] = all_power_cal(balance_chassis.Driving_Encoder[0].Torque,4.626,0.0001699,1.629,balance_chassis.Driving_Encoder[0].rate_rpm) + \
                             all_power_cal(balance_chassis.Driving_Encoder[1].Torque,4.626,0.0001699,1.629,balance_chassis.Driving_Encoder[1].rate_rpm);
+
 
 }
 
@@ -519,6 +517,9 @@ void chassis_stop_handle(void)
 							检查好各个传感器的单位与性能
 ************************************************************************************************************************
 **/
+float harmonize_output = 0;
+float vw_torque = 0;
+float roll_F_output = 0;
 void balance_task(void)
 {
     /********************各个计算量的更新************************************/
@@ -542,6 +543,8 @@ void balance_task(void)
     b_chassis.balance_loop.ddz = chassis_gyro.z_Acc*cos(chassis_gyro.pitch_Angle*PI/180.0f);
 	
 	  b_chassis.balance_loop.wheel_dx = ((balance_chassis.Driving_Encoder[0].gyro + (-balance_chassis.Driving_Encoder[1].gyro))/2.0f) * WHEEL_R;
+      
+      b_chassis.balance_loop.RPM = (balance_chassis.Driving_Encoder[0].rate_rpm-balance_chassis.Driving_Encoder[1].rate_rpm)/2.0;
 
     b_chassis.balance_loop.L0 = (b_chassis.left_leg.l0 + b_chassis.right_leg.l0)/2.0f;
 		
@@ -568,15 +571,33 @@ void balance_task(void)
         }
             
     }
-   
-   //误差计算
+   /********************************平衡部分解算********************************/
+   //平衡部分误差计算
     b_chassis.balance_loop.state_err[0] = 0 - b_chassis.balance_loop.theta;
 	b_chassis.balance_loop.state_err[1] = 0 - b_chassis.balance_loop.dtheta;
 	b_chassis.balance_loop.state_err[2] = b_chassis.chassis_ref.y_position - b_chassis.balance_loop.x;
-	b_chassis.balance_loop.state_err[3] = b_chassis.chassis_ref.vy - b_chassis.balance_loop.dx;
 	b_chassis.balance_loop.state_err[4] = b_chassis.chassis_ref.pitch - b_chassis.balance_loop.phi;
 	b_chassis.balance_loop.state_err[5] = 0 - b_chassis.balance_loop.dphi;
-	
+	//平衡部分未离地增益计算
+    balance_Tgain = b_chassis.balance_loop.k[0][0] * b_chassis.balance_loop.state_err[0] + \
+                    b_chassis.balance_loop.k[0][1] * b_chassis.balance_loop.state_err[1] + \
+                    b_chassis.balance_loop.k[0][2] * (b_chassis.balance_loop.state_err[2]+b_chassis.normal_Y_erroffset) + \
+                    b_chassis.balance_loop.k[0][4] * b_chassis.balance_loop.state_err[4] + \
+                    b_chassis.balance_loop.k[0][5] * b_chassis.balance_loop.state_err[5];
+    
+    balance_Tpgain = b_chassis.balance_loop.k[1][0] * b_chassis.balance_loop.state_err[0] + \
+                     b_chassis.balance_loop.k[1][1] * b_chassis.balance_loop.state_err[1] + \
+                     b_chassis.balance_loop.k[1][2] * (b_chassis.balance_loop.state_err[2]+b_chassis.normal_Y_erroffset) + \
+                     b_chassis.balance_loop.k[1][4] * b_chassis.balance_loop.state_err[4] + \
+                     b_chassis.balance_loop.k[1][5] * b_chassis.balance_loop.state_err[5];
+    
+    
+    /*******************************速度部分解算*******************************/
+#if POWER_LIMIT == 1
+    power_limit_handle();
+#endif
+    //速度误差计算
+    b_chassis.balance_loop.state_err[3] = b_chassis.chassis_ref.vy - b_chassis.balance_loop.dx;
     //对腿变化加速度的限制
 	if(fabs(b_chassis.chassis_dynemic_ref.vy) == 1.6)
 	{
@@ -593,17 +614,7 @@ void balance_task(void)
 		
     V_T_gain = b_chassis.balance_loop.k[0][3] * b_chassis.balance_loop.state_err[3];
     V_Tp_gain = b_chassis.balance_loop.k[1][3] * b_chassis.balance_loop.state_err[3];
-    balance_Tgain = b_chassis.balance_loop.k[0][0] * b_chassis.balance_loop.state_err[0] + \
-                    b_chassis.balance_loop.k[0][1] * b_chassis.balance_loop.state_err[1] + \
-                    b_chassis.balance_loop.k[0][2] * (b_chassis.balance_loop.state_err[2]+b_chassis.normal_Y_erroffset) + \
-                    b_chassis.balance_loop.k[0][4] * b_chassis.balance_loop.state_err[4] + \
-                    b_chassis.balance_loop.k[0][5] * b_chassis.balance_loop.state_err[5];
     
-    balance_Tpgain = b_chassis.balance_loop.k[1][0] * b_chassis.balance_loop.state_err[0] + \
-                     b_chassis.balance_loop.k[1][1] * b_chassis.balance_loop.state_err[1] + \
-                     b_chassis.balance_loop.k[1][2] * (b_chassis.balance_loop.state_err[2]+b_chassis.normal_Y_erroffset) + \
-                     b_chassis.balance_loop.k[1][4] * b_chassis.balance_loop.state_err[4] + \
-                     b_chassis.balance_loop.k[1][5] * b_chassis.balance_loop.state_err[5];
 		
 			
     //lqr离地增益计算
@@ -612,17 +623,16 @@ void balance_task(void)
     balance_Toutlandgain = 0;
     balance_Tpoutlandgain = b_chassis.balance_loop.k[1][0] * b_chassis.balance_loop.state_err[0] + b_chassis.balance_loop.k[1][1] * b_chassis.balance_loop.state_err[1] ;
 		
-#if POWER_LIMIT == 1
-    power_limit_handle();
-#endif    
+
 		
 		
     //双腿协调pid
-    float harmonize_output = pid_calc(&b_chassis.leg_harmonize_pid, (b_chassis.right_leg.phi0 - b_chassis.left_leg.phi0), 0);
+     harmonize_output = pid_calc(&b_chassis.leg_harmonize_pid, (b_chassis.right_leg.phi0 - b_chassis.left_leg.phi0), 0);
     //转向pid
-    float vw_torque = pid_calc(&b_chassis.vw_pid, chassis_gyro.yaw_Gyro*PI/180.0f, b_chassis.chassis_ref.vw);
+     vw_torque = pid_calc(&b_chassis.vw_pid, chassis_gyro.yaw_Gyro*PI/180.0f, b_chassis.chassis_ref.vw);
+     b_chassis.vw_limit_rate = 1;
     //roll平衡pid
-    float roll_F_output = pid_calc(&b_chassis.roll_pid,chassis_gyro.roll_Angle*PI/180.0f,0);
+     roll_F_output = pid_calc(&b_chassis.roll_pid,chassis_gyro.roll_Angle*PI/180.0f,0);
     
     
     //腿部竖直力F的计算
@@ -642,13 +652,24 @@ void balance_task(void)
 		//lqr输出
     b_chassis.balance_loop.lqrOutT = balance_Tgain + V_T_gain;
     b_chassis.balance_loop.lqrOutTp = balance_Tpgain + V_Tp_gain;
+#if POWER_LIMIT == 1    
+    if(b_chassis.ctrl_mode == CHASSIS_ROTATE)
+    {
+     b_chassis.vw_limit_rate = get_vw_limit_rate(output_power_cal(capacitance_message.cap_voltage_filte),balance_chassis.Driving_Encoder[0].rate_rpm,-balance_chassis.Driving_Encoder[1].rate_rpm);
+     VAL_LIMIT( b_chassis.vw_limit_rate,0,1);
+    }else
+    {
+        b_chassis.vw_limit_rate = 1;
+    }
+#endif        
+    
     //此处的T0为phi1电机的扭矩，另一个是phi4的
     if (wheel_state_estimate(&b_chassis.left_leg)||(b_chassis.ctrl_mode==CHASSIS_INIT))
     {
         leg_conv(b_chassis.left_leg.leg_F, b_chassis.balance_loop.lqrOutTp-harmonize_output, b_chassis.left_leg.phi1, b_chassis.left_leg.phi4, b_chassis.left_leg.T);
         b_chassis.joint_T[1] = b_chassis.left_leg.T[1];
         b_chassis.joint_T[2] = b_chassis.left_leg.T[0];
-        b_chassis.driving_T[0] = b_chassis.balance_loop.lqrOutT / 2.0f + vw_torque;
+        b_chassis.driving_T[0] = b_chassis.balance_loop.lqrOutT / 2.0f + vw_torque* b_chassis.vw_limit_rate;
 			
     }
     else
@@ -667,7 +688,7 @@ void balance_task(void)
         leg_conv(b_chassis.right_leg.leg_F, b_chassis.balance_loop.lqrOutTp+ harmonize_output, b_chassis.right_leg.phi1, b_chassis.right_leg.phi4, b_chassis.right_leg.T);
         b_chassis.joint_T[0] = b_chassis.right_leg.T[1];
         b_chassis.joint_T[3] = b_chassis.right_leg.T[0];
-        b_chassis.driving_T[1] = b_chassis.balance_loop.lqrOutT / 2.0f - vw_torque;
+        b_chassis.driving_T[1] = b_chassis.balance_loop.lqrOutT / 2.0f - vw_torque* b_chassis.vw_limit_rate;
     }
     else
     {
@@ -678,7 +699,7 @@ void balance_task(void)
         b_chassis.driving_T[1] = 0;
     }
 
-
+    b_chassis.predict_power[1] = all_power_cal(b_chassis.driving_T[0],4.626,0.0001699,1.629,balance_chassis.Driving_Encoder[0].rate_rpm) + all_power_cal(b_chassis.driving_T[1],4.626,0.0001699,1.629,-balance_chassis.Driving_Encoder[1].rate_rpm);
     
     
     //电机输出限幅
@@ -694,30 +715,6 @@ void balance_task(void)
 }
 
 
-/**
-************************************************************************************************************************
-* @Name     : middle_angle_adjust_handle
-* @brief    : 重心自适应算法
-* @param		: None
-* @retval   : void
-* @Note     : 
-************************************************************************************************************************
-**/
-
-void middle_angle_adjust_handle(void)
-{
-	if(fabs(b_chassis.chassis_ref.vy)==0.0f && fabs(b_chassis.balance_loop.wheel_dx) < 0.20f && fabs(chassis_gyro.yaw_Gyro*PI/180.0f)<=0.04f)
-	{
-		if(b_chassis.balance_loop.wheel_dx > 0.03f)
-		{
-			b_chassis.chassis_ref.pitch +=  b_chassis.balance_loop.wheel_dx*0.001;
-		}else if(b_chassis.balance_loop.wheel_dx < -0.03f)
-		{
-			b_chassis.chassis_ref.pitch +=  b_chassis.balance_loop.wheel_dx*0.001;
-		}
-	}
-	   
-}
 
 /**
 ************************************************************************************************************************
@@ -728,7 +725,7 @@ void middle_angle_adjust_handle(void)
 * @Note     : 
 ************************************************************************************************************************
 **/
-	float limit_vw,limit_vy;
+	float limit_vy;
 void Software_power_limit_handle(void)
 {
 
@@ -738,27 +735,22 @@ void Software_power_limit_handle(void)
 		{
 			case 45:
 			{
-					limit_vw = 7;
 					limit_vy = 1.5;
 			}break;
 			case 50:
 			{
-					limit_vw = 7;
 					limit_vy = 1.5;
 			}break;
 			case 60:
 			{
-				limit_vw = 8;
 					limit_vy = 1.6;
 			}break;
 			case 70:
 			{
-				limit_vw = 9;
 					limit_vy = 1.8;
 			}break;
 			case 80:
 			{
-					limit_vw = 9;
 					limit_vy = 2.0;
 			}break;
 			case 100:
@@ -767,20 +759,12 @@ void Software_power_limit_handle(void)
 			}break;
 			}
 					
-				}else if(capacitance_message.cap_voltage_filte > 22)
+				}else if(capacitance_message.cap_voltage_filte > 21)
 				{
-					limit_vw = 10;
 					limit_vy = b_chassis.max_speed;
 				}
-		if(capacitance_message.cap_voltage_filte < 17)
-		{
-			PID_struct_init(&b_chassis.vw_pid, POSITION_PID,2,2,2,0,0);
-		}else
-		{
-			PID_struct_init(&b_chassis.vw_pid, POSITION_PID,5,5,2,0,0);
-		}
+
 		
-		VAL_LIMIT(b_chassis.chassis_ref.vw,-limit_vw,limit_vw);
 		VAL_LIMIT(b_chassis.chassis_ref.vy,-limit_vy,limit_vy);
 }
 /**
@@ -795,7 +779,40 @@ void Software_power_limit_handle(void)
 
 void power_limit_handle(void)
 {
+    Software_power_limit_handle();
     
+}
+
+/**
+************************************************************************************************************************
+* @Name     : get_speed_limit_rate
+* @brief    : 求限制系数
+* @param		: None
+* @retval   : void
+* @Note     : 
+************************************************************************************************************************
+**/
+float VAL[3];
+float get_vw_limit_rate(float max_power,float w0,float w1)
+{
+    float K1 = 4.626;
+    float K2 = 0.0001699;
+    float K3 = 1.629;
+    
+    static float w[2];
+    static float a,b;
+    
+    w[0] = w0;
+    w[1] = w1;
+    
+    a = b_chassis.balance_loop.lqrOutT/2.0f;
+    b = vw_torque;
+    
+    VAL[0] = 2*K1*b*b;
+    VAL[1] = 0.10471204188481675*(b*w[0] - b*w[1]);
+    VAL[2] = 0.10471204188481675*(w[0]*a + w[1]*a)+K2*(w[0]*w[0] + w[1]*w[1])+2*K3+2*K1*a*a-max_power;
+    
+    return (-VAL[1] + (float)sqrt((double)(VAL[1]*VAL[1]-4*VAL[0]*VAL[2])+0.1f))/(2*VAL[0]);//加1.0是为不报nan
 }
 
 /**
@@ -840,10 +857,10 @@ float output_power_cal(float voltage)//限制电压防止电压过低导致电机复位
 { 
 	int max_power=0;
   if(voltage>WARNING_VOLTAGE+3)
-    max_power=150;
+    max_power=200;
   else
     max_power=b_chassis.Max_power_to_PM01;
-  VAL_LIMIT(max_power,0,150);
+  VAL_LIMIT(max_power,0,200);
   return max_power;
 //  return 80;
 }

@@ -6,7 +6,7 @@
 #define BODY_MASS 18
 #define WHEEL_MASS 2.268
 #define T_MAX 10 
-#define WARNING_VOLTAGE 10
+#define WARNING_VOLTAGE 17
 #define POWER_LIMIT 1
 #define ROTATE_Y_ERROFFSET -1.2f
 #define NORMAL_Y_ERROFFSET +0.15f
@@ -62,6 +62,7 @@ typedef struct
 	float dx;
 	float ddz;
 	float wheel_dx;
+    float RPM;
 	float Fm;
 
 	double L0;
@@ -139,7 +140,10 @@ typedef struct
 	lqr_system balance_loop;
 	chassis_ref_t chassis_ref;
 	chassis_ref_t chassis_dynemic_ref;
-
+    
+    float predict_power[2];
+    float vw_limit_rate;
+    
 	leg_state_t left_leg;
 	leg_state_t right_leg;
 
@@ -157,7 +161,7 @@ typedef struct
 	float yaw_angle__pi_pi;
 	float normal_Y_erroffset;
 	
-	float predict_power;
+	
 	float max_speed;
 	float min_speed;
 	//tqouce
@@ -180,11 +184,11 @@ void balance_task(void);
 
 void Software_power_limit_handle(void);
 void power_limit_handle(void);
+float get_vw_limit_rate(float max_power,float w0,float w1);
 float input_power_cal(void);
 float output_power_cal(float voltage);//限制电压防止电压过低导致电机复位
 float all_power_cal(float T, float k1, float k2, float k3, float w);
 
-void middle_angle_adjust_handle(void);
 void balance_param_init(void);
 void lqr_k(double L0, double K[12]);
 double convert_ecd_angle_to_0_2pi(double ecd_angle,float _0_2pi_angle);
