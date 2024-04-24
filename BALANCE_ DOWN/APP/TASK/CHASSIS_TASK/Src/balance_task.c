@@ -69,6 +69,7 @@ void balance_chassis_task(void)
 			b_chassis.chassis_ref.y_position = b_chassis.balance_loop.x;
 			b_chassis.normal_Y_erroffset = NORMAL_Y_ERROFFSET;
 			b_chassis.roll_pid.iout = 0;
+        b_chassis.chassis_ref.roll = 0;
 
     }
     break;
@@ -147,6 +148,7 @@ void balance_cmd_select(void)
 
     if (b_chassis.ctrl_mode != CHASSIS_INIT)
         {
+            b_chassis.chassis_ref.roll = usart_chassis_data.roll;
             b_chassis.chassis_dynemic_ref.vy = usart_chassis_data.y/100.0f;
             b_chassis.chassis_dynemic_ref.vx = usart_chassis_data.x/100.0f;
             VAL_LIMIT(b_chassis.chassis_dynemic_ref.vy,b_chassis.min_speed,b_chassis.max_speed);
@@ -352,23 +354,28 @@ void follow_gimbal_handle(void)
 		{
 			target_angle = b_chassis.chassis_ref.remote_angle;
 			b_chassis.chassis_ref.vy = b_chassis.chassis_ref.remote_speed;
+            b_chassis.chassis_ref.roll = usart_chassis_data.roll;
 		}else if(b_chassis.chassis_ref.remote_angle-b_chassis.yaw_angle__pi_pi > 3*PI/2)
 		{
 			target_angle = b_chassis.chassis_ref.remote_angle-2*PI;
 			b_chassis.chassis_ref.vy = b_chassis.chassis_ref.remote_speed;
+            b_chassis.chassis_ref.roll = usart_chassis_data.roll;
 		}else if(b_chassis.chassis_ref.remote_angle-b_chassis.yaw_angle__pi_pi < -3*PI/2)
 		{
 			target_angle = b_chassis.chassis_ref.remote_angle+2*PI;
 			b_chassis.chassis_ref.vy = b_chassis.chassis_ref.remote_speed;
+            b_chassis.chassis_ref.roll = usart_chassis_data.roll;
 		}
 		else if(b_chassis.chassis_ref.remote_angle-b_chassis.yaw_angle__pi_pi>0)
 		{
 			target_angle = b_chassis.chassis_ref.remote_angle - PI;
 			b_chassis.chassis_ref.vy = -b_chassis.chassis_ref.remote_speed;
+            b_chassis.chassis_ref.roll = -usart_chassis_data.roll;
 		}else if(b_chassis.chassis_ref.remote_angle-b_chassis.yaw_angle__pi_pi<0)
 		{
 			target_angle = b_chassis.chassis_ref.remote_angle + PI;
 			b_chassis.chassis_ref.vy = -b_chassis.chassis_ref.remote_speed;
+            b_chassis.chassis_ref.roll = -usart_chassis_data.roll;
 		}
 		
 		b_chassis.chassis_ref.vw = -pid_calc(&b_chassis.pid_follow_gim,b_chassis.yaw_angle__pi_pi,target_angle); 
@@ -599,16 +606,22 @@ void balance_task(void)
     //速度误差计算
     b_chassis.balance_loop.state_err[3] = b_chassis.chassis_ref.vy - b_chassis.balance_loop.dx;
     //对腿变化加速度的限制
-	if(fabs(b_chassis.chassis_dynemic_ref.vy) == 1.6)
-	{
-    VAL_LIMIT(b_chassis.balance_loop.state_err[3], -1.2, 1.2);
-	}else if(fabs(b_chassis.chassis_dynemic_ref.vy) == b_chassis.max_speed)
-	{
-		VAL_LIMIT(b_chassis.balance_loop.state_err[3], -1.0, 1.0);
-	}else
-	{
-		VAL_LIMIT(b_chassis.balance_loop.state_err[3], -1.2, 1.2);
-	}
+   if(b_chassis.ctrl_mode == CHASSIS_ROTATE)
+   {
+       b_chassis.balance_loop.state_err[3] = 0;
+   }else
+   {
+        if(fabs(b_chassis.chassis_dynemic_ref.vy) == 1.6)
+        {
+        VAL_LIMIT(b_chassis.balance_loop.state_err[3], -1.2, 1.2);
+        }else if(fabs(b_chassis.chassis_dynemic_ref.vy) == b_chassis.max_speed)
+        {
+            VAL_LIMIT(b_chassis.balance_loop.state_err[3], -1.0, 1.0);
+        }else
+        {
+            VAL_LIMIT(b_chassis.balance_loop.state_err[3], -1.2, 1.2);
+        }
+    }
 
     //lqr未离地增益计算
 		
@@ -632,7 +645,7 @@ void balance_task(void)
      vw_torque = pid_calc(&b_chassis.vw_pid, chassis_gyro.yaw_Gyro*PI/180.0f, b_chassis.chassis_ref.vw);
      b_chassis.vw_limit_rate = 1;
     //roll平衡pid
-     roll_F_output = pid_calc(&b_chassis.roll_pid,chassis_gyro.roll_Angle*PI/180.0f,0);
+     roll_F_output = pid_calc(&b_chassis.roll_pid,chassis_gyro.roll_Angle*PI/180.0f,b_chassis.chassis_ref.roll);
     
     
     //腿部竖直力F的计算

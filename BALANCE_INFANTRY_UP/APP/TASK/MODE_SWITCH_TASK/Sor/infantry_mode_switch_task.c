@@ -76,6 +76,7 @@ void infantry_mode_switch_task(void)
         }
 			}
 			leg_length = 21;
+            chassis.roll = 0.0f;
 			/*****************************************************************************************/
 			
 			
@@ -139,7 +140,16 @@ void infantry_mode_switch_task(void)
                 chassis.ChassisSpeed_Ref.left_right_ref = 0;
             }
 
-            
+            if(RC_CtrlData.Key_Flag.Key_Q_Flag)
+            {
+                chassis.roll = -15*PI/180.0f;
+            }else if(RC_CtrlData.Key_Flag.Key_E_Flag)
+            {
+                chassis.roll = 15*PI/180.0f;
+            }else
+            {
+                chassis.roll = 0.0f;
+            }
 					 
            /*******************************º¸ Û‘∆Ã®∏≥÷µ****************************************/
             if (gimbal_data.ctrl_mode == GIMBAL_FOLLOW_ZGYRO&&RC_CtrlData.mouse.press_r == 0)
@@ -162,6 +172,7 @@ void infantry_mode_switch_task(void)
 								reserve_flag = 0;
 							}
             }
+            
             
          }
 

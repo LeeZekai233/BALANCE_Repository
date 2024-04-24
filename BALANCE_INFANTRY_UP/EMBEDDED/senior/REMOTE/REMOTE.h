@@ -20,17 +20,17 @@
 #define  KEY_A  0X0004
 #define  KEY_D  0X0008
 #define  KEY_SHIFT  0X0010//切换高速模式
-#define  KEY_CTRL  0X0020 //小陀螺
-#define  KEY_Q  0X0040    //热量
-#define  KEY_E  0X0080   //
-#define  KEY_R 0X0100    //开弹仓
-#define  KEY_F 0X0200      //
-#define  KEY_G  0X0400    //关弹仓
+#define  KEY_CTRL  0X0020 //高姿
+#define  KEY_Q  0X0040    //左探头
+#define  KEY_E  0X0080   //右探头
+#define  KEY_R 0X0100    //刷UI
+#define  KEY_F 0X0200      //侧身
+#define  KEY_G  0X0400    //倒地
 #define  KEY_Z  0X0800    //大符
-#define  KEY_X  0X1000    //长按软件复位
+#define  KEY_X  0X1000    //调头
 #define  KEY_C  0X2000   //摩擦轮
-#define  KEY_V  0X4000   //打小符   （未使用）
-#define  KEY_B  0X8000   //UI刷新
+#define  KEY_V  0X4000   //小符
+#define  KEY_B  0X8000   //陀螺
 
 /***********************************遥控器*********************************************/
 

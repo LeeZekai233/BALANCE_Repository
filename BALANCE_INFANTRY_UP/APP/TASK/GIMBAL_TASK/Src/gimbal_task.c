@@ -211,10 +211,20 @@ void gimbal_parameter_Init(void)
     PID_struct_init(&gimbal_data.pid_pit_speed, POSITION_PID, 27000, 20000,
                     150, 0.001, 60); //170, 0.001f, 60
     //------------------------------------------------
-		PID_struct_init(&gimbal_data.pid_yaw_Angle, POSITION_PID, 400, 16,
-                    13.8, 0.1f, 6.5);
+//		PID_struct_init(&gimbal_data.pid_yaw_Angle, POSITION_PID, 400, 16,
+//                    13.8, 0.1f, 6.5);
+//    PID_struct_init(&gimbal_data.pid_yaw_speed, POSITION_PID, 29000, 10000,
+//                    400, 0.8f, 0); 
+                    
+        PID_struct_init(&gimbal_data.pid_yaw_Angle, POSITION_PID, 400, 8,
+                    9, 0.02f, 150);
     PID_struct_init(&gimbal_data.pid_yaw_speed, POSITION_PID, 29000, 10000,
-                    400, 0.8f, 0); 
+                    500, 10.0f, 5); 
+                    
+//       PID_struct_init(&gimbal_data.pid_yaw_Angle, POSITION_PID, 5000, 16,
+//                    9, 0.1f, 100);
+//    PID_struct_init(&gimbal_data.pid_yaw_speed, POSITION_PID, 29000, 10000,
+//                    500, 10.0f, 5); 
 
     //自瞄下参数
     PID_struct_init ( &gimbal_data.pid_pit_follow, POSITION_PID, 200, 10, 15
@@ -381,6 +391,7 @@ void gimbal_init_handle	( void )
 	 =============================================================================
  **/
 
+
 void gimbal_follow_gyro_handle(void)
 {
 		//如果刚刚切换至该模式，该模式的增量式输入以当前传感器反馈赋初始值
@@ -454,13 +465,14 @@ void gimbal_follow_gyro_handle(void)
         gimbal_data.gim_ref_and_fdb.pit_angle_ref = gimbal_data.gim_dynamic_ref.pitch_angle_dynamic_ref;
         gimbal_data.gim_ref_and_fdb.yaw_angle_ref = gimbal_data.gim_dynamic_ref.yaw_angle_dynamic_ref;
 			//pitch轴与yaw轴双环pid计算
+        
     gimbal_data.gim_ref_and_fdb.yaw_motor_input = pid_double_loop_cal(&gimbal_data.pid_yaw_Angle,
                                                                       &gimbal_data.pid_yaw_speed,
                                                                       gimbal_data.gim_ref_and_fdb.yaw_angle_ref,                     
                                                                       gimbal_data.gim_ref_and_fdb.yaw_angle_fdb,
 																																			&gimbal_data.gim_ref_and_fdb.yaw_speed_ref,
                                                                       gimbal_data.gim_ref_and_fdb.yaw_speed_fdb,
-                                                                      0 )*YAW_MOTOR_POLARITY;
+                                                                      RC_CtrlData.mouse.x*2 )*YAW_MOTOR_POLARITY;
     gimbal_data.gim_ref_and_fdb.pitch_motor_input = pid_double_loop_cal(&gimbal_data.pid_pit_Angle,
                                                                       &gimbal_data.pid_pit_speed,
                                                                       gimbal_data.gim_ref_and_fdb.pit_angle_ref,                     

@@ -17,10 +17,12 @@ void control_task(void)
 							chassis.ChassisSpeed_Ref.left_right_ref,
 							chassis.ChassisSpeed_Ref.forward_back_ref,
 							chassis.ChassisSpeed_Ref.rotate_ref,
+                            0,
 							judge_rece_mesg.power_heat_data.chassis_power,
 							judge_rece_mesg.power_heat_data.chassis_power_buffer,
 							judge_rece_mesg.game_robot_state.chassis_power_limit,
-							RC_CtrlData.Key_Flag.Key_G_TFlag);
+							RC_CtrlData.Key_Flag.Key_G_TFlag
+                            );
 	
 		
 		

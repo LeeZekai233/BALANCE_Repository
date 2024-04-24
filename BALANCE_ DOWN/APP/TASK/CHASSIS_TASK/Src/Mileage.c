@@ -18,7 +18,7 @@
 Mileage_kalman_filter_t Mileage_kalman_filter =
 {
 	.Q_data = {
-	            0.1 , 0 ,
+	            1 , 0 ,
 	            0 , 0.1 
             },
 	.R_data = {

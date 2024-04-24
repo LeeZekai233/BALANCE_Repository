@@ -13,6 +13,7 @@ void usart_chassis_send(
 										int16_t x,
 										int16_t y,
 										int16_t rotate_speed,
+                                        float roll,
 										float chassis_power,
 										uint16_t chassis_power_buffer,
 										u8 chassis_power_limit,
@@ -25,6 +26,7 @@ void usart_chassis_send(
 	
 	 int32_t data = (int32_t)(yaw_0_2pi*10000);
     int16_t cp= chassis_power*100;
+    int16_t r = roll*100;
 	 databuff[0] = (uint8_t)if_follow_gim;
 	 databuff[1] = (uint8_t)jump_cmd;
 	 databuff[2] = (uint8_t)chassis_mode;
@@ -46,8 +48,11 @@ void usart_chassis_send(
 	 databuff[18] = (uint8_t)(data);
 	databuff[19] = (uint8_t)(chassis_power_limit);
 	databuff[20] = (uint8_t)(ctrl_mode);
+    databuff[21] = (uint8_t)((r) >> 8);
+	 databuff[22] = (uint8_t)(r);
+     
 	
-	Uart3SendBytesInfoProc(databuff,21);
+	Uart3SendBytesInfoProc(databuff,23);
 }
 
 
@@ -61,10 +66,11 @@ void usart_chassis_receive(uint8_t *DataAddress)
 	usart_chassis_data.x = ((DataAddress[5]<<8)|DataAddress[6]);
 	usart_chassis_data.y = ((DataAddress[7]<<8)|DataAddress[8]);
 	usart_chassis_data.rotate_speed = ((DataAddress[9]<<8)|DataAddress[10]);
-	usart_chassis_data.chassis_power = ((DataAddress[11]<<8)|DataAddress[12])/100.0;
+	usart_chassis_data.chassis_power = ((int16_t)((DataAddress[11]<<8)|DataAddress[12]))/100.0;
 	usart_chassis_data.chassis_power_buffer = ((DataAddress[13]<<8)|DataAddress[14]);
 	usart_chassis_data.chassis_power_limit = DataAddress[19];
 	usart_chassis_data.ctrl_mode = DataAddress[20];
+    usart_chassis_data.roll = ((int16_t)((DataAddress[21]<<8)|DataAddress[22]))/100.0;
 }
 
 void usart_gimbal_send(float cap_v)

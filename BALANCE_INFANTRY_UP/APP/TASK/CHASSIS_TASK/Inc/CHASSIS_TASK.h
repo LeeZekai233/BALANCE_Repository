@@ -189,7 +189,8 @@ typedef struct
 {
 		float           vx; // forward/back
 		float           vy; // left/right
-		float           vw; // 
+		float           vw; //
+        float           roll;
 		
 		chassis_mode_e  			ctrl_mode;
 		chassis_mode_e  			last_ctrl_mode;
