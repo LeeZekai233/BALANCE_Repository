@@ -298,14 +298,14 @@ void Client_send_handle()
       cap_sight.grapic_data_struct[0].start_y=110;
       cap_sight.grapic_data_struct[0].end_y=110;
 			
-      if(usart_gimbal_data.cap_v>=0.0f&&usart_gimbal_data.cap_v<=17.0f)
+      if(usart_gimbal_data.cap_v>=0.0f&&usart_gimbal_data.cap_v<=7.0f)
         {
           cap_sight.grapic_data_struct[0].end_x=600;
           cap_sight.grapic_data_struct[0].color=UI_PINK;
         }
-      else if(usart_gimbal_data.cap_v>17.0f)
+      else if(usart_gimbal_data.cap_v>7.0f)
         {
-          cap_sight.grapic_data_struct[0].end_x=600+((int)(usart_gimbal_data.cap_v-17.0))*90.44f;
+          cap_sight.grapic_data_struct[0].end_x=600+((int)(usart_gimbal_data.cap_v-7.0))*35.29f;
           cap_sight.grapic_data_struct[0].color=UI_PINK;
         }
 
@@ -545,7 +545,7 @@ void Client_send_handle()
 	/*******************************************************************************************************************************/
 		case 11:  //超电条                       20
 		{
-					ddata[0]=0x0104;
+	  ddata[0]=0x0104;
       ddata[1]=0x0104>>8;	 //数据内容id
       //0x0100  删除图形 0x0101 绘制一个图形 0x0102 绘制二个图形 0x0103 绘制五个图形 0x0104绘制七个图形 0x0110客户端绘制字符图形
       ddata[2]=judge_rece_mesg.game_robot_state.robot_id;
@@ -583,24 +583,24 @@ void Client_send_handle()
 		}break;
 		case 12:  //准星                   5
 		{
-			ddata[0]=0x0104;
-      ddata[1]=0x0104>>8;	 //数据内容id
-      //0x0100  删除图形 0x0101 绘制一个图形 0x0102 绘制二个图形 0x0103 绘制五个图形 0x0104绘制七个图形 0x0110客户端绘制字符图形
-      ddata[2]=judge_rece_mesg.game_robot_state.robot_id;
-      ddata[3]=judge_rece_mesg.game_robot_state.robot_id>>8;    //机器人id
-      ddata[4]=client_custom_ID;
-      ddata[5]=client_custom_ID>>8;       //客户端id
+              ddata[0]=0x0104;
+              ddata[1]=0x0104>>8;	 //数据内容id
+              //0x0100  删除图形 0x0101 绘制一个图形 0x0102 绘制二个图形 0x0103 绘制五个图形 0x0104绘制七个图形 0x0110客户端绘制字符图形
+              ddata[2]=judge_rece_mesg.game_robot_state.robot_id;
+              ddata[3]=judge_rece_mesg.game_robot_state.robot_id>>8;    //机器人id
+              ddata[4]=client_custom_ID;
+              ddata[5]=client_custom_ID>>8;       //客户端id
 
 
-      /*********************准星显示****************************************/
-      sight_bead.grapic_data_struct[0].operate_type=2;  //1 增加 2修改图形 3删除单个图形 5删除一个图层的图形 6删除所有图形
-      sight_bead.grapic_data_struct[0].layer=1;   //图层
-      sight_bead.grapic_data_struct[0].graphic_type=2;  //0 直线 1矩形 2整圆 3椭圆 4圆弧 5浮点数 6整数型 7字符
-      sight_bead.grapic_data_struct[0].graphic_name[0]=0;
-      sight_bead.grapic_data_struct[0].graphic_name[1]=0;
-      sight_bead.grapic_data_struct[0].graphic_name[2]=1;
-      sight_bead.grapic_data_struct[0].start_x=960;
-      sight_bead.grapic_data_struct[0].start_y=540;
+              /*********************准星显示****************************************/
+              sight_bead.grapic_data_struct[0].operate_type=2;  //1 增加 2修改图形 3删除单个图形 5删除一个图层的图形 6删除所有图形
+              sight_bead.grapic_data_struct[0].layer=1;   //图层
+              sight_bead.grapic_data_struct[0].graphic_type=2;  //0 直线 1矩形 2整圆 3椭圆 4圆弧 5浮点数 6整数型 7字符
+              sight_bead.grapic_data_struct[0].graphic_name[0]=0;
+              sight_bead.grapic_data_struct[0].graphic_name[1]=0;
+              sight_bead.grapic_data_struct[0].graphic_name[2]=1;
+              sight_bead.grapic_data_struct[0].start_x=960;
+              sight_bead.grapic_data_struct[0].start_y=540;
 			if(shoot.poke_run)
 			{
 				sight_bead.grapic_data_struct[0].color=UI_RB;

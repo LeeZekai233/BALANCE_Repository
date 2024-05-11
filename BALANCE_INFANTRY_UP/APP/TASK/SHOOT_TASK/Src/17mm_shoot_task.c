@@ -9,6 +9,7 @@
 		pid_t pid_rotate[2]     = {0};
 /*----------------------------------------------------------------------------------------------------------------------*/
 
+
 void shot_param_init()
 {
 
@@ -16,7 +17,7 @@ void shot_param_init()
 	PID_struct_init(&pid_trigger_speed,POSITION_PID,29000,10000,30,0,0);//100 0.1 4
 
 	
-	PID_struct_init(&pid_trigger_angle_buf,POSITION_PID, 800 , 0    ,  150, 5  , 10);
+	PID_struct_init(&pid_trigger_angle_buf,POSITION_PID, 1300 , 0    ,  150, 5  , 10);
 	PID_struct_init(&pid_trigger_speed_buf,POSITION_PID,29000 , 5500 ,  25 , 0  , 0 );
 	
     PID_struct_init(&pid_rotate[1], POSITION_PID,15500,500,50,0,0);
@@ -43,11 +44,25 @@ void heat_switch()
       
 	//计算射频
 		if(judge_rece_mesg.game_robot_state.robot_level==1)//level_冷却
-			shoot.shoot_frequency=10;						
+			shoot.shoot_frequency=5;
+        else if(judge_rece_mesg.game_robot_state.robot_level==2)
+            shoot.shoot_frequency=7;
 		else if(judge_rece_mesg.game_robot_state.robot_level==3)//level_2
+			shoot.shoot_frequency=7;
+		else if(judge_rece_mesg.game_robot_state.robot_level==4)//level_2
+			shoot.shoot_frequency=8;
+        else if(judge_rece_mesg.game_robot_state.robot_level==5)//level_2
+			shoot.shoot_frequency=10;
+        else if(judge_rece_mesg.game_robot_state.robot_level==6)//level_2
+			shoot.shoot_frequency=10;
+        else if(judge_rece_mesg.game_robot_state.robot_level==7)//level_2
 			shoot.shoot_frequency=14;
-		else if(judge_rece_mesg.game_robot_state.robot_level>=5)//level_3
+        else if(judge_rece_mesg.game_robot_state.robot_level==8)//level_2
 			shoot.shoot_frequency=14;
+        else if(judge_rece_mesg.game_robot_state.robot_level==9)//level_2
+			shoot.shoot_frequency=15;
+        else if(judge_rece_mesg.game_robot_state.robot_level==10)//level_2
+			shoot.shoot_frequency=18;
 		else
 			shoot.shoot_frequency=10;
 				
@@ -109,7 +124,7 @@ void bullets_spilling()//步兵射频限制部分
 void heat0_limit(void)           //热量限制
 {  //由于发送的数据为50hz，而且每次进入该操作需要5次循环，因此计算时 公式为：冷却上限-热量值+0.1*冷却值
   shoot.limit_heart0 = judge_rece_mesg.game_robot_state.shooter_barrel_heat_limit-judge_rece_mesg.power_heat_data.shooter_id1_17mm_cooling_heat+0.002*judge_rece_mesg.game_robot_state.shooter_barrel_cooling_value;
-	if(shoot.limit_heart0>15)//residual_heat)
+	if(shoot.limit_heart0>12)//residual_heat)
     shoot.ctrl_mode=1;
   else
     {
@@ -124,7 +139,6 @@ int buff_time;
 u8 buff_check_flag;
 int single_shoot_cnt;
 
-float zhishixuebao;//刘尚坤写的，可删掉。
 void shoot_bullet_handle(void)
 {	
 	static uint32_t start_shooting_count = 0;//正转计时
@@ -164,10 +178,10 @@ void shoot_bullet_handle(void)
 			shoot.poke_pid.angle_fdb=general_poke.poke.ecd_angle;
 			shoot.poke_pid.speed_fdb=general_poke.poke.filter_rate;
 			shoot.poke_current=pid_double_loop_cal(&pid_trigger_angle,&pid_trigger_speed,
-																								  shoot.poke_pid.angle_ref,
-																								  shoot.poke_pid.angle_fdb,
-																								 &shoot.poke_pid.speed_ref,
-																									shoot.poke_pid.speed_fdb,0);
+                                                  shoot.poke_pid.angle_ref,
+                                                  shoot.poke_pid.angle_fdb,
+                                                 &shoot.poke_pid.speed_ref,
+                                                    shoot.poke_pid.speed_fdb,0);
 			}
 			if((shoot.fric_wheel_run)&&(lock_rotor1 == 0))
 			{	
@@ -176,10 +190,10 @@ void shoot_bullet_handle(void)
 			shoot.poke_pid.angle_fdb=general_poke.poke.ecd_angle;
 			shoot.poke_pid.speed_fdb=general_poke.poke.filter_rate;
 			shoot.poke_current=pid_double_loop_cal(&pid_trigger_angle,&pid_trigger_speed,
-																								  shoot.poke_pid.angle_ref,
-																								  shoot.poke_pid.angle_fdb,
-																								 &shoot.poke_pid.speed_ref,
-																									shoot.poke_pid.speed_fdb,0);
+                                                  shoot.poke_pid.angle_ref,
+                                                  shoot.poke_pid.angle_fdb,
+                                                 &shoot.poke_pid.speed_ref,
+                                                    shoot.poke_pid.speed_fdb,0);
 			}
 		}
 		else
@@ -290,6 +304,7 @@ void shoot_friction_handle()
 * @Note     : 
 ************************************************************************************************************************
 **/
+int press_C_cnt;
 void shoot_state_mode_switch()
 {
 	 /****************************键鼠射击状态更新**********************************************/		
@@ -316,7 +331,7 @@ void shoot_state_mode_switch()
 				{
 					if(RC_CtrlData.mouse.press_r==1)
 					{
-						if(RC_CtrlData.mouse.press_l==1&&My_Auto_Shoot.Auto_Aim.enable_shoot)
+						if(RC_CtrlData.mouse.press_l==1&&new_location.flag)
 							shoot.poke_run=1;
 					else
 							shoot.poke_run=0;
@@ -328,17 +343,32 @@ void shoot_state_mode_switch()
 							shoot.poke_run=0;
 					}
 					
-					 
-					if(RC_CtrlData.Key_Flag.Key_C_TFlag)
-					{
-							shoot.fric_wheel_run=1;
-						LASER_ON();
-					}
-					else
-					{
-						shoot.fric_wheel_run=0;
-						LASER_OFF();
-					}
+                   if(RC_CtrlData.Key_Flag.Key_C_Flag)
+                   {
+                       press_C_cnt++;
+                       if(press_C_cnt < 1000)
+                       {
+                           shoot.fric_wheel_run=1;
+                           LASER_ON();
+                       }else
+                       {
+                           shoot.fric_wheel_run=0;
+                           LASER_OFF();
+                       }
+                   }else
+                   {
+                      press_C_cnt = 0;
+                   }
+//					if(RC_CtrlData.Key_Flag.Key_C_TFlag)
+//					{
+//							shoot.fric_wheel_run=1;
+//						LASER_ON();
+//					}
+//					else
+//					{
+//						shoot.fric_wheel_run=0;
+//						LASER_OFF();
+//					}
 							
 					 
 					if(RC_CtrlData.Key_Flag.Key_Q_TFlag)
@@ -378,3 +408,39 @@ void shoot_task()
 
 
 }
+
+/**
+************************************************************************************************************************
+* @Name     : auto_bullet_speed
+* @brief    : 自适应弹速
+* @retval   : 
+* @Note     : 
+************************************************************************************************************************
+**/
+
+
+float First_Order_Kalman_Filter_Cal
+        (First_Order_Kalman_Filter_t *_First_Order_Kalman_Filter
+        ,float _Z/*测量值*/)
+{
+        //更新上一次的值
+        _First_Order_Kalman_Filter->Error_Est_Last=_First_Order_Kalman_Filter->Error_Est;
+        _First_Order_Kalman_Filter->X_hat_Last=_First_Order_Kalman_Filter->X_hat;
+        //更新上一次的值
+        _First_Order_Kalman_Filter->Error_Est_Last=_First_Order_Kalman_Filter->Error_Est;
+        _First_Order_Kalman_Filter->X_hat_Last=_First_Order_Kalman_Filter->X_hat;
+        //Step1:Kalman_Gain计算
+        _First_Order_Kalman_Filter->Kalman_Gain=
+        _First_Order_Kalman_Filter->Error_Est_Last
+        /(_First_Order_Kalman_Filter->Error_Est_Last+_First_Order_Kalman_Filter->Error_Mea);
+        //Step2:计算预测值
+        _First_Order_Kalman_Filter->X_hat=
+        _First_Order_Kalman_Filter->X_hat_Last
+        +_First_Order_Kalman_Filter->Kalman_Gain*(_Z-_First_Order_Kalman_Filter->X_hat_Last);
+        //Step3:预测误差更新
+        _First_Order_Kalman_Filter->Error_Est=(1-_First_Order_Kalman_Filter->Kalman_Gain)
+        *_First_Order_Kalman_Filter->Error_Est_Last;
+        //返回预测值
+        return _First_Order_Kalman_Filter->X_hat;
+}
+

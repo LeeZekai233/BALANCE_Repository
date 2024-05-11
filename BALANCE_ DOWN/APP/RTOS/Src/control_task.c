@@ -29,7 +29,7 @@ void control_task(void)
 	if(time_tick%10==5)
 	{
 //		power_data_read_handle(CAN2);//超电获取信息任务
-		usart_gimbal_send(capacitance_message.cap_voltage_filte);//电容上发至云台ui
+		usart_gimbal_send(usart_capacitance_message.cap_voltage_filte);//电容上发至云台ui
 	}
 		//程序运行指示灯与硬件看门狗喂狗
 	if(time_tick%1000==0)

@@ -800,7 +800,7 @@ void balance_task(void)
 void Software_power_limit_handle(void)
 {
 
-	if(usart_capacitance_message.cap_voltage_filte < 7)
+	if(usart_capacitance_message.cap_voltage_filte < 10)
 	{
 		switch(usart_chassis_data.chassis_power_limit)
 		{
@@ -826,11 +826,11 @@ void Software_power_limit_handle(void)
 			}break;
 			case 100:
 			{
-				
+				  
 			}break;
 			}
 					
-				}else if(usart_capacitance_message.cap_voltage_filte > 10)
+				}else if(usart_capacitance_message.cap_voltage_filte > 12)
 				{
 					limit_vy = b_chassis.max_speed;
 				}

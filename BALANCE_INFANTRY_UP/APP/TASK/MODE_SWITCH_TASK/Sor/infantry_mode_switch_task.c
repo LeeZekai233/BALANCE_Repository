@@ -207,31 +207,31 @@ void infantry_mode_switch_task(void)
 			{
                 
          //视觉模式选择
-             if(RC_CtrlData.Key_Flag.Key_X_Flag)
-                {
-                    press_X_time++;
-                    if(press_X_time<50)
+                 if(RC_CtrlData.Key_Flag.Key_X_Flag)
                     {
-                        gimbal_data.vision_mode = SMALL_BUFF;
+                        press_X_time++;
+                        if(press_X_time<50)
+                        {
+                            gimbal_data.vision_mode = SMALL_BUFF;
+                        }else
+                        {
+                            gimbal_data.vision_mode = BIG_BUFF;
+                        }
+                            
                     }else
                     {
-                        gimbal_data.vision_mode = BIG_BUFF;
+                        press_X_time = 0;;
                     }
-                        
-                }else
-                {
-                    press_X_time = 0;;
-                }
-              if(RC_CtrlData.mouse.z > 0)
-              {
-                  gimbal_data.vision_mode = AIM_ROTATE;
-              }else if(RC_CtrlData.mouse.z < 0)
-              {
-                  gimbal_data.vision_mode = AIM_NORMAL;
-              }else
-              {
-                  
-              }
+                  if(RC_CtrlData.mouse.z > 10)
+                  {
+                      gimbal_data.vision_mode = AIM_ROTATE;
+                  }else if(RC_CtrlData.mouse.z < -10)
+                  {
+                      gimbal_data.vision_mode = AIM_NORMAL;
+                  }else
+                  {
+                      
+                  }
            //云台模式选择
 				if (gimbal_data.vision_mode == BIG_BUFF&&RC_CtrlData.mouse.press_r)
                 {
@@ -246,26 +246,24 @@ void infantry_mode_switch_task(void)
                     gimbal_data.ctrl_mode = GIMBAL_FOLLOW_ZGYRO;
                     chassis.ctrl_mode = MANUAL_FOLLOW_GIMBAL;
                 }
+           //底盘模式选择
 								
-								if (RC_CtrlData.Key_Flag.Key_B_TFlag)
+			if (RC_CtrlData.Key_Flag.Key_B_TFlag)
             {
-
                 chassis.ctrl_mode = CHASSIS_ROTATE;
-							chassis.ChassisSpeed_Ref.rotate_ref = 10;
+				chassis.ChassisSpeed_Ref.rotate_ref = 10;
             }
             else if(RC_CtrlData.Key_Flag.Key_F_TFlag)
             {
                 chassis.ctrl_mode = CHASSIS_REVERSE;
-							chassis.ChassisSpeed_Ref.rotate_ref = 0;
+				chassis.ChassisSpeed_Ref.rotate_ref = 0;
             }else
-						{
-							chassis.ctrl_mode = MANUAL_FOLLOW_GIMBAL;
-							chassis.ChassisSpeed_Ref.rotate_ref = 0;
-						}
-						
-						
+			{
+                chassis.ctrl_mode = MANUAL_FOLLOW_GIMBAL;
+                chassis.ChassisSpeed_Ref.rotate_ref = 0;
+            }
 
-						}
+        }
         
 			/*****************************************************************************************/
     }
