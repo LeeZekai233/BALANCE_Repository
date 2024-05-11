@@ -128,31 +128,26 @@ void vision_process_general_message(unsigned char* address, unsigned int length)
 
 DeviceToHost__Frame msg;
 u8 DateLength;
-#define GIMBAL_AUTO_SMALL_BUFF 11
-#define GIMBAL_AUTO_BIG_BUFF 12
-void send_protocol(float x, float y, float r, int id, float ammo_speed, int gimbal_mode, u8 *data)
+static float yaw_angle__pi_pi;
+
+void send_protocol(float x, float y, float r, int id, float ammo_speed, u8 vision_mode, u8 *data)
 {
 	device_to_host__frame__init(&msg);
+    
+    yaw_angle__pi_pi = convert_ecd_angle_to__pi_pi(x,yaw_angle__pi_pi);;
 
-	if (gimbal_mode == GIMBAL_AUTO_SMALL_BUFF)
-	{
-		msg.mode_ = 2;
-	}
-	else if (gimbal_mode == GIMBAL_AUTO_BIG_BUFF)
-	{
-		msg.mode_ = 1;
-	}
-	else
-	{
-		msg.mode_ = 0;
-	}
-	//	msg.mode_= 1;
+	msg.mode_ = vision_mode;
 
 	msg.current_pitch_ = y;
-	msg.current_yaw_ = x;
+    if(vision_mode == AIM_ROTATE)
+    {
+       msg.current_yaw_ = yaw_angle__pi_pi; 
+    }else
+    {
+       msg.current_yaw_ = x; 
+    }
 	msg.current_color_ = id;
 	msg.bullet_speed_ = ammo_speed;
-	msg.current_roll_ = r;
 
 	device_to_host__frame__pack(&msg, data + 2);
 	DateLength = device_to_host__frame__get_packed_size(&msg);

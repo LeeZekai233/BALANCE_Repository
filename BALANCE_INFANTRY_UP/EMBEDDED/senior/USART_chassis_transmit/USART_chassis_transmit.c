@@ -9,9 +9,9 @@ void usart_chassis_send(
 										u8 jump_cmd,
 										u8 chassis_mode,
 										float yaw_encoder_angle,
-										int16_t cmd_leg_length,
-										int16_t x,
-										int16_t y,
+										float cmd_leg_length,
+										float x,
+										float y,
 										int16_t rotate_speed,
                                         float roll,
 										float chassis_power,
@@ -27,15 +27,18 @@ void usart_chassis_send(
 	 int32_t data = (int32_t)(yaw_0_2pi*10000);
     int16_t cp= chassis_power*100;
     int16_t r = roll*100;
+    int16_t vx = x*100;
+    int16_t vy = y*100;
+    int16_t lg = cmd_leg_length*100;
 	 databuff[0] = (uint8_t)if_follow_gim;
 	 databuff[1] = (uint8_t)jump_cmd;
 	 databuff[2] = (uint8_t)chassis_mode;
-	 databuff[3] = (uint8_t)((cmd_leg_length) >> 8);
-	 databuff[4] = (uint8_t)(cmd_leg_length);
-	 databuff[5] = (uint8_t)((x) >> 8);
-	 databuff[6] = (uint8_t)(x);
-	 databuff[7] = (uint8_t)((y) >> 8);
-	 databuff[8] = (uint8_t)(y);
+	 databuff[3] = (uint8_t)((lg) >> 8);
+	 databuff[4] = (uint8_t)(lg);
+	 databuff[5] = (uint8_t)((vx) >> 8);
+	 databuff[6] = (uint8_t)(vx);
+	 databuff[7] = (uint8_t)((vy) >> 8);
+	 databuff[8] = (uint8_t)(vy);
 	 databuff[9] = (uint8_t)((rotate_speed) >> 8);
 	 databuff[10] = (uint8_t)(rotate_speed);
 	 databuff[11] = (uint8_t)((cp) >> 8);
@@ -62,9 +65,9 @@ void usart_chassis_receive(uint8_t *DataAddress)
 	usart_chassis_data.if_follow_gim = DataAddress[0];
 	usart_chassis_data.jump_cmd = DataAddress[1];
 	usart_chassis_data.chassis_mode = DataAddress[2];
-	usart_chassis_data.cmd_leg_length = ((DataAddress[3]<<8)|DataAddress[4]);
-	usart_chassis_data.x = ((DataAddress[5]<<8)|DataAddress[6]);
-	usart_chassis_data.y = ((DataAddress[7]<<8)|DataAddress[8]);
+	usart_chassis_data.cmd_leg_length = ((int16_t)((DataAddress[3]<<8)|DataAddress[4]))/100.0;
+	usart_chassis_data.x = ((int16_t)((DataAddress[5]<<8)|DataAddress[6]))/100.0;
+	usart_chassis_data.y = ((int16_t)((DataAddress[7]<<8)|DataAddress[8]))/100.0;
 	usart_chassis_data.rotate_speed = ((DataAddress[9]<<8)|DataAddress[10]);
 	usart_chassis_data.chassis_power = ((int16_t)((DataAddress[11]<<8)|DataAddress[12]))/100.0;
 	usart_chassis_data.chassis_power_buffer = ((DataAddress[13]<<8)|DataAddress[14]);

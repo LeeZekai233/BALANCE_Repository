@@ -3,15 +3,18 @@
 #include "public.h"
 
 #define WHEEL_R 0.0675
-#define BODY_MASS 18
+#define BODY_MASS 16.7918
 #define WHEEL_MASS 2.268
 #define T_MAX 10 
-#define WARNING_VOLTAGE 17
+#define WARNING_VOLTAGE 7
 #define POWER_LIMIT 1
 #define ROTATE_Y_ERROFFSET -1.2f
-#define NORMAL_Y_ERROFFSET +0.15f
+#define NORMAL_Y_ERROFFSET 0.0f
 #define TIME_STEP 2
 #define YAW_POLARITY 					-1 //逆正      舵轮要顺正，改-1；麦轮1
+
+#define CHASSIS_RAMP_TICK_COUNT    1000
+
 
 /**
 ************************************************************************************************************************
@@ -195,6 +198,8 @@ double convert_ecd_angle_to_0_2pi(double ecd_angle,float _0_2pi_angle);
 uint8_t wheel_state_estimate(leg_state_t* leg);
 
 extern Balance_chassis_t b_chassis;
-
+extern float ecd_dtheta;
+extern float final_dtheta;
+extern RampGen_t balance_ramp;
 
 #endif // ! __BALANCE_TASK_H

@@ -136,6 +136,15 @@ void updateKeyFlag(uint16_t key,RC_Ctl_t *remote, uint8_t *flag)
     *flag = (remote->key.v & key) ? 1 : 0;
 }
 
+int asb;
+void updatemousezFlag(RC_Ctl_t *remote, int *flag)
+{
+    if(remote->mouse.z > 0)
+    *flag=*flag+1;
+    if(remote->mouse.z < 0)
+    *flag=*flag-1; 
+}
+
 void keyborad_process(RC_Ctl_t *remote) 
 {
 
@@ -172,8 +181,8 @@ void keyborad_process(RC_Ctl_t *remote)
 	remote->Key_Flag.Key_C_TFlag = T_Key_procces(remote->Key_Flag.Key_C_Flag,&remote_flagC1,&remote_flagC2);
 	remote->Key_Flag.Key_V_TFlag = T_Key_procces(remote->Key_Flag.Key_V_Flag,&remote_flagV1,&remote_flagV2);
 	remote->Key_Flag.Key_B_TFlag = T_Key_procces(remote->Key_Flag.Key_B_Flag,&remote_flagB1,&remote_flagB2);
-
-
+    
+//    updatemousezFlag(remote,&asb);
 }
 
 uint8_t T_Key_procces(u8 flag,u8 *a,u8 *i)

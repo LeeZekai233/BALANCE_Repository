@@ -12,10 +12,10 @@
 #define  GM3Encoder_Offset   4141
 #define  GM4Encoder_Offset   6732
 //平步底盘电机初始位置
-#define  JM1Encoder_Offset   54353
-#define  JM2Encoder_Offset   17210
-#define  JM3Encoder_Offset   22725
-#define  JM4Encoder_Offset   4557
+#define  JM1Encoder_Offset   24324
+#define  JM2Encoder_Offset   12891
+#define  JM3Encoder_Offset   28850
+#define  JM4Encoder_Offset   2003
 
 #define  TM1Encoder_Offset   0
 #define  TM2Encoder_Offset   0
@@ -37,13 +37,14 @@ typedef struct
 	int32_t rate_buf[RATE_BUF_SIZE];	//buf，for filter
 	int32_t round_cnt;										//圈数
 	int32_t can_cnt;					//记录函数的使用次数，在电机初始完成部分任务
+    int32_t heart_cnt;
 }Encoder_cal;
 
 
 typedef struct{
 	Encoder_cal cal_data;
 
-
+    u8 if_online;
 	int32_t filter_rate;											//速度
 	double ecd_angle;											//角度
 	int16_t rate_rpm;
@@ -151,7 +152,7 @@ typedef struct
 
 
 
-
+void online_detective(volatile Encoder *v);
 
 
 /**************general_gyro define**********************/

@@ -17,8 +17,8 @@ float Lpf_1st_calcu(Lpf1stObj *filter, float u_k,float fc, float ts);
 
 
 extern Lpf1stObj ACC_LPF;
-extern Lpf1stObj LEFTLEG_LPF;
-extern Lpf1stObj RIGHTLEG_LPF;
+extern Lpf1stObj TEST_LPF;
+
 
 
 

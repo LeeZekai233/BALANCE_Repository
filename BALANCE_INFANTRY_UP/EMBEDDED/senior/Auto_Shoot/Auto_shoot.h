@@ -99,9 +99,7 @@ extern New_Auto_Aim_t New_Auto_Aim;
 extern New_Auto_Aim_Send_t New_Auto_Aim_Send;
 extern Visual_Data_Need_t Visual_Data_Need;
 
-void Vision_Process_General_Message(unsigned char* address, unsigned int length, Auto_Shoot_t *Auto_Shoot);
 void Vision_Process_General_Message_New(unsigned char* address, unsigned int length, Auto_Shoot_t *Auto_Shoot);
-void send_protocol(float x, float y, float r, int id, float ammo_speed, int gimbal_mode, uint8_t *data);
 void send_protocol_New(float Yaw, float Pitch, float Roll, int id, float ammo_speed, int Attack_Engineer_Flag, uint8_t* data);
 void AUTO_Shoot_CAN_Send_Handle(CAN_TypeDef *CANx, uint8_t *address_1,uint8_t *address_2,uint8_t *address_3,uint8_t *address_4,uint8_t *address_5);
 void AUTO_Shoot_CAN_Send_Handle_2_1(CAN_TypeDef *CANx, uint8_t *address_1);

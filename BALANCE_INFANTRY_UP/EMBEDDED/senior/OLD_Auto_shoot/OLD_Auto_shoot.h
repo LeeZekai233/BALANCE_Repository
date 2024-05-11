@@ -25,7 +25,7 @@ typedef struct
 } location;
 
 void vision_process_general_message(unsigned char* address, unsigned int length);
-void send_protocol(float x, float y, float r, int id, float ammo_speed, int gimbal_mode, u8 *data);
+void send_protocol(float x, float y, float r, int id, float ammo_speed, u8 vision_mode, u8 *data);
 
 
 extern location new_location;

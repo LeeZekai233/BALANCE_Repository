@@ -50,7 +50,8 @@ else if(val>=max)\
 #include "oldpid.h"
 #include "high_pass_filter.h"
 #include "low_pass_filter.h"
-
+#include "ramp.h"
+#include "ramp_second.h"
 
 
 /**************senior**********************/
@@ -64,6 +65,7 @@ else if(val>=max)\
 #include "JUDGE.h"
 #include "can_chassis_transmit.h"
 #include "USART_chassis_transmit.h"
+#include "SuperCap.h"
 
 /****************BSP**********************/
 #include "BSP.h"

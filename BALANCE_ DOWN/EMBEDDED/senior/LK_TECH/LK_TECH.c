@@ -123,6 +123,7 @@ void MF_18bit_EncoderProcess(volatile Encoder *v, CanRxMsg * msg,float Torque_Co
 void MF_18bit_EncoderTask(volatile Encoder *v, CanRxMsg * msg,int offset,float Torque_Constant)
 {
 	v->cal_data.can_cnt++;
+    v->cal_data.heart_cnt = time_tick;
 	if(v->cal_data.can_cnt<=2){v->cal_data.ecd_bias = offset;}
 	MF_18bit_EncoderProcess(v, msg,Torque_Constant);
 	// 码盘中间值设定也需要修改
@@ -238,6 +239,7 @@ void MG_18bit_EncoderProcess(volatile Encoder *v, CanRxMsg * msg,float Torque_Co
 void MG_18bit_EncoderTask(volatile Encoder *v, CanRxMsg * msg,int offset,float Torque_Constant)
 {
 	v->cal_data.can_cnt++;
+    v->cal_data.heart_cnt = time_tick;
 	if(v->cal_data.can_cnt<=2){v->cal_data.ecd_bias = offset;}
 	MG_18bit_EncoderProcess(v, msg,Torque_Constant);
 	// 码盘中间值设定也需要修改
@@ -338,5 +340,4 @@ void CAN_LK_TechspeedControl(CAN_TypeDef *CANx ,uint32_t speedControl,uint32_t i
 	
 	CAN_Transmit(CANx,&txmsg);
 }
-
 

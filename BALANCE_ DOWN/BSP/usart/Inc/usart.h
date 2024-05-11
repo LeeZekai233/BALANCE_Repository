@@ -24,8 +24,7 @@
 #define USART1_Data_Receive_Process_0				do{RemoteDataPrcess(_USART1_DMA_RX_BUF[0],this_time_rx_len1);}while(0);																																															
 #define USART1_Data_Receive_Process_1				do{RemoteDataPrcess(_USART1_DMA_RX_BUF[1],this_time_rx_len1);}while(0);
 
-#define USART2_Data_Receive_Process_0				do{}while(0);
-#define USART2_Data_Receive_Process_1				do{}while(0);
+#define USART2_Data_Receive_Process_0				do{SuperCap_message_Process(&usart_capacitance_message,_USART2_DMA_RX_BUF);}while(0);
 	
 #define USART3_Data_Receive_Process					do{usart_chassis_receive(_USART3_RX_BUF);}while(0);
 #define UART4_Data_Receive_Process					do{}while(0);
@@ -53,6 +52,7 @@
 #define BSP_UART5_DMA_RX_BUF_LEN  512
 #define BSP_USART6_RX_BUF_LENGTH  100
 
+#define USART2_TX_BUF_LENGTH        100
 #define USART3_TX_BUF_LENGTH  		100
 #define UART4_TX_BUF_LENGTH       100
 #define UART5_TX_BUF_LENGTH       150
@@ -131,6 +131,14 @@ void usart6_init(void);
 void Uart4DmaSendDataProc(DMA_Stream_TypeDef *DMA_Streamx,u16 ndtr);
 void Uart4SendByteInfoProc(u8 nSendInfo);
 void Uart4SendBytesInfoProc(u8* pSendInfo, u16 nSendCount);
+
+void Uart2DmaSendDataProc(DMA_Stream_TypeDef *DMA_Streamx,u16 ndtr);
+void Uart2SendByteInfoProc(u8 nSendInfo);
+void Uart2SendBytesInfoProc(u8* pSendInfo, u16 nSendCount);
+
+void Uart3DmaSendDataProc(DMA_Stream_TypeDef *DMA_Streamx,u16 ndtr);
+void Uart3SendByteInfoProc(u8 nSendInfo);
+void Uart3SendBytesInfoProc(u8* pSendInfo, u16 nSendCount);
 
 void MYDMA_Enable(DMA_Stream_TypeDef *DMA_Streamx,u16 ndtr);
 

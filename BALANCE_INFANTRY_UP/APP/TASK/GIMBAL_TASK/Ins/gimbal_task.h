@@ -41,6 +41,13 @@ typedef enum
 	GIMBAL_CHANGE_DIRCTION  =15,	//未实际意义
 } gimbal_mode_e;
 
+typedef enum
+{
+    AIM_NORMAL = 0,
+    BIG_BUFF = 1,
+    SMALL_BUFF = 2,
+    AIM_ROTATE = 3,
+}vision_mode_e;
  /**
   ******************************************************************************
 										云台输入与反馈结构体（输入，反馈，电机输出）
@@ -85,6 +92,7 @@ typedef struct
   /* ctrl mode */
   gimbal_mode_e ctrl_mode;
   gimbal_mode_e last_ctrl_mode;
+  vision_mode_e vision_mode;
   
   gim_ref_and_fdb_t gim_ref_and_fdb;
   gim_dynamic_ref_t gim_dynamic_ref;

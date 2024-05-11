@@ -10,14 +10,14 @@ void control_task(void)
 
 		if(time_tick%10 == 0)
 		usart_chassis_send(chassis.follow_gimbal,
-							RC_CtrlData.Key_Flag.Key_E_Flag ,
+							RC_CtrlData.Key_Flag.Key_V_Flag ,
 							chassis.ctrl_mode,
 							yaw_Encoder.ecd_angle,
 							leg_length,
 							chassis.ChassisSpeed_Ref.left_right_ref,
 							chassis.ChassisSpeed_Ref.forward_back_ref,
 							chassis.ChassisSpeed_Ref.rotate_ref,
-                            0,
+                            chassis.roll*PI/180.0f,
 							judge_rece_mesg.power_heat_data.chassis_power,
 							judge_rece_mesg.power_heat_data.chassis_power_buffer,
 							judge_rece_mesg.game_robot_state.chassis_power_limit,
@@ -33,9 +33,9 @@ void control_task(void)
 			can_bus_send_task();
 	}
 
-	if(time_tick%20 == 0)
+	if(time_tick%4 == 0)
 	{
-		send_protocol_New(gimbal_gyro.yaw_Angle,gimbal_gyro.pitch_Angle,gimbal_gyro.roll_Angle,judge_rece_mesg.game_robot_state.robot_id,27,gimbal_data.ctrl_mode,UART4_DMA_TX_BUF);
+		send_protocol(gimbal_gyro.yaw_Angle,gimbal_gyro.pitch_Angle,gimbal_gyro.roll_Angle,judge_rece_mesg.game_robot_state.robot_id,judge_rece_mesg.shoot_data.bullet_speed,gimbal_data.vision_mode,UART4_DMA_TX_BUF);
 	}
 	
 	  if(time_tick%100 == 0) //上传用户信息

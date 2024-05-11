@@ -2,8 +2,8 @@
 
 
 Lpf1stObj ACC_LPF;
-Lpf1stObj LEFTLEG_LPF;
-Lpf1stObj RIGHTLEG_LPF;
+Lpf1stObj TEST_LPF;
+
 
 float Lpf_1st_calcu(Lpf1stObj *filter, float u_k,float fc, float ts)
 {

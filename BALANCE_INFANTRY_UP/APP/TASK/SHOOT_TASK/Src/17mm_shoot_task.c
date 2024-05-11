@@ -12,12 +12,12 @@
 void shot_param_init()
 {
 
-    PID_struct_init(&pid_trigger_angle, POSITION_PID, 6000, 1000,20,0.2,0);//5 0.2 15
-	PID_struct_init(&pid_trigger_speed,POSITION_PID,19000,10000,30,0,0);//100 0.1 4
+    PID_struct_init(&pid_trigger_angle, POSITION_PID, 6000, 1000,20,0.2,10);//20 0.2 0
+	PID_struct_init(&pid_trigger_speed,POSITION_PID,29000,10000,30,0,0);//100 0.1 4
 
 	
-	PID_struct_init(&pid_trigger_angle_buf,POSITION_PID, 4000 , 0    ,  130, 5  , 10);
-	PID_struct_init(&pid_trigger_speed_buf,POSITION_PID,12000 , 5500 ,  30 , 0  , 0 );
+	PID_struct_init(&pid_trigger_angle_buf,POSITION_PID, 800 , 0    ,  150, 5  , 10);
+	PID_struct_init(&pid_trigger_speed_buf,POSITION_PID,29000 , 5500 ,  25 , 0  , 0 );
 	
     PID_struct_init(&pid_rotate[1], POSITION_PID,15500,500,50,0,0);
     PID_struct_init(&pid_rotate[0], POSITION_PID,15500,500,50,0,0);
@@ -119,6 +119,12 @@ void heat0_limit(void)           //热量限制
 
 
 //拨盘 trigger poke
+int buff_reversal_count;
+int buff_time;
+u8 buff_check_flag;
+int single_shoot_cnt;
+
+float zhishixuebao;//刘尚坤写的，可删掉。
 void shoot_bullet_handle(void)
 {	
 	static uint32_t start_shooting_count = 0;//正转计时
@@ -131,7 +137,8 @@ void shoot_bullet_handle(void)
 
 	
 	if(gimbal_data.ctrl_mode!=GIMBAL_AUTO_SMALL_BUFF&&
-		 gimbal_data.ctrl_mode!=GIMBAL_AUTO_BIG_BUFF)//正常模式   
+		 gimbal_data.ctrl_mode!=GIMBAL_AUTO_BIG_BUFF)//正常模式
+//        if(0)
 	  {//热量限制
 		  if(shoot.will_time_shoot>0&&
 				 shoot.fric_wheel_run==1&&
@@ -139,33 +146,33 @@ void shoot_bullet_handle(void)
 						  shoot.ctrl_mode==1)
 		{	
 /**/
-//			start_shooting_count++;
-//			if((start_shooting_count >= 100)&&(abs(general_poke.poke.filter_rate) < 3))
-//			{
-//				lock_rotor1 = 1;
-//				start_shooting_count = 0;
-//			}
-//			if(lock_rotor1 == 1)
-//			{
-//				start_reversal_count1++;
-//			if(start_reversal_count1 > 100)
-//			{
-//				lock_rotor1 = 0;
-//				start_reversal_count1 = 0;
-//			}
-//			shoot.poke_pid.angle_ref[0]=shoot.poke_pid.angle_fdb[0]+shoot.shoot_frequency*45*36/500;		//一秒shoot_frequency发，一发拨盘转45°，减速比是1：36。每两毫秒执行一次故除以500。	
-//			shoot.poke_pid.angle_fdb[0]=general_poke.poke.ecd_angle;
-//			shoot.poke_pid.speed_fdb[0]=general_poke.poke.filter_rate;
-//			shoot.poke_current[0]=pid_double_loop_cal(&pid_trigger_angle[0],&pid_trigger_speed[0],
-//																								  shoot.poke_pid.angle_ref[0],
-//																								  shoot.poke_pid.angle_fdb[0],
-//																								 &shoot.poke_pid.speed_ref[0],
-//																									shoot.poke_pid.speed_fdb[0],0);
-//			}
-//			if((shoot.fric_wheel_run)&&(lock_rotor1 == 0))
+			start_shooting_count++;
+			if((start_shooting_count >= 200)&&(abs(general_poke.poke.filter_rate) < 3))
+			{
+				lock_rotor1 = 1;
+				start_shooting_count = 0;
+			}
+			if(lock_rotor1 == 1)
+			{
+				start_reversal_count1++;
+			if(start_reversal_count1 > 100)
+			{
+				lock_rotor1 = 0;
+				start_reversal_count1 = 0;
+			}
+			shoot.poke_pid.angle_ref=shoot.poke_pid.angle_fdb-shoot.shoot_frequency*45*36/500;		//一秒shoot_frequency发，一发拨盘转45°，减速比是1：36。每两毫秒执行一次故除以500。	
+			shoot.poke_pid.angle_fdb=general_poke.poke.ecd_angle;
+			shoot.poke_pid.speed_fdb=general_poke.poke.filter_rate;
+			shoot.poke_current=pid_double_loop_cal(&pid_trigger_angle,&pid_trigger_speed,
+																								  shoot.poke_pid.angle_ref,
+																								  shoot.poke_pid.angle_fdb,
+																								 &shoot.poke_pid.speed_ref,
+																									shoot.poke_pid.speed_fdb,0);
+			}
+			if((shoot.fric_wheel_run)&&(lock_rotor1 == 0))
 			{	
 /**/
-			shoot.poke_pid.angle_ref=shoot.poke_pid.angle_fdb-shoot.shoot_frequency*45*36/500;		//一秒shoot_frequency发，一发拨盘转45°，减速比是1：36。每两毫秒执行一次故除以500。	
+			shoot.poke_pid.angle_ref=shoot.poke_pid.angle_fdb+shoot.shoot_frequency*45*36/500;		//一秒shoot_frequency发，一发拨盘转45°，减速比是1：36。每两毫秒执行一次故除以500。	
 			shoot.poke_pid.angle_fdb=general_poke.poke.ecd_angle;
 			shoot.poke_pid.speed_fdb=general_poke.poke.filter_rate;
 			shoot.poke_current=pid_double_loop_cal(&pid_trigger_angle,&pid_trigger_speed,
@@ -181,15 +188,25 @@ void shoot_bullet_handle(void)
 		shoot.poke_current=0;
 		start_shooting_count = 0;//清零正转计时
     start_reversal_count1 = 0;//清零反转计时
-		}		
+            
+		}
+
+            buff_time = 0;
+            single_shoot_cnt = 0;
 }
 	else//打幅单发模式
 	{
+        if(buff_time==0)
+        {
+            buff_check_flag = 1;
+        }
+        buff_time++;
 		if(shoot.fric_wheel_run==1)
 		{
 			
 			if(RC_CtrlData.mouse.press_l==1||RC_CtrlData.RemoteSwitch.trigger==1)
-			 {if(press_l_flag==0)
+			 {
+                 if(press_l_flag==0)
 				{
 				press_l_flag=1;	
 				shoot.poke_run=1;	
@@ -200,20 +217,39 @@ void shoot_bullet_handle(void)
 				}
 			}
 		else
-				{press_l_flag=0;}	
-			
+				{press_l_flag=0;}
 
-			if(shoot.poke_run==1)
-				shoot.poke_pid.angle_ref-=shoot.single_angle;
-				
-			
+         if(buff_check_flag)
+         {
+             buff_reversal_count++;
+             if(buff_reversal_count<400)
+             {
+                 shoot.poke_pid.angle_ref-=shoot.single_angle;
+                 
+             }else
+             {
+                buff_reversal_count = 0;
+                shoot.poke_pid.angle_ref = shoot.poke_pid.angle_fdb;
+                 buff_check_flag = 0;
+                 single_shoot_cnt++;
+             }
+         }else
+         {
+             if(shoot.poke_run==1)
+             {
+				shoot.poke_pid.angle_ref+=shoot.single_angle;
+                 single_shoot_cnt++;
+             }
+             
+         }		
 			shoot.poke_pid.angle_fdb=general_poke.poke.ecd_angle/36.109f;
 			shoot.poke_pid.speed_fdb=general_poke.poke.rate_rpm;
 			shoot.poke_current=pid_double_loop_cal(&pid_trigger_angle_buf,&pid_trigger_speed_buf,
 													 shoot.poke_pid.angle_ref,
 													 shoot.poke_pid.angle_fdb,
 													&shoot.poke_pid.speed_ref,
-													 shoot.poke_pid.speed_fdb,0);	
+													 shoot.poke_pid.speed_fdb,0);
+       
 		}
 		else
 		{shoot.poke_pid.angle_ref=shoot.poke_pid.angle_fdb;
@@ -314,6 +350,8 @@ void shoot_state_mode_switch()
 				{
 					shoot.fric_wheel_run=0;
 					shoot.poke_run=0;
+                    buff_time = 0;
+                    single_shoot_cnt = 0;
 				}break;
 
 					default:

@@ -30,21 +30,22 @@ typedef struct
 	int32_t rate_buf[RATE_BUF_SIZE];	//buf，for filter
 	int32_t round_cnt;										//圈数
 	int32_t can_cnt;					//记录函数的使用次数，在电机初始完成部分任务
+    int32_t heart_cnt;
 }Encoder_cal;
 
 
 typedef struct{
 	Encoder_cal cal_data;
 
+    u8 if_online;                        //在线状态                       
+	int32_t filter_rate;				//dps
+	double ecd_angle;					//度
+	int16_t rate_rpm;                   //rpm
 
-	int32_t filter_rate;											//速度
-	double ecd_angle;											//角度
-	int16_t rate_rpm;
+	double angle;                       //弧度
+	double gyro;                        //角速度
 
-	double angle;
-	double gyro;
-
-	float Torque;
+	float Torque;                       //力矩
 	u32 temperature;
 	
 	

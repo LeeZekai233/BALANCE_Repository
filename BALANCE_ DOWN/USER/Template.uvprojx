@@ -335,7 +335,7 @@
               <MiscControls></MiscControls>
               <Define>STM32F40_41xxx,USE_STDPERIPH_DRIVER</Define>
               <Undefine></Undefine>
-              <IncludePath>..\CORE;..\USER;..\README;..\HEADFILE;..\STLIB\inc;..\STLIB\src;..\APP\BAL\Ins;..\APP\RTOS\Ins;..\APP\TASK\CHASSIS_TASK\Inc;..\APP\TASK\GIMBAL_TASK\Ins;..\APP\TASK\SHOOT_TASK\Ins;..\BSP\can\Inc;..\BSP\delay\Inc;..\BSP\usart\Inc;..\BSP\sys\Inc;..\BSP\LED;..\EMBEDDED\CAN_BUS;..\EMBEDDED\senior\Auto_Shoot;..\EMBEDDED\senior\Auto_Shoot\proto;..\EMBEDDED\senior\Auto_Shoot\Protocol;..\EMBEDDED\senior\CH100;..\EMBEDDED\senior\DJI_MOTOR;..\EMBEDDED\senior\HI220;..\EMBEDDED\senior\HT430;..\EMBEDDED\senior\JUDGE;..\EMBEDDED\senior\LK_TECH;..\EMBEDDED\senior\PM01;..\EMBEDDED\senior_struct;..\EMBEDDED\senior\REMOTE;..\APP\TASK\MODE_SWITCH_TASK\Inc;..\BSP\timer\Inc;..\EMBEDDED\senior\CAN_CHASSIS_TRANSMIT;..\EMBEDDED\senior\USART_chassis_transmit;..\BSP\iwdg</IncludePath>
+              <IncludePath>..\CORE;..\USER;..\README;..\HEADFILE;..\STLIB\inc;..\STLIB\src;..\APP\BAL\Ins;..\APP\RTOS\Ins;..\APP\TASK\CHASSIS_TASK\Inc;..\APP\TASK\GIMBAL_TASK\Ins;..\APP\TASK\SHOOT_TASK\Ins;..\BSP\can\Inc;..\BSP\delay\Inc;..\BSP\usart\Inc;..\BSP\sys\Inc;..\BSP\LED;..\EMBEDDED\CAN_BUS;..\EMBEDDED\senior\Auto_Shoot;..\EMBEDDED\senior\Auto_Shoot\proto;..\EMBEDDED\senior\Auto_Shoot\Protocol;..\EMBEDDED\senior\CH100;..\EMBEDDED\senior\DJI_MOTOR;..\EMBEDDED\senior\HI220;..\EMBEDDED\senior\HT430;..\EMBEDDED\senior\JUDGE;..\EMBEDDED\senior\LK_TECH;..\EMBEDDED\senior\PM01;..\EMBEDDED\senior_struct;..\EMBEDDED\senior\REMOTE;..\APP\TASK\MODE_SWITCH_TASK\Inc;..\BSP\timer\Inc;..\EMBEDDED\senior\CAN_CHASSIS_TRANSMIT;..\EMBEDDED\senior\USART_chassis_transmit;..\BSP\iwdg;..\EMBEDDED\senior\SuperCap</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -449,6 +449,26 @@
               <FileType>1</FileType>
               <FilePath>..\APP\BAL\Src\low_pass_filter.c</FilePath>
             </File>
+            <File>
+              <FileName>ramp.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\APP\BAL\Ins\ramp.h</FilePath>
+            </File>
+            <File>
+              <FileName>ramp_second.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\APP\BAL\Ins\ramp_second.h</FilePath>
+            </File>
+            <File>
+              <FileName>RMLib.lib</FileName>
+              <FileType>4</FileType>
+              <FilePath>..\APP\BAL\Ins\RMLib.lib</FilePath>
+            </File>
+            <File>
+              <FileName>ramp_second.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\APP\BAL\Src\ramp_second.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -503,6 +523,11 @@
               <FileName>USART_chassis_transmit.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\EMBEDDED\senior\USART_chassis_transmit\USART_chassis_transmit.c</FilePath>
+            </File>
+            <File>
+              <FileName>SuperCap.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\EMBEDDED\senior\SuperCap\SuperCap.c</FilePath>
             </File>
           </Files>
         </Group>

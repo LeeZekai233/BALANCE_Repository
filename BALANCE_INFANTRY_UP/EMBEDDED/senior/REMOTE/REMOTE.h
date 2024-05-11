@@ -145,6 +145,7 @@ typedef struct
 void RemoteDataPrcess(uint8_t *pData,u16 length);
 void SetInputMode(RC_Ctl_t *remote);
 void updateKeyFlag(uint16_t key,RC_Ctl_t *remote, uint8_t *flag);
+void updatemousezFlag(RC_Ctl_t *remote, int *flag);
 void keyborad_process(RC_Ctl_t *remote);
 uint8_t T_Key_procces(u8 flag,u8 *a,u8 *i);
 void GetRemoteSwitchAction(RC_Ctl_t *remote);

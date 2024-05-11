@@ -5,7 +5,7 @@
  * File: lqr_k_initialize.c
  *
  * MATLAB Coder version            : 23.2
- * C/C++ source code generated on  : 11-Apr-2024 02:37:07
+ * C/C++ source code generated on  : 07-May-2024 03:40:01
  */
 
 /* Include Files */

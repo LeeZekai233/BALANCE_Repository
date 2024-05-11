@@ -170,9 +170,9 @@ typedef enum
 
 typedef __packed struct
 {
-    int16_t forward_back_ref;
-    int16_t left_right_ref;
-    int16_t rotate_ref;
+    float forward_back_ref;
+    float left_right_ref;
+    float rotate_ref;
 }ChassisSpeed_Ref_t;
 /**
 ************************************************************************************************************************

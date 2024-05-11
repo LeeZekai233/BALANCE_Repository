@@ -5,7 +5,7 @@
 
 #define  GMPitchEncoder_Offset 6165
 //yaw轴电机初始位置
-#define  GMYawEncoder_Offset   6344
+#define  GMYawEncoder_Offset   5319
 //底盘航向轴电机初始位置
 #define  GM1Encoder_Offset   1370-1024
 #define  GM2Encoder_Offset   1298+1024

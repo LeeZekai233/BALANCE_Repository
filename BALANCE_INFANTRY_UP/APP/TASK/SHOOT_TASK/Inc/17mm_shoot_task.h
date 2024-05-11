@@ -3,7 +3,7 @@
 #include "public.h"
 
 
-#define FRICTION_SPEED_30  (-1000)
+#define FRICTION_SPEED_30  (-950)
 
 
 

@@ -9,9 +9,9 @@ typedef struct
 	u8 jump_cmd;
 	u8 chassis_mode;
 	float yaw_Encoder_ecd_angle;
-	int16_t cmd_leg_length;
-	int16_t x;
-	int16_t y;
+	float cmd_leg_length;
+	float x;
+	float y;
 	int16_t rotate_speed;
     float roll;
 	float chassis_power;
@@ -30,9 +30,9 @@ void usart_chassis_send(
 										u8 jump_cmd,
 										u8 chassis_mode,
 										float yaw_encoder_angle,
-										int16_t cmd_leg_length,
-										int16_t x,
-										int16_t y,
+										float cmd_leg_length,
+										float x,
+										float y,
 										int16_t rotate_speed,
                                         float roll,
 										float chassis_power,

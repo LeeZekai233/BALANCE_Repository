@@ -1,12 +1,14 @@
 #include "infantry_mode_switch_task.h"
 
 chassis_t chassis;
-int16_t chassis_speed = 0;
-int16_t leg_length;
+float chassis_speed = 0;
+float leg_length;
 u8 this_input_mode = 0;
 u8 last_input_mode = 0;
 
 u8 reserve_flag = 0;
+int press_X_time;
+
 void infantry_mode_switch_task(void)
 {
 		//切换遥控模式的时候所有任务归位重新开始
@@ -26,14 +28,20 @@ void infantry_mode_switch_task(void)
         /*******************************底盘云台遥感数据接收******************************************/
         if(gimbal_data.ctrl_mode != GIMBAL_INIT)
         {
-            chassis.ChassisSpeed_Ref.forward_back_ref = (RC_CtrlData.rc.ch1- (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * 0.4f;
-            chassis.ChassisSpeed_Ref.left_right_ref   = (RC_CtrlData.rc.ch0- (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * 0.4f;
+            chassis.ChassisSpeed_Ref.forward_back_ref = (RC_CtrlData.rc.ch1- (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * 0.004f;
+            chassis.ChassisSpeed_Ref.left_right_ref   = (RC_CtrlData.rc.ch0- (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * 0.004f;
         }
         if(gimbal_data.ctrl_mode == GIMBAL_FOLLOW_ZGYRO)
         {
             gimbal_data.gim_dynamic_ref.pitch_angle_dynamic_ref += (RC_CtrlData.rc.ch3 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * STICK_TO_PITCH_ANGLE_INC_FACT;
             gimbal_data.gim_dynamic_ref.yaw_angle_dynamic_ref   += (RC_CtrlData.rc.ch2 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * STICK_TO_YAW_ANGLE_INC_FACT;
+            if( chassis.ctrl_mode == CHASSIS_ROTATE)
+            {
+                
+            }else
+            {
 					VAL_LIMIT(gimbal_data.gim_dynamic_ref.pitch_angle_dynamic_ref, pitch_min, pitch_max);
+            }
         }
         
         /****************************底盘默认状态设置**********************************************/
@@ -75,7 +83,7 @@ void infantry_mode_switch_task(void)
 			
         }
 			}
-			leg_length = 21;
+			leg_length = 0.18;
             chassis.roll = 0.0f;
 			/*****************************************************************************************/
 			
@@ -91,19 +99,19 @@ void infantry_mode_switch_task(void)
             if (RC_CtrlData.Key_Flag.Key_SHIFT_Flag)
             {
 //                chassis.chassis_speed_mode = HIGH_SPEED_MODE;
-                chassis_speed = HIGH_SPEED*100;
+                chassis_speed = HIGH_SPEED;
             }else
             {
 //                chassis.chassis_speed_mode = NORMAL_SPEED_MODE;
-                chassis_speed = NORMAL_SPEED*100;
+                chassis_speed = NORMAL_SPEED;
             }
 						
 						if(RC_CtrlData.Key_Flag.Key_CTRL_Flag)
 						{
-							leg_length = 34;
+							leg_length = 0.34;
 						}else
 						{
-							leg_length = 21;
+							leg_length = 0.18;
 						}
 						
             if(RC_CtrlData.Key_Flag.Key_W_Flag)
@@ -142,10 +150,10 @@ void infantry_mode_switch_task(void)
 
             if(RC_CtrlData.Key_Flag.Key_Q_Flag)
             {
-                chassis.roll = -15*PI/180.0f;
+                chassis.roll = -15.0f;
             }else if(RC_CtrlData.Key_Flag.Key_E_Flag)
             {
-                chassis.roll = 15*PI/180.0f;
+                chassis.roll = 15.0f;
             }else
             {
                 chassis.roll = 0.0f;
@@ -158,19 +166,20 @@ void infantry_mode_switch_task(void)
                 VAL_LIMIT(RC_CtrlData.mouse.y, -100, 100);
                 gimbal_data.gim_dynamic_ref.yaw_angle_dynamic_ref += RC_CtrlData.mouse.x * MOUSE_TO_YAW_ANGLE_INC_FACT;
                 gimbal_data.gim_dynamic_ref.pitch_angle_dynamic_ref -= RC_CtrlData.mouse.y * MOUSE_TO_PITCH_ANGLE_INC_FACT;
-                VAL_LIMIT(gimbal_data.gim_dynamic_ref.pitch_angle_dynamic_ref, pitch_min, pitch_max);
+                VAL_LIMIT(gimbal_data.gim_dynamic_ref.pitch_angle_dynamic_ref, pitch_min+fabs(chassis.roll), pitch_max+fabs(chassis.roll));
 							//一键反向
-							if(RC_CtrlData.Key_Flag.Key_X_Flag)
-							{
-								if(reserve_flag==0)
-								{
-									gimbal_data.gim_dynamic_ref.yaw_angle_dynamic_ref +=180.0f;
-									reserve_flag++;
-								}
-							}else
-							{
-								reserve_flag = 0;
-							}
+//							if(RC_CtrlData.Key_Flag.Key_X_Flag)
+//							{
+//								if(reserve_flag==0)
+//								{
+//									gimbal_data.gim_dynamic_ref.yaw_angle_dynamic_ref +=180.0f;
+//									reserve_flag++;
+//								}
+//							}else
+//							{
+//								reserve_flag = 0;
+//							}
+                
             }
             
             
@@ -196,15 +205,43 @@ void infantry_mode_switch_task(void)
       //键鼠模式的模式选择从这里开始
 			if(gimbal_data.if_finish_Init == 1)
 			{
-//				if (RC_CtrlData.Key_Flag.Key_V_TFlag)
-//                {
-//                    gimbal_data.ctrl_mode = GIMBAL_AUTO_BIG_BUFF;
-//                }
-//                else if (RC_CtrlData.Key_Flag.Key_Z_TFlag)
-//                {
-//                    gimbal_data.ctrl_mode = GIMBAL_AUTO_SMALL_BUFF;
-//                }
-//                else
+                
+         //视觉模式选择
+             if(RC_CtrlData.Key_Flag.Key_X_Flag)
+                {
+                    press_X_time++;
+                    if(press_X_time<50)
+                    {
+                        gimbal_data.vision_mode = SMALL_BUFF;
+                    }else
+                    {
+                        gimbal_data.vision_mode = BIG_BUFF;
+                    }
+                        
+                }else
+                {
+                    press_X_time = 0;;
+                }
+              if(RC_CtrlData.mouse.z > 0)
+              {
+                  gimbal_data.vision_mode = AIM_ROTATE;
+              }else if(RC_CtrlData.mouse.z < 0)
+              {
+                  gimbal_data.vision_mode = AIM_NORMAL;
+              }else
+              {
+                  
+              }
+           //云台模式选择
+				if (gimbal_data.vision_mode == BIG_BUFF&&RC_CtrlData.mouse.press_r)
+                {
+                    gimbal_data.ctrl_mode = GIMBAL_AUTO_BIG_BUFF;
+                }
+                else if (gimbal_data.vision_mode == SMALL_BUFF&&RC_CtrlData.mouse.press_r)
+                {
+                    gimbal_data.ctrl_mode = GIMBAL_AUTO_SMALL_BUFF;
+                }
+                else
                 {
                     gimbal_data.ctrl_mode = GIMBAL_FOLLOW_ZGYRO;
                     chassis.ctrl_mode = MANUAL_FOLLOW_GIMBAL;

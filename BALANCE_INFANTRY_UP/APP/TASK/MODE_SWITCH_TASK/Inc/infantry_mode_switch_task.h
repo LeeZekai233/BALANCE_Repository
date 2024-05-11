@@ -6,8 +6,7 @@
 
 /*************************************************/
 #define HIGH_SPEED 2.4
-#define NORMAL_SPEED 1.6 
-
+#define NORMAL_SPEED 1.8 
 
 
 
@@ -16,7 +15,7 @@ void infantry_mode_switch_task(void);
 
 
 extern chassis_t chassis;
-extern int16_t leg_length;
+extern float leg_length;
 
 
 
