@@ -44,13 +44,13 @@ void heat_switch()
       
 	//º∆À„…‰∆µ
 		if(judge_rece_mesg.game_robot_state.robot_level==1)//level_¿‰»¥
-			shoot.shoot_frequency=5;
+			shoot.shoot_frequency=10;
         else if(judge_rece_mesg.game_robot_state.robot_level==2)
-            shoot.shoot_frequency=7;
+            shoot.shoot_frequency=10;
 		else if(judge_rece_mesg.game_robot_state.robot_level==3)//level_2
-			shoot.shoot_frequency=7;
+			shoot.shoot_frequency=10;
 		else if(judge_rece_mesg.game_robot_state.robot_level==4)//level_2
-			shoot.shoot_frequency=8;
+			shoot.shoot_frequency=10;
         else if(judge_rece_mesg.game_robot_state.robot_level==5)//level_2
 			shoot.shoot_frequency=10;
         else if(judge_rece_mesg.game_robot_state.robot_level==6)//level_2

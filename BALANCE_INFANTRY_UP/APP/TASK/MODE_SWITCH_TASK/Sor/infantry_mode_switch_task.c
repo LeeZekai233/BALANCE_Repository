@@ -222,10 +222,10 @@ void infantry_mode_switch_task(void)
                     {
                         press_X_time = 0;;
                     }
-                  if(RC_CtrlData.mouse.z > 10)
+                  if(RC_CtrlData.mouse.z > 0)
                   {
                       gimbal_data.vision_mode = AIM_ROTATE;
-                  }else if(RC_CtrlData.mouse.z < -10)
+                  }else if(RC_CtrlData.mouse.z < 0)
                   {
                       gimbal_data.vision_mode = AIM_NORMAL;
                   }else

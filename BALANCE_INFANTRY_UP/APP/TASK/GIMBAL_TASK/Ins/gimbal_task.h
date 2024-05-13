@@ -117,11 +117,17 @@ typedef struct
   pid_t pid_pit_speed_small_buff;
   pid_t pid_yaw_speed_small_buff;
 
-  // 自瞄模式外环的参数
+  // 自瞄模式(平移)的参数
   pid_t pid_yaw_follow;
   pid_t pid_pit_follow;
   pid_t pid_pit_speed_follow;
   pid_t pid_yaw_speed_follow;
+  
+  //自瞄模式(陀螺)的参数
+  pid_t pid_yaw_rotate;
+  pid_t pid_pit_rotate;
+  pid_t pid_pit_speed_rotate;
+  pid_t pid_yaw_speed_rotate;  
 
   // 大符下的PID参数
   pid_t pid_yaw_big_buff;

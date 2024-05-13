@@ -364,7 +364,7 @@ void data_upload_handle(uint16_t cmd_id, uint8_t *p_data, uint16_t len, uint8_t 
 
 extern receive_judge_t judge_rece_mesg;
 
-
+extern int already_shoot;
 
 
 #endif

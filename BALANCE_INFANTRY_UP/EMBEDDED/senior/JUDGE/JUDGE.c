@@ -20,6 +20,8 @@ receive_judge_t judge_rece_mesg;
 u16 last_base,this_base;
 u16 last_security,this_security;
 
+u16 last_remain,this_remain;
+int already_shoot;
 
 /***********************************    ↓    DJI提供的CRC校检函数   ↓  ***********************************/
 //crc8 generator polynomial:G(x)=x8+x5+x4+1
@@ -326,6 +328,12 @@ void judgement_data_handle(uint8_t *p_frame, u16 rec_len)
 				case BULLET_REMAINING_ID:
 				{
 					memcpy(&judge_rece_mesg.ext_bullet_remaining, data_addr, data_length);
+                    last_remain = this_remain;
+                    this_remain = judge_rece_mesg.ext_bullet_remaining.bullet_remaining_num_17mm;
+                    if(this_remain - last_remain > 0||this_remain==0)
+                        break;
+                    already_shoot+=last_remain-this_remain;
+                    
 				}
 				break;
 				case STUDENT_INTERACTIVE_HEADER_DATA_ID: // 交互数据接收信息：0x0301。发送频率：上限 10Hz
