@@ -8,7 +8,7 @@ u8 last_input_mode = 0;
 
 u8 reserve_flag = 0;
 int press_X_time;
-
+int rotate_cnt;
 void infantry_mode_switch_task(void)
 {
 		//切换遥控模式的时候所有任务归位重新开始
@@ -35,13 +35,10 @@ void infantry_mode_switch_task(void)
         {
             gimbal_data.gim_dynamic_ref.pitch_angle_dynamic_ref += (RC_CtrlData.rc.ch3 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * STICK_TO_PITCH_ANGLE_INC_FACT;
             gimbal_data.gim_dynamic_ref.yaw_angle_dynamic_ref   += (RC_CtrlData.rc.ch2 - (int16_t)REMOTE_CONTROLLER_STICK_OFFSET) * STICK_TO_YAW_ANGLE_INC_FACT;
-            if( chassis.ctrl_mode == CHASSIS_ROTATE)
-            {
-                
-            }else
-            {
+            
+            
 					VAL_LIMIT(gimbal_data.gim_dynamic_ref.pitch_angle_dynamic_ref, pitch_min, pitch_max);
-            }
+            
         }
         
         /****************************底盘默认状态设置**********************************************/
@@ -73,7 +70,14 @@ void infantry_mode_switch_task(void)
         {
 
             chassis.ctrl_mode = CHASSIS_ROTATE;
-					chassis.ChassisSpeed_Ref.rotate_ref = 10;
+            if(rotate_cnt%2==0)
+            {
+                chassis.ChassisSpeed_Ref.rotate_ref = 10;
+            }else
+            {
+                chassis.ChassisSpeed_Ref.rotate_ref = -10;
+            }
+					
 				
         }
         else
@@ -111,7 +115,14 @@ void infantry_mode_switch_task(void)
 							leg_length = 0.34;
 						}else
 						{
-							leg_length = 0.18;
+                           if(RC_CtrlData.Key_Flag.Key_Z_TFlag)
+                           {
+                               leg_length = 0.14;
+                           }else
+                           {
+                               leg_length = 0.18;
+                           }
+							
 						}
 						
             if(RC_CtrlData.Key_Flag.Key_W_Flag)
@@ -212,10 +223,10 @@ void infantry_mode_switch_task(void)
                         press_X_time++;
                         if(press_X_time<50)
                         {
-                            gimbal_data.vision_mode = SMALL_BUFF;
+                            gimbal_data.vision_mode = BIG_BUFF;
                         }else
                         {
-                            gimbal_data.vision_mode = BIG_BUFF;
+                            gimbal_data.vision_mode = SMALL_BUFF;
                         }
                             
                     }else
@@ -277,7 +288,14 @@ void infantry_mode_switch_task(void)
     default:
         break;
     }
+    
+    if(chassis.ctrl_mode==CHASSIS_ROTATE&&chassis.last_ctrl_mode!=CHASSIS_ROTATE)
+    {
+        rotate_cnt++;
+    }
 	chassis.last_ctrl_mode = chassis.ctrl_mode;
+    
+    
 }
 
 

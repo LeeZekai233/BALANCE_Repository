@@ -71,12 +71,12 @@ float pitch_max = 0;
 #if STANDARD == 3
 
 		#define INFANTRY_PITCH_MAX 27.0f
-		#define INFANTRY_PITCH_MIN -18.0f
+		#define INFANTRY_PITCH_MIN -19.0f
     float pitch_middle = 0;
     float Pitch_min = INFANTRY_PITCH_MIN;
     float Pitch_max = INFANTRY_PITCH_MAX;
 
-    #define VISION_PITCH_MIN            -18
+    #define VISION_PITCH_MIN            -19
     #define VISION_PITCH_MAX            27
 
     #define YAW_INIT_ANGLE_FDB          -yaw_Encoder.ecd_angle   //步兵机械将电机反着装导致yaw轴电机向右编码器角度为负，与期望极性相反，需要加负号
@@ -148,13 +148,13 @@ void gimbal_parameter_Init(void)
                     
 
     //自瞄陀螺下参数
-    PID_struct_init ( &gimbal_data.pid_pit_rotate, POSITION_PID, 200, 30, 3.5
-                    , 0.01, 20 );
+    PID_struct_init ( &gimbal_data.pid_pit_rotate, POSITION_PID, 200, 30, 15
+                    , 0.01, 12 );
 										
     PID_struct_init ( &gimbal_data.pid_pit_speed_rotate, POSITION_PID, 27000, 25000, 300.0f, 0.001f, 0 ); 
 
-    PID_struct_init ( &gimbal_data.pid_yaw_rotate, POSITION_PID,  150,16,
-                    7, 0.01, 20);//15 0 80
+    PID_struct_init ( &gimbal_data.pid_yaw_rotate, POSITION_PID,  150,12,
+                    15, 0.05, 17);//15 0 80
     PID_struct_init ( &gimbal_data.pid_yaw_speed_rotate, POSITION_PID, 29800, 29800,
                     400.0f, 0.8, 0 ); //160 0.8 40
                     
@@ -233,13 +233,9 @@ void gimbal_task(void)
     default:
         break;
     }
-    if( chassis.ctrl_mode == CHASSIS_ROTATE)
-     {
-                
-     }else
-     {
-         VAL_LIMIT(gimbal_data.gim_ref_and_fdb.pit_angle_ref, pitch_min , pitch_max );		//pitch轴云台限幅
-     }
+    
+         VAL_LIMIT(gimbal_data.gim_ref_and_fdb.pit_angle_ref, pitch_min + fabs(chassis.roll), pitch_max + fabs(chassis.roll));		//pitch轴云台限幅
+     
     
 		gimbal_data.last_ctrl_mode = gimbal_data.ctrl_mode;//云台模式更新
 

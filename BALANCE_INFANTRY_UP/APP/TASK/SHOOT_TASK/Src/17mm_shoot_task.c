@@ -17,7 +17,7 @@ void shot_param_init()
 	PID_struct_init(&pid_trigger_speed,POSITION_PID,29000,10000,30,0,0);//100 0.1 4
 
 	
-	PID_struct_init(&pid_trigger_angle_buf,POSITION_PID, 1300 , 0    ,  150, 5  , 10);
+	PID_struct_init(&pid_trigger_angle_buf,POSITION_PID, 800 , 0    ,  100, 5  , 10);
 	PID_struct_init(&pid_trigger_speed_buf,POSITION_PID,29000 , 5500 ,  25 , 0  , 0 );
 	
     PID_struct_init(&pid_rotate[1], POSITION_PID,15500,500,50,0,0);
@@ -43,34 +43,34 @@ void heat_switch()
   shoot.cooling_ratio=judge_rece_mesg.game_robot_state.shooter_barrel_cooling_value;      //冷却速率
       
 	//计算射频
-		if(judge_rece_mesg.game_robot_state.robot_level==1)//level_冷却
-			shoot.shoot_frequency=10;
-        else if(judge_rece_mesg.game_robot_state.robot_level==2)
-            shoot.shoot_frequency=10;
-		else if(judge_rece_mesg.game_robot_state.robot_level==3)//level_2
-			shoot.shoot_frequency=10;
-		else if(judge_rece_mesg.game_robot_state.robot_level==4)//level_2
-			shoot.shoot_frequency=10;
-        else if(judge_rece_mesg.game_robot_state.robot_level==5)//level_2
-			shoot.shoot_frequency=10;
-        else if(judge_rece_mesg.game_robot_state.robot_level==6)//level_2
-			shoot.shoot_frequency=10;
-        else if(judge_rece_mesg.game_robot_state.robot_level==7)//level_2
-			shoot.shoot_frequency=14;
-        else if(judge_rece_mesg.game_robot_state.robot_level==8)//level_2
-			shoot.shoot_frequency=14;
-        else if(judge_rece_mesg.game_robot_state.robot_level==9)//level_2
-			shoot.shoot_frequency=15;
-        else if(judge_rece_mesg.game_robot_state.robot_level==10)//level_2
-			shoot.shoot_frequency=18;
-		else
-			shoot.shoot_frequency=10;
-				
-		
-				if(shoot.bulletspead_level==1)
-				{
-					shoot.shoot_frequency=1.5*shoot.shoot_frequency;
-				}
+//		 if(shoot.bulletspead_level==1)
+//                {
+//                    shoot.shoot_frequency=22;
+//                }
+//    else{
+            if(judge_rece_mesg.game_robot_state.robot_level==1)//level_冷却
+                shoot.shoot_frequency=10;                        
+            else if(judge_rece_mesg.game_robot_state.robot_level==2)//level_2
+                shoot.shoot_frequency=14;
+            else if(judge_rece_mesg.game_robot_state.robot_level==3)//level_3
+                shoot.shoot_frequency=17;
+            else if(judge_rece_mesg.game_robot_state.robot_level==4)
+                shoot.shoot_frequency=20;
+            else if(judge_rece_mesg.game_robot_state.robot_level==5)
+                shoot.shoot_frequency=20;
+            else if(judge_rece_mesg.game_robot_state.robot_level==6)
+                shoot.shoot_frequency=20;
+            else if(judge_rece_mesg.game_robot_state.robot_level==7)
+                shoot.shoot_frequency=20;
+            else if(judge_rece_mesg.game_robot_state.robot_level==8)
+                shoot.shoot_frequency=20;
+            else if(judge_rece_mesg.game_robot_state.robot_level==9)
+                shoot.shoot_frequency=20;
+            else if(judge_rece_mesg.game_robot_state.robot_level==10)
+                shoot.shoot_frequency=20;
+            else
+                shoot.shoot_frequency=12;                    
+//         }
 
 
 						
@@ -80,23 +80,37 @@ void heat_shoot_frequency_limit()//步兵射频限制部分
 {
 
 		heat_switch();//热量模式选择
-		bullets_spilling();//泼弹
+//		bullets_spilling();//泼弹
 
 	if(shoot.shoot_frequency!=0)                          //如果射频不为0（射频用来设定热量限制）
 	{
 		//计算2ms一次  time_tick 1ms更新一次
-			 if(shoot.shoot_frequency>20)                   //高射速时，计算射击时间
-			 {
-				 shoot.will_time_shoot=(shoot.remain_bullets-4)*1000/shoot.shoot_frequency;             //没有裁判系统就读不到剩余弹量，就没法发射
-			 }
-			 else if(shoot.shoot_frequency>13)
-			 {
-				 shoot.will_time_shoot=(shoot.remain_bullets-3.5)*1000/shoot.shoot_frequency;
-			 }
-			 else
-			 {
-				 shoot.will_time_shoot=(shoot.remain_bullets-1.5)*1000/shoot.shoot_frequency;
-			 }
+			  switch(judge_rece_mesg.game_robot_state.robot_level)
+        {
+            case 1:
+            {shoot.will_time_shoot=(shoot.remain_bullets-2)*1000/shoot.shoot_frequency;}break;
+            case 2:
+            {shoot.will_time_shoot=(shoot.remain_bullets-4.2)*1000/shoot.shoot_frequency;}break;
+            case 3:
+            {shoot.will_time_shoot=(shoot.remain_bullets-5)*1000/shoot.shoot_frequency;}break;
+            case 4:
+            {shoot.will_time_shoot=(shoot.remain_bullets-6.1)*1000/shoot.shoot_frequency;}break;
+            case 5:
+            {shoot.will_time_shoot=(shoot.remain_bullets-6.1)*1000/shoot.shoot_frequency;}break;
+            case 6:
+            {shoot.will_time_shoot=(shoot.remain_bullets-6.1)*1000/shoot.shoot_frequency;}break;
+            case 7:
+            {shoot.will_time_shoot=(shoot.remain_bullets-6.1)*1000/shoot.shoot_frequency;}break;
+            case 8:
+            {shoot.will_time_shoot=(shoot.remain_bullets-6.1)*1000/shoot.shoot_frequency;}break;
+            case 9:
+            {shoot.will_time_shoot=(shoot.remain_bullets-6.1)*1000/shoot.shoot_frequency;}break;
+            case 10:
+            {shoot.will_time_shoot=(shoot.remain_bullets-6.1)*1000/shoot.shoot_frequency;}break;
+            default :
+            {shoot.will_time_shoot=(shoot.remain_bullets-3)*1000/shoot.shoot_frequency;} break;
+            
+        }
 	}
 }	
 	
@@ -121,11 +135,15 @@ void bullets_spilling()//步兵射频限制部分
 	}	
 
 }
+
+int residual_heat;
 void heat0_limit(void)           //热量限制
 {  //由于发送的数据为50hz，而且每次进入该操作需要5次循环，因此计算时 公式为：冷却上限-热量值+0.1*冷却值
   shoot.limit_heart0 = judge_rece_mesg.game_robot_state.shooter_barrel_heat_limit-judge_rece_mesg.power_heat_data.shooter_id1_17mm_cooling_heat+0.002*judge_rece_mesg.game_robot_state.shooter_barrel_cooling_value;
-	if(shoot.limit_heart0>12)//residual_heat)
+	if(shoot.limit_heart0>residual_heat)
+    {
     shoot.ctrl_mode=1;
+    }
   else
     {
      shoot.ctrl_mode=0;
@@ -213,6 +231,8 @@ void shoot_bullet_handle(void)
         if(buff_time==0)
         {
             buff_check_flag = 1;
+            shoot.poke_pid.angle_fdb=general_poke.poke.ecd_angle/36.109;
+            shoot.poke_pid.angle_ref = shoot.poke_pid.angle_fdb;
         }
         buff_time++;
 		if(shoot.fric_wheel_run==1)
@@ -402,7 +422,7 @@ void shoot_task()
 
 	shoot_state_mode_switch();
 
-
+    heat0_limit();
 	shoot_bullet_handle();
 	shoot_friction_handle();
 

@@ -44,6 +44,7 @@ void balance_param_init(void)
      balance_ramp.Init(&balance_ramp,CHASSIS_RAMP_TICK_COUNT);
     balance_ramp.SetScale(&balance_ramp, CHASSIS_RAMP_TICK_COUNT);
     balance_ramp.ResetCounter(&balance_ramp);
+    
    
 	
 }
@@ -78,6 +79,8 @@ void balance_chassis_task(void)
 			b_chassis.normal_Y_erroffset = NORMAL_Y_ERROFFSET;
 			b_chassis.roll_pid.iout = 0;
         b_chassis.chassis_ref.roll = 0;
+        b_chassis.jump_flag = 0;
+        jump_state = 0;
 
     }
     break;
@@ -151,7 +154,7 @@ b_chassis.predict_power[0] = all_power_cal(balance_chassis.Driving_Encoder[0].To
 void balance_cmd_select(void)
 {
     b_chassis.last_ctrl_mode = b_chassis.ctrl_mode;
-   if(balance_chassis.Driving_Encoder[0].if_online&&balance_chassis.Driving_Encoder[1].if_online)
+   if(balance_chassis.Driving_Encoder[0].if_online&&balance_chassis.Driving_Encoder[1].if_online&&time_tick>2000)
    {
        if((b_chassis.ctrl_mode != CHASSIS_INIT&&b_chassis.ctrl_mode != CHASSIS_STAND_MODE)||usart_chassis_data.chassis_mode == 0)
     b_chassis.ctrl_mode = usart_chassis_data.chassis_mode;
@@ -232,8 +235,16 @@ void get_remote_angle(void)
 	
 	if(vy==0&&vx==0)
 	{
-		b_chassis.chassis_ref.remote_angle = 0;
-        ecd_speed = 0;
+        if(b_chassis.ctrl_mode==CHASSIS_REVERSE)
+        {
+            b_chassis.chassis_ref.remote_angle = PI/2;
+            ecd_speed = 0;
+        }else
+        {
+            b_chassis.chassis_ref.remote_angle = 0;
+            ecd_speed = 0;
+        }
+		
 		
 	}else
 	{
@@ -512,7 +523,7 @@ void chassis_rotate_handle(void)
 **/
 void chassis_side_handle(void)
 {
-	 float side_angle;
+/*	 float side_angle;
 	if((b_chassis.yaw_angle_0_2pi>=0)&&((b_chassis.yaw_angle_0_2pi<=PI)))
 		{
 			side_angle = PI/2;
@@ -533,7 +544,56 @@ void chassis_side_handle(void)
 			b_chassis.normal_Y_erroffset-=b_chassis.balance_loop.dx*0.001*TIME_STEP;
 		
 		b_chassis.chassis_ref.vw = -pid_calc(&b_chassis.pid_follow_gim,b_chassis.yaw_angle_0_2pi,side_angle); 
+        
+        
+		VAL_LIMIT(b_chassis.chassis_ref.vw,-5,5);*/
+        
+           PID_struct_init(&b_chassis.roll_pid, POSITION_PID, 50000, 20000, 800, 0, 12000);
+	     b_chassis.roll_pid.iout = 0;
+    b_chassis.chassis_ref.vx = b_chassis.chassis_dynemic_ref.vx;
+		if(fabs(b_chassis.balance_loop.dx) > 0.2||b_chassis.chassis_ref.vy != 0||usart_chassis_data.ctrl_mode==1||b_chassis.chassis_ref.vw >= 0.2)
+			b_chassis.chassis_ref.y_position = b_chassis.balance_loop.x;
+		else
+			b_chassis.normal_Y_erroffset-=b_chassis.balance_loop.dx*0.001*TIME_STEP;
+		
+		if(fabs(b_chassis.chassis_ref.remote_angle-b_chassis.yaw_angle__pi_pi)<PI/2)
+		{
+			target_angle = b_chassis.chassis_ref.remote_angle;
+			b_chassis.chassis_ref.vy = b_chassis.chassis_ref.remote_speed;
+            b_chassis.chassis_ref.roll = usart_chassis_data.roll;
+		}else if(b_chassis.chassis_ref.remote_angle-b_chassis.yaw_angle__pi_pi > 3*PI/2)
+		{
+			target_angle = b_chassis.chassis_ref.remote_angle-2*PI;
+			b_chassis.chassis_ref.vy = b_chassis.chassis_ref.remote_speed;
+            b_chassis.chassis_ref.roll = usart_chassis_data.roll;
+		}else if(b_chassis.chassis_ref.remote_angle-b_chassis.yaw_angle__pi_pi < -3*PI/2)
+		{
+			target_angle = b_chassis.chassis_ref.remote_angle+2*PI;
+			b_chassis.chassis_ref.vy = b_chassis.chassis_ref.remote_speed;
+            b_chassis.chassis_ref.roll = usart_chassis_data.roll;
+		}
+		else if(b_chassis.chassis_ref.remote_angle-b_chassis.yaw_angle__pi_pi>0)
+		{
+			target_angle = b_chassis.chassis_ref.remote_angle - PI;
+			b_chassis.chassis_ref.vy = -b_chassis.chassis_ref.remote_speed;
+            b_chassis.chassis_ref.roll = -usart_chassis_data.roll;
+		}else if(b_chassis.chassis_ref.remote_angle-b_chassis.yaw_angle__pi_pi<0)
+		{
+			target_angle = b_chassis.chassis_ref.remote_angle + PI;
+			b_chassis.chassis_ref.vy = -b_chassis.chassis_ref.remote_speed;
+            b_chassis.chassis_ref.roll = -usart_chassis_data.roll;
+		}
+		
+		b_chassis.chassis_ref.vw = -pid_calc(&b_chassis.pid_follow_gim,b_chassis.yaw_angle__pi_pi,target_angle); 
 		VAL_LIMIT(b_chassis.chassis_ref.vw,-5,5);
+		
+        if(if_middle_leg)
+        {
+            b_chassis.chassis_ref.leglength = 0.21f;
+        }else
+        {
+            b_chassis.chassis_ref.leglength = b_chassis.chassis_dynemic_ref.leglength;
+        }
 		VAL_LIMIT(b_chassis.chassis_ref.vy,-1.4,1.4);
 }
 
@@ -713,12 +773,10 @@ void balance_task(void)
    
 		if(usart_chassis_data.ctrl_mode==1)
 		{
-			V_Tp_gain = 0;
+			
 			balance_Tgain = 0;
-			balance_Tpgain = 0;
-			b_chassis.left_leg.leg_F = 0;
-			b_chassis.right_leg.leg_F = 0;
 			V_T_gain = b_chassis.balance_loop.state_err[3]*2;
+     
 		}
 		//lqr输出
     b_chassis.balance_loop.lqrOutT = balance_Tgain + V_T_gain;
@@ -774,13 +832,48 @@ void balance_task(void)
     
     
     //电机输出限幅
-    VAL_LIMIT(b_chassis.joint_T[1], -34 , 34);
+   if(usart_chassis_data.ctrl_mode==1)
+   {
+       VAL_LIMIT(b_chassis.joint_T[1], 0 , 0);
+    VAL_LIMIT(b_chassis.joint_T[2], 0, 0);
+    VAL_LIMIT(b_chassis.joint_T[0], 0, 0);
+    VAL_LIMIT(b_chassis.joint_T[3], 0, 0);
+   }else
+   {
+          
+       
+       VAL_LIMIT(b_chassis.joint_T[1], -34 , 34);
     VAL_LIMIT(b_chassis.joint_T[2], -34, 34);
-    VAL_LIMIT(b_chassis.driving_T[0], -5, 5);
-
     VAL_LIMIT(b_chassis.joint_T[0], -34, 34);
     VAL_LIMIT(b_chassis.joint_T[3], -34, 34);
+   }
+//    
+//    
+    if(usart_chassis_data.chassis_power_buffer>10)
+    {
+        VAL_LIMIT(b_chassis.driving_T[0], -5, 5);
     VAL_LIMIT(b_chassis.driving_T[1], -5, 5);
+    }else 
+    {
+        if(usart_capacitance_message.cap_voltage_filte < 5)
+        {
+            VAL_LIMIT(b_chassis.driving_T[0], 0, 0);
+            VAL_LIMIT(b_chassis.driving_T[1], 0, 0);
+            
+        }else
+        {
+            VAL_LIMIT(b_chassis.driving_T[0], -2, 2);
+            VAL_LIMIT(b_chassis.driving_T[1], -2, 2);
+            
+        }
+    }
+
+        //电机输出限幅
+//    VAL_LIMIT(b_chassis.driving_T[0], -5, 5);
+//    VAL_LIMIT(b_chassis.driving_T[1], -5, 5);
+         
+    
+   
 
     
 }
@@ -806,7 +899,7 @@ void Software_power_limit_handle(void)
 		{
 			case 45:
 			{
-					limit_vy = 1.5;
+					limit_vy = 1.3;
 			}break;
 			case 50:
 			{
@@ -826,7 +919,7 @@ void Software_power_limit_handle(void)
 			}break;
 			case 100:
 			{
-				  
+				
 			}break;
 			}
 					

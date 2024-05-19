@@ -3,7 +3,7 @@
 #include "public.h"
 
 
-#define FRICTION_SPEED_30  (-980)
+#define FRICTION_SPEED_30  (-960)
 
 typedef struct{
         float Error_Mea;
@@ -72,8 +72,8 @@ typedef struct
 	uint8_t      bulletspead_level;
   uint8_t      fric_wheel_run; //run or not
   uint16_t     fric_wheel_spd;
-  uint16_t     will_time_shoot;
-  uint16_t     remain_bullets;
+  float     will_time_shoot;
+  float     remain_bullets;
 	uint8_t        single_angle;
 	float        shoot_frequency;
   float        total_speed;

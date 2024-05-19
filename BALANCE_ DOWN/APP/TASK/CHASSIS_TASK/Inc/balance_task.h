@@ -6,7 +6,7 @@
 #define BODY_MASS 16.7918
 #define WHEEL_MASS 2.268
 #define T_MAX 10 
-#define WARNING_VOLTAGE 7
+#define WARNING_VOLTAGE 17
 #define POWER_LIMIT 1
 #define ROTATE_Y_ERROFFSET -1.2f
 #define NORMAL_Y_ERROFFSET 0.0f
@@ -201,5 +201,7 @@ extern Balance_chassis_t b_chassis;
 extern float ecd_dtheta;
 extern float final_dtheta;
 extern RampGen_t balance_ramp;
+extern u8 jump_state;
+
 
 #endif // ! __BALANCE_TASK_H

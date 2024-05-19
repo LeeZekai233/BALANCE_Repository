@@ -138,7 +138,7 @@ poke_t general_poke = {0};
 
 void online_detective(volatile Encoder *v)
 {
-    if(abs(time_tick - v->cal_data.heart_cnt) > 10)
+    if(abs(time_tick - v->cal_data.heart_cnt) > 100)
     {
         v->if_online = 0;
     }else
