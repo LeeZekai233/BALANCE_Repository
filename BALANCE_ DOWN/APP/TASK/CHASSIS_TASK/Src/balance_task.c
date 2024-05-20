@@ -15,6 +15,7 @@ Balance_chassis_t b_chassis = { 0 };
 
     u8 if_middle_leg;
     int16_t middle_cnt;
+    int16_t seperate_cnt;
 
 RampGen_t balance_ramp = RAMP_GEN_DAFAULT;
 		
@@ -37,7 +38,9 @@ void balance_param_init(void)
     PID_struct_init(&b_chassis.vw_pid, POSITION_PID,5,5,2,0,0);
     PID_struct_init(&b_chassis.roll_pid, POSITION_PID, 50000, 20000, 800, 0, 12000);
 	
-		PID_struct_init(&b_chassis.pid_follow_gim, POSITION_PID, 500, 200, 7, 0, 10);
+    PID_struct_init(&b_chassis.pid_follow_gim, POSITION_PID, 500, 200, 7, 0, 10);
+    
+    PID_struct_init(&b_chassis.pid_seperate_gim, POSITION_PID, 500, 200, 0.5, 0, 5);
 	
 	PID_struct_init(&b_chassis.Init_Tp_pid, POSITION_PID, 500, 200, 40, 0, 60);
     
@@ -201,7 +204,11 @@ void balance_cmd_select(void)
                  if_middle_leg = 0;
              }
 				
-				
+			if(b_chassis.ctrl_mode != CHASSIS_SEPARATE)
+            {
+                seperate_cnt = 0;
+    
+            }                
 				get_remote_angle();
 				VAL_LIMIT(b_chassis.chassis_ref.remote_speed,b_chassis.min_speed,b_chassis.max_speed);
 }
@@ -365,13 +372,34 @@ void chassis_Init_handle(void)
 * @Note     :
 ************************************************************************************************************************
 **/
+float sep_target_yaw;
 void chassis_seperate_handle(void)
 {
-    b_chassis.chassis_ref.leglength = b_chassis.chassis_dynemic_ref.leglength;
-    b_chassis.chassis_ref.vy = b_chassis.chassis_dynemic_ref.vy;
-    b_chassis.chassis_ref.vx = b_chassis.chassis_dynemic_ref.vx;
-    b_chassis.chassis_ref.vw = b_chassis.chassis_dynemic_ref.vw;
-	b_chassis.chassis_ref.y_position += b_chassis.chassis_ref.vy*0.001*TIME_STEP;
+    if(seperate_cnt==0)
+    {
+        seperate_cnt++;
+        sep_target_yaw = chassis_gyro.yaw_Angle;
+    }
+    
+    
+        if(fabs(b_chassis.balance_loop.dx) > 0.2||b_chassis.chassis_ref.vy != 0||usart_chassis_data.ctrl_mode==1||b_chassis.chassis_ref.vw >= 0.2)
+			b_chassis.chassis_ref.y_position = b_chassis.balance_loop.x;
+		else
+			b_chassis.normal_Y_erroffset-=b_chassis.balance_loop.dx*0.001*TIME_STEP;
+        
+        b_chassis.chassis_ref.vy = 0; 
+        b_chassis.chassis_ref.roll = 0;
+        
+        b_chassis.chassis_ref.vw = pid_calc(&b_chassis.pid_seperate_gim,chassis_gyro.yaw_Angle,sep_target_yaw); 
+		VAL_LIMIT(b_chassis.chassis_ref.vw,-5,5);
+        
+        if(if_middle_leg)
+        {
+            b_chassis.chassis_ref.leglength = 0.21f;
+        }else
+        {
+            b_chassis.chassis_ref.leglength = b_chassis.chassis_dynemic_ref.leglength;
+        }
 }
 
 
@@ -1105,7 +1133,7 @@ void lqr_k(double L0, double K[12])
 
   
 				
- if(b_chassis.ctrl_mode == CHASSIS_REVERSE||b_chassis.chassis_ref.vx != 0)
+ if(b_chassis.ctrl_mode == CHASSIS_REVERSE||b_chassis.chassis_ref.vx != 0||b_chassis.ctrl_mode == CHASSIS_SEPARATE)
  {
 	K[0] = ((L0 * -207.816242348274 + t2 * 344.22964052883651) -
           t3 * 279.49335048597931) -

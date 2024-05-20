@@ -96,12 +96,18 @@ float pitch_max = 0;
 
     #define YAW_MOTOR_POLARITY          -1
     #define PITCH_MOTOR_POLARITY        1
-
+    
+    #define YAW_BIG_FEED          1
+    #define PITCH_BIG_FEED        1
+    
     float Buff_Yaw_remain = 0;
     float Buff_pitch_remain= 0;
 
     float auto_aim_Yaw_remain = 0;
     float auto_aim_pitch_remain = 0;
+    
+    float big_buff_pit_fed = PITCH_BIG_FEED;
+    float big_buff_yaw_fed = YAW_BIG_FEED;
 #elif STANDARD == 4
 #elif STANDARD == 5
 #endif
@@ -168,25 +174,24 @@ void gimbal_parameter_Init(void)
                     4, 0.01, 20);//15 0 80
     PID_struct_init ( &gimbal_data.pid_yaw_speed_follow, POSITION_PID, 29800, 29800,
                     400.0f, 0.8, 0 ); //160 0.8 40
-    //小幅下的参数
-    PID_struct_init(&gimbal_data.pid_pit_small_buff, POSITION_PID, 70, 20,
-                    12.0f, 0.2f, 5); 
-    PID_struct_init(&gimbal_data.pid_pit_speed_small_buff, POSITION_PID, 25000, 20000,
-                    350.0f, 7.0f, 0); 
-    PID_struct_init(&gimbal_data.pid_yaw_small_buff, POSITION_PID, 60, 20,
-                    20.0f, 0.2f, 10);
-    PID_struct_init(&gimbal_data.pid_yaw_speed_small_buff, POSITION_PID, 25000, 25000,
-                    450.0f, 4.0f, 200);
-
+    //小幅下的参数            
+    PID_struct_init(&gimbal_data.pid_pit_small_buff, POSITION_PID, 200, 10,
+                    8.0f, 0.05f, 20); 
+    PID_struct_init(&gimbal_data.pid_pit_speed_small_buff, POSITION_PID, 27000, 25000,
+                    350.0f, 8.0f, 200); 
+    PID_struct_init(&gimbal_data.pid_yaw_small_buff, POSITION_PID, 250, 5,
+                    8.5f, 0.05f, 30); 
+    PID_struct_init(&gimbal_data.pid_yaw_speed_small_buff, POSITION_PID, 25000, 5000,
+                    400.0f, 8.0f, 200);
     //大幅下的参数
     PID_struct_init(&gimbal_data.pid_pit_big_buff, POSITION_PID, 200, 10,
-                    10.0f, 0.1f, 20); 
+                    8.0f, 0.05f, 20); 
     PID_struct_init(&gimbal_data.pid_pit_speed_big_buff, POSITION_PID, 27000, 25000,
-                    300.0f, 8.0f, 200); 
-    PID_struct_init(&gimbal_data.pid_yaw_big_buff, POSITION_PID, 250, 4,
-                    10.0f, 0.1f, 20); 
+                    350.0f, 8.0f, 200); 
+    PID_struct_init(&gimbal_data.pid_yaw_big_buff, POSITION_PID, 250, 5,
+                    8.5f, 0.05f, 30); 
     PID_struct_init(&gimbal_data.pid_yaw_speed_big_buff, POSITION_PID, 25000, 5000,
-                    300.0f, 8.0f, 200);
+                    400.0f, 8.0f, 200);
 #elif STANDARD == 4
 #elif STANDARD == 5
 #endif
@@ -539,6 +544,7 @@ void auto_small_buff_handle(void)
 																big_buff控制任务		
 	 =============================================================================
  **/
+
 void auto_big_buff_handle(void)
 {
     if(first_flag == 0)
@@ -582,20 +588,30 @@ void auto_big_buff_handle(void)
         gimbal_data.gim_ref_and_fdb.pit_angle_ref = last_pitch_angle;
     }
     
+    if(fabs(gimbal_data.pid_yaw_big_buff.err[0])<=0.7&&fabs(gimbal_data.pid_pit_big_buff.err[0])<=0.7)
+    {
+        big_buff_pit_fed = PITCH_BIG_FEED;
+        big_buff_yaw_fed = YAW_BIG_FEED;
+    }else
+    {
+        big_buff_pit_fed = 0;
+        big_buff_yaw_fed = 0;
+    }
+    
     gimbal_data.gim_ref_and_fdb.yaw_motor_input = pid_double_loop_cal(&gimbal_data.pid_yaw_big_buff,
                                                                       &gimbal_data.pid_yaw_speed_big_buff,
                                                                       gimbal_data.gim_ref_and_fdb.yaw_angle_ref,                     
                                                                       gimbal_data.gim_ref_and_fdb.yaw_angle_fdb,
 																																			&gimbal_data.gim_ref_and_fdb.yaw_speed_ref,
                                                                       gimbal_data.gim_ref_and_fdb.yaw_speed_fdb,
-                                                                      0 )*YAW_MOTOR_POLARITY;
+                                                                      gimbal_data.pid_yaw_big_buff.out*big_buff_yaw_fed )*YAW_MOTOR_POLARITY;
     gimbal_data.gim_ref_and_fdb.pitch_motor_input = pid_double_loop_cal(&gimbal_data.pid_pit_big_buff,
                                                                       &gimbal_data.pid_pit_speed_big_buff,
                                                                       gimbal_data.gim_ref_and_fdb.pit_angle_ref,                     
                                                                       gimbal_data.gim_ref_and_fdb.pit_angle_fdb,
 																																			&gimbal_data.gim_ref_and_fdb.pit_speed_ref,
                                                                       gimbal_data.gim_ref_and_fdb.pit_speed_fdb,
-                                                                      0 )*PITCH_MOTOR_POLARITY;
+                                                                      gimbal_data.pid_pit_big_buff.out*big_buff_pit_fed )*PITCH_MOTOR_POLARITY;
 }
 
 

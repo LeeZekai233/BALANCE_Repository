@@ -20,7 +20,7 @@ receive_judge_t judge_rece_mesg;
 u16 last_base,this_base;
 u16 last_security,this_security;
 
-u16 last_remain,this_remain;
+int last_remain,this_remain;
 int already_shoot;
 
 /***********************************    ↓    DJI提供的CRC校检函数   ↓  ***********************************/

@@ -741,7 +741,7 @@ void Client_send_handle()
                 }break;
                 case BIG_BUFF:
                 {
-                    graphic2.grapic_data_struct[2].operate_type=1;  //1 增加 2修改图形 3删除单个图形 5删除一个图层的图形 6删除所有图形
+                      graphic2.grapic_data_struct[2].operate_type=1;  //1 增加 2修改图形 3删除单个图形 5删除一个图层的图形 6删除所有图形
                       graphic2.grapic_data_struct[2].layer=1;   //图层
                       graphic2.grapic_data_struct[2].graphic_type=2;  //0 直线 1矩形 2整圆 3椭圆 4圆弧 5浮点数 6整数型 7字符
                       graphic2.grapic_data_struct[2].graphic_name[0]=0;
@@ -754,6 +754,34 @@ void Client_send_handle()
                       graphic2.grapic_data_struct[2].width=5;//竖
                 }break;
             }
+            //自瞄范围
+                     graphic2.grapic_data_struct[3].operate_type=1;  //1 增加 2修改图形 3删除单个图形 5删除一个图层的图形 6删除所有图形
+                      graphic2.grapic_data_struct[3].layer=1;   //图层
+                      graphic2.grapic_data_struct[3].graphic_type=1;  //0 直线 1矩形 2整圆 3椭圆 4圆弧 5浮点数 6整数型 7字符
+                      graphic2.grapic_data_struct[3].graphic_name[0]=0;
+                      graphic2.grapic_data_struct[3].graphic_name[1]=2;
+                      graphic2.grapic_data_struct[3].graphic_name[2]=1;
+                      graphic2.grapic_data_struct[3].start_x=670;
+                      graphic2.grapic_data_struct[3].start_y=346;
+                      graphic2.grapic_data_struct[3].end_x=1252;
+                      graphic2.grapic_data_struct[3].end_y=810;
+                      graphic2.grapic_data_struct[3].color=UI_RB;
+                      graphic2.grapic_data_struct[3].radius=5;
+                      graphic2.grapic_data_struct[3].width=2;//竖
+            //2号准星
+                      graphic2.grapic_data_struct[4].operate_type=1;  //1 增加 2修改图形 3删除单个图形 5删除一个图层的图形 6删除所有图形
+                      graphic2.grapic_data_struct[4].layer=1;   //图层
+                      graphic2.grapic_data_struct[4].graphic_type=2;  //0 直线 1矩形 2整圆 3椭圆 4圆弧 5浮点数 6整数型 7字符
+                      graphic2.grapic_data_struct[4].graphic_name[0]=0;
+                      graphic2.grapic_data_struct[4].graphic_name[1]=2;
+                      graphic2.grapic_data_struct[4].graphic_name[2]=2;
+                      graphic2.grapic_data_struct[4].start_x=960;
+                      graphic2.grapic_data_struct[4].start_y=500;
+            
+				graphic2.grapic_data_struct[4].color=UI_YELLOW;
+			
+			graphic2.grapic_data_struct[4].radius=1;
+            graphic2.grapic_data_struct[4].width=3;//竖
             *(ext_client_custom_graphic_seven_t*)(&ddata[6])=graphic2;
             data_upload_handle(STUDENT_INTERACTIVE_HEADER_DATA_ID, ddata,6+sizeof(graphic2),DN_REG_ID,tx_buf);
               

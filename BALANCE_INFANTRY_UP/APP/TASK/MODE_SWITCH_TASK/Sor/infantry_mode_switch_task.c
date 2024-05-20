@@ -263,6 +263,9 @@ void infantry_mode_switch_task(void)
             {
                 chassis.ctrl_mode = CHASSIS_ROTATE;
 				chassis.ChassisSpeed_Ref.rotate_ref = 10;
+            }else if(gimbal_data.vision_mode==BIG_BUFF||gimbal_data.vision_mode==SMALL_BUFF)
+            {
+                chassis.ctrl_mode = CHASSIS_SEPARATE;
             }
             else if(RC_CtrlData.Key_Flag.Key_F_TFlag)
             {

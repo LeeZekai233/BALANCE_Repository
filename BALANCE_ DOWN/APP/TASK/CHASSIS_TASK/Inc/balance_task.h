@@ -154,6 +154,7 @@ typedef struct
 	pid_t vw_pid;
 	pid_t roll_pid;
 	pid_t pid_follow_gim;
+    pid_t pid_seperate_gim;
 	
 	pid_t Init_Tp_pid;
     

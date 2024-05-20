@@ -55,21 +55,21 @@ void heat_switch()
             else if(judge_rece_mesg.game_robot_state.robot_level==3)//level_3
                 shoot.shoot_frequency=17;
             else if(judge_rece_mesg.game_robot_state.robot_level==4)
-                shoot.shoot_frequency=20;
+                shoot.shoot_frequency=17;
             else if(judge_rece_mesg.game_robot_state.robot_level==5)
-                shoot.shoot_frequency=20;
+                shoot.shoot_frequency=17;
             else if(judge_rece_mesg.game_robot_state.robot_level==6)
-                shoot.shoot_frequency=20;
+                shoot.shoot_frequency=17;
             else if(judge_rece_mesg.game_robot_state.robot_level==7)
-                shoot.shoot_frequency=20;
+                shoot.shoot_frequency=17;
             else if(judge_rece_mesg.game_robot_state.robot_level==8)
-                shoot.shoot_frequency=20;
+                shoot.shoot_frequency=17;
             else if(judge_rece_mesg.game_robot_state.robot_level==9)
-                shoot.shoot_frequency=20;
+                shoot.shoot_frequency=17;
             else if(judge_rece_mesg.game_robot_state.robot_level==10)
-                shoot.shoot_frequency=20;
+                shoot.shoot_frequency=17;
             else
-                shoot.shoot_frequency=12;                    
+                shoot.shoot_frequency=10;                    
 //         }
 
 
@@ -90,25 +90,25 @@ void heat_shoot_frequency_limit()//步兵射频限制部分
             case 1:
             {shoot.will_time_shoot=(shoot.remain_bullets-2)*1000/shoot.shoot_frequency;}break;
             case 2:
-            {shoot.will_time_shoot=(shoot.remain_bullets-4.2)*1000/shoot.shoot_frequency;}break;
+            {shoot.will_time_shoot=(shoot.remain_bullets-2)*1000/shoot.shoot_frequency;}break;
             case 3:
-            {shoot.will_time_shoot=(shoot.remain_bullets-5)*1000/shoot.shoot_frequency;}break;
+            {shoot.will_time_shoot=(shoot.remain_bullets-3)*1000/shoot.shoot_frequency;}break;
             case 4:
-            {shoot.will_time_shoot=(shoot.remain_bullets-6.1)*1000/shoot.shoot_frequency;}break;
+            {shoot.will_time_shoot=(shoot.remain_bullets-3)*1000/shoot.shoot_frequency;}break;
             case 5:
-            {shoot.will_time_shoot=(shoot.remain_bullets-6.1)*1000/shoot.shoot_frequency;}break;
+            {shoot.will_time_shoot=(shoot.remain_bullets-3)*1000/shoot.shoot_frequency;}break;
             case 6:
-            {shoot.will_time_shoot=(shoot.remain_bullets-6.1)*1000/shoot.shoot_frequency;}break;
+            {shoot.will_time_shoot=(shoot.remain_bullets-3)*1000/shoot.shoot_frequency;}break;
             case 7:
-            {shoot.will_time_shoot=(shoot.remain_bullets-6.1)*1000/shoot.shoot_frequency;}break;
+            {shoot.will_time_shoot=(shoot.remain_bullets-3)*1000/shoot.shoot_frequency;}break;
             case 8:
-            {shoot.will_time_shoot=(shoot.remain_bullets-6.1)*1000/shoot.shoot_frequency;}break;
+            {shoot.will_time_shoot=(shoot.remain_bullets-3.5)*1000/shoot.shoot_frequency;}break;
             case 9:
-            {shoot.will_time_shoot=(shoot.remain_bullets-6.1)*1000/shoot.shoot_frequency;}break;
+            {shoot.will_time_shoot=(shoot.remain_bullets-3.5)*1000/shoot.shoot_frequency;}break;
             case 10:
-            {shoot.will_time_shoot=(shoot.remain_bullets-6.1)*1000/shoot.shoot_frequency;}break;
+            {shoot.will_time_shoot=(shoot.remain_bullets-3.5)*1000/shoot.shoot_frequency;}break;
             default :
-            {shoot.will_time_shoot=(shoot.remain_bullets-3)*1000/shoot.shoot_frequency;} break;
+            {shoot.will_time_shoot=(shoot.remain_bullets-1)*1000/shoot.shoot_frequency;} break;
             
         }
 	}
@@ -156,6 +156,7 @@ int buff_reversal_count;
 int buff_time;
 u8 buff_check_flag;
 int single_shoot_cnt;
+int press_l_cnt;
 
 void shoot_bullet_handle(void)
 {	
@@ -171,7 +172,9 @@ void shoot_bullet_handle(void)
 	if(gimbal_data.ctrl_mode!=GIMBAL_AUTO_SMALL_BUFF&&
 		 gimbal_data.ctrl_mode!=GIMBAL_AUTO_BIG_BUFF)//正常模式
 //        if(0)
-	  {//热量限制
+	  {
+          shoot.friction_pid.speed_ref[0] =FRICTION_SPEED_30; 
+          //热量限制
 		  if(shoot.will_time_shoot>0&&
 				 shoot.fric_wheel_run==1&&
 							 shoot.poke_run==1&&				
@@ -228,6 +231,7 @@ void shoot_bullet_handle(void)
 }
 	else//打幅单发模式
 	{
+        shoot.friction_pid.speed_ref[0] =FRICTION_BUF_SPEED_30; 
         if(buff_time==0)
         {
             buff_check_flag = 1;
@@ -237,7 +241,21 @@ void shoot_bullet_handle(void)
         buff_time++;
 		if(shoot.fric_wheel_run==1)
 		{
-			
+            if(RC_CtrlData.mouse.press_l==1)
+            {
+                press_l_cnt++;
+            }
+            else
+            {
+                press_l_cnt=0;
+            }
+            if(press_l_cnt>300)
+            {
+                if(time_tick%800==0)
+                {
+                    press_l_flag=0;
+                }
+            }
 			if(RC_CtrlData.mouse.press_l==1||RC_CtrlData.RemoteSwitch.trigger==1)
 			 {
                  if(press_l_flag==0)

@@ -3,7 +3,8 @@
 #include "public.h"
 
 
-#define FRICTION_SPEED_30  (-960)
+#define FRICTION_BUF_SPEED_30  (-970)
+#define FRICTION_SPEED_30  (-920)
 
 typedef struct{
         float Error_Mea;
