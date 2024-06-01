@@ -16,6 +16,9 @@ Balance_chassis_t b_chassis = { 0 };
     u8 if_middle_leg;
     int16_t middle_cnt;
     int16_t seperate_cnt;
+    u8 down_flag;
+    u8 down_cnt_flag;
+    int down_cnt;
 
 RampGen_t balance_ramp = RAMP_GEN_DAFAULT;
 		
@@ -135,8 +138,8 @@ void balance_chassis_task(void)
     default:
         break;
     }
-b_chassis.max_speed = 2.4;
-b_chassis.min_speed = -2.4;
+b_chassis.max_speed = 2.3;
+b_chassis.min_speed = -2.3;
 b_chassis.Max_power_to_PM01 = input_power_cal();
 b_chassis.predict_power[0] = all_power_cal(balance_chassis.Driving_Encoder[0].Torque,4.626,0.0001699,1.629,balance_chassis.Driving_Encoder[0].rate_rpm) + \
                             all_power_cal(balance_chassis.Driving_Encoder[1].Torque,4.626,0.0001699,1.629,balance_chassis.Driving_Encoder[1].rate_rpm);
@@ -208,7 +211,31 @@ void balance_cmd_select(void)
             {
                 seperate_cnt = 0;
     
-            }                
+            }
+            
+            //倒地模式逻辑
+            if(usart_chassis_data.ctrl_mode==1)
+            {
+                down_flag = 1;
+                down_cnt_flag = 1;
+            }else
+            {
+                if(usart_chassis_data.chassis_power_buffer < 10)
+                {
+                    down_flag = 1;
+                    down_cnt_flag = 1;
+                }
+                if(usart_capacitance_message.cap_voltage_filte > 13&&down_cnt > 1000)
+                {
+                    down_flag = 0;
+                    down_cnt_flag = 0;
+                    down_cnt = 0;
+                }
+            }
+            if(down_cnt_flag==1)
+            {
+                down_cnt++;
+            }
 				get_remote_angle();
 				VAL_LIMIT(b_chassis.chassis_ref.remote_speed,b_chassis.min_speed,b_chassis.max_speed);
 }
@@ -382,10 +409,10 @@ void chassis_seperate_handle(void)
     }
     
     
-        if(fabs(b_chassis.balance_loop.dx) > 0.2||b_chassis.chassis_ref.vy != 0||usart_chassis_data.ctrl_mode==1||b_chassis.chassis_ref.vw >= 0.2)
-			b_chassis.chassis_ref.y_position = b_chassis.balance_loop.x;
-		else
-			b_chassis.normal_Y_erroffset-=b_chassis.balance_loop.dx*0.001*TIME_STEP;
+//        if(fabs(b_chassis.balance_loop.dx) > 0.2||b_chassis.chassis_ref.vy != 0||usart_chassis_data.ctrl_mode==1||b_chassis.chassis_ref.vw >= 0.2)
+//			b_chassis.chassis_ref.y_position = b_chassis.balance_loop.x;
+//		else
+//			b_chassis.normal_Y_erroffset-=b_chassis.balance_loop.dx*0.001*TIME_STEP;
         
         b_chassis.chassis_ref.vy = 0; 
         b_chassis.chassis_ref.roll = 0;
@@ -799,7 +826,7 @@ void balance_task(void)
     b_chassis.right_leg.leg_F = pid_calc(&b_chassis.right_leg.leglengthpid, b_chassis.right_leg.l0, b_chassis.chassis_ref.leglength) + (BODY_MASS/2)*9.8 - roll_F_output - b_chassis.balance_loop.Fm*0.5;
     
    
-		if(usart_chassis_data.ctrl_mode==1)
+		if(down_flag==1)
 		{
 			
 			balance_Tgain = 0;
@@ -860,7 +887,7 @@ void balance_task(void)
     
     
     //电机输出限幅
-   if(usart_chassis_data.ctrl_mode==1)
+   if(down_flag==1)
    {
        VAL_LIMIT(b_chassis.joint_T[1], 0 , 0);
     VAL_LIMIT(b_chassis.joint_T[2], 0, 0);
@@ -883,17 +910,10 @@ void balance_task(void)
     VAL_LIMIT(b_chassis.driving_T[1], -5, 5);
     }else 
     {
-        if(usart_capacitance_message.cap_voltage_filte < 5)
-        {
+        
             VAL_LIMIT(b_chassis.driving_T[0], 0, 0);
             VAL_LIMIT(b_chassis.driving_T[1], 0, 0);
             
-        }else
-        {
-            VAL_LIMIT(b_chassis.driving_T[0], -2, 2);
-            VAL_LIMIT(b_chassis.driving_T[1], -2, 2);
-            
-        }
     }
 
         //电机输出限幅

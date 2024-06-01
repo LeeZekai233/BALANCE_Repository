@@ -1,7 +1,13 @@
 #include "17mm_shoot_task.h"
 
 /* Variables_definination-----------------------------------------------------------------------------------------------*/
-  shoot_t shoot;
+  shoot_t shoot = {
+        .Bullet_Speed_Kalman.X_hat=28,
+        .Bullet_Speed_Kalman.Error_Mea=0.2,
+        .Bullet_Speed_Kalman.Error_Est=5,
+};
+  
+  
 	pid_t pid_trigger_angle ={0};
 	pid_t pid_trigger_angle_buf={0};
 	pid_t pid_trigger_speed_buf={0};
@@ -17,7 +23,7 @@ void shot_param_init()
 	PID_struct_init(&pid_trigger_speed,POSITION_PID,29000,10000,30,0,0);//100 0.1 4
 
 	
-	PID_struct_init(&pid_trigger_angle_buf,POSITION_PID, 800 , 0    ,  100, 5  , 10);
+	PID_struct_init(&pid_trigger_angle_buf,POSITION_PID, 1000 , 0    ,  120, 5  , 10);
 	PID_struct_init(&pid_trigger_speed_buf,POSITION_PID,29000 , 5500 ,  25 , 0  , 0 );
 	
     PID_struct_init(&pid_rotate[1], POSITION_PID,15500,500,50,0,0);
@@ -30,7 +36,13 @@ void shot_param_init()
 }
 
 
-
+float Shooter_Bullet_Speed_Self_Adaptation(float Bullet_Speed)
+{
+        float static Bullet_Speed_Error;
+        Bullet_Speed_Error=(BULLET_SPEED_TARGET-Bullet_Speed);
+        
+        return Bullet_Speed_Error*BULLET_SPEED_SELF_ADAPTATION_K;
+}
 
 
 
@@ -168,12 +180,12 @@ void shoot_bullet_handle(void)
 
 	heat_shoot_frequency_limit();//步兵射频限制
 
-	
-	if(gimbal_data.ctrl_mode!=GIMBAL_AUTO_SMALL_BUFF&&
-		 gimbal_data.ctrl_mode!=GIMBAL_AUTO_BIG_BUFF)//正常模式
+if(general_friction.left_motor.if_online==1&&general_friction.right_motor.if_online==1)
+{
+	if(gimbal_data.vision_mode!=SMALL_BUFF&&
+		 gimbal_data.vision_mode!=BIG_BUFF)//正常模式
 //        if(0)
 	  {
-          shoot.friction_pid.speed_ref[0] =FRICTION_SPEED_30; 
           //热量限制
 		  if(shoot.will_time_shoot>0&&
 				 shoot.fric_wheel_run==1&&
@@ -231,10 +243,9 @@ void shoot_bullet_handle(void)
 }
 	else//打幅单发模式
 	{
-        shoot.friction_pid.speed_ref[0] =FRICTION_BUF_SPEED_30; 
         if(buff_time==0)
         {
-            buff_check_flag = 1;
+            buff_check_flag = 0;//1;
             shoot.poke_pid.angle_fdb=general_poke.poke.ecd_angle/36.109;
             shoot.poke_pid.angle_ref = shoot.poke_pid.angle_fdb;
         }
@@ -307,6 +318,12 @@ void shoot_bullet_handle(void)
 		{shoot.poke_pid.angle_ref=shoot.poke_pid.angle_fdb;
 		shoot.poke_current=0;}
 	}
+}else
+{
+    {shoot.poke_pid.angle_ref=shoot.poke_pid.angle_fdb;
+		shoot.poke_current=0;}
+}
+
 }
 
 
@@ -316,8 +333,8 @@ void shoot_friction_handle()
 {  
 	if(shoot.fric_wheel_run==1)
 	{
-		pid_rotate[0].set= shoot.friction_pid.speed_ref[0];
-    pid_rotate[1].set= -shoot.friction_pid.speed_ref[0];	
+		pid_rotate[0].set= shoot.friction_pid.speed_ref[0] - Shooter_Bullet_Speed_Self_Adaptation(shoot.Bullet_Speed_Kalman.X_hat) ;
+        pid_rotate[1].set= -shoot.friction_pid.speed_ref[0] + Shooter_Bullet_Speed_Self_Adaptation(shoot.Bullet_Speed_Kalman.X_hat) ;	
 	}
 	else
 	{

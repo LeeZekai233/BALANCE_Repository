@@ -470,29 +470,9 @@
               <FilePath>..\EMBEDDED\senior\DJI_MOTOR\DJI_MOTOR.c</FilePath>
             </File>
             <File>
-              <FileName>HI220.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\EMBEDDED\senior\HI220\HI220.c</FilePath>
-            </File>
-            <File>
-              <FileName>HT430.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\EMBEDDED\senior\HT430\HT430.c</FilePath>
-            </File>
-            <File>
               <FileName>JUDGE.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\EMBEDDED\senior\JUDGE\JUDGE.c</FilePath>
-            </File>
-            <File>
-              <FileName>LK_TECH.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\EMBEDDED\senior\LK_TECH\LK_TECH.c</FilePath>
-            </File>
-            <File>
-              <FileName>PM01.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\EMBEDDED\senior\PM01\PM01.c</FilePath>
             </File>
             <File>
               <FileName>REMOTE.c</FileName>

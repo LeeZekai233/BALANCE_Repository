@@ -4,7 +4,9 @@
 
 
 #define FRICTION_BUF_SPEED_30  (-970)
-#define FRICTION_SPEED_30  (-920)
+#define FRICTION_SPEED_30  (-950)
+#define BULLET_SPEED_TARGET     28
+#define BULLET_SPEED_SELF_ADAPTATION_K    100
 
 typedef struct{
         float Error_Mea;
@@ -82,7 +84,9 @@ typedef struct
 	float        limit_heart1;
   uint16_t     max_heart0;
   uint16_t     cooling_ratio;
+    First_Order_Kalman_Filter_t Bullet_Speed_Kalman;
 } shoot_t;
+
 
 void shot_param_init(void);
 void heat0_limit(void);

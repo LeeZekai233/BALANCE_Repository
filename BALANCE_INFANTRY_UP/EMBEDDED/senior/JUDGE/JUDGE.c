@@ -321,7 +321,16 @@ void judgement_data_handle(uint8_t *p_frame, u16 rec_len)
 
 					if (data_length == 7)
 					{
-						memcpy(&judge_rece_mesg.shoot_data, data_addr, data_length);
+                        memcpy(&judge_rece_mesg.shoot_data, data_addr, data_length);
+                        if(judge_rece_mesg.shoot_data.bullet_speed < 20)
+                        {
+                            First_Order_Kalman_Filter_Cal(&shoot.Bullet_Speed_Kalman, 28);
+                        }
+                        else
+                        {
+                            First_Order_Kalman_Filter_Cal(&shoot.Bullet_Speed_Kalman, judge_rece_mesg.shoot_data.bullet_speed);
+                        }
+                        
 					}
 				}
 				break;

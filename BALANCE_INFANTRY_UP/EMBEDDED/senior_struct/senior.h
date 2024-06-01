@@ -17,7 +17,8 @@
 #define STRUCT_MOTOR
 
 #define RATE_BUF_SIZE 6
-typedef struct{
+typedef struct 
+{
 	int32_t raw_value;   									//编码器不经处理的原始值
 	int32_t last_raw_value;								//上一次的编码器原始值
 	int32_t ecd_value;                       //经过处理后连续的编码器值
@@ -29,11 +30,24 @@ typedef struct{
 	int32_t rate_buf[RATE_BUF_SIZE];	//buf，for filter
 	int32_t round_cnt;										//圈数
 	int32_t can_cnt;					//记录函数的使用次数，在电机初始完成部分任务
+    int32_t heart_cnt;
+}Encoder_cal;
 
+
+typedef struct{
+	Encoder_cal cal_data;
+
+    u8 if_online;
 	int32_t filter_rate;											//速度
 	double ecd_angle;											//角度
-	u32 temperature;
 	int16_t rate_rpm;
+
+	double angle;
+	double gyro;
+
+	float Torque;
+	u32 temperature;
+	
 	
 }Encoder;
 	
@@ -134,6 +148,6 @@ extern friction_t general_friction;
 extern poke_t general_poke;
 
 
-
+void online_detective(volatile Encoder *v);
 #endif
 

@@ -72,10 +72,10 @@ void infantry_mode_switch_task(void)
             chassis.ctrl_mode = CHASSIS_ROTATE;
             if(rotate_cnt%2==0)
             {
-                chassis.ChassisSpeed_Ref.rotate_ref = 10;
+                chassis.ChassisSpeed_Ref.rotate_ref = 5;
             }else
             {
-                chassis.ChassisSpeed_Ref.rotate_ref = -10;
+                chassis.ChassisSpeed_Ref.rotate_ref = -5;
             }
 					
 				

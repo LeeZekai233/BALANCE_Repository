@@ -68,7 +68,9 @@ void vision_process_general_message(unsigned char* address, unsigned int length)
 			new_location.y = Uart4_Protobuf_Receive_Gimbal_Angle->target_pitch_;
 			new_location.pitch_speed = Uart4_Protobuf_Receive_Gimbal_Angle->pitch_speed;
 			new_location.yaw_speed = Uart4_Protobuf_Receive_Gimbal_Angle->yaw_speed;
-			new_location.flag = 1;
+            new_location.flag = 1;
+            
+			
 			if (fabs(new_location.x - gimbal_gyro.yaw_Angle) > 45 || fabs(new_location.y - gimbal_gyro.pitch_Angle) > 70)
 			{
 

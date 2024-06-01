@@ -133,7 +133,16 @@ poke_t general_poke = {0};
 //										uint16_t chassis_power_buffer,
 //										u8 chassis_power_limit)
 
-
+void online_detective(volatile Encoder *v)
+{
+    if(abs(time_tick - v->cal_data.heart_cnt) > 100)
+    {
+        v->if_online = 0;
+    }else
+    {
+        v->if_online = 1;
+    }
+}
 
 
 

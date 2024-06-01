@@ -175,19 +175,19 @@ void gimbal_parameter_Init(void)
     PID_struct_init ( &gimbal_data.pid_yaw_speed_follow, POSITION_PID, 29800, 29800,
                     400.0f, 0.8, 0 ); //160 0.8 40
     //小幅下的参数            
-    PID_struct_init(&gimbal_data.pid_pit_small_buff, POSITION_PID, 200, 10,
-                    8.0f, 0.05f, 20); 
+    PID_struct_init(&gimbal_data.pid_pit_small_buff, POSITION_PID, 200, 5,
+                    7.0f, 0.1f, 3); 
     PID_struct_init(&gimbal_data.pid_pit_speed_small_buff, POSITION_PID, 27000, 25000,
                     350.0f, 8.0f, 200); 
     PID_struct_init(&gimbal_data.pid_yaw_small_buff, POSITION_PID, 250, 5,
-                    8.5f, 0.05f, 30); 
+                    6.5f, 0.2f, 10); 
     PID_struct_init(&gimbal_data.pid_yaw_speed_small_buff, POSITION_PID, 25000, 5000,
                     400.0f, 8.0f, 200);
     //大幅下的参数
     PID_struct_init(&gimbal_data.pid_pit_big_buff, POSITION_PID, 200, 10,
                     8.0f, 0.05f, 20); 
     PID_struct_init(&gimbal_data.pid_pit_speed_big_buff, POSITION_PID, 27000, 25000,
-                    350.0f, 8.0f, 200); 
+                    300.0f, 8.0f, 150); 
     PID_struct_init(&gimbal_data.pid_yaw_big_buff, POSITION_PID, 250, 5,
                     8.5f, 0.05f, 30); 
     PID_struct_init(&gimbal_data.pid_yaw_speed_big_buff, POSITION_PID, 25000, 5000,
@@ -206,6 +206,7 @@ void gimbal_parameter_Init(void)
  **/
 void gimbal_task(void)
 {
+    
     switch (gimbal_data.ctrl_mode)
     {
     case GIMBAL_RELAX:		//关控
@@ -474,6 +475,8 @@ void gimbal_follow_gyro_handle(void)
 																small_buff控制任务		
 	 =============================================================================
  **/
+float pit_forward_k = 0;
+float yaw_forward_k = 0.01;
 void auto_small_buff_handle(void)
 {
      if(first_flag == 0)
@@ -506,7 +509,7 @@ void auto_small_buff_handle(void)
         }
         last_yaw=new_location.x1;
 		last_pit=new_location.y1;
-
+        
         gimbal_data.gim_ref_and_fdb.yaw_angle_ref = yaw_angle_ref_aim;
         gimbal_data.gim_ref_and_fdb.pit_angle_ref = raw_data_to_pitch_angle(pit_angle_ref_aim)+Buff_pitch_remain;;
     }
@@ -523,14 +526,14 @@ void auto_small_buff_handle(void)
                                                                       gimbal_data.gim_ref_and_fdb.yaw_angle_fdb,
 																																			&gimbal_data.gim_ref_and_fdb.yaw_speed_ref,
                                                                       gimbal_data.gim_ref_and_fdb.yaw_speed_fdb,
-                                                                      0 )*YAW_MOTOR_POLARITY;
+                                                                      yaw_forward_k*gimbal_data.pid_yaw_small_buff.out )*YAW_MOTOR_POLARITY;
     gimbal_data.gim_ref_and_fdb.pitch_motor_input = pid_double_loop_cal(&gimbal_data.pid_pit_small_buff,
                                                                       &gimbal_data.pid_pit_speed_small_buff,
                                                                       gimbal_data.gim_ref_and_fdb.pit_angle_ref,                     
                                                                       gimbal_data.gim_ref_and_fdb.pit_angle_fdb,
 																																			&gimbal_data.gim_ref_and_fdb.pit_speed_ref,
                                                                       gimbal_data.gim_ref_and_fdb.pit_speed_fdb,
-                                                                      0 )*PITCH_MOTOR_POLARITY;
+                                                                      pit_forward_k*gimbal_data.pid_pit_small_buff.out )*PITCH_MOTOR_POLARITY;
 }
 
 

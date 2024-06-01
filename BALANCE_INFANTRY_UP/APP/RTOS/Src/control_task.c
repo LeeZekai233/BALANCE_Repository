@@ -53,6 +53,9 @@ void control_task(void)
 			LED0_OFF;
 			HARD_WDG_OFF;
 		}
+        
+        online_detective(&general_friction.left_motor);
+        online_detective(&general_friction.right_motor);
 }
 
 void control_task_Init(void)
