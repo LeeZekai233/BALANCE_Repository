@@ -23,10 +23,10 @@ typedef struct
 	float velocity;
 
 	mat xhat,
-			U,
+        U,
 	    A,
 	    AT,
-			B,
+        B,
 	    H,
 	    HT,
 	    Z,

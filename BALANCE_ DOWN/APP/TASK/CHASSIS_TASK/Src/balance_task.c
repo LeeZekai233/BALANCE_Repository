@@ -72,21 +72,7 @@ void balance_chassis_task(void)
     case CHASSIS_RELAX:
     {
 			
-        b_chassis.joint_T[0] = 0;
-			  b_chassis.joint_T[1] = 0;
-			  b_chassis.joint_T[2] = 0;
-				b_chassis.joint_T[3] = 0;
-				b_chassis.driving_T[0] = 0;
-			  b_chassis.driving_T[1] = 0;
-			balance_Tpgain = 0;
-			balance_Tpoutlandgain = 0;
-			b_chassis.chassis_ref.pitch = 0;
-			b_chassis.chassis_ref.y_position = b_chassis.balance_loop.x;
-			b_chassis.normal_Y_erroffset = NORMAL_Y_ERROFFSET;
-			b_chassis.roll_pid.iout = 0;
-        b_chassis.chassis_ref.roll = 0;
-        b_chassis.jump_flag = 0;
-        jump_state = 0;
+        chassis_relax_handle();
 
     }
     break;
@@ -298,6 +284,34 @@ void get_remote_angle(void)
 	
 
     
+}
+
+/**
+************************************************************************************************************************
+* @Name     : chassis_relax_handle
+* @brief    : 底盘关控模式下各积分参数清零
+* @param		: void
+* @retval   : void
+* @Note     :
+************************************************************************************************************************
+**/
+void chassis_relax_handle(void)
+{
+    b_chassis.joint_T[0] = 0;
+    b_chassis.joint_T[1] = 0;
+			  b_chassis.joint_T[2] = 0;
+				b_chassis.joint_T[3] = 0;
+				b_chassis.driving_T[0] = 0;
+			  b_chassis.driving_T[1] = 0;
+			balance_Tpgain = 0;
+			balance_Tpoutlandgain = 0;
+			b_chassis.chassis_ref.pitch = 0;
+			b_chassis.chassis_ref.y_position = b_chassis.balance_loop.x;
+			b_chassis.normal_Y_erroffset = NORMAL_Y_ERROFFSET;
+			b_chassis.roll_pid.iout = 0;
+        b_chassis.chassis_ref.roll = 0;
+        b_chassis.jump_flag = 0;
+        jump_state = 0;
 }
 
 /**
@@ -578,31 +592,7 @@ void chassis_rotate_handle(void)
 **/
 void chassis_side_handle(void)
 {
-/*	 float side_angle;
-	if((b_chassis.yaw_angle_0_2pi>=0)&&((b_chassis.yaw_angle_0_2pi<=PI)))
-		{
-			side_angle = PI/2;
-			b_chassis.chassis_ref.vy = -b_chassis.chassis_dynemic_ref.vx;
-		}
-		else
-		{
-			side_angle = 3*PI/2;
-			b_chassis.chassis_ref.vy = b_chassis.chassis_dynemic_ref.vx;
-		}
-		
-		b_chassis.chassis_ref.leglength = b_chassis.chassis_dynemic_ref.leglength;
-    
-
-		if(fabs(b_chassis.balance_loop.dx) > 0.1||b_chassis.chassis_ref.vy != 0)
-			b_chassis.chassis_ref.y_position = b_chassis.balance_loop.x;
-		else
-			b_chassis.normal_Y_erroffset-=b_chassis.balance_loop.dx*0.001*TIME_STEP;
-		
-		b_chassis.chassis_ref.vw = -pid_calc(&b_chassis.pid_follow_gim,b_chassis.yaw_angle_0_2pi,side_angle); 
-        
-        
-		VAL_LIMIT(b_chassis.chassis_ref.vw,-5,5);*/
-        
+  
            PID_struct_init(&b_chassis.roll_pid, POSITION_PID, 50000, 20000, 800, 0, 12000);
 	     b_chassis.roll_pid.iout = 0;
     b_chassis.chassis_ref.vx = b_chassis.chassis_dynemic_ref.vx;
