@@ -1,18 +1,38 @@
+/**
+  ******************************************************************************
+  * @file    balance_task.c
+  * @author  Lee_Zekai
+  * @version V1.0.0
+  * @date    01-June-2024
+  * @brief   平衡底盘控制任务，平衡底盘包含balance_task.c，leg_task.c,Mileage.c
+  *          部分命名不够规范，在此做出说明：
+  *             侧向对敌                    HASSIS_REVERSE
+  *             操作手是否解除平衡姿态 usart_chassis_data.ctrl_mode
+  *         
+  @verbatim
+ ===============================================================================
+**/
+
+
+/* Includes ------------------------------------------------------------------*/
 #include "balance_task.h"
 
 
-
+/* balance struct */
 Balance_chassis_t b_chassis = { 0 };
+
+/* 临时全局变量 */
+    //速度及平衡未离地增益
     float V_T_gain;
     float V_Tp_gain;
     float balance_Tgain;
     float balance_Tpgain;
-
+    //速度及平衡离地增益
     float V_T_outlandgain ;
     float V_Tp_outlandgain ;
     float balance_Toutlandgain ;
     float balance_Tpoutlandgain ;
-
+    //逻辑用标志位与计数器
     u8 if_middle_leg;
     int16_t middle_cnt;
     int16_t seperate_cnt;
@@ -20,7 +40,6 @@ Balance_chassis_t b_chassis = { 0 };
     u8 down_cnt_flag;
     int down_cnt;
 
-RampGen_t balance_ramp = RAMP_GEN_DAFAULT;
 		
 /**
 ************************************************************************************************************************
@@ -35,6 +54,7 @@ void balance_param_init(void)
 {
     memset(&b_chassis, 0, sizeof(Balance_chassis_t));
     b_chassis.chassis_dynemic_ref.leglength = 0.21;
+    /* PID赋初值 */
     PID_struct_init(&b_chassis.left_leg.leglengthpid, POSITION_PID,20000,20000,1200,0,40000);
     PID_struct_init(&b_chassis.right_leg.leglengthpid, POSITION_PID, 20000, 20000, 1200, 0, 40000);
     PID_struct_init(&b_chassis.leg_harmonize_pid, POSITION_PID, 2000, 2000, 150, 0, 3000);
@@ -47,9 +67,6 @@ void balance_param_init(void)
 	
 	PID_struct_init(&b_chassis.Init_Tp_pid, POSITION_PID, 500, 200, 40, 0, 60);
     
-     balance_ramp.Init(&balance_ramp,CHASSIS_RAMP_TICK_COUNT);
-    balance_ramp.SetScale(&balance_ramp, CHASSIS_RAMP_TICK_COUNT);
-    balance_ramp.ResetCounter(&balance_ramp);
     
    
 	
@@ -66,57 +83,56 @@ void balance_param_init(void)
 **/
 void balance_chassis_task(void)
 {
-    balance_cmd_select();
+    balance_cmd_select();//平衡模式与逻辑选择
+    
+    /* 底盘状态机 */
     switch (b_chassis.ctrl_mode)
     {
-    case CHASSIS_RELAX:
+    case CHASSIS_RELAX://关控
     {
 			
         chassis_relax_handle();
 
     }
     break;
-		case CHASSIS_STOP:
-		{
-			chassis_stop_handle();
-			balance_task();
-		}break;
-    case CHASSIS_INIT:
+    case CHASSIS_INIT://底盘腿姿态初始化
     {
         chassis_Init_handle();
 
     }
     break;
-		case CHASSIS_STAND_MODE:
+		case CHASSIS_STAND_MODE://完成腿姿态初始化后起立
 		{
 			chassis_standup_handle();
 			balance_task();
 		}break;
-    case CHASSIS_SEPARATE:
+    case CHASSIS_SEPARATE://底盘云台分离，打符用
     {
-				chassis_seperate_handle();
+        chassis_seperate_handle();
         balance_task();
     }
     break;
-    case MANUAL_FOLLOW_GIMBAL:
+    case MANUAL_FOLLOW_GIMBAL://底盘跟随云台
     {
 			if(b_chassis.jump_flag==1)
 			{
+                /* 跳跃模式 */
 				balance_jump_handle();
 				balance_task();
 			}else
 			{
+                /* 普通模式 */
 				follow_gimbal_handle();
                 balance_task();
 			}
     }
     break;
-    case CHASSIS_ROTATE:
+    case CHASSIS_ROTATE://小陀螺
     {
 			chassis_rotate_handle();
 			balance_task();
     }break;
-		case CHASSIS_REVERSE:
+		case CHASSIS_REVERSE://侧身向敌
 		{
 			chassis_side_handle();
 			balance_task();
@@ -124,9 +140,14 @@ void balance_chassis_task(void)
     default:
         break;
     }
+/* 最大速度设置，轮毂为FM9025时调试的最稳定的飞坡速度 */
 b_chassis.max_speed = 2.3;
 b_chassis.min_speed = -2.3;
-b_chassis.Max_power_to_PM01 = input_power_cal();
+ 
+/* 老功率控制板，计算最大输入功率*/
+/* b_chassis.Max_power_to_PM01 = input_power_cal(); */
+    
+/* 底盘实时功率预测，调试用 */
 b_chassis.predict_power[0] = all_power_cal(balance_chassis.Driving_Encoder[0].Torque,4.626,0.0001699,1.629,balance_chassis.Driving_Encoder[0].rate_rpm) + \
                             all_power_cal(balance_chassis.Driving_Encoder[1].Torque,4.626,0.0001699,1.629,balance_chassis.Driving_Encoder[1].rate_rpm);
 
@@ -146,48 +167,57 @@ b_chassis.predict_power[0] = all_power_cal(balance_chassis.Driving_Encoder[0].To
 void balance_cmd_select(void)
 {
     b_chassis.last_ctrl_mode = b_chassis.ctrl_mode;
+    //底盘上电先等2s，且确保双轮毂电机均在线（关节电机上电快，轮毂慢）
    if(balance_chassis.Driving_Encoder[0].if_online&&balance_chassis.Driving_Encoder[1].if_online&&time_tick>2000)
    {
-       if((b_chassis.ctrl_mode != CHASSIS_INIT&&b_chassis.ctrl_mode != CHASSIS_STAND_MODE)||usart_chassis_data.chassis_mode == 0)
-    b_chassis.ctrl_mode = usart_chassis_data.chassis_mode;
+       //底盘完成初始化或上位机强制要求关控，底盘模式选用上位机下发模式
+       if((b_chassis.ctrl_mode != CHASSIS_INIT&&b_chassis.ctrl_mode != CHASSIS_STAND_MODE)||usart_chassis_data.chassis_mode == CHASSIS_RELAX)
+            b_chassis.ctrl_mode = usart_chassis_data.chassis_mode;
 
     if (b_chassis.ctrl_mode != CHASSIS_INIT)
         {
+            //完成初始化后对底盘参考输入进行赋值
             b_chassis.chassis_ref.roll = usart_chassis_data.roll;
             b_chassis.chassis_dynemic_ref.vy = usart_chassis_data.y;
             b_chassis.chassis_dynemic_ref.vx = usart_chassis_data.x;
             VAL_LIMIT(b_chassis.chassis_dynemic_ref.vy,b_chassis.min_speed,b_chassis.max_speed);
-            VAL_LIMIT(b_chassis.chassis_dynemic_ref.vx,-1.5,1.5);
+            VAL_LIMIT(b_chassis.chassis_dynemic_ref.vx,-1.5,1.5);//操作手不希望横移速度太快，特此限幅
         }
+        /* 以下逻辑完成了底盘初始化，且后续均采用上位机下发模式 */
         if(b_chassis.ctrl_mode != CHASSIS_INIT&&usart_chassis_data.chassis_mode != CHASSIS_RELAX&&b_chassis.last_ctrl_mode == CHASSIS_RELAX&&usart_chassis_data.if_follow_gim)
         {
+            //当上位机下发别的模式，且底盘当前非初始化，上一个模式为关控模式，执行上位机的模式
             b_chassis.ctrl_mode = usart_chassis_data.chassis_mode;
         }
         if (b_chassis.last_ctrl_mode == CHASSIS_RELAX && b_chassis.ctrl_mode != CHASSIS_RELAX)
 	    {
+            //关控后第一个模式当首先进入初始化
 		    b_chassis.ctrl_mode = CHASSIS_INIT;
 	    }
+        /* 底盘正在执行任务，检测到俯仰角异常过大，且此时非解除平衡姿态模式，强制进入初始化，进行倒地自启 */ 
         if (b_chassis.ctrl_mode == usart_chassis_data.chassis_mode && fabs(chassis_gyro.pitch_Angle) > 15 &&usart_chassis_data.chassis_mode != CHASSIS_RELAX&&usart_chassis_data.ctrl_mode!=1)
         {
             b_chassis.ctrl_mode = CHASSIS_INIT;
         }
-				if(usart_chassis_data.jump_cmd)
-				{
-					b_chassis.jump_flag = usart_chassis_data.jump_cmd;
-				}
+        /* 跳跃命令赋值 */
+        if(usart_chassis_data.jump_cmd)
+        {
+            b_chassis.jump_flag = usart_chassis_data.jump_cmd;
+        }
                 
-                
-                    b_chassis.chassis_dynemic_ref.leglength = usart_chassis_data.cmd_leg_length;
+        /* 腿长命令赋值 */        
+        b_chassis.chassis_dynemic_ref.leglength = usart_chassis_data.cmd_leg_length;
    }else
    {
        b_chassis.ctrl_mode = CHASSIS_RELAX;
    }
-	
+             //常用腿长下跳跃会出现落地后姿态不稳，特设一个腿长，只在跳跃落地后工作一段时间后自动切回常用腿长
              if(if_middle_leg)
              {
+                 //开始计时
                  middle_cnt++;
              }
-             if(middle_cnt==1000)
+             if(middle_cnt==1000)//时间一到，切回常用腿长
              {
                  middle_cnt = 0;
                  if_middle_leg = 0;
@@ -195,11 +225,15 @@ void balance_cmd_select(void)
 				
 			if(b_chassis.ctrl_mode != CHASSIS_SEPARATE)
             {
-                seperate_cnt = 0;
-    
+                seperate_cnt = 0;//非底盘云台分离模式，分离计时器清0（后续底盘分离模式下用作逻辑判断）
             }
             
-            //倒地模式逻辑
+            /* 接触平衡姿态逻辑 
+            （自己盘一下吧，平衡车在两种情况下进行解除平衡姿态，一个是操作手主动按键解除
+              另一个是，功耗大且电容已用完，为了不超功率强制解除，等电容回血后主动站起，
+               这里采用计数的原因无它，电容电压在回血的时候会在13V附近跳变，所以需要加
+                延时以缓冲，当down_flag=1时，执行解除平衡）
+            */
             if(usart_chassis_data.ctrl_mode==1)
             {
                 down_flag = 1;
@@ -222,7 +256,9 @@ void balance_cmd_select(void)
             {
                 down_cnt++;
             }
+                /* 为了让平衡能全向移动，对两个轴方向的速度进行融合解算成平衡前进速度与方向角 */
 				get_remote_angle();
+                //对前进速度进行限幅
 				VAL_LIMIT(b_chassis.chassis_ref.remote_speed,b_chassis.min_speed,b_chassis.max_speed);
 }
 
@@ -235,15 +271,14 @@ void balance_cmd_select(void)
 * @Note     :
 ************************************************************************************************************************
 **/
-float ecd_speed,last_ecd_speed;
+float ecd_speed;
 float final_speed;
-int test;
 void get_remote_angle(void)
 {
 	float vy;
 	float vx;
 	float temp_angle;
-	last_ecd_speed = ecd_speed;
+    //将yaw电机编码器值存入并转换到-PI —— PI
 	b_chassis.yaw_angle_0_2pi = usart_chassis_data.yaw_Encoder_ecd_angle;
 		if(b_chassis.yaw_angle_0_2pi>PI)
 		{b_chassis.yaw_angle__pi_pi=b_chassis.yaw_angle_0_2pi-(2*PI);}
@@ -253,9 +288,9 @@ void get_remote_angle(void)
 	vy = b_chassis.chassis_dynemic_ref.vy;
 	vx = b_chassis.chassis_dynemic_ref.vx;
 	
-	if(vy==0&&vx==0)
+	if(vy==0&&vx==0)//当给定速度为0时，底盘跟随云台的夹角确定
 	{
-        if(b_chassis.ctrl_mode==CHASSIS_REVERSE)
+        if(b_chassis.ctrl_mode==CHASSIS_REVERSE)//当侧向时，夹角为90，否则为0
         {
             b_chassis.chassis_ref.remote_angle = PI/2;
             ecd_speed = 0;
@@ -269,7 +304,8 @@ void get_remote_angle(void)
 	}else
 	{
         
-		ecd_speed = sqrt((vx*vx)+(vy*vy));
+		ecd_speed = sqrt((vx*vx)+(vy*vy));//初始速度计算，勾股定理
+        /* 反三角函数计算并将目标跟随角度坐标系与当前编码器角度坐标系进行统一（建议自己画图分析，查找atan2函数的性质） */
 		temp_angle=atan2(vy,vx) - PI/2;
 		if(temp_angle < -PI)
 		{
@@ -279,7 +315,7 @@ void get_remote_angle(void)
 			b_chassis.chassis_ref.remote_angle = temp_angle;
 		}
 	}
-    
+    /* 最终的前进速度经过一个斜坡函数处理，这个斜坡处理非常重要，大大提升其加减速稳定性 */
     b_chassis.chassis_ref.remote_speed = trackRamp(b_chassis.chassis_ref.remote_speed,ecd_speed);
 	
 
@@ -299,10 +335,11 @@ void chassis_relax_handle(void)
 {
     b_chassis.joint_T[0] = 0;
     b_chassis.joint_T[1] = 0;
-			  b_chassis.joint_T[2] = 0;
-				b_chassis.joint_T[3] = 0;
-				b_chassis.driving_T[0] = 0;
-			  b_chassis.driving_T[1] = 0;
+    b_chassis.joint_T[2] = 0;
+    b_chassis.joint_T[3] = 0;
+    b_chassis.driving_T[0] = 0;
+    b_chassis.driving_T[1] = 0;
+    
 			balance_Tpgain = 0;
 			balance_Tpoutlandgain = 0;
 			b_chassis.chassis_ref.pitch = 0;
@@ -331,7 +368,7 @@ void chassis_standup_handle(void)
     b_chassis.chassis_ref.vw = 0;
 	b_chassis.chassis_ref.y_position = b_chassis.balance_loop.x;
 	
-		if(fabs(b_chassis.balance_loop.state_err[4])<2*PI/180.0)
+		if(fabs(b_chassis.balance_loop.state_err[4])<2*PI/180.0)//确保已是平衡姿态再切入别的模式
 		b_chassis.ctrl_mode = usart_chassis_data.chassis_mode;
 	
 	
@@ -422,11 +459,6 @@ void chassis_seperate_handle(void)
         sep_target_yaw = chassis_gyro.yaw_Angle;
     }
     
-    
-//        if(fabs(b_chassis.balance_loop.dx) > 0.2||b_chassis.chassis_ref.vy != 0||usart_chassis_data.ctrl_mode==1||b_chassis.chassis_ref.vw >= 0.2)
-//			b_chassis.chassis_ref.y_position = b_chassis.balance_loop.x;
-//		else
-//			b_chassis.normal_Y_erroffset-=b_chassis.balance_loop.dx*0.001*TIME_STEP;
         
         b_chassis.chassis_ref.vy = 0; 
         b_chassis.chassis_ref.roll = 0;
@@ -434,13 +466,9 @@ void chassis_seperate_handle(void)
         b_chassis.chassis_ref.vw = pid_calc(&b_chassis.pid_seperate_gim,chassis_gyro.yaw_Angle,sep_target_yaw); 
 		VAL_LIMIT(b_chassis.chassis_ref.vw,-5,5);
         
-        if(if_middle_leg)
-        {
-            b_chassis.chassis_ref.leglength = 0.21f;
-        }else
-        {
+        
             b_chassis.chassis_ref.leglength = b_chassis.chassis_dynemic_ref.leglength;
-        }
+        
 }
 
 
@@ -689,6 +717,7 @@ void balance_task(void)
                                         balance_chassis.joint_Encoder[0].gyro,
                                         balance_chassis.joint_Encoder[3].angle+PI,
                                         balance_chassis.joint_Encoder[3].gyro);
+    /* 这里对dtheta进行低通滤波，至少旧车需要，或许解决外八问题后不需要 */
    ecd_dtheta = (((b_chassis.left_leg.dphi0 + b_chassis.right_leg.dphi0)/2.0f) - chassis_gyro.pitch_Gyro*PI/180.0f);
     final_dtheta = Lpf_1st_calcu(&TEST_LPF,ecd_dtheta,5,0.002);
     //计算状态变量    
@@ -697,7 +726,7 @@ void balance_task(void)
     b_chassis.balance_loop.x = ((balance_chassis.Driving_Encoder[0].angle + (-balance_chassis.Driving_Encoder[1].angle))/2.0f) * WHEEL_R;
     b_chassis.balance_loop.dx = Mileage_kalman_filter.velocity;
     b_chassis.balance_loop.theta = ((((b_chassis.left_leg.phi0 + b_chassis.right_leg.phi0)/2.0f) - 1.57f) - chassis_gyro.pitch_Angle*PI/180.0f);
-    if(fabs(b_chassis.balance_loop.theta)>= 3*PI/180.0||fabs(b_chassis.balance_loop.state_err[3])>1)
+    if(fabs(b_chassis.balance_loop.theta)>= 3*PI/180.0||fabs(b_chassis.balance_loop.state_err[3])>1)//小补丁，无理论依据但在分区赛的车上有效
         b_chassis.balance_loop.dtheta = ecd_dtheta;
     else
         b_chassis.balance_loop.dtheta = final_dtheta;
@@ -774,10 +803,7 @@ void balance_task(void)
        b_chassis.balance_loop.state_err[3] = 0;
    }else
    {
-        if(fabs(b_chassis.chassis_dynemic_ref.vy) == 1.6)
-        {
-        VAL_LIMIT(b_chassis.balance_loop.state_err[3], -1.5, 1.5);
-        }else if(fabs(b_chassis.chassis_dynemic_ref.vy) == b_chassis.max_speed)
+        if(fabs(b_chassis.chassis_dynemic_ref.vy) == b_chassis.max_speed)
         {
             VAL_LIMIT(b_chassis.balance_loop.state_err[3], -1.0, 1.0);
         }else
