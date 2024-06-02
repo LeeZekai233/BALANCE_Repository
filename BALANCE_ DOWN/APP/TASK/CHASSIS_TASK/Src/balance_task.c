@@ -228,7 +228,7 @@ void balance_cmd_select(void)
                 seperate_cnt = 0;//非底盘云台分离模式，分离计时器清0（后续底盘分离模式下用作逻辑判断）
             }
             
-            /* 接触平衡姿态逻辑 
+            /* 解除平衡姿态逻辑 
             （自己盘一下吧，平衡车在两种情况下进行解除平衡姿态，一个是操作手主动按键解除
               另一个是，功耗大且电容已用完，为了不超功率强制解除，等电容回血后主动站起，
                这里采用计数的原因无它，电容电压在回血的时候会在13V附近跳变，所以需要加
@@ -380,13 +380,13 @@ void chassis_standup_handle(void)
 * @Name     : chassis_Init_handle
 * @brief    : 初始化收腿
 * @param		: void
-* @retval   : void
+* @retval   : 初始化必须收腿，关控或阵亡前的腿部姿态可以是多种的，如果其在伸长姿态直接站立会滑铲
 * @Note     :
 ************************************************************************************************************************
 **/
 void chassis_Init_handle(void)
 {
-    b_chassis.chassis_ref.leglength = 0.14f;
+    b_chassis.chassis_ref.leglength = 0.14f;//腿长设为最低
     b_chassis.chassis_ref.vy = 0;
     b_chassis.chassis_ref.vx = 0;
     b_chassis.chassis_ref.vw = 0;
@@ -403,7 +403,7 @@ void chassis_Init_handle(void)
 	if((fabs(phi0) >= 4*PI/180))
 	{
 		float Init_Tp = pid_calc(&b_chassis.Init_Tp_pid,phi0,0);
-		//双腿协调pid
+		//这里采用双腿协调pid，将腿收置中间
     float harmonize_output = pid_calc(&b_chassis.leg_harmonize_pid, (b_chassis.right_leg.phi0 - b_chassis.left_leg.phi0), 0);
 		
 		//腿部竖直力F的计算
@@ -444,7 +444,7 @@ void chassis_Init_handle(void)
 /**
 ************************************************************************************************************************
 * @Name     : chassis_seperate_handle
-* @brief    : 单个底盘模式，测试用
+* @brief    : 底盘云台分离，打符用
 * @param		: void
 * @retval   : void
 * @Note     :
@@ -456,13 +456,13 @@ void chassis_seperate_handle(void)
     if(seperate_cnt==0)
     {
         seperate_cnt++;
-        sep_target_yaw = chassis_gyro.yaw_Angle;
+        sep_target_yaw = chassis_gyro.yaw_Angle;//刚进模式时记住当前的底盘yaw角
     }
     
         
         b_chassis.chassis_ref.vy = 0; 
         b_chassis.chassis_ref.roll = 0;
-        
+        //直接闭底盘陀螺仪环防止其受外力发生旋转
         b_chassis.chassis_ref.vw = pid_calc(&b_chassis.pid_seperate_gim,chassis_gyro.yaw_Angle,sep_target_yaw); 
 		VAL_LIMIT(b_chassis.chassis_ref.vw,-5,5);
         
@@ -775,7 +775,7 @@ void balance_task(void)
         x_err = 0;
     }else
     {
-        x_err = (b_chassis.balance_loop.state_err[2]+b_chassis.normal_Y_erroffset);
+        x_err = (b_chassis.balance_loop.state_err[2]+b_chassis.normal_Y_erroffset);//重心自适应，由于在激战途中，弹丸量越来越少，因此在这里进行实时补偿
     }
 	//平衡部分未离地增益计算
     balance_Tgain = b_chassis.balance_loop.k[0][0] * b_chassis.balance_loop.state_err[0] + \
