@@ -1,4 +1,4 @@
-#include <leg_task.h>
+#include "leg_task.h"
 
 
 void VMC_data_get(leg_state_t *leg , float phi4_angle, 
@@ -50,7 +50,7 @@ static float  JacobinT_inv_data[4];
 static float  mat_F_data[2];
 static float  mat_T_data[2];
 
-void FN_calculate(leg_state_t *leg,float MT1_torque,float MT4_torque)
+void FN_calculate(leg_state_t *leg,float MT1_torque,float MT4_torque,Lpf1stObj *ft)
 {
     float costheta = cosf(b_chassis.balance_loop.theta);
     float sintheta = sinf(b_chassis.balance_loop.theta);
@@ -61,10 +61,12 @@ void FN_calculate(leg_state_t *leg,float MT1_torque,float MT4_torque)
       this_dtheta = b_chassis.balance_loop.dtheta;
       b_chassis.balance_loop.ddtheta = (this_dtheta - last_dtheta) / ((TIME_STEP * 0.001));
     //ddzw的计算
-      leg->ddzw = b_chassis.balance_loop.ddz - leg->ddl0 * costheta + \
+      float ddzw = b_chassis.balance_loop.ddz - leg->ddl0 * costheta + \
                   2 * leg->dl0 * b_chassis.balance_loop.dtheta * sintheta + \
                     leg->l0 * b_chassis.balance_loop.ddtheta * sintheta + \
                     leg->l0 * (b_chassis.balance_loop.dtheta * b_chassis.balance_loop.dtheta) * costheta;
+      
+      leg->ddzw = Lpf_1st_calcu(ft,ddzw,5,0.002);
     //P和Tp的计算
     mat_init(&Jacobian,2,2,(float *)Jacobian_data);
     mat_init(&JacobianT,2,2,(float *)JacobianT_data);

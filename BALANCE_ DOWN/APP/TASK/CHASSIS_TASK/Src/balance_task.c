@@ -88,6 +88,8 @@ void balance_chassis_task(void)
         b_chassis.chassis_ref.roll = 0;
         b_chassis.jump_flag = 0;
         jump_state = 0;
+        b_chassis.left_leg.leg_FN = 100;
+        b_chassis.right_leg.leg_FN = 100;
 
     }
     break;
@@ -697,8 +699,8 @@ void balance_task(void)
 		b_chassis.balance_loop.Fm = b_chassis.chassis_ref.vw*b_chassis.chassis_ref.vy*BODY_MASS;
     
     //计算支持力
-    FN_calculate(&b_chassis.left_leg,-balance_chassis.joint_Encoder[2].Torque,-balance_chassis.joint_Encoder[1].Torque);//capacitance_message.out_power
-    FN_calculate(&b_chassis.right_leg,balance_chassis.joint_Encoder[3].Torque,balance_chassis.joint_Encoder[0].Torque);//balance_chassis.Driving_Encoder[0].rate_rpm
+    FN_calculate(&b_chassis.left_leg,-balance_chassis.joint_Encoder[2].Torque,-balance_chassis.joint_Encoder[1].Torque,&L_DDZW_LPF);//capacitance_message.out_power
+    FN_calculate(&b_chassis.right_leg,balance_chassis.joint_Encoder[3].Torque,balance_chassis.joint_Encoder[0].Torque,&R_DDZW_LPF);//balance_chassis.Driving_Encoder[0].rate_rpm
 																																																											 //balance_chassis.Driving_Encoder[0].Torque
 
     /*****************************************************************/
@@ -1085,7 +1087,7 @@ float all_power_cal(float T, float k1, float k2, float k3, float w)
 
 uint8_t wheel_state_estimate(leg_state_t *leg)
 {
-    if (leg->leg_FN < 15)
+    if (leg->leg_FN < 20)
     {
 			
         leg->wheel_state = 0;
