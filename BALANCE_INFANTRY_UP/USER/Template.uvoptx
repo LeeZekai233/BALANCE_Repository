@@ -248,6 +248,11 @@
           <WinNumber>1</WinNumber>
           <ItemText>yaw_forward_k</ItemText>
         </Ww>
+        <Ww>
+          <count>18</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>test_voltage,0x0A</ItemText>
+        </Ww>
       </WatchWindow1>
       <WatchWindow2>
         <Ww>

@@ -63,7 +63,6 @@ void Can2ReceiveMsgProcess(CanRxMsg * msg)
 
 
 
-
 void can_bus_send_task(void)
 {
 	
