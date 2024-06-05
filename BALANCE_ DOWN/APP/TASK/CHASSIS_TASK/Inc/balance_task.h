@@ -177,7 +177,6 @@ void get_remote_angle(void);
 void chassis_Init_handle(void);
 void chassis_stop_handle(void);
 void balance_cmd_select(void);
-void chassis_relax_handle(void);
 void chassis_standup_handle(void);
 void follow_gimbal_handle(void);
 void balance_jump_handle(void);

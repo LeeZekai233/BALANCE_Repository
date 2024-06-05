@@ -19,7 +19,6 @@ void VMC_data_get(leg_state_t *leg , float phi4_angle,
     leg->dl0 = leg->spd[0];
     leg->this_dl0 = leg->dl0;
     leg->dphi0 = leg->spd[1];
-    //腿长加速度计算
     leg->ddl0 = (leg->this_dl0 - leg->last_dl0) / (TIME_STEP * 0.001);//可能要加低通滤波器
 
     leg_J_cal(phi1_angle,phi4_angle,leg->J);
