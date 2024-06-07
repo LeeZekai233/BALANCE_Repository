@@ -333,6 +333,9 @@ void gimbal_init_handle	( void )
 
 float feed_forward;
 float test1 = 70;
+float rotate_feed_forward;
+float test2 = -170;
+float test3 = 0;
 void gimbal_follow_gyro_handle(void)
 {
 		//如果刚刚切换至该模式，该模式的增量式输入以当前传感器反馈赋初始值
@@ -444,15 +447,24 @@ void gimbal_follow_gyro_handle(void)
         gimbal_data.gim_ref_and_fdb.yaw_angle_ref = gimbal_data.gim_dynamic_ref.yaw_angle_dynamic_ref;
 			//pitch轴与yaw轴双环pid计算
         
-        feed_forward = RC_CtrlData.mouse.x*2;
+        if(chassis.ctrl_mode==CHASSIS_ROTATE)
+        {
+            rotate_feed_forward = test2;
+            feed_forward = 0;
+        }else
+        {
+           rotate_feed_forward = 0; 
+           feed_forward = RC_CtrlData.mouse.x*2;
+        }
         VAL_LIMIT(feed_forward,-test1,+test1);
+        
     gimbal_data.gim_ref_and_fdb.yaw_motor_input = pid_double_loop_cal(&gimbal_data.pid_yaw_Angle,
                                                                       &gimbal_data.pid_yaw_speed,
                                                                       gimbal_data.gim_ref_and_fdb.yaw_angle_ref,                     
                                                                       gimbal_data.gim_ref_and_fdb.yaw_angle_fdb,
 																																			&gimbal_data.gim_ref_and_fdb.yaw_speed_ref,
                                                                       gimbal_data.gim_ref_and_fdb.yaw_speed_fdb,
-                                                                       feed_forward)*YAW_MOTOR_POLARITY;
+                                                                       feed_forward)*YAW_MOTOR_POLARITY + rotate_feed_forward;
     gimbal_data.gim_ref_and_fdb.pitch_motor_input = pid_double_loop_cal(&gimbal_data.pid_pit_Angle,
                                                                       &gimbal_data.pid_pit_speed,
                                                                       gimbal_data.gim_ref_and_fdb.pit_angle_ref,                     

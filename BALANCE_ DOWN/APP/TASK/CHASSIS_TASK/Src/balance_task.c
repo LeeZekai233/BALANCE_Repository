@@ -240,7 +240,14 @@ void balance_cmd_select(void)
                 down_cnt++;
             }
 				get_remote_angle();
-				VAL_LIMIT(b_chassis.chassis_ref.remote_speed,b_chassis.min_speed,b_chassis.max_speed);
+            if(b_chassis.chassis_dynemic_ref.vx == 0)
+            {
+                VAL_LIMIT(b_chassis.chassis_ref.remote_speed,b_chassis.min_speed,b_chassis.max_speed);
+            }else
+            {
+                VAL_LIMIT(b_chassis.chassis_ref.remote_speed,-1.4,1.4);
+            }
+				
 }
 
 /**
