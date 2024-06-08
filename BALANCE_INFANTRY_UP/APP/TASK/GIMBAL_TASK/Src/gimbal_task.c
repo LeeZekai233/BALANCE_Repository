@@ -332,10 +332,10 @@ void gimbal_init_handle	( void )
  **/
 
 float feed_forward;
-float test1 = 70;
+float feed_forward_limit = 70;
 float rotate_feed_forward;
-float test2 = -170;
-float test3 = 0;
+float rotate_torque_fed = -170;
+
 void gimbal_follow_gyro_handle(void)
 {
 		//如果刚刚切换至该模式，该模式的增量式输入以当前传感器反馈赋初始值
@@ -449,14 +449,14 @@ void gimbal_follow_gyro_handle(void)
         
         if(chassis.ctrl_mode==CHASSIS_ROTATE)
         {
-            rotate_feed_forward = test2;
+            rotate_feed_forward = rotate_torque_fed;
             feed_forward = 0;
         }else
         {
            rotate_feed_forward = 0; 
            feed_forward = RC_CtrlData.mouse.x*2;
         }
-        VAL_LIMIT(feed_forward,-test1,+test1);
+        VAL_LIMIT(feed_forward,-feed_forward_limit,+feed_forward_limit);
         
     gimbal_data.gim_ref_and_fdb.yaw_motor_input = pid_double_loop_cal(&gimbal_data.pid_yaw_Angle,
                                                                       &gimbal_data.pid_yaw_speed,
