@@ -3,7 +3,6 @@
 #include "public.h"
 
 
-
 #ifndef LEG_STATE
 #define LEG_STATE
 
@@ -45,13 +44,27 @@ typedef struct
 
 #endif // !LEG_STATE
 
-void FN_calculate(leg_state_t *leg,float MT1_torque,float MT4_torque);
+
+#ifndef __LPF
+#define __LPF
+typedef struct _lpf_first_order
+{
+    float fc;       // cut-off frequency
+    float y_k1;     // last output
+    float alpha;    // filter coefficient
+    float ts;       // samping period
+    float u_k1;     // last input
+}Lpf1stObj;
+
+#endif
+
+
 void VMC_data_get(leg_state_t *leg , float phi4_angle, 
                                     float phi4_gyro,
                                     float phi1_angle,
                                     float phi1_gyro);
 
-
+void FN_calculate(leg_state_t *leg,float MT1_torque,float MT4_torque,Lpf1stObj *ft);
 
 
 void leg_pos(float phi1, float phi4, float pos[2]);

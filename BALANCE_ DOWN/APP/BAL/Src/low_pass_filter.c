@@ -3,7 +3,7 @@
 
 Lpf1stObj ACC_LPF;
 Lpf1stObj TEST_LPF;
-
+Lpf1stObj L_DDZW_LPF,R_DDZW_LPF;
 
 float Lpf_1st_calcu(Lpf1stObj *filter, float u_k,float fc, float ts)
 {
