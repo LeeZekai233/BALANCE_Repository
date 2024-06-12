@@ -40,6 +40,10 @@ typedef struct
 	int32_t round_cnt;										//圈数
 	int32_t can_cnt;					//记录函数的使用次数，在电机初始完成部分任务
     int32_t heart_cnt;
+    
+    float raw_angle_val;
+    float last_raw_angle_val;
+    float angle_diff;
 }Encoder_cal;
 
 

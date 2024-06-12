@@ -1,7 +1,7 @@
 <deployment-project plugin="plugin.coder" plugin-version="R2023a">
-  <configuration build-checksum="2773373330" file="E:\电控\开源资料\foc-wheel-legged-robot-master_自用\foc-wheel-legged-robot-master\matlab\leg_spd.prj" location="E:\电控\开源资料\foc-wheel-legged-robot-master_自用\foc-wheel-legged-robot-master\matlab" name="leg_spd" target="target.unifiedcoder" target-name="MATLAB Coder">
+  <configuration build-checksum="478493594" file="C:\Users\HP\Desktop\MY_Repository\matlab\leg_spd.prj" location="C:\Users\HP\Desktop\MY_Repository\matlab" name="leg_spd" target="target.unifiedcoder" target-name="MATLAB Coder">
     <profile key="profile.mex">
-      <param.BuiltInstrumentedMex>false</param.BuiltInstrumentedMex>
+      <param.BuiltInstrumentedMex />
       <param.RanInstrumentedMex>false</param.RanInstrumentedMex>
       <param.WorkingFolder>option.WorkingFolder.Project</param.WorkingFolder>
       <param.SpecifiedWorkingFolder />
@@ -49,7 +49,7 @@
       <param.DefaultTestFile />
       <param.MergeInstrumentationResults>false</param.MergeInstrumentationResults>
       <param.VerificationMode>option.VerificationMode.None</param.VerificationMode>
-      <param.VerificationStatus>option.VerificationStatus.Passed</param.VerificationStatus>
+      <param.VerificationStatus>option.VerificationStatus.Inactive</param.VerificationStatus>
       <param.EnableMexProfiling>false</param.EnableMexProfiling>
       <var.BuiltWithMexProfiling>false</var.BuiltWithMexProfiling>
       <param.CustomSourceCode />
@@ -82,7 +82,7 @@
       <param.EnableAutoParallelizationReporting>true</param.EnableAutoParallelizationReporting>
       <param.CacheDynamicArrayDataPointer>true</param.CacheDynamicArrayDataPointer>
       <param.EnableJIT>false</param.EnableJIT>
-      <param.EnableJITSilentBailOut>false</param.EnableJITSilentBailOut>
+      <param.EnableJITSilentBailOut />
       <param.CheckForIssuesJIT>true</param.CheckForIssuesJIT>
       <param.EnableGitSupport>false</param.EnableGitSupport>
       <param.EnableAutoCommit>true</param.EnableAutoCommit>
@@ -136,6 +136,7 @@
         <param.DefaultTestFile />
         <param.MergeInstrumentationResults />
         <param.VerificationMode />
+        <param.VerificationStatus />
         <param.EnableMexProfiling />
         <var.BuiltWithMexProfiling />
         <param.CustomSourceCode />
@@ -595,9 +596,7 @@
     </profile>
     <param.objective>option.objective.c</param.objective>
     <param.WorkflowStep>generateCode</param.WorkflowStep>
-    <param.TestSnippets>
-      <item>leg_spd(0.1,0.1,0.1,0.1)</item>
-    </param.TestSnippets>
+    <param.TestSnippets />
     <param.ExternalFcnMajority>column</param.ExternalFcnMajority>
     <param.UseGlobals>option.UseGlobals.No</param.UseGlobals>
     <param.outputfile>${PROJECT_ROOT}\codegen\lib\leg_spd\leg_spd.lib</param.outputfile>
@@ -615,7 +614,7 @@
     <param.AutoInferUnboundedSizeThreshold>2048</param.AutoInferUnboundedSizeThreshold>
     <param.EnableFixedPointStep>false</param.EnableFixedPointStep>
     <param.EnableScreener>true</param.EnableScreener>
-    <param.AnnotationChecksum>3232049120</param.AnnotationChecksum>
+    <param.AnnotationChecksum>2729052042</param.AnnotationChecksum>
     <var.LegacyTarget />
     <var.MirrorOnOpen>false</var.MirrorOnOpen>
     <param.FixedPointEnabled>false</param.FixedPointEnabled>
@@ -625,13 +624,12 @@
     <param.hdlParamStorage />
     <var.gc.lastOutputRoot>codegen\lib\leg_spd</var.gc.lastOutputRoot>
     <var.gc.lastOutputType>C_CODE</var.gc.lastOutputType>
-    <var.gc.preBuildChecksum>2001457375</var.gc.preBuildChecksum>
-    <var.cfi.lastOutputRoot>codegen\mex\leg_spd</var.cfi.lastOutputRoot>
-    <var.cfi.preBuildChecksum>436783826</var.cfi.preBuildChecksum>
-    <var.lastCfiTestSnippet>leg_spd(0.1,0.1,0.1,0.1)</var.lastCfiTestSnippet>
+    <var.gc.preBuildChecksum>421956554</var.gc.preBuildChecksum>
+    <var.cfi.lastOutputRoot />
+    <var.cfi.preBuildChecksum />
     <var.outdatedOnRestore>false</var.outdatedOnRestore>
-    <var.lastUserSourceChecksum>&lt;?xml version="1.0" encoding="UTF-8" standalone="yes"?&gt;&lt;checksum&gt;&lt;includedFiles&gt;&lt;file&gt;E:\电控\开源资料\foc-wheel-legged-robot-master_自用\foc-wheel-legged-robot-master\matlab\leg_spd.m&lt;/file&gt;&lt;/includedFiles&gt;&lt;value&gt;3785001897&lt;/value&gt;&lt;/checksum&gt;</var.lastUserSourceChecksum>
-    <var.sourceSetState>&lt;?xml version="1.0" encoding="UTF-8" standalone="yes"?&gt;&lt;sourceModel&gt;&lt;primarySourceFiles&gt;&lt;file&gt;E:\电控\开源资料\foc-wheel-legged-robot-master_自用\foc-wheel-legged-robot-master\matlab\leg_spd.m&lt;/file&gt;&lt;/primarySourceFiles&gt;&lt;fixedPointSourceFiles/&gt;&lt;fixedPointSourceRegistered&gt;false&lt;/fixedPointSourceRegistered&gt;&lt;fixedPointSourceSelected&gt;false&lt;/fixedPointSourceSelected&gt;&lt;/sourceModel&gt;</var.sourceSetState>
+    <var.lastUserSourceChecksum>&lt;?xml version="1.0" encoding="UTF-8" standalone="yes"?&gt;&lt;checksum&gt;&lt;includedFiles&gt;&lt;file&gt;C:\Users\HP\Desktop\MY_Repository\matlab\leg_spd.m&lt;/file&gt;&lt;/includedFiles&gt;&lt;value&gt;841302026&lt;/value&gt;&lt;/checksum&gt;</var.lastUserSourceChecksum>
+    <var.sourceSetState>&lt;?xml version="1.0" encoding="UTF-8" standalone="yes"?&gt;&lt;sourceModel&gt;&lt;primarySourceFiles&gt;&lt;file&gt;C:\Users\HP\Desktop\MY_Repository\matlab\leg_spd.m&lt;/file&gt;&lt;/primarySourceFiles&gt;&lt;fixedPointSourceFiles/&gt;&lt;fixedPointSourceRegistered&gt;false&lt;/fixedPointSourceRegistered&gt;&lt;fixedPointSourceSelected&gt;false&lt;/fixedPointSourceSelected&gt;&lt;/sourceModel&gt;</var.sourceSetState>
     <param.forceMexBuild>false</param.forceMexBuild>
     <param.NoDefaultJIT>false</param.NoDefaultJIT>
     <param.configImportActive>false</param.configImportActive>
@@ -747,6 +745,7 @@
     <param.FixedPointUseDesignRanges>false</param.FixedPointUseDesignRanges>
     <unset>
       <param.objective />
+      <param.TestSnippets />
       <param.ExternalFcnMajority />
       <param.UseGlobals />
       <param.outputfile />
@@ -771,6 +770,8 @@
       <var.DismissScreener />
       <param.unifiedParamStorage />
       <param.hdlParamStorage />
+      <var.cfi.lastOutputRoot />
+      <var.cfi.preBuildChecksum />
       <var.outdatedOnRestore />
       <param.forceMexBuild />
       <param.NoDefaultJIT />
@@ -884,7 +885,7 @@
     </unset>
     <fileset.entrypoints>
       <file custom-data-expanded="false" value="${PROJECT_ROOT}\leg_spd.m">
-        <Marker>1703170640338</Marker>
+        <Marker>1717941931808</Marker>
       </file>
     </fileset.entrypoints>
     <fileset.testbench />
@@ -910,7 +911,7 @@
       </file>
     </fileset.inputtypes>
     <build-deliverables>
-      <file location="${PROJECT_ROOT}\codegen\lib\leg_spd" name="leg_spd.lib" optional="false">E:\电控\开源资料\foc-wheel-legged-robot-master_自用\foc-wheel-legged-robot-master\matlab\codegen\lib\leg_spd\leg_spd.lib</file>
+      <file location="${PROJECT_ROOT}\codegen\lib\leg_spd" name="leg_spd.lib" optional="false">C:\Users\HP\Desktop\MY_Repository\matlab\codegen\lib\leg_spd\leg_spd.lib</file>
     </build-deliverables>
     <workflow />
     <matlab>

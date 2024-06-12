@@ -5,7 +5,7 @@
  * File: _coder_leg_spd_info.h
  *
  * MATLAB Coder version            : 23.2
- * C/C++ source code generated on  : 21-Dec-2023 22:57:49
+ * C/C++ source code generated on  : 09-Jun-2024 22:05:39
  */
 
 #ifndef _CODER_LEG_SPD_INFO_H

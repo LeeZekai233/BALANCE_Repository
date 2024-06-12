@@ -6,7 +6,7 @@
 void CAN_HT03_SendControlPara(CAN_TypeDef *CANx,uint32_t id,float f_p, float f_v, float f_kp, float f_kd, float f_t)
 {
     CanTxMsg txmsg;
-    float real_T = f_t/MOTOR_Reduction_ratio;
+    float real_T = f_t;
     uint16_t p, v, kp, kd, t;
     
     /* 限制输入的参数在定义的范围内 */
@@ -74,9 +74,20 @@ void HT03_EncoderProcess(volatile Encoder *v, CanRxMsg * msg)
 	uint16_t cur_value;
     
     v->cal_data.heart_cnt = time_tick;
+    v->cal_data.last_raw_angle_val = v->cal_data.raw_angle_val;
     
     pos_value = ((msg->Data[1] << 8) | msg->Data[2]);
-    v->angle = uint_to_float(pos_value, P_MIN, P_MAX, 16);
+    v->cal_data.raw_angle_val = uint_to_float(pos_value, P_MIN, P_MAX, 16);
+    v->cal_data.angle_diff = v->cal_data.raw_angle_val - v->cal_data.last_raw_angle_val;
+    if(v->cal_data.angle_diff < P_MIN)
+    {
+        v->cal_data.round_cnt++;
+    }
+    else if(v->cal_data.angle_diff > P_MAX)
+    {
+        v->cal_data.round_cnt--;
+    }
+    v->angle = v->cal_data.round_cnt*191.0 + v->cal_data.raw_angle_val + P_MAX;
     
     vel_value =  (msg->Data[3]<<4)|(msg->Data[4]>>4);
     v->gyro = uint_to_float(vel_value, V_MIN, V_MAX, 12);

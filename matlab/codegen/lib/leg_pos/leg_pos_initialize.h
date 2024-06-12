@@ -5,7 +5,7 @@
  * File: leg_pos_initialize.h
  *
  * MATLAB Coder version            : 23.2
- * C/C++ source code generated on  : 21-Dec-2023 22:54:47
+ * C/C++ source code generated on  : 09-Jun-2024 22:14:42
  */
 
 #ifndef LEG_POS_INITIALIZE_H

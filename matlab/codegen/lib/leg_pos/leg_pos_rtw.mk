@@ -2,7 +2,7 @@
 ## Makefile generated for component 'leg_pos'. 
 ## 
 ## Makefile     : leg_pos_rtw.mk
-## Generated on : Thu Dec 21 22:54:53 2023
+## Generated on : Sun Jun 09 22:01:43 2024
 ## Final product: .\leg_pos.lib
 ## Product type : static-library
 ## 
@@ -24,7 +24,7 @@ MAKEFILE                  = leg_pos_rtw.mk
 MATLAB_ROOT               = E:\matlab
 MATLAB_BIN                = E:\matlab\bin
 MATLAB_ARCH_BIN           = $(MATLAB_BIN)\win64
-START_DIR                 = E:\电控\开源资料\foc-wheel-legged-robot-master_自用\foc-wheel-legged-robot-master\matlab
+START_DIR                 = C:\Users\HP\Desktop\MY_Repository\matlab
 TGT_FCN_LIB               = ISO_C
 SOLVER_OBJ                = 
 CLASSIC_INTERFACE         = 0

@@ -5,7 +5,7 @@
  * File: _coder_leg_pos_info.c
  *
  * MATLAB Coder version            : 23.2
- * C/C++ source code generated on  : 21-Dec-2023 22:54:47
+ * C/C++ source code generated on  : 09-Jun-2024 22:14:42
  */
 
 /* Include Files */
@@ -65,12 +65,9 @@ mxArray *emlrtMexFcnProperties(void)
   emlrtSetField(
       xEntryPoints, 0, "FullPath",
       emlrtMxCreateString(
-          "E:"
-          "\\\xe7\x94\xb5\xe6\x8e\xa7\\\xe5\xbc\x80\xe6\xba\x90\xe8\xb5\x84\xe6"
-          "\x96\x99\\foc-wheel-legged-robot-master_\xe8\x87\xaa\xe7\x94"
-          "\xa8\\foc-wheel-legged-robot-master\\matlab\\leg_pos.m"));
+          "C:\\Users\\HP\\Desktop\\MY_Repository\\matlab\\leg_pos.m"));
   emlrtSetField(xEntryPoints, 0, "TimeStamp",
-                emlrtMxCreateDoubleScalar(739241.95288194448));
+                emlrtMxCreateDoubleScalar(739412.91677083331));
   emlrtSetField(xEntryPoints, 0, "Constructor",
                 emlrtMxCreateLogicalScalar(false));
   emlrtSetField(xEntryPoints, 0, "Visible", emlrtMxCreateLogicalScalar(true));

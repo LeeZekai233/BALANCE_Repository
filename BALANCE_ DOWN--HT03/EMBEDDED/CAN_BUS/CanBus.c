@@ -63,23 +63,25 @@ void Can1ReceiveMsgProcess(CanRxMsg * msg)
 void Can2ReceiveMsgProcess(CanRxMsg * msg)
 {
 	
-    switch (msg->StdId)
+     switch (msg->StdId)
     {
-    
-		case TM1Encoder_MOTOR:
-		{
-			balance_chassis.Driving_Encoder[0].cal_data.can_cnt++;
-            if(balance_chassis.Driving_Encoder[0].cal_data.can_cnt<=50){HT03_START(CAN2,TM1Encoder_MOTOR);}
-            HT03_EncoderProcess(&balance_chassis.Driving_Encoder[0],msg);
-			
-		}break;
-		case TM2Encoder_MOTOR:
-		{
-			balance_chassis.Driving_Encoder[1].cal_data.can_cnt++;
-            if(balance_chassis.Driving_Encoder[1].cal_data.can_cnt<=50){HT03_START(CAN2,TM2Encoder_MOTOR);}
-            HT03_EncoderProcess(&balance_chassis.Driving_Encoder[1],msg);
-			
-		}break;
+        case 0x00:
+        {
+            switch(msg->Data[0])
+        {
+            case TM1Encoder_MOTOR:
+            {
+                HT03_EncoderProcess(&balance_chassis.Driving_Encoder[0],msg);
+            }break;
+            case TM2Encoder_MOTOR:
+            {
+                HT03_EncoderProcess(&balance_chassis.Driving_Encoder[1],msg);
+            }break;
+            default:
+            break;
+        }
+        }break;
+		
 		
 
     default:
@@ -107,8 +109,16 @@ void can_bus_send_task(void)
 //	CAN_MF_single_torsionControl(CAN2,-b_chassis.driving_T[1],0x142,0.002597741);
 
 //		CAN_MF_multiy_torsionControl(CAN2,0.002597741,b_chassis.driving_T[0],-b_chassis.driving_T[1],0,0);
+    if(balance_chassis.Driving_Encoder[0].if_online&&balance_chassis.Driving_Encoder[1].if_online)
+    {
         CAN_HT03_SendControlPara(CAN2,0X01,0,0,0,0,b_chassis.driving_T[0]);
         CAN_HT03_SendControlPara(CAN2,0X02,0,0,0,0,b_chassis.driving_T[1]);
+    }else
+    {
+//        HT03_START(CAN2,0x01);
+        HT03_START(CAN2,0x02);
+    }
+        
 
 		CAN_MG_multiy_torsionControl(CAN1,0.017368678,b_chassis.joint_T[0],b_chassis.joint_T[1],b_chassis.joint_T[2],b_chassis.joint_T[3]);
 	

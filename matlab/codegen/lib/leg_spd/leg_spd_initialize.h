@@ -5,7 +5,7 @@
  * File: leg_spd_initialize.h
  *
  * MATLAB Coder version            : 23.2
- * C/C++ source code generated on  : 21-Dec-2023 22:57:49
+ * C/C++ source code generated on  : 09-Jun-2024 22:05:39
  */
 
 #ifndef LEG_SPD_INITIALIZE_H

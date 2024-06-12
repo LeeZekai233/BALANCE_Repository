@@ -1,5 +1,5 @@
 <deployment-project plugin="plugin.coder" plugin-version="R2023a">
-  <configuration build-checksum="3563284113" file="E:\电控\开源资料\foc-wheel-legged-robot-master_自用\foc-wheel-legged-robot-master\matlab\leg_J_cal.prj" location="E:\电控\开源资料\foc-wheel-legged-robot-master_自用\foc-wheel-legged-robot-master\matlab" name="leg_J_cal" target="target.unifiedcoder" target-name="MATLAB Coder">
+  <configuration build-checksum="434185945" file="C:\Users\HP\Desktop\MY_Repository\matlab\leg_J_cal.prj" location="C:\Users\HP\Desktop\MY_Repository\matlab" name="leg_J_cal" target="target.unifiedcoder" target-name="MATLAB Coder">
     <profile key="profile.mex">
       <param.BuiltInstrumentedMex />
       <param.RanInstrumentedMex>false</param.RanInstrumentedMex>
@@ -614,7 +614,7 @@
     <param.AutoInferUnboundedSizeThreshold>2048</param.AutoInferUnboundedSizeThreshold>
     <param.EnableFixedPointStep>false</param.EnableFixedPointStep>
     <param.EnableScreener>true</param.EnableScreener>
-    <param.AnnotationChecksum>3278311780</param.AnnotationChecksum>
+    <param.AnnotationChecksum>117884995</param.AnnotationChecksum>
     <var.LegacyTarget />
     <var.MirrorOnOpen>false</var.MirrorOnOpen>
     <param.FixedPointEnabled>false</param.FixedPointEnabled>
@@ -624,12 +624,12 @@
     <param.hdlParamStorage />
     <var.gc.lastOutputRoot>codegen\lib\leg_J_cal</var.gc.lastOutputRoot>
     <var.gc.lastOutputType>C_CODE</var.gc.lastOutputType>
-    <var.gc.preBuildChecksum>4225843484</var.gc.preBuildChecksum>
+    <var.gc.preBuildChecksum>557406597</var.gc.preBuildChecksum>
     <var.cfi.lastOutputRoot />
     <var.cfi.preBuildChecksum />
     <var.outdatedOnRestore>false</var.outdatedOnRestore>
-    <var.lastUserSourceChecksum>&lt;?xml version="1.0" encoding="UTF-8" standalone="yes"?&gt;&lt;checksum&gt;&lt;includedFiles&gt;&lt;file&gt;E:\电控\开源资料\foc-wheel-legged-robot-master_自用\foc-wheel-legged-robot-master\matlab\leg_J_cal.m&lt;/file&gt;&lt;/includedFiles&gt;&lt;value&gt;2786315386&lt;/value&gt;&lt;/checksum&gt;</var.lastUserSourceChecksum>
-    <var.sourceSetState>&lt;?xml version="1.0" encoding="UTF-8" standalone="yes"?&gt;&lt;sourceModel&gt;&lt;primarySourceFiles&gt;&lt;file&gt;E:\电控\开源资料\foc-wheel-legged-robot-master_自用\foc-wheel-legged-robot-master\matlab\leg_J_cal.m&lt;/file&gt;&lt;/primarySourceFiles&gt;&lt;fixedPointSourceFiles/&gt;&lt;fixedPointSourceRegistered&gt;false&lt;/fixedPointSourceRegistered&gt;&lt;fixedPointSourceSelected&gt;false&lt;/fixedPointSourceSelected&gt;&lt;/sourceModel&gt;</var.sourceSetState>
+    <var.lastUserSourceChecksum>&lt;?xml version="1.0" encoding="UTF-8" standalone="yes"?&gt;&lt;checksum&gt;&lt;includedFiles&gt;&lt;file&gt;C:\Users\HP\Desktop\MY_Repository\matlab\leg_J_cal.m&lt;/file&gt;&lt;/includedFiles&gt;&lt;value&gt;870335418&lt;/value&gt;&lt;/checksum&gt;</var.lastUserSourceChecksum>
+    <var.sourceSetState>&lt;?xml version="1.0" encoding="UTF-8" standalone="yes"?&gt;&lt;sourceModel&gt;&lt;primarySourceFiles&gt;&lt;file&gt;C:\Users\HP\Desktop\MY_Repository\matlab\leg_J_cal.m&lt;/file&gt;&lt;/primarySourceFiles&gt;&lt;fixedPointSourceFiles/&gt;&lt;fixedPointSourceRegistered&gt;false&lt;/fixedPointSourceRegistered&gt;&lt;fixedPointSourceSelected&gt;false&lt;/fixedPointSourceSelected&gt;&lt;/sourceModel&gt;</var.sourceSetState>
     <param.forceMexBuild>false</param.forceMexBuild>
     <param.NoDefaultJIT>false</param.NoDefaultJIT>
     <param.configImportActive>false</param.configImportActive>
@@ -885,7 +885,7 @@
     </unset>
     <fileset.entrypoints>
       <file custom-data-expanded="false" value="${PROJECT_ROOT}\leg_J_cal.m">
-        <Marker>1706099858097</Marker>
+        <Marker>1717942322589</Marker>
       </file>
     </fileset.entrypoints>
     <fileset.testbench />
@@ -909,7 +909,7 @@
       </file>
     </fileset.inputtypes>
     <build-deliverables>
-      <file location="${PROJECT_ROOT}\codegen\lib\leg_J_cal" name="leg_J_cal.lib" optional="false">E:\电控\开源资料\foc-wheel-legged-robot-master_自用\foc-wheel-legged-robot-master\matlab\codegen\lib\leg_J_cal\leg_J_cal.lib</file>
+      <file location="${PROJECT_ROOT}\codegen\lib\leg_J_cal" name="leg_J_cal.lib" optional="false">C:\Users\HP\Desktop\MY_Repository\matlab\codegen\lib\leg_J_cal\leg_J_cal.lib</file>
     </build-deliverables>
     <workflow />
     <matlab>

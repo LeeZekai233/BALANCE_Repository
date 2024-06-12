@@ -2,7 +2,7 @@
 ## Makefile generated for component 'leg_conv'. 
 ## 
 ## Makefile     : leg_conv_rtw.mk
-## Generated on : Thu Dec 21 23:01:41 2023
+## Generated on : Sun Jun 09 22:08:24 2024
 ## Final product: .\leg_conv.lib
 ## Product type : static-library
 ## 
@@ -24,7 +24,7 @@ MAKEFILE                  = leg_conv_rtw.mk
 MATLAB_ROOT               = E:\matlab
 MATLAB_BIN                = E:\matlab\bin
 MATLAB_ARCH_BIN           = $(MATLAB_BIN)\win64
-START_DIR                 = E:\电控\开源资料\foc-wheel-legged-robot-master_自用\foc-wheel-legged-robot-master\matlab
+START_DIR                 = C:\Users\HP\Desktop\MY_Repository\matlab
 TGT_FCN_LIB               = ISO_C
 SOLVER_OBJ                = 
 CLASSIC_INTERFACE         = 0
