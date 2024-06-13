@@ -614,7 +614,7 @@
     <param.AutoInferUnboundedSizeThreshold>2048</param.AutoInferUnboundedSizeThreshold>
     <param.EnableFixedPointStep>false</param.EnableFixedPointStep>
     <param.EnableScreener>true</param.EnableScreener>
-    <param.AnnotationChecksum>4025079174</param.AnnotationChecksum>
+    <param.AnnotationChecksum>3927757599</param.AnnotationChecksum>
     <var.LegacyTarget />
     <var.MirrorOnOpen>false</var.MirrorOnOpen>
     <param.FixedPointEnabled>false</param.FixedPointEnabled>
@@ -885,7 +885,7 @@
     </unset>
     <fileset.entrypoints>
       <file custom-data-expanded="false" value="${PROJECT_ROOT}\lqr_k.m">
-        <Marker>1718176336825</Marker>
+        <Marker>1718318451345</Marker>
       </file>
     </fileset.entrypoints>
     <fileset.testbench />
