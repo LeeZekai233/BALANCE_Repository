@@ -17,6 +17,7 @@
 *.hex
 *.bin
 *.Bak
+*.prj
 
 #Keil Project screen layout file
 *.uvguix.*
