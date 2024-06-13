@@ -18,6 +18,7 @@
 *.bin
 *.Bak
 *.prj
+*.asv
 
 #Keil Project screen layout file
 *.uvguix.*
