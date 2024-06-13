@@ -29,5 +29,5 @@ JLinkLog.txt
 *.dbgcon
 
 #matlab
-/codegen/
-/slprj/
+codegen
+slprj
