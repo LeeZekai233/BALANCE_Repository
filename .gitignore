@@ -17,6 +17,8 @@
 *.hex
 *.bin
 *.Bak
+*.prj
+*.asv
 
 #Keil Project screen layout file
 *.uvguix.*
@@ -26,3 +28,6 @@
 JLinkLog.txt
 *.dbgcon
 
+#matlab
+codegen
+slprj
