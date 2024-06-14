@@ -128,7 +128,7 @@ void heat_shoot_frequency_limit()//步兵射频限制部分
 	
 void bullets_spilling()//步兵射频限制部分
 {
-	static 	int fric_run_time=0;
+	static int fric_run_time=0;
 	
 	if(shoot.fric_wheel_run==1&&
 					 shoot.poke_run==1&&
