@@ -112,7 +112,7 @@ void infantry_mode_switch_task(void)
 						
 						if(RC_CtrlData.Key_Flag.Key_CTRL_Flag)
 						{
-							leg_length = 0.34;
+							leg_length = 0.30;
 						}else
 						{
                            if(RC_CtrlData.Key_Flag.Key_Z_TFlag)
