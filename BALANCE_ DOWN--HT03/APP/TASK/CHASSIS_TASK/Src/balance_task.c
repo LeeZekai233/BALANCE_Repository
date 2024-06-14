@@ -459,8 +459,10 @@ float target_angle;
 void follow_gimbal_handle(void)
 {
 		
-		   PID_struct_init(&b_chassis.roll_pid, POSITION_PID, 50000, 20000, 800, 0, 12000);
-	     b_chassis.roll_pid.iout = 0;
+            PID_struct_init(&b_chassis.roll_pid, POSITION_PID, 50, 0, 500, 0, 12000);
+        b_chassis.roll_pid.iout = 0;
+		   
+	     
     b_chassis.chassis_ref.vx = b_chassis.chassis_dynemic_ref.vx;
 		if(fabs(b_chassis.balance_loop.dx) > 0.5||b_chassis.chassis_ref.vy != 0||usart_chassis_data.ctrl_mode==1||b_chassis.chassis_ref.vw >= 0.2)
 			b_chassis.chassis_ref.y_position = b_chassis.balance_loop.x;
@@ -568,7 +570,7 @@ void balance_jump_handle(void)
 **/
 void chassis_rotate_handle(void)
 {
-	PID_struct_init(&b_chassis.roll_pid, POSITION_PID, 50000, 40, 1000, 10, 12000);
+	PID_struct_init(&b_chassis.roll_pid, POSITION_PID, 150, 40, 1000, 10, 12000);
 	if(b_chassis.yaw_angle_0_2pi>=PI)
 		{b_chassis.yaw_angle__pi_pi=b_chassis.yaw_angle_0_2pi-(2*PI);}
 		else
@@ -597,7 +599,7 @@ void chassis_rotate_handle(void)
 void chassis_side_handle(void)
 {
         
-           PID_struct_init(&b_chassis.roll_pid, POSITION_PID, 50000, 20000, 800, 0, 12000);
+           PID_struct_init(&b_chassis.roll_pid, POSITION_PID, 50, 20000, 500, 0, 12000);
 	     b_chassis.roll_pid.iout = 0;
     b_chassis.chassis_ref.vx = b_chassis.chassis_dynemic_ref.vx;
 		if(fabs(b_chassis.balance_loop.dx) > 0.5||b_chassis.chassis_ref.vy != 0||usart_chassis_data.ctrl_mode==1||b_chassis.chassis_ref.vw >= 0.2)
