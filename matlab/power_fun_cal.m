@@ -3,9 +3,9 @@
 
 % syms k1 k2 k3 w P bT_gain Vmax Kv Pmax T;
 
-T = balance_chassisDriving_Encoder0Torque;
-w = balance_chassisDriving_Encoder0rate_rpm;
-P = usart_chassis_datachassis_power/2;
+T = 0.741.*(Motor6020_Encoder2current*3/16384);
+w = ChassisHeading_Speed_Fdb2/6;
+P = judge_rece_mesgpower_heat_datachassis_power;
 
 
 
@@ -43,7 +43,7 @@ g = fittype('k1*w^2+k2*T.^2+c','independent',{'w','T'}, ...
     'dependent','Pother','coefficients',{'k1','k2','c'});
 myfit = fit([w,T],Pother,g);
 
-     Pre_Pother = 0.0001699  *w.^2+4.626 *T.^2  +1.629;
+ Pre_Pother = 0.0003723  *w.^2+31.99 *T.^2  +1.304;
 
 
 figure;
@@ -51,7 +51,7 @@ plot(linspace(1,size(Pre_Pother,1),size(Pre_Pother,1)),Pre_Pother);
 hold on;
 plot(linspace(1,size(Pre_Pother,1),size(Pre_Pother,1)),Pother);
 predicte_power = machine_power + Pre_Pother;
-legend('other power', 'predicte other power'); 
+legend('predicte other power','other power'); 
 
 
 figure;
