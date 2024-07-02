@@ -66,6 +66,7 @@ else if(val>=max)\
 #include "USART_chassis_transmit.h"
 #include "SuperCap.h"
 #include "HT03.h"
+#include "TF02.h"
 
 /****************BSP**********************/
 #include "BSP.h"

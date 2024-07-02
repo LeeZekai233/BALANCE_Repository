@@ -42,7 +42,8 @@ friction_t general_friction = {0};
 poke_t general_poke = {0};
 
 
-
+/**************other_moddle define**********************/
+float mea_distance;
 
 
 /******************************capacitance_define*************************************/

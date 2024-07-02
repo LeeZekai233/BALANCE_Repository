@@ -89,5 +89,6 @@ void usart_gimbal_send(float cap_v)
 void usart_gimbal_receive(uint8_t *DataAddress)
 {
 	usart_gimbal_data.cap_v = ((int32_t)(((DataAddress[0]<<24)|(DataAddress[1]<<16)|(DataAddress[2]<<8)|DataAddress[3])))/10000.0f;
+    usart_gimbal_data.input_V = ((int32_t)(((DataAddress[4]<<24)|(DataAddress[5]<<16)|(DataAddress[6]<<8)|DataAddress[7])))/10000.0f;
 }
 

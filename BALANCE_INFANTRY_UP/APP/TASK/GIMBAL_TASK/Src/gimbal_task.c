@@ -240,7 +240,7 @@ void gimbal_task(void)
         break;
     }
     
-         VAL_LIMIT(gimbal_data.gim_ref_and_fdb.pit_angle_ref, pitch_min + fabs(chassis.roll), pitch_max + fabs(chassis.roll));		//pitch轴云台限幅
+         VAL_LIMIT(gimbal_data.gim_ref_and_fdb.pit_angle_ref, pitch_min - chassis.roll, pitch_max - chassis.roll);		//pitch轴云台限幅
      
     
 		gimbal_data.last_ctrl_mode = gimbal_data.ctrl_mode;//云台模式更新

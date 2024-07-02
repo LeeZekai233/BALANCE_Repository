@@ -39,7 +39,7 @@ void usart_chassis_send(
 										u8 chassis_power_limit,
 										u8 ctrl_mode);
 void usart_chassis_receive(uint8_t *DataAddress);
-void usart_gimbal_send(float cap_v);
+void usart_gimbal_send(float cap_v,float input_V);
 void usart_gimbal_receive(uint8_t *DataAddress);										
 extern usart_chassis_data_t usart_chassis_data;
 extern usart_gimbal_data_t usart_gimbal_data;										

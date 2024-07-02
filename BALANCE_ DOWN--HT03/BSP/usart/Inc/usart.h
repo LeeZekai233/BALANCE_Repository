@@ -12,7 +12,7 @@
 #define EN_UART4												1//默认单缓冲
 
 #define EN_UART5												1//可选缓冲
-#define EN_UART5_DMA_SECOND_FIFO 				1
+#define EN_UART5_DMA_SECOND_FIFO 				0
 
 #define EN_USART6												1//默认单缓冲
 
@@ -26,10 +26,10 @@
 
 #define USART2_Data_Receive_Process_0				do{SuperCap_message_Process(&usart_capacitance_message,_USART2_DMA_RX_BUF);}while(0);
 	
-#define USART3_Data_Receive_Process					do{usart_chassis_receive(_USART3_RX_BUF);}while(0);
+#define USART3_Data_Receive_Process					do{TF02_DataProgress(_USART3_RX_BUF,&mea_distance);}while(0);
 #define UART4_Data_Receive_Process					do{}while(0);
 	
-#define UART5_Data_Receive_Process_0				do{}while(0);
+#define UART5_Data_Receive_Process_0				do{usart_chassis_receive(_UART5_DMA_RX_BUF);}while(0);
 #define UART5_Data_Receive_Process_1				do{}while(0);
 
 #define USART6_Data_Receive_Process					do{CH100_getDATA(_USART6_DMA_RX_BUF,&chassis_gyro,0,0,0,0,0,0,0,0);}while(0);
@@ -140,6 +140,10 @@ void Uart3DmaSendDataProc(DMA_Stream_TypeDef *DMA_Streamx,u16 ndtr);
 void Uart3SendByteInfoProc(u8 nSendInfo);
 void Uart3SendBytesInfoProc(u8* pSendInfo, u16 nSendCount);
 
+void Uart5DmaSendDataProc(DMA_Stream_TypeDef *DMA_Streamx,u16 ndtr);
+void Uart5SendByteInfoProc(u8 nSendInfo);
+void Uart5SendBytesInfoProc(u8* pSendInfo, u16 nSendCount);
+    
 void MYDMA_Enable(DMA_Stream_TypeDef *DMA_Streamx,u16 ndtr);
 
 extern uint8_t UART4_DMA_TX_BUF[UART4_TX_BUF_LENGTH];

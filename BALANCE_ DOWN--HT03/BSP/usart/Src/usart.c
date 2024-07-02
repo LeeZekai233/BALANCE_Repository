@@ -18,7 +18,7 @@ uint8_t _UART5_DMA_RX_BUF[100];
 static uint8_t USART2_DMA_TX_BUF[USART2_TX_BUF_LENGTH];
 static uint8_t USART3_DMA_TX_BUF[USART3_TX_BUF_LENGTH];
 	 uint8_t UART4_DMA_TX_BUF[UART4_TX_BUF_LENGTH];
-	static uint8_t UART5_DMA_TX_BUF[UART5_TX_BUF_LENGTH];
+	 uint8_t UART5_DMA_TX_BUF[UART5_TX_BUF_LENGTH];
 //static uint8_t USART6_DMA_TX_BUF[USART6_TX_BUF_LENGTH];
 /*********************************************************************************************************/
 /*********************************************************************************************************/
@@ -807,6 +807,8 @@ void uart5_init(u32 bound)
   NVIC_InitStructure.NVIC_IRQChannelSubPriority = 1;
   NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
   NVIC_Init(&NVIC_InitStructure);
+  
+  DMA_ITConfig(DMA1_Stream7,DMA_IT_TC,ENABLE);
 }
 void MYDMA_Enable(DMA_Stream_TypeDef *DMA_Streamx,u16 ndtr)
 {
@@ -865,13 +867,65 @@ void UART5_IRQHandler(void)
       DMA_SetCurrDataCounter(DMA1_Stream0, BSP_UART5_DMA_RX_BUF_LEN);      //设置当前DMA剩余数据量
       DMA_Cmd(DMA1_Stream0, ENABLE); 
 				//开启串口5的DMA接收通道
-				UART5_Data_Receive_Process
+				UART5_Data_Receive_Process_0
      
 #endif
 
     }
 	}
 
+    
+void Uart5DmaSendDataProc(DMA_Stream_TypeDef *DMA_Streamx,u16 ndtr)
+
+{
+//    DMA_Cmd(DMA_Streamx, DISABLE);                      //关闭DMA传输
+//    while (DMA_GetCmdStatus(DMA_Streamx) != DISABLE){}  //确保DMA可以被设置
+  DMA_SetCurrDataCounter(DMA_Streamx,ndtr);          //数据传输量
+  DMA_Cmd(DMA_Streamx, ENABLE);                      //开启DMA传输
+}
+
+
+
+void DMA1_Stream7_IRQHandler(void)
+{
+  //清除标志
+  if(DMA_GetFlagStatus(DMA1_Stream7,DMA_FLAG_TCIF7)!=RESET)//等待DMA1_Steam3传输完成
+    {
+      DMA_Cmd(DMA1_Stream7, DISABLE);                      //关闭DMA传输
+      DMA_ClearFlag(DMA1_Stream7,DMA_FLAG_TCIF7);//清除DMA1_Steam3传输完成标志
+    }
+}
+
+
+//发送单字节
+void Uart5SendByteInfoProc(u8 nSendInfo)
+{
+  u8 *pBuf = NULL;
+  //指向发送缓冲区
+  pBuf = UART5_DMA_TX_BUF;
+  *pBuf++ = nSendInfo;
+
+  Uart5DmaSendDataProc(DMA1_Stream7,1); //开始一次DMA传输！
+
+}
+
+//发送多字节
+
+void Uart5SendBytesInfoProc(u8* pSendInfo, u16 nSendCount)
+{
+  u16 i = 0;
+  u8 *pBuf = NULL;
+  //指向发送缓冲区
+  pBuf = UART5_DMA_TX_BUF;
+  for (i=0; i<nSendCount; i++)
+    {
+      *(pBuf+i) = pSendInfo[i];
+    }
+
+  //DMA发送方式
+
+  Uart5DmaSendDataProc(DMA1_Stream7,nSendCount); //开始一次DMA传输！
+}
 #endif
 	
 

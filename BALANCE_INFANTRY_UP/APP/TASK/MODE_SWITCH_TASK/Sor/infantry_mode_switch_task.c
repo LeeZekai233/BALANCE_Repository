@@ -177,7 +177,7 @@ void infantry_mode_switch_task(void)
                 VAL_LIMIT(RC_CtrlData.mouse.y, -100, 100);
                 gimbal_data.gim_dynamic_ref.yaw_angle_dynamic_ref += RC_CtrlData.mouse.x * MOUSE_TO_YAW_ANGLE_INC_FACT;
                 gimbal_data.gim_dynamic_ref.pitch_angle_dynamic_ref -= RC_CtrlData.mouse.y * MOUSE_TO_PITCH_ANGLE_INC_FACT;
-                VAL_LIMIT(gimbal_data.gim_dynamic_ref.pitch_angle_dynamic_ref, pitch_min+fabs(chassis.roll), pitch_max+fabs(chassis.roll));
+                VAL_LIMIT(gimbal_data.gim_dynamic_ref.pitch_angle_dynamic_ref, pitch_min-chassis.roll, pitch_max-chassis.roll);
 							//Ò»¼ü·´Ïò
 //							if(RC_CtrlData.Key_Flag.Key_X_Flag)
 //							{

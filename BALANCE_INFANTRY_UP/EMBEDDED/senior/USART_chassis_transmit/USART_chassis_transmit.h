@@ -23,6 +23,7 @@ typedef struct
 typedef struct
 {
 	float cap_v;
+    float input_V;
 } usart_gimbal_data_t;
 
 void usart_chassis_send(
