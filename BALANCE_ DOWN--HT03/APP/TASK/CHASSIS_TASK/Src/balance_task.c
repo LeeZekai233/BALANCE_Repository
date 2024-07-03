@@ -42,7 +42,7 @@ void balance_param_init(void)
     PID_struct_init(&b_chassis.vw_pid, POSITION_PID,5,5,2,0,0);
     PID_struct_init(&b_chassis.roll_pid, POSITION_PID, 50000, 20000, 800, 0, 12000);
 	
-    PID_struct_init(&b_chassis.pid_follow_gim, POSITION_PID, 500, 200, 12, 0, 5);
+    PID_struct_init(&b_chassis.pid_follow_gim, POSITION_PID, 5, 200, 12, 0, 5);
     
     PID_struct_init(&b_chassis.pid_seperate_gim, POSITION_PID, 500, 200, 0.5, 0, 5);
 	
@@ -122,7 +122,7 @@ void balance_chassis_task(void)
             }break;
         case CHASSIS_SEPARATE:
         {
-                    chassis_seperate_handle();
+            chassis_seperate_handle();
             balance_task();
         }
         break;
@@ -205,7 +205,10 @@ void balance_cmd_select(void)
 				{
 					b_chassis.jump_flag = usart_chassis_data.jump_cmd;
 				}
-                
+                if(b_chassis.chassis_dynemic_ref.vx != 0)
+                {
+                    b_chassis.jump_flag = 0;
+                }
                 
                     b_chassis.chassis_dynemic_ref.leglength = usart_chassis_data.cmd_leg_length;
    }else
@@ -494,7 +497,6 @@ void follow_gimbal_handle(void)
         b_chassis.chassis_ref.vy = trackRamp(b_chassis.chassis_ref.vy,ecd_speed);
         
 		b_chassis.chassis_ref.vw = -pid_calc(&b_chassis.pid_follow_gim,b_chassis.yaw_angle__pi_pi,target_angle); 
-		VAL_LIMIT(b_chassis.chassis_ref.vw,-5,5);
 		
         if(if_middle_leg)
         {
@@ -519,19 +521,58 @@ void follow_gimbal_handle(void)
 u8 jump_state = 0;
 void balance_jump_handle(void)
 {
-	b_chassis.chassis_ref.vy = b_chassis.balance_loop.dx;
+	
 	b_chassis.chassis_ref.vx = 0;
 	b_chassis.chassis_ref.vw = 0;
-	b_chassis.chassis_ref.y_position = b_chassis.balance_loop.x;
+	
 	if(jump_state == 0)
 	{
 		b_chassis.chassis_ref.leglength = 0.14f;
-		if(fabs(b_chassis.balance_loop.L0 - b_chassis.chassis_ref.leglength)<=0.02)
+        if(fabs(b_chassis.balance_loop.dx) > 0.5||b_chassis.chassis_ref.vy != 0||usart_chassis_data.ctrl_mode==1||b_chassis.chassis_ref.vw >= 0.2)
+			b_chassis.chassis_ref.y_position = b_chassis.balance_loop.x;
+		else
+			b_chassis.normal_Y_erroffset-=b_chassis.balance_loop.dx*0.001*TIME_STEP;
+		
+       if(fabs(b_chassis.chassis_ref.remote_angle-b_chassis.yaw_angle__pi_pi)<PI/2)
+		{
+			target_angle = b_chassis.chassis_ref.remote_angle;
+			ecd_speed = b_chassis.chassis_ref.remote_speed;
+            b_chassis.chassis_ref.roll = usart_chassis_data.roll;
+		}else if(b_chassis.chassis_ref.remote_angle-b_chassis.yaw_angle__pi_pi > 3*PI/2)
+		{
+			target_angle = b_chassis.chassis_ref.remote_angle-2*PI;
+			ecd_speed = b_chassis.chassis_ref.remote_speed;
+            b_chassis.chassis_ref.roll = usart_chassis_data.roll;
+		}else if(b_chassis.chassis_ref.remote_angle-b_chassis.yaw_angle__pi_pi < -3*PI/2)
+		{
+			target_angle = b_chassis.chassis_ref.remote_angle+2*PI;
+			ecd_speed = b_chassis.chassis_ref.remote_speed;
+            b_chassis.chassis_ref.roll = usart_chassis_data.roll;
+		}
+		else if(b_chassis.chassis_ref.remote_angle-b_chassis.yaw_angle__pi_pi>0)
+		{
+			target_angle = b_chassis.chassis_ref.remote_angle - PI;
+			ecd_speed = -b_chassis.chassis_ref.remote_speed;
+            b_chassis.chassis_ref.roll = -usart_chassis_data.roll;
+		}else if(b_chassis.chassis_ref.remote_angle-b_chassis.yaw_angle__pi_pi<0)
+		{
+			target_angle = b_chassis.chassis_ref.remote_angle + PI;
+			ecd_speed = -b_chassis.chassis_ref.remote_speed;
+            b_chassis.chassis_ref.roll = -usart_chassis_data.roll;
+		}
+		
+        b_chassis.chassis_ref.vy = trackRamp(b_chassis.chassis_ref.vy,ecd_speed);
+        
+		b_chassis.chassis_ref.vw = -pid_calc(&b_chassis.pid_follow_gim,b_chassis.yaw_angle__pi_pi,target_angle); 
+        
+		if(mea_distance < 0.6)
 		{
 			jump_state++;
 		}
 	}else if(jump_state == 1)
 	{
+        b_chassis.chassis_ref.vy = b_chassis.balance_loop.dx;
+        b_chassis.chassis_ref.y_position = b_chassis.balance_loop.x;
 		PID_struct_init(&b_chassis.left_leg.leglengthpid, POSITION_PID,20000,20000,4000,0,15000);
     PID_struct_init(&b_chassis.right_leg.leglengthpid, POSITION_PID, 20000, 20000, 4000, 0, 15000);
 		b_chassis.chassis_ref.leglength = 0.34f;
@@ -540,6 +581,8 @@ void balance_jump_handle(void)
 		
 	}else if(jump_state == 2)
 	{
+        b_chassis.chassis_ref.vy = b_chassis.balance_loop.dx;
+        b_chassis.chassis_ref.y_position = b_chassis.balance_loop.x;
 		b_chassis.chassis_ref.leglength = 0.14f;
 		if(fabs(b_chassis.balance_loop.L0 - b_chassis.chassis_ref.leglength)<=0.01)
 		{
@@ -632,7 +675,6 @@ void chassis_side_handle(void)
         b_chassis.chassis_ref.vy = trackRamp(b_chassis.chassis_ref.vy,ecd_speed);
         
 		b_chassis.chassis_ref.vw = -pid_calc(&b_chassis.pid_follow_gim,b_chassis.yaw_angle__pi_pi,target_angle); 
-		VAL_LIMIT(b_chassis.chassis_ref.vw,-5,5);
 		
         if(if_middle_leg)
         {
@@ -743,7 +785,7 @@ void balance_task(void)
 	b_chassis.balance_loop.state_err[5] = 0 - b_chassis.balance_loop.dphi;
     
     float x_err;
-    if(b_chassis.jump_flag==1)
+    if(jump_state>=1)
     {
         x_err = 0;
     }else
