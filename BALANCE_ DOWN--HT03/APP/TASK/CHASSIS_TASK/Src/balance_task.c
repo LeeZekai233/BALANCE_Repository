@@ -330,7 +330,7 @@ void get_remote_angle(void)
 **/
 void chassis_standup_handle(void)
 {
-	b_chassis.chassis_ref.leglength = 0.15f;
+	b_chassis.chassis_ref.leglength = 0.10f;
     b_chassis.chassis_ref.vy = 0;
     b_chassis.chassis_ref.vx = 0;
     b_chassis.chassis_ref.vw = 0;
@@ -354,7 +354,7 @@ void chassis_standup_handle(void)
 **/
 void chassis_Init_handle(void)
 {
-    b_chassis.chassis_ref.leglength = 0.14f;
+    b_chassis.chassis_ref.leglength = 0.10f;
     b_chassis.chassis_ref.vy = 0;
     b_chassis.chassis_ref.vx = 0;
     b_chassis.chassis_ref.vw = 0;

@@ -76,7 +76,6 @@ else if(val>=max)\
 #include "timer.h"
 #include "iwdg.h"
 
-
 /***************TASK*********************/
 #include "balance_task.h"
 #include "leg_task.h"

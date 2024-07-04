@@ -474,6 +474,8 @@ void USART_CH100_IRQHandler(void)
 		
 		USART_DMACmd(USART_CH100, USART_DMAReq_Rx, ENABLE);
 		DMA_Cmd(USART_CH100_RX_DMA_STREAM,ENABLE);//重新置位后，地址指针变成0
+        
+
 	}
 }
 
