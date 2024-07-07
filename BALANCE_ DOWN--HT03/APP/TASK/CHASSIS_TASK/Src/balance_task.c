@@ -239,11 +239,11 @@ void balance_cmd_select(void)
                 down_cnt_flag = 1;
             }else
             {
-                if(usart_chassis_data.chassis_power_buffer < 10)
-                {
-                    down_flag = 1;
-                    down_cnt_flag = 1;
-                }
+//                if(usart_chassis_data.chassis_power_buffer < 10)
+//                {
+//                    down_flag = 1;
+//                    down_cnt_flag = 1;
+//                }
                 if(usart_capacitance_message.cap_voltage_filte > 13&&down_cnt > 1000)
                 {
                     down_flag = 0;
@@ -946,11 +946,9 @@ void balance_task(void)
     }else 
     {
         
-            VAL_LIMIT(b_chassis.driving_T[0], 0, 0);
-            VAL_LIMIT(b_chassis.driving_T[1], 0, 0);
-            
+            VAL_LIMIT(b_chassis.driving_T[0], -5, 5);
+            VAL_LIMIT(b_chassis.driving_T[1], -5, 5);
     }
-
         //电机输出限幅
 //    VAL_LIMIT(b_chassis.driving_T[0], -5, 5);
 //    VAL_LIMIT(b_chassis.driving_T[1], -5, 5);

@@ -245,7 +245,7 @@ if(general_friction.left_motor.if_online==1&&general_friction.right_motor.if_onl
 	{
         if(buff_time==0)
         {
-            buff_check_flag = 0;//1;
+            buff_check_flag = 1;
             shoot.poke_pid.angle_fdb=general_poke.poke.ecd_angle/36.109;
             shoot.poke_pid.angle_ref = shoot.poke_pid.angle_fdb;
         }

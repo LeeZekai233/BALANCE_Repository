@@ -68,8 +68,3 @@ CAN2_Mode_Init(CAN_BS2_4tq,CAN_BS1_9tq,3,CAN_Mode_Normal);//CAN初始化正常模式,波
 
 
 
-
-
-
-
-
