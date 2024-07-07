@@ -55,7 +55,7 @@ void usart_chassis_send(
 	 databuff[22] = (uint8_t)(r);
      
 	
-	Uart3SendBytesInfoProc(databuff,23);
+	usart3.Send_bytes(&usart3,databuff,23);
 }
 
 
@@ -90,7 +90,7 @@ void usart_gimbal_send(float cap_v,float input_V)
          databuff[5] = (uint8_t)(data1 >> 16);
          databuff[6] = (uint8_t)(data1 >> 8);
          databuff[7] = (uint8_t)(data1);
-	Uart5SendBytesInfoProc(databuff,8);
+	usart5.Send_bytes(&usart5,databuff,8);
 }
 
 void usart_gimbal_receive(uint8_t *DataAddress)

@@ -340,7 +340,7 @@
               <MiscControls></MiscControls>
               <Define>STM32F40_41xxx,USE_STDPERIPH_DRIVER</Define>
               <Undefine></Undefine>
-              <IncludePath>..\CORE;..\USER;..\README;..\HEADFILE;..\STLIB\inc;..\STLIB\src;..\APP\BAL\Ins;..\APP\RTOS\Ins;..\APP\TASK\CHASSIS_TASK\Inc;..\APP\TASK\GIMBAL_TASK\Ins;..\BSP\can\Inc;..\BSP\delay\Inc;..\BSP\usart\Inc;..\BSP\sys\Inc;..\EMBEDDED\CAN_BUS;..\EMBEDDED\senior\CH100;..\EMBEDDED\senior\DJI_MOTOR;..\EMBEDDED\senior\HI220;..\EMBEDDED\senior\HT430;..\EMBEDDED\senior\JUDGE;..\EMBEDDED\senior\LK_TECH;..\EMBEDDED\senior\PM01;..\EMBEDDED\senior_struct;..\EMBEDDED\senior\REMOTE;..\APP\TASK\MODE_SWITCH_TASK\Inc;..\BSP\timer\Inc;..\EMBEDDED\senior\CAN_CHASSIS_TRANSMIT;..\EMBEDDED\senior\USART_chassis_transmit;..\BSP\LED\LED;..\APP\TASK\SHOOT_TASK\Inc;..\EMBEDDED\senior\Auto_Shoot;..\EMBEDDED\senior\OLD_Auto_shoot;..\EMBEDDED\senior\OLD_Auto_shoot\proto;..\EMBEDDED\senior\OLD_Auto_shoot\Protocol;..\EMBEDDED\senior\client;..\BSP\iwdg</IncludePath>
+              <IncludePath>..\CORE;..\USER;..\README;..\HEADFILE;..\STLIB\inc;..\STLIB\src;..\APP\BAL\Ins;..\APP\RTOS\Ins;..\APP\TASK\CHASSIS_TASK\Inc;..\APP\TASK\GIMBAL_TASK\Ins;..\BSP\can\Inc;..\BSP\delay\Inc;..\BSP\usart\Inc;..\BSP\sys\Inc;..\EMBEDDED\CAN_BUS;..\EMBEDDED\senior\CH100;..\EMBEDDED\senior\DJI_MOTOR;..\EMBEDDED\senior\HI220;..\EMBEDDED\senior\HT430;..\EMBEDDED\senior\JUDGE;..\EMBEDDED\senior\LK_TECH;..\EMBEDDED\senior\PM01;..\EMBEDDED\senior_struct;..\EMBEDDED\senior\REMOTE;..\APP\TASK\MODE_SWITCH_TASK\Inc;..\BSP\timer\Inc;..\EMBEDDED\senior\CAN_CHASSIS_TRANSMIT;..\EMBEDDED\senior\USART_chassis_transmit;..\BSP\LED\LED;..\APP\TASK\SHOOT_TASK\Inc;..\EMBEDDED\senior\Auto_Shoot;..\EMBEDDED\senior\OLD_Auto_shoot;..\EMBEDDED\senior\OLD_Auto_shoot\proto;..\EMBEDDED\senior\OLD_Auto_shoot\Protocol;..\EMBEDDED\senior\client;..\BSP\iwdg;..\BSP\serial</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -530,6 +530,11 @@
           <GroupName>BSP</GroupName>
           <Files>
             <File>
+              <FileName>serial.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\BSP\serial\serial.c</FilePath>
+            </File>
+            <File>
               <FileName>can.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\BSP\can\Src\can.c</FilePath>
@@ -543,11 +548,6 @@
               <FileName>sys.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\BSP\sys\Sor\sys.c</FilePath>
-            </File>
-            <File>
-              <FileName>usart.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\BSP\usart\Src\usart.c</FilePath>
             </File>
             <File>
               <FileName>timer.c</FileName>

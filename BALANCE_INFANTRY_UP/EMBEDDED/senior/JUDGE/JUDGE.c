@@ -388,8 +388,6 @@ void data_upload_handle(uint16_t cmd_id, uint8_t *p_data, uint16_t len, uint8_t 
 	 {}
   else if (sof == DN_REG_ID)
 	{
-					DMA_ClearFlag(DMA1_Stream7,DMA_FLAG_TCIF7);//清除DMA2_Steam7传输完成标志
-		      USART_DMACmd(UART5,USART_DMAReq_Tx,ENABLE);  //使能串口1的DMA发送      
-	      	MYDMA_Enable(DMA1_Stream7,frame_length);
+					usart5.Send_bytes(&usart5,tx_buf,frame_length);
 	}
 }

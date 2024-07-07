@@ -113,7 +113,7 @@ void send_protocol_New(float Yaw, float Pitch, float Roll, int id, float ammo_sp
 	memcpy(&data[1],&New_Auto_Aim_Send,25);
 	Append_CRC16_Check_Sum(&data[0],25+3);
 //	data[52]=0xed;
-	Uart4SendBytesInfoProc(data, 25+3);
+	usart4.Send_bytes(&usart4,data, 25+3);
 }
 
 

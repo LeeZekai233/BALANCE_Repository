@@ -21,7 +21,7 @@ void POWER_Control(SuperCap_Send_t *S)
 	S->chassis_power_limit =usart_chassis_data.chassis_power_limit;
 
 	memcpy(&Capacitance_Message_Buf,(uint8_t *)S,sizeof(SuperCap_Send_t));
-    Uart2SendBytesInfoProc((uint8_t *)Capacitance_Message_Buf,sizeof(Capacitance_Message_Buf));
+    usart2.Send_bytes(&usart2,(uint8_t *)Capacitance_Message_Buf,sizeof(Capacitance_Message_Buf));
 }
 
 void SuperCap_message_Process(volatile usart_capacitance_message_t *v,uint8_t *data)
