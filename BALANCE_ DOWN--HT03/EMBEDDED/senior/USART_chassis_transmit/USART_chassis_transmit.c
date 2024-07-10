@@ -77,23 +77,20 @@ void usart_chassis_receive(uint8_t *DataAddress)
     usart_chassis_data.roll = ((int16_t)((DataAddress[21]<<8)|DataAddress[22]))/100.0;
 }
 
-void usart_gimbal_send(float cap_v,float input_V)
+void usart_gimbal_send(float cap_v,float input_V,float phi4,float phi1,float phi0,float L0,uint8_t jump_flag)
 {
-		int32_t data = (int32_t)(cap_v*10000);
-        int32_t data1 = (int32_t)(input_V*10000);
-		 databuff[0] = (uint8_t)(data >> 24);
-         databuff[1] = (uint8_t)(data >> 16);
-         databuff[2] = (uint8_t)(data >> 8);
-         databuff[3] = (uint8_t)(data);
-         
-         databuff[4] = (uint8_t)(data1 >> 24);
-         databuff[5] = (uint8_t)(data1 >> 16);
-         databuff[6] = (uint8_t)(data1 >> 8);
-         databuff[7] = (uint8_t)(data1);
-	usart5.Send_bytes(&usart5,databuff,8);
+	usart_gimbal_data.cap_v = cap_v;
+    usart_gimbal_data.input_V = input_V;
+    usart_gimbal_data.phi4 = phi4;
+    usart_gimbal_data.phi1 = phi1;
+    usart_gimbal_data.phi0 = phi0;
+    usart_gimbal_data.L0 = L0;
+    usart_gimbal_data.jump_flag = jump_flag;
+    
+	usart5.Send_bytes(&usart5,(uint8_t *)&usart_gimbal_data,sizeof(usart_gimbal_data_t));
 }
 
-void usart_gimbal_receive(uint8_t *DataAddress)
+void usart_gimbal_receive(usart_gimbal_data_t *data,uint8_t *DataAddress)
 {
-	usart_gimbal_data.cap_v = ((int32_t)(((DataAddress[0]<<24)|(DataAddress[1]<<16)|(DataAddress[2]<<8)|DataAddress[3])))/10000.0f;
+	memcpy((uint8_t *)data,DataAddress,sizeof(usart_gimbal_data_t));
 }

@@ -100,8 +100,8 @@ float pitch_max = 0;
     #define YAW_BIG_FEED          1
     #define PITCH_BIG_FEED        1
     
-    float Buff_Yaw_remain = 0;
-    float Buff_pitch_remain= 0;
+    float Buff_Yaw_remain = 0.7;
+    float Buff_pitch_remain= 0.7;
 
     float auto_aim_Yaw_remain = 0;
     float auto_aim_pitch_remain = 0;
@@ -159,19 +159,19 @@ void gimbal_parameter_Init(void)
 										
     PID_struct_init ( &gimbal_data.pid_pit_speed_rotate, POSITION_PID, 27000, 25000, 300.0f, 0.001f, 0 ); 
 
-    PID_struct_init ( &gimbal_data.pid_yaw_rotate, POSITION_PID,  150,12,
-                    15, 0.05, 17);//15 0 80
+    PID_struct_init ( &gimbal_data.pid_yaw_rotate, POSITION_PID,  150,13,
+                    6, 0.3, 10);//15 0 80
     PID_struct_init ( &gimbal_data.pid_yaw_speed_rotate, POSITION_PID, 29800, 29800,
                     400.0f, 0.8, 0 ); //160 0.8 40
                     
     //自瞄平移下参数
-    PID_struct_init ( &gimbal_data.pid_pit_follow, POSITION_PID, 200, 30, 2.5
-                    , 0.01, 30 );
+    PID_struct_init ( &gimbal_data.pid_pit_follow, POSITION_PID, 200, 30, 20
+                    , 0.01, 15);
 										
     PID_struct_init ( &gimbal_data.pid_pit_speed_follow, POSITION_PID, 27000, 25000, 300.0f, 0.001f, 0 ); 
 
     PID_struct_init ( &gimbal_data.pid_yaw_follow, POSITION_PID,  150,16,
-                    4, 0.01, 20);//15 0 80
+                    9, 0.1, 10);//15 0 80
     PID_struct_init ( &gimbal_data.pid_yaw_speed_follow, POSITION_PID, 29800, 29800,
                     400.0f, 0.8, 0 ); //160 0.8 40
     //小幅下的参数            
@@ -349,12 +349,12 @@ void gimbal_follow_gyro_handle(void)
     gimbal_data.gim_ref_and_fdb.yaw_angle_fdb = YAW_ANGLE_FDB;
     gimbal_data.gim_ref_and_fdb.pit_speed_fdb = PITCH_SPEED_FDB;
     gimbal_data.gim_ref_and_fdb.yaw_speed_fdb = YAW_SPEED_FDB;
-    if(RC_CtrlData.mouse.press_r&&(gimbal_data.vision_mode==AIM_NORMAL||gimbal_data.vision_mode==AIM_ROTATE))//鼠标右键按下
+    if(RC_CtrlData.mouse.press_r&&(gimbal_data.vision_mode==AIM_NORMAL||gimbal_data.vision_mode==AIM_ROTATE)&&new_location.flag)//鼠标右键按下
     {
 
-                if (new_location.flag)//视觉完成识别
-                {
-                    if(gimbal_data.vision_mode==AIM_ROTATE)
+                
+                
+                    if(gimbal_data.vision_mode==AIM_ROTATE||gimbal_data.vision_mode==AIM_NORMAL)
                     {
                         //切换云台反馈
 									/**/
@@ -421,14 +421,16 @@ void gimbal_follow_gyro_handle(void)
                                                                       gimbal_data.gim_ref_and_fdb.pit_speed_fdb,
                                                                       0 )*PITCH_MOTOR_POLARITY;
                     }
+                    gimbal_data.gim_dynamic_ref.pitch_angle_dynamic_ref = VISION_PITCH_ANGLE_FDB;
+                    gimbal_data.gim_dynamic_ref.yaw_angle_dynamic_ref = VISION_YAW_ANGLE_FDB;
 										
-									if(fabs(gimbal_data.gim_ref_and_fdb.yaw_angle_ref - gimbal_data.gim_ref_and_fdb.yaw_angle_fdb) < 0.5)
-									{
-										gimbal_data.if_auto_shoot = 1;
-									}else
-									{
-										gimbal_data.if_auto_shoot = 0;
-									}
+//									if(fabs(gimbal_data.gim_ref_and_fdb.yaw_angle_ref - gimbal_data.gim_ref_and_fdb.yaw_angle_fdb) < 0.5)
+//									{
+//										gimbal_data.if_auto_shoot = 1;
+//									}else
+//									{
+//										gimbal_data.if_auto_shoot = 0;
+//									}
 									
                     
 						
@@ -437,7 +439,7 @@ void gimbal_follow_gyro_handle(void)
 									
 										
                                 
-                }
+                
 				
         
     }else

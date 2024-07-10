@@ -1,80 +1,86 @@
 #include "client.h"
-u8  draw_cnt=0,draw_int=0;
-u16 draw_data_ID=0x0101;
-u16 data_ID=0xD180;
+
+/**
+  ******************************************************************************
+  * @file    client.c
+  * @date    2024.7.5
+  * @brief    各图形定义及引用方法见client.h，除字符外共用结构体interaction_figure_t
+	*	@introduction UI绘制步骤
+			静态UI ：1.创建interaction_figure_t图形对象或client_custom_character_t字符对象
+							 2.调用UI.结构体中ADD函数进行绘制 如UI.ADD_7Graph（入口参数）
+			动态UI ：前两步同静态UI
+							 3.调用UI.结构体中相应modify函数进行动态自定义更新
+							 4.自行调整case和UI.cnt
+ ===============================================================================
+ **/
+#define WIDTH    3
 u16 client_custom_ID=0;
-uint8_t  ddata[150];
+uint8_t dddata[120];
 uint8_t  tx_buf[150];
-int Energy_organs_flag=0;
-u8 security_attacked;
-u8 base_attacked;
 
-ext_client_custom_character_t Friction_state;                                
-ext_client_custom_character_t Level;                         
-ext_client_custom_character_t cap;                 //
-ext_client_custom_character_t speed_up;             
+UI_t UI=UI_DEFAULT;
 
-ext_client_custom_character_t Level_sight;
-ext_client_custom_character_t security_or_base;
-
-ext_client_custom_graphic_seven_t   cap_sight;               //电量显示
-ext_client_custom_graphic_seven_t		cap_ract;										 //超级电容框
-ext_client_custom_graphic_seven_t   sight_bead;                  //准星
-ext_client_custom_graphic_seven_t   chassis_graphics;          //小陀螺图形
+VMC_t VMC_point;
 
 
-ext_client_custom_graphic_seven_t graphic1;
-ext_client_custom_graphic_seven_t graphic2;
+/*创建图形对象*/
+/*电容警示圈*/
+interaction_figure_t cap_down_arc =         ARC(ADD,0,0,1,960,540,140*3-30,140*3-30,225,315,6,0,UI_BLACK);
+interaction_figure_t cap_up_arc =           ARC(ADD,0,0,2,960,540,140*3-30,140*3-30,225,315,5,1,UI_YELLOW);
+/*热量圈*/ 
+interaction_figure_t heat_down_arc =        ARC(ADD,0,0,3,960,540,140*3-30,140*3-30,45,135,6,0,UI_BLACK);
+interaction_figure_t heat_up_arc =          ARC(ADD,0,0,4,960,540,140*3-30,140*3-30,45,135,5,1,UI_RB);
+/*底盘状态*/    
+interaction_figure_t yaw_down_arc =         ARC(ADD,0,0,5,960,130,40,40,0,359,15,0,UI_RB);/*yaw底圈*/
+interaction_figure_t yaw_up_arc =           ARC(ADD,0,0,6,960,130,40,40,0,359,15,1,UI_CYAN);
+/*视觉状态*/    
+interaction_figure_t vision_cl =         CIRCLE(ADD,0,0,7,1650,530,9,5,0,UI_RB);
+/*剩余发弹量*/
+interaction_figure_t bullet =         FLOAT_NUM(ADD,0,0,8,230,540,0,20,4,0,UI_RB);
+/*等级*/                             
+interaction_figure_t level  =         FLOAT_NUM(ADD,0,0,9,230,570,0,20,4,0,UI_RB);
+/*电池*/
+interaction_figure_t battery_ract =   RECTANGLE(ADD,0,1,0,600,730,115,155,3,0,UI_RB);
+interaction_figure_t battery =        FLOAT_NUM(ADD,0,1,1,607,144,0,17,4,1,UI_CYAN);
+/*准星*/
+interaction_figure_t sight =             CIRCLE(ADD,0,1,2,960,540,1,3,0,UI_YELLOW);
+interaction_figure_t sight1 =            CIRCLE(ADD,0,1,9,970,490,2,4,0,UI_YELLOW);   
+/*五连杆*/
+interaction_figure_t l1 =                  LINE(ADD,0,2,0,0,0,0,0,WIDTH,1,UI_YELLOW);
+interaction_figure_t l2 =                  LINE(ADD,0,2,1,0,0,0,0,WIDTH,1,UI_YELLOW);
+interaction_figure_t l3 =                  LINE(ADD,0,2,2,0,0,0,0,WIDTH,1,UI_YELLOW);
+interaction_figure_t l4 =                  LINE(ADD,0,2,3,0,0,0,0,WIDTH,1,UI_YELLOW);
+interaction_figure_t l5 =                  LINE(ADD,0,2,4,0,0,0,0,WIDTH,1,UI_RB);
+interaction_figure_t wheel =             CIRCLE(ADD,0,2,5,0,0,100/2,WIDTH,1,UI_RB); 
 
-ext_client_custom_character_t Friction_state;                                
-ext_client_custom_character_t Level;                         
-ext_client_custom_character_t cap;                 //
-ext_client_custom_character_t speed_up;  
-ext_client_custom_character_t bullet_data;
-ext_client_custom_character_t aim_normal;
-ext_client_custom_character_t aim_rotate;
-ext_client_custom_character_t small_buff;
-ext_client_custom_character_t big_buff;
+interaction_figure_t X1;
 
-ext_client_custom_character_t Level_sight;
-ext_client_custom_character_t security_or_base;
-ext_client_custom_character_t bullet_sight;
+/*字符*/
+interaction_figure_t _1=CHARACTER(ADD,0,1,3,100,540,20,20,WIDTH,0,UI_YELLOW);/*bullet*/
+interaction_figure_t _2=CHARACTER(ADD,0,1,4,100,570,20,20,WIDTH,0,UI_YELLOW);/*level*/
+interaction_figure_t _3=CHARACTER(ADD,0,1,5,1700,630,20,20,2,0,UI_RB);/*BIG_BUFF*/
+interaction_figure_t _4=CHARACTER(ADD,0,1,6,1700,600,20,20,2,0,UI_RB);/*SMALL_BUFF*/
+interaction_figure_t _5=CHARACTER(ADD,0,1,7,1700,570,20,20,2,0,UI_RB);/*AIM_ROTATE*/
+interaction_figure_t _6=CHARACTER(ADD,0,1,8,1700,540,20,20,2,0,UI_RB);/*AIM_NORMAL*/
+/*创建 组合图形对象*/
+interaction_figure_4_t A;
+interaction_figure_4_t AA;
+interaction_figure_4_t AB;
 
-#define START_POINT_X 0
-#define START_POINT_Y -50
-#define END_POINT_X   0
-#define END_POINT_Y   50
-#define RADIOS    20
-#define WIDTH    2
-#define OFFSET_X 1600
-#define OFFSET_Y 600
-
-typedef struct
-{
-  int16_t x;
-  int16_t y;
-} point;
-
-point rotate_point(int16_t x,int16_t y,float angle)
-{
-  point result;
-  float rad_angle=angle*ANGLE_TO_RAD;
-  result.x=(int)(x*cos(rad_angle)-y*sin(rad_angle));
-  result.y=(int)(x*sin(rad_angle)+y*cos(rad_angle));
-  return result;
-}
+/*创建 字符对象*/
+client_custom_character_t B;uint8_t dataB[]="BULLET:";
+client_custom_character_t C;uint8_t dataC[]="LEVEL:";
+client_custom_character_t D;uint8_t dataD[]="BIG_BUFF";
+client_custom_character_t E;uint8_t dataE[]="SMALL_BUFF";
+client_custom_character_t F;uint8_t dataF[]="AIM_ROTATE";
+client_custom_character_t G;uint8_t dataG[]="AIM_NORMAL";
 
 
-int qwe,qwer,last_qwe,qwert;
-int NX_time_flag;
-double NX_time,NX_time_qwe;
-
-void Client_send_handle()
-{
-  u8 id;
-  id=judge_rece_mesg.game_robot_state.robot_id;
-
-  switch(id)
+/*UI刷新主函数*/
+void Client_Send_Handle()
+{	
+  UI.id=judge_rece_mesg.game_robot_state.robot_id;
+  switch(UI.id)
     {
     case 3:
       client_custom_ID=0x0103;
@@ -95,1201 +101,379 @@ void Client_send_handle()
       client_custom_ID=0x0169;
       break;
     }
-
-
-//************************************************************************************************************************************/
-//////////////////////////////////////////////////////////////初始化///////////////////////////////////////////////////////////////////
-//************************************************************************************************************************************/
-    switch(draw_cnt)
-    {
-        case 1:
-        {
-            ddata[0]=0x0104;
-              ddata[1]=0x0104>>8;	 //数据内容id
-              //0x0100  删除图形 0x0101 绘制一个图形 0x0102 绘制二个图形 0x0103 绘制五个图形 0x0104绘制七个图形 0x0110客户端绘制字符图形
-              ddata[2]=judge_rece_mesg.game_robot_state.robot_id;
-              ddata[3]=judge_rece_mesg.game_robot_state.robot_id>>8;    //机器人id
-              ddata[4]=client_custom_ID;
-              ddata[5]=client_custom_ID>>8;       //客户端id
-            
-            /*********************准星显示****************************************/
-              graphic1.grapic_data_struct[0].operate_type=1;  //1 增加 2修改图形 3删除单个图形 5删除一个图层的图形 6删除所有图形
-              graphic1.grapic_data_struct[0].layer=1;   //图层
-              graphic1.grapic_data_struct[0].graphic_type=2;  //0 直线 1矩形 2整圆 3椭圆 4圆弧 5浮点数 6整数型 7字符
-              graphic1.grapic_data_struct[0].graphic_name[0]=0;
-              graphic1.grapic_data_struct[0].graphic_name[1]=0;
-              graphic1.grapic_data_struct[0].graphic_name[2]=1;
-              graphic1.grapic_data_struct[0].start_x=960;
-              graphic1.grapic_data_struct[0].start_y=540;
-            if(shoot.poke_run)
-			{
-				graphic1.grapic_data_struct[0].color=UI_RB;
-			}else
-			{
-				graphic1.grapic_data_struct[0].color=UI_GREEN;
-			}
-			graphic1.grapic_data_struct[0].radius=1;
-            graphic1.grapic_data_struct[0].width=3;//竖
-            if(new_location.flag||My_Auto_Shoot.Auto_Aim.Flag_Get_Target)
-			{
-                  graphic1.grapic_data_struct[1].operate_type=1;  //1 增加 2修改图形 3删除单个图形 5删除一个图层的图形 6删除所有图形
-                  graphic1.grapic_data_struct[1].layer=1;   //图层
-                  graphic1.grapic_data_struct[1].graphic_type=2;  //0 直线 1矩形 2整圆 3椭圆 4圆弧 5浮点数 6整数型 7字符
-                  graphic1.grapic_data_struct[1].graphic_name[0]=0;
-                  graphic1.grapic_data_struct[1].graphic_name[1]=0;
-                  graphic1.grapic_data_struct[1].graphic_name[2]=2;
-                  graphic1.grapic_data_struct[1].start_x=960;
-                  graphic1.grapic_data_struct[1].start_y=540;
-                    graphic1.grapic_data_struct[1].color=UI_YELLOW;
-                    graphic1.grapic_data_struct[1].radius=3;
-                    graphic1.grapic_data_struct[1].width=3;//竖
-			}else
-			{
-				graphic1.grapic_data_struct[1].operate_type=3;  //1 增加 2修改图形 3删除单个图形 5删除一个图层的图形 6删除所有图形
-                graphic1.grapic_data_struct[1].layer=1;   //图层
-                graphic1.grapic_data_struct[1].graphic_type=2;  //0 直线 1矩形 2整圆 3椭圆 4圆弧 5浮点数 6整数型 7字符
-                graphic1.grapic_data_struct[1].graphic_name[0]=0;
-                graphic1.grapic_data_struct[1].graphic_name[1]=0;
-                graphic1.grapic_data_struct[1].graphic_name[2]=2;
-			}
-            /*********************底盘模式显示****************************************/
-                    graphic1.grapic_data_struct[2].operate_type=1;  //1 增加 2修改图形 3删除单个图形 5删除一个图层的图形 6删除所有图形
-					graphic1.grapic_data_struct[2].layer=1;   //图层
-					graphic1.grapic_data_struct[2].graphic_type=0;  //0 直线 1矩形 2整圆 3椭圆 4圆弧 5浮点数 6整数型 7字符
-					graphic1.grapic_data_struct[2].graphic_name[0]=0;
-					graphic1.grapic_data_struct[2].graphic_name[1]=0;
-					graphic1.grapic_data_struct[2].graphic_name[2]=3;					
-					graphic1.grapic_data_struct[2].color = UI_PINK;
-					graphic1.grapic_data_struct[2].start_x = 1320;
-					graphic1.grapic_data_struct[2].start_y = 108;
-					graphic1.grapic_data_struct[2].end_x = 1320;
-					graphic1.grapic_data_struct[2].end_y = 195;
-					graphic1.grapic_data_struct[2].width = 3;
-					
-					graphic1.grapic_data_struct[3].operate_type=1;  //1 增加 2修改图形 3删除单个图形 5删除一个图层的图形 6删除所有图形
-					graphic1.grapic_data_struct[3].layer=1;   //图层
-					graphic1.grapic_data_struct[3].graphic_type=0;  //0 直线 1矩形 2整圆 3椭圆 4圆弧 5浮点数 6整数型 7字符
-					graphic1.grapic_data_struct[3].graphic_name[0]=0;
-					graphic1.grapic_data_struct[3].graphic_name[1]=0;
-					graphic1.grapic_data_struct[3].graphic_name[2]=4;					
-					graphic1.grapic_data_struct[3].color = UI_YELLOW;
-					graphic1.grapic_data_struct[3].start_x = 1285;
-					graphic1.grapic_data_struct[3].start_y = 143;
-					graphic1.grapic_data_struct[3].end_x = 1354;
-					graphic1.grapic_data_struct[3].end_y = 143;
-					graphic1.grapic_data_struct[3].width = 4;
-					
-					graphic1.grapic_data_struct[4].operate_type=1;  //1 增加 2修改图形 3删除单个图形 5删除一个图层的图形 6删除所有图形
-					graphic1.grapic_data_struct[4].layer=1;   //图层
-					graphic1.grapic_data_struct[4].graphic_type=0;  //0 直线 1矩形 2整圆 3椭圆 4圆弧 5浮点数 6整数型 7字符
-					graphic1.grapic_data_struct[4].graphic_name[0]=0;
-					graphic1.grapic_data_struct[4].graphic_name[1]=0;
-					graphic1.grapic_data_struct[4].graphic_name[2]=5;				
-					graphic1.grapic_data_struct[4].color = UI_YELLOW;
-					graphic1.grapic_data_struct[4].start_x = 1285;
-					graphic1.grapic_data_struct[4].start_y = 85;
-					graphic1.grapic_data_struct[4].end_x = 1354;
-					graphic1.grapic_data_struct[4].end_y = 85;
-					graphic1.grapic_data_struct[4].width = 4;
-                    
-           /*************************电压框显示*******************************/
-                  graphic1.grapic_data_struct[5].operate_type=1;  //1 增加 2修改图形 3删除单个图形 5删除一个图层的图形 6删除所有图形
-                  graphic1.grapic_data_struct[5].layer=1;   //图层
-                  graphic1.grapic_data_struct[5].graphic_type=1;  //0 直线 1矩形 2整圆 3椭圆 4圆弧 5浮点数 6整数型 7字符
-                  graphic1.grapic_data_struct[5].graphic_name[0]=0;
-                  graphic1.grapic_data_struct[5].graphic_name[1]=0;
-                  graphic1.grapic_data_struct[5].graphic_name[2]=6;
-                  graphic1.grapic_data_struct[5].start_x=583;
-                  graphic1.grapic_data_struct[5].start_y=85;
-                  graphic1.grapic_data_struct[5].end_x=1208;
-                  graphic1.grapic_data_struct[5].end_y=135;
-                  graphic1.grapic_data_struct[5].color=0;
-                  graphic1.grapic_data_struct[5].width=2;
-                  
-          /*************************电容条显示********************************/
-                    graphic1.grapic_data_struct[6].operate_type=1;  //1 增加 2修改图形 3删除单个图形 5删除一个图层的图形 6删除所有图形
-                    graphic1.grapic_data_struct[6].layer=1;   //图层
-                    graphic1.grapic_data_struct[6].graphic_type=0;  //0 直线 1矩形 2整圆 3椭圆 4圆弧 5浮点数 6整数型 7字符
-                    graphic1.grapic_data_struct[6].graphic_name[0]=0;
-                    graphic1.grapic_data_struct[6].graphic_name[1]=0;
-                    graphic1.grapic_data_struct[6].graphic_name[2]=7;                                             
-                    graphic1.grapic_data_struct[6].start_x=600;
-                    graphic1.grapic_data_struct[6].start_y=110;
-                    graphic1.grapic_data_struct[6].end_y=110;
-                        
-                  if(usart_gimbal_data.cap_v>=0.0f&&usart_gimbal_data.cap_v<=7.0f)
-                    {
-                      graphic1.grapic_data_struct[6].end_x=600;
-                      graphic1.grapic_data_struct[6].color=UI_PINK;
-                    }
-                  else if(usart_gimbal_data.cap_v>7.0f)
-                    {
-                      graphic1.grapic_data_struct[6].end_x=600+((int)(usart_gimbal_data.cap_v-7.0))*35.29f;
-                      graphic1.grapic_data_struct[6].color=UI_PINK;
-                    }
-
-                    graphic1.grapic_data_struct[6].width=30;
-                    
-               *(ext_client_custom_graphic_seven_t*)(&ddata[6])=graphic1;
-                data_upload_handle(STUDENT_INTERACTIVE_HEADER_DATA_ID, ddata,6+sizeof(graphic1),DN_REG_ID,tx_buf);
-                    
-        }break;
-        case 2:
-        {
-              ddata[0]=0x0110;
-              ddata[1]=0x0110>>8;	 //数据内容id
-              //0x0100  删除图形 0x0101 绘制一个图形 0x0102 绘制二个图形 0x0103 绘制五个图形 0x0104绘制七个图形 0x0110客户端绘制字符图形
-              ddata[2]=judge_rece_mesg.game_robot_state.robot_id;
-              ddata[3]=judge_rece_mesg.game_robot_state.robot_id>>8;    //机器人id
-              ddata[4]=client_custom_ID;
-              ddata[5]=client_custom_ID>>8;       //客户端id
-			
-			Friction_state.grapic_data_struct.operate_type=1;  //1 增加 2修改图形 3删除单个图形 5删除一个图层的图形 6删除所有图形
-			Friction_state.grapic_data_struct.layer=1;   //图层
-			Friction_state.grapic_data_struct.graphic_type=7;  //0 直线 1矩形 2整圆 3椭圆 4圆弧 5浮点数 6整数型 7字符
-			Friction_state.grapic_data_struct.graphic_name[0]=0;
-			Friction_state.grapic_data_struct.graphic_name[1]=0;
-			Friction_state.grapic_data_struct.graphic_name[2]=8;
-			
-			Friction_state.grapic_data_struct.start_x=100;//55
-				Friction_state.grapic_data_struct.start_y=540;//215
-				Friction_state.grapic_data_struct.width=WIDTH;
-				Friction_state.grapic_data_struct.start_angle=20;
-				Friction_state.grapic_data_struct.end_angle=15;
-      
-				Friction_state.data[0] = 'F';
-				Friction_state.data[1] = 'R';
-				Friction_state.data[2] = 'I';
-				Friction_state.data[3] = 'C';
-				Friction_state.data[4] = 'T';
-				Friction_state.data[5] = 'I';
-				Friction_state.data[6] = 'O';
-				Friction_state.data[7] = 'N';
-                Friction_state.data[8] = ':';
-				
-				
-			   Friction_state.grapic_data_struct.color = UI_YELLOW;
-				
-				
-				
-					
-      *(ext_client_custom_character_t*)(&ddata[6])=Friction_state;
-		data_upload_handle(STUDENT_INTERACTIVE_HEADER_DATA_ID, ddata,6+sizeof(Friction_state),DN_REG_ID,tx_buf);
-        }break;
+	
+	switch(UI.cnt)
+		{
+		case 1:/*静态显示*/
+		{
+			UI.ADD_7Graph(A,cap_down_arc,cap_up_arc,heat_down_arc,heat_up_arc,yaw_down_arc,yaw_up_arc,vision_cl);
+		}break;
+		case 2:
+		{
+			UI.ADD_7Graph(AA,bullet,level,battery_ract,battery,sight,sight1,wheel);
+		}break;
         case 3:
         {
-            ddata[0]=0x0110;
-              ddata[1]=0x0110>>8;	 //数据内容id
-              //0x0100  删除图形 0x0101 绘制一个图形 0x0102 绘制二个图形 0x0103 绘制五个图形 0x0104绘制七个图形 0x0110客户端绘制字符图形
-              ddata[2]=judge_rece_mesg.game_robot_state.robot_id;
-              ddata[3]=judge_rece_mesg.game_robot_state.robot_id>>8;    //机器人id
-              ddata[4]=client_custom_ID;
-              ddata[5]=client_custom_ID>>8;       //客户端id
-			
-			Level.grapic_data_struct.operate_type=1;  //1 增加 2修改图形 3删除单个图形 5删除一个图层的图形 6删除所有图形
-			Level.grapic_data_struct.layer=1;   //图层
-			Level.grapic_data_struct.graphic_type=7;  //0 直线 1矩形 2整圆 3椭圆 4圆弧 5浮点数 6整数型 7字符
-			Level.grapic_data_struct.graphic_name[0]=0;
-			Level.grapic_data_struct.graphic_name[1]=0;
-			Level.grapic_data_struct.graphic_name[2]=9;
-			
-			Level.grapic_data_struct.start_x=100;
-				Level.grapic_data_struct.start_y=600;
-				Level.grapic_data_struct.width=WIDTH;
-				Level.grapic_data_struct.start_angle=20;
-				Level.grapic_data_struct.end_angle=6;
-      
-				Level.data[0] = 'L';
-				Level.data[1] = 'E';
-				Level.data[2] = 'V';
-				Level.data[3] = 'E';
-				Level.data[4] = 'L';
-				Level.data[5] = ':';
-
-
-					Level.grapic_data_struct.color = UI_YELLOW;
-				
-		
-			
-      *(ext_client_custom_character_t*)(&ddata[6])=Level;
-      data_upload_handle(STUDENT_INTERACTIVE_HEADER_DATA_ID, ddata,6+sizeof(Level),DN_REG_ID,tx_buf);
+            UI.ADD_7Graph(AB,l1,l2,l3,l4,l5,X1,X1);
         }break;
-       case 4:
+		case 4:
+		{
+			UI.ADD_Char(B,_1,dataB,7);
+		}break;
+		case 5:
+		{
+			UI.ADD_Char(C,_2,dataC,6);
+		}break;
+		case 6:
+		{
+			UI.ADD_Char(D,_3,dataD,8);
+		}break;
+		case 7:
+		{
+			UI.ADD_Char(E,_4,dataE,10);
+		}break;
+		case 8:
+		{
+			UI.ADD_Char(F,_5,dataF,10);
+		}break;
+        case 9:
         {
-            	//----------------------------------加速模式----------------------------------------//
-              ddata[0]=0x0110;
-              ddata[1]=0x0110>>8;	 //数据内容id
-              //0x0100  删除图形 0x0101 绘制一个图形 0x0102 绘制二个图形 0x0103 绘制五个图形 0x0104绘制七个图形 0x0110客户端绘制字符图形
-              ddata[2]=judge_rece_mesg.game_robot_state.robot_id;
-              ddata[3]=judge_rece_mesg.game_robot_state.robot_id>>8;    //机器人id
-              ddata[4]=client_custom_ID;
-              ddata[5]=client_custom_ID>>8;       //客户端id
-			
-			speed_up.grapic_data_struct.operate_type=1;  //1 增加 2修改图形 3删除单个图形 5删除一个图层的图形 6删除所有图形
-			speed_up.grapic_data_struct.layer=1;   //图层
-			speed_up.grapic_data_struct.graphic_type=7;  //0 直线 1矩形 2整圆 3椭圆 4圆弧 5浮点数 6整数型 7字符
-			speed_up.grapic_data_struct.graphic_name[0]=0;
-			speed_up.grapic_data_struct.graphic_name[1]=1;
-			speed_up.grapic_data_struct.graphic_name[2]=0;
-			
-			speed_up.grapic_data_struct.start_x=100;
-				speed_up.grapic_data_struct.start_y=570;
-				speed_up.grapic_data_struct.width=WIDTH;
-				speed_up.grapic_data_struct.start_angle=20;
-				speed_up.grapic_data_struct.end_angle=7;
-      
-				speed_up.data[0] = 'S';
-				speed_up.data[1] = 'P';
-				speed_up.data[2] = 'E';
-				speed_up.data[3] = 'E';
-				speed_up.data[4] = 'D';
-				speed_up.data[5] = ':';
-
-				
-				
-                speed_up.grapic_data_struct.color = UI_YELLOW;
-				
-			
-			
-			
-			
-			
-      *(ext_client_custom_character_t*)(&ddata[6])=speed_up;
-      data_upload_handle(STUDENT_INTERACTIVE_HEADER_DATA_ID, ddata,6+sizeof(speed_up),DN_REG_ID,tx_buf);
+            UI.ADD_Char(G,_6,dataG,10);
         }break;
-       case 5:
-       {
-           //----------------------------------弹量显示----------------------------------------//
-              ddata[0]=0x0110;
-              ddata[1]=0x0110>>8;	 //数据内容id
-              //0x0100  删除图形 0x0101 绘制一个图形 0x0102 绘制二个图形 0x0103 绘制五个图形 0x0104绘制七个图形 0x0110客户端绘制字符图形
-              ddata[2]=judge_rece_mesg.game_robot_state.robot_id;
-              ddata[3]=judge_rece_mesg.game_robot_state.robot_id>>8;    //机器人id
-              ddata[4]=client_custom_ID;
-              ddata[5]=client_custom_ID>>8;       //客户端id
-			
-			bullet_data.grapic_data_struct.operate_type=1;  //1 增加 2修改图形 3删除单个图形 5删除一个图层的图形 6删除所有图形
-			bullet_data.grapic_data_struct.layer=1;   //图层
-			bullet_data.grapic_data_struct.graphic_type=7;  //0 直线 1矩形 2整圆 3椭圆 4圆弧 5浮点数 6整数型 7字符
-			bullet_data.grapic_data_struct.graphic_name[0]=0;
-			bullet_data.grapic_data_struct.graphic_name[1]=1;
-			bullet_data.grapic_data_struct.graphic_name[2]=1;
-			
-                bullet_data.grapic_data_struct.start_x=100;
-				bullet_data.grapic_data_struct.start_y=630;
-				bullet_data.grapic_data_struct.width=WIDTH;
-				bullet_data.grapic_data_struct.start_angle=20;
-				bullet_data.grapic_data_struct.end_angle=7;
-                
-				bullet_data.data[0] = 'B';
-				bullet_data.data[1] = 'U';
-				bullet_data.data[2] = 'L';
-				bullet_data.data[3] = 'L';
-				bullet_data.data[4] = 'E';
-				bullet_data.data[5] = 'T';
-                bullet_data.data[6] = ':';
-
-				
-				
-                bullet_data.grapic_data_struct.color = UI_YELLOW;
-				
-			
-			
-			
-			
-			
-      *(ext_client_custom_character_t*)(&ddata[6])=bullet_data;
-      data_upload_handle(STUDENT_INTERACTIVE_HEADER_DATA_ID, ddata,6+sizeof(bullet_data),DN_REG_ID,tx_buf);
-       }break;
-       case 6:
-       {
-           //----------------------------------经验----------------------------------------//
-          ddata[0]=0x0110;
-          ddata[1]=0x0110>>8;	 //数据内容id
-          //0x0100  删除图形 0x0101 绘制一个图形 0x0102 绘制二个图形 0x0103 绘制五个图形 0x0104绘制七个图形 0x0110客户端绘制字符图形
-          ddata[2]=judge_rece_mesg.game_robot_state.robot_id;
-          ddata[3]=judge_rece_mesg.game_robot_state.robot_id>>8;    //机器人id
-          ddata[4]=client_custom_ID;
-          ddata[5]=client_custom_ID>>8;       //客户端id
-			
-			Level_sight.grapic_data_struct.operate_type=1;  //1 增加 2修改图形 3删除单个图形 5删除一个图层的图形 6删除所有图形
-			Level_sight.grapic_data_struct.layer=1;   //图层
-			Level_sight.grapic_data_struct.graphic_type=7;  //0 直线 1矩形 2整圆 3椭圆 4圆弧 5浮点数 6整数型 7字符
-			Level_sight.grapic_data_struct.graphic_name[0]=0;
-			Level_sight.grapic_data_struct.graphic_name[1]=1;
-			Level_sight.grapic_data_struct.graphic_name[2]=2;
-			
-				Level_sight.grapic_data_struct.start_x=230;
-				Level_sight.grapic_data_struct.start_y=600;
-				Level_sight.grapic_data_struct.width=4;
-				Level_sight.grapic_data_struct.start_angle=20;
-				Level_sight.grapic_data_struct.end_angle=4;
-      
-				sprintf(Level_sight.data,"%f",judge_rece_mesg.game_robot_state.robot_level*1.0f);
-
-
-					Level_sight.grapic_data_struct.color = UI_RB;
-							
-      *(ext_client_custom_character_t*)(&ddata[6])=Level_sight;
-      data_upload_handle(STUDENT_INTERACTIVE_HEADER_DATA_ID, ddata,6+sizeof(Level_sight),DN_REG_ID,tx_buf);
-       }break;
-       case 7:
-       {
-            //----------------------------------弹量----------------------------------------//
-          ddata[0]=0x0110;
-          ddata[1]=0x0110>>8;	 //数据内容id
-          //0x0100  删除图形 0x0101 绘制一个图形 0x0102 绘制二个图形 0x0103 绘制五个图形 0x0104绘制七个图形 0x0110客户端绘制字符图形
-          ddata[2]=judge_rece_mesg.game_robot_state.robot_id;
-          ddata[3]=judge_rece_mesg.game_robot_state.robot_id>>8;    //机器人id
-          ddata[4]=client_custom_ID;
-          ddata[5]=client_custom_ID>>8;       //客户端id
-			
-			bullet_sight.grapic_data_struct.operate_type=1;  //1 增加 2修改图形 3删除单个图形 5删除一个图层的图形 6删除所有图形
-			bullet_sight.grapic_data_struct.layer=1;   //图层
-			bullet_sight.grapic_data_struct.graphic_type=7;  //0 直线 1矩形 2整圆 3椭圆 4圆弧 5浮点数 6整数型 7字符
-			bullet_sight.grapic_data_struct.graphic_name[0]=0;
-			bullet_sight.grapic_data_struct.graphic_name[1]=1;
-			bullet_sight.grapic_data_struct.graphic_name[2]=3;
-			
-            bullet_sight.grapic_data_struct.start_x=230;
-            bullet_sight.grapic_data_struct.start_y=630;
-            bullet_sight.grapic_data_struct.width=4;
-            bullet_sight.grapic_data_struct.start_angle=20;
-            bullet_sight.grapic_data_struct.end_angle=4;
-
-            sprintf(bullet_sight.data,"%f",already_shoot*1.0f);
-
-
-					bullet_sight.grapic_data_struct.color = UI_RB;
-							
-      *(ext_client_custom_character_t*)(&ddata[6])=bullet_sight;
-      data_upload_handle(STUDENT_INTERACTIVE_HEADER_DATA_ID, ddata,6+sizeof(bullet_sight),DN_REG_ID,tx_buf);
-       }break;
-       
-       //----------------------------------视觉模式显示----------------------------------------//
-       
-       case 8:
-       {
-             
-              ddata[0]=0x0110;
-              ddata[1]=0x0110>>8;	 //数据内容id
-              //0x0100  删除图形 0x0101 绘制一个图形 0x0102 绘制二个图形 0x0103 绘制五个图形 0x0104绘制七个图形 0x0110客户端绘制字符图形
-              ddata[2]=judge_rece_mesg.game_robot_state.robot_id;
-              ddata[3]=judge_rece_mesg.game_robot_state.robot_id>>8;    //机器人id
-              ddata[4]=client_custom_ID;
-              ddata[5]=client_custom_ID>>8;       //客户端id
-			
-			aim_normal.grapic_data_struct.operate_type=1;  //1 增加 2修改图形 3删除单个图形 5删除一个图层的图形 6删除所有图形
-			aim_normal.grapic_data_struct.layer=1;   //图层
-			aim_normal.grapic_data_struct.graphic_type=7;  //0 直线 1矩形 2整圆 3椭圆 4圆弧 5浮点数 6整数型 7字符
-			aim_normal.grapic_data_struct.graphic_name[0]=0;
-			aim_normal.grapic_data_struct.graphic_name[1]=1;
-			aim_normal.grapic_data_struct.graphic_name[2]=4;
-			
-                aim_normal.grapic_data_struct.start_x=1700;
-				aim_normal.grapic_data_struct.start_y=540;
-				aim_normal.grapic_data_struct.width=WIDTH;
-				aim_normal.grapic_data_struct.start_angle=20;
-				aim_normal.grapic_data_struct.end_angle=7;
-                
-				aim_normal.data[0] = 'A';
-				aim_normal.data[1] = 'I';
-				aim_normal.data[2] = 'M';
-				aim_normal.data[3] = '_';
-				aim_normal.data[4] = 'N';
-				aim_normal.data[5] = 'O';
-                aim_normal.data[6] = 'R';
-                aim_normal.data[7] = 'M';
-                aim_normal.data[8] = 'A';
-                aim_normal.data[9] = 'L';
-				
-				
-                aim_normal.grapic_data_struct.color = UI_PINK;
-				
-			
-			
-			
-			
-			
-      *(ext_client_custom_character_t*)(&ddata[6])=aim_normal;
-      data_upload_handle(STUDENT_INTERACTIVE_HEADER_DATA_ID, ddata,6+sizeof(aim_normal),DN_REG_ID,tx_buf);
-       }break;
-       case 9:
-       {
-             
-              ddata[0]=0x0110;
-              ddata[1]=0x0110>>8;	 //数据内容id
-              //0x0100  删除图形 0x0101 绘制一个图形 0x0102 绘制二个图形 0x0103 绘制五个图形 0x0104绘制七个图形 0x0110客户端绘制字符图形
-              ddata[2]=judge_rece_mesg.game_robot_state.robot_id;
-              ddata[3]=judge_rece_mesg.game_robot_state.robot_id>>8;    //机器人id
-              ddata[4]=client_custom_ID;
-              ddata[5]=client_custom_ID>>8;       //客户端id
-			
-                aim_rotate.grapic_data_struct.operate_type=1;  //1 增加 2修改图形 3删除单个图形 5删除一个图层的图形 6删除所有图形
-                aim_rotate.grapic_data_struct.layer=1;   //图层
-                aim_rotate.grapic_data_struct.graphic_type=7;  //0 直线 1矩形 2整圆 3椭圆 4圆弧 5浮点数 6整数型 7字符
-                aim_rotate.grapic_data_struct.graphic_name[0]=0;
-                aim_rotate.grapic_data_struct.graphic_name[1]=1;
-                aim_rotate.grapic_data_struct.graphic_name[2]=5;
-			    
-                aim_rotate.grapic_data_struct.start_x=1700;
-				aim_rotate.grapic_data_struct.start_y=570;
-				aim_rotate.grapic_data_struct.width=WIDTH;
-				aim_rotate.grapic_data_struct.start_angle=20;
-				aim_rotate.grapic_data_struct.end_angle=7;
-                
-				aim_rotate.data[0] = 'A';
-				aim_rotate.data[1] = 'I';
-				aim_rotate.data[2] = 'M';
-				aim_rotate.data[3] = '_';
-				aim_rotate.data[4] = 'R';
-				aim_rotate.data[5] = 'O';
-                aim_rotate.data[6] = 'T';
-                aim_rotate.data[7] = 'A';
-                aim_rotate.data[8] = 'T';
-                aim_rotate.data[9] = 'E';
-			
-                aim_rotate.grapic_data_struct.color = UI_PINK;
-				
-			
-			
-			
-			
-			
-      *(ext_client_custom_character_t*)(&ddata[6])=aim_rotate;
-      data_upload_handle(STUDENT_INTERACTIVE_HEADER_DATA_ID, ddata,6+sizeof(aim_rotate),DN_REG_ID,tx_buf);
-       }break;
-       case 10:
-       {
-             
-              ddata[0]=0x0110;
-              ddata[1]=0x0110>>8;	 //数据内容id
-              //0x0100  删除图形 0x0101 绘制一个图形 0x0102 绘制二个图形 0x0103 绘制五个图形 0x0104绘制七个图形 0x0110客户端绘制字符图形
-              ddata[2]=judge_rece_mesg.game_robot_state.robot_id;
-              ddata[3]=judge_rece_mesg.game_robot_state.robot_id>>8;    //机器人id
-              ddata[4]=client_custom_ID;
-              ddata[5]=client_custom_ID>>8;       //客户端id
-			
-                small_buff.grapic_data_struct.operate_type=1;  //1 增加 2修改图形 3删除单个图形 5删除一个图层的图形 6删除所有图形
-                small_buff.grapic_data_struct.layer=1;   //图层
-                small_buff.grapic_data_struct.graphic_type=7;  //0 直线 1矩形 2整圆 3椭圆 4圆弧 5浮点数 6整数型 7字符
-                small_buff.grapic_data_struct.graphic_name[0]=0;
-                small_buff.grapic_data_struct.graphic_name[1]=1;
-                small_buff.grapic_data_struct.graphic_name[2]=6;
-			    
-                small_buff.grapic_data_struct.start_x=1700;
-				small_buff.grapic_data_struct.start_y=600;
-				small_buff.grapic_data_struct.width=WIDTH;
-				small_buff.grapic_data_struct.start_angle=20;
-				small_buff.grapic_data_struct.end_angle=7;
-                
-				small_buff.data[0] = 'S';
-				small_buff.data[1] = 'M';
-				small_buff.data[2] = 'A';
-				small_buff.data[3] = 'L';
-				small_buff.data[4] = 'L';
-				small_buff.data[5] = '_';
-                small_buff.data[6] = 'B';
-                small_buff.data[7] = 'U';
-                small_buff.data[8] = 'F';
-                small_buff.data[9] = 'F';
-			    
-                small_buff.grapic_data_struct.color = UI_PINK;
-				
-			
-			
-			
-			
-			
-      *(ext_client_custom_character_t*)(&ddata[6])=small_buff;
-      data_upload_handle(STUDENT_INTERACTIVE_HEADER_DATA_ID, ddata,6+sizeof(small_buff),DN_REG_ID,tx_buf);
-       }break;
-       case 11:
-       {
-             
-              ddata[0]=0x0110;
-              ddata[1]=0x0110>>8;	 //数据内容id
-              //0x0100  删除图形 0x0101 绘制一个图形 0x0102 绘制二个图形 0x0103 绘制五个图形 0x0104绘制七个图形 0x0110客户端绘制字符图形
-              ddata[2]=judge_rece_mesg.game_robot_state.robot_id;
-              ddata[3]=judge_rece_mesg.game_robot_state.robot_id>>8;    //机器人id
-              ddata[4]=client_custom_ID;
-              ddata[5]=client_custom_ID>>8;       //客户端id
-			
-                big_buff.grapic_data_struct.operate_type=1;  //1 增加 2修改图形 3删除单个图形 5删除一个图层的图形 6删除所有图形
-                big_buff.grapic_data_struct.layer=1;   //图层
-                big_buff.grapic_data_struct.graphic_type=7;  //0 直线 1矩形 2整圆 3椭圆 4圆弧 5浮点数 6整数型 7字符
-                big_buff.grapic_data_struct.graphic_name[0]=0;
-                big_buff.grapic_data_struct.graphic_name[1]=1;
-                big_buff.grapic_data_struct.graphic_name[2]=7;
-			    
-                big_buff.grapic_data_struct.start_x=1700;
-				big_buff.grapic_data_struct.start_y=630;
-				big_buff.grapic_data_struct.width=WIDTH;
-				big_buff.grapic_data_struct.start_angle=20;
-				big_buff.grapic_data_struct.end_angle=7;
-                
-				big_buff.data[0] = 'B';
-				big_buff.data[1] = 'I';
-				big_buff.data[2] = 'G';
-				big_buff.data[3] = '_';
-				big_buff.data[4] = 'B';
-				big_buff.data[5] = 'U';
-                big_buff.data[6] = 'F';
-                big_buff.data[7] = 'F';
-                
-			    
-                big_buff.grapic_data_struct.color = UI_PINK;
-				
-			
-			
-			
-			
-			
-      *(ext_client_custom_character_t*)(&ddata[6])=big_buff;
-      data_upload_handle(STUDENT_INTERACTIVE_HEADER_DATA_ID, ddata,6+sizeof(big_buff),DN_REG_ID,tx_buf);
-       }break;
-       case 12:
-       {
-              ddata[0]=0x0104;
-              ddata[1]=0x0104>>8;	 //数据内容id
-              //0x0100  删除图形 0x0101 绘制一个图形 0x0102 绘制二个图形 0x0103 绘制五个图形 0x0104绘制七个图形 0x0110客户端绘制字符图形
-              ddata[2]=judge_rece_mesg.game_robot_state.robot_id;
-              ddata[3]=judge_rece_mesg.game_robot_state.robot_id>>8;    //机器人id
-              ddata[4]=client_custom_ID;
-              ddata[5]=client_custom_ID>>8;       //客户端id
-                //摩擦轮
-              graphic2.grapic_data_struct[0].operate_type=1;  //1 增加 2修改图形 3删除单个图形 5删除一个图层的图形 6删除所有图形
-              graphic2.grapic_data_struct[0].layer=1;   //图层
-              graphic2.grapic_data_struct[0].graphic_type=2;  //0 直线 1矩形 2整圆 3椭圆 4圆弧 5浮点数 6整数型 7字符
-              graphic2.grapic_data_struct[0].graphic_name[0]=0;
-              graphic2.grapic_data_struct[0].graphic_name[1]=1;
-              graphic2.grapic_data_struct[0].graphic_name[2]=8;
-              graphic2.grapic_data_struct[0].start_x=300;
-              graphic2.grapic_data_struct[0].start_y=530;
-            if(shoot.fric_wheel_run==1)
-			{
-				graphic2.grapic_data_struct[0].color=UI_RB;
-			}else
-			{
-				graphic2.grapic_data_struct[0].color=UI_YELLOW;
-			}
-			graphic2.grapic_data_struct[0].radius=9;
-            graphic2.grapic_data_struct[0].width=5;//竖
-              //加速
-              graphic2.grapic_data_struct[1].operate_type=1;  //1 增加 2修改图形 3删除单个图形 5删除一个图层的图形 6删除所有图形
-              graphic2.grapic_data_struct[1].layer=1;   //图层
-              graphic2.grapic_data_struct[1].graphic_type=2;  //0 直线 1矩形 2整圆 3椭圆 4圆弧 5浮点数 6整数型 7字符
-              graphic2.grapic_data_struct[1].graphic_name[0]=0;
-              graphic2.grapic_data_struct[1].graphic_name[1]=1;
-              graphic2.grapic_data_struct[1].graphic_name[2]=9;
-              graphic2.grapic_data_struct[1].start_x=300;
-              graphic2.grapic_data_struct[1].start_y=560;
-            if(RC_CtrlData.Key_Flag.Key_SHIFT_Flag==1)
-			{
-				graphic2.grapic_data_struct[1].color=UI_RB;
-			}else
-			{
-				graphic2.grapic_data_struct[1].color=UI_YELLOW;
-			}
-			graphic2.grapic_data_struct[1].radius=9;
-            graphic2.grapic_data_struct[1].width=5;//竖
-            //视觉模式
-            switch(gimbal_data.vision_mode)
-            {
-                case AIM_NORMAL:
-                {
-                      graphic2.grapic_data_struct[2].operate_type=1;  //1 增加 2修改图形 3删除单个图形 5删除一个图层的图形 6删除所有图形
-                      graphic2.grapic_data_struct[2].layer=1;   //图层
-                      graphic2.grapic_data_struct[2].graphic_type=2;  //0 直线 1矩形 2整圆 3椭圆 4圆弧 5浮点数 6整数型 7字符
-                      graphic2.grapic_data_struct[2].graphic_name[0]=0;
-                      graphic2.grapic_data_struct[2].graphic_name[1]=2;
-                      graphic2.grapic_data_struct[2].graphic_name[2]=0;
-                      graphic2.grapic_data_struct[2].start_x=1650;
-                      graphic2.grapic_data_struct[2].start_y=530;
-                      graphic2.grapic_data_struct[2].color=UI_RB;
-                      graphic2.grapic_data_struct[2].radius=9;
-                      graphic2.grapic_data_struct[2].width=5;//竖
-                    
-                }break;
-                case AIM_ROTATE:
-                {
-                    graphic2.grapic_data_struct[2].operate_type=1;  //1 增加 2修改图形 3删除单个图形 5删除一个图层的图形 6删除所有图形
-                      graphic2.grapic_data_struct[2].layer=1;   //图层
-                      graphic2.grapic_data_struct[2].graphic_type=2;  //0 直线 1矩形 2整圆 3椭圆 4圆弧 5浮点数 6整数型 7字符
-                      graphic2.grapic_data_struct[2].graphic_name[0]=0;
-                      graphic2.grapic_data_struct[2].graphic_name[1]=2;
-                      graphic2.grapic_data_struct[2].graphic_name[2]=0;
-                      graphic2.grapic_data_struct[2].start_x=1650;
-                      graphic2.grapic_data_struct[2].start_y=560;
-                      graphic2.grapic_data_struct[2].color=UI_RB;
-                      graphic2.grapic_data_struct[2].radius=9;
-                      graphic2.grapic_data_struct[2].width=5;//竖
-                }break;
-                case SMALL_BUFF:
-                {
-                    graphic2.grapic_data_struct[2].operate_type=1;  //1 增加 2修改图形 3删除单个图形 5删除一个图层的图形 6删除所有图形
-                      graphic2.grapic_data_struct[2].layer=1;   //图层
-                      graphic2.grapic_data_struct[2].graphic_type=2;  //0 直线 1矩形 2整圆 3椭圆 4圆弧 5浮点数 6整数型 7字符
-                      graphic2.grapic_data_struct[2].graphic_name[0]=0;
-                      graphic2.grapic_data_struct[2].graphic_name[1]=2;
-                      graphic2.grapic_data_struct[2].graphic_name[2]=0;
-                      graphic2.grapic_data_struct[2].start_x=1650;
-                      graphic2.grapic_data_struct[2].start_y=590;
-                      graphic2.grapic_data_struct[2].color=UI_RB;
-                      graphic2.grapic_data_struct[2].radius=9;
-                      graphic2.grapic_data_struct[2].width=5;//竖
-                }break;
-                case BIG_BUFF:
-                {
-                      graphic2.grapic_data_struct[2].operate_type=1;  //1 增加 2修改图形 3删除单个图形 5删除一个图层的图形 6删除所有图形
-                      graphic2.grapic_data_struct[2].layer=1;   //图层
-                      graphic2.grapic_data_struct[2].graphic_type=2;  //0 直线 1矩形 2整圆 3椭圆 4圆弧 5浮点数 6整数型 7字符
-                      graphic2.grapic_data_struct[2].graphic_name[0]=0;
-                      graphic2.grapic_data_struct[2].graphic_name[1]=2;
-                      graphic2.grapic_data_struct[2].graphic_name[2]=0;
-                      graphic2.grapic_data_struct[2].start_x=1650;
-                      graphic2.grapic_data_struct[2].start_y=620;
-                      graphic2.grapic_data_struct[2].color=UI_RB;
-                      graphic2.grapic_data_struct[2].radius=9;
-                      graphic2.grapic_data_struct[2].width=5;//竖
-                }break;
-            }
-            //自瞄范围
-                     graphic2.grapic_data_struct[3].operate_type=1;  //1 增加 2修改图形 3删除单个图形 5删除一个图层的图形 6删除所有图形
-                      graphic2.grapic_data_struct[3].layer=1;   //图层
-                      graphic2.grapic_data_struct[3].graphic_type=1;  //0 直线 1矩形 2整圆 3椭圆 4圆弧 5浮点数 6整数型 7字符
-                      graphic2.grapic_data_struct[3].graphic_name[0]=0;
-                      graphic2.grapic_data_struct[3].graphic_name[1]=2;
-                      graphic2.grapic_data_struct[3].graphic_name[2]=1;
-                      graphic2.grapic_data_struct[3].start_x=670;
-                      graphic2.grapic_data_struct[3].start_y=346;
-                      graphic2.grapic_data_struct[3].end_x=1252;
-                      graphic2.grapic_data_struct[3].end_y=810;
-                      graphic2.grapic_data_struct[3].color=UI_RB;
-                      graphic2.grapic_data_struct[3].radius=5;
-                      graphic2.grapic_data_struct[3].width=2;//竖
-            //2号准星
-                      graphic2.grapic_data_struct[4].operate_type=1;  //1 增加 2修改图形 3删除单个图形 5删除一个图层的图形 6删除所有图形
-                      graphic2.grapic_data_struct[4].layer=1;   //图层
-                      graphic2.grapic_data_struct[4].graphic_type=2;  //0 直线 1矩形 2整圆 3椭圆 4圆弧 5浮点数 6整数型 7字符
-                      graphic2.grapic_data_struct[4].graphic_name[0]=0;
-                      graphic2.grapic_data_struct[4].graphic_name[1]=2;
-                      graphic2.grapic_data_struct[4].graphic_name[2]=2;
-                      graphic2.grapic_data_struct[4].start_x=960;
-                      graphic2.grapic_data_struct[4].start_y=500;
-            
-				graphic2.grapic_data_struct[4].color=UI_YELLOW;
-			
-			graphic2.grapic_data_struct[4].radius=1;
-            graphic2.grapic_data_struct[4].width=3;//竖
-            *(ext_client_custom_graphic_seven_t*)(&ddata[6])=graphic2;
-            data_upload_handle(STUDENT_INTERACTIVE_HEADER_DATA_ID, ddata,6+sizeof(graphic2),DN_REG_ID,tx_buf);
-              
-       }break;
-       
-       
-//************************************************************************************************************************************/
-//////////////////////////////////////////////////////////////刷新UI///////////////////////////////////////////////////////////////////
-//************************************************************************************************************************************/
-                case 13:
-                {
-                                //----------------------------------经验----------------------------------------//
-                      ddata[0]=0x0110;
-                      ddata[1]=0x0110>>8;	 //数据内容id
-                      //0x0100  删除图形 0x0101 绘制一个图形 0x0102 绘制二个图形 0x0103 绘制五个图形 0x0104绘制七个图形 0x0110客户端绘制字符图形
-                      ddata[2]=judge_rece_mesg.game_robot_state.robot_id;
-                      ddata[3]=judge_rece_mesg.game_robot_state.robot_id>>8;    //机器人id
-                      ddata[4]=client_custom_ID;
-                      ddata[5]=client_custom_ID>>8;       //客户端id
-                        
-                        Level_sight.grapic_data_struct.operate_type=2;  //1 增加 2修改图形 3删除单个图形 5删除一个图层的图形 6删除所有图形
-                        Level_sight.grapic_data_struct.layer=1;   //图层
-                        Level_sight.grapic_data_struct.graphic_type=7;  //0 直线 1矩形 2整圆 3椭圆 4圆弧 5浮点数 6整数型 7字符
-                        Level_sight.grapic_data_struct.graphic_name[0]=0;
-                        Level_sight.grapic_data_struct.graphic_name[1]=1;
-                        Level_sight.grapic_data_struct.graphic_name[2]=2;
-                        
-                            Level_sight.grapic_data_struct.start_x=230;
-                            Level_sight.grapic_data_struct.start_y=600;
-                            Level_sight.grapic_data_struct.width=4;
-                            Level_sight.grapic_data_struct.start_angle=20;
-                            Level_sight.grapic_data_struct.end_angle=4;
-                  
-                            sprintf(Level_sight.data,"%f",judge_rece_mesg.game_robot_state.robot_level*1.0f);
-
-
-                                Level_sight.grapic_data_struct.color = UI_RB;
-                                        
-                  *(ext_client_custom_character_t*)(&ddata[6])=Level_sight;
-                  data_upload_handle(STUDENT_INTERACTIVE_HEADER_DATA_ID, ddata,6+sizeof(Level_sight),DN_REG_ID,tx_buf);
-                }break;
-                case 14:
-                {
-                    ddata[0]=0x0104;
-              ddata[1]=0x0104>>8;	 //数据内容id
-              //0x0100  删除图形 0x0101 绘制一个图形 0x0102 绘制二个图形 0x0103 绘制五个图形 0x0104绘制七个图形 0x0110客户端绘制字符图形
-              ddata[2]=judge_rece_mesg.game_robot_state.robot_id;
-              ddata[3]=judge_rece_mesg.game_robot_state.robot_id>>8;    //机器人id
-              ddata[4]=client_custom_ID;
-              ddata[5]=client_custom_ID>>8;       //客户端id
-            
-            /*********************准星显示****************************************/
-              graphic1.grapic_data_struct[0].operate_type=2;  //1 增加 2修改图形 3删除单个图形 5删除一个图层的图形 6删除所有图形
-              graphic1.grapic_data_struct[0].layer=1;   //图层
-              graphic1.grapic_data_struct[0].graphic_type=2;  //0 直线 1矩形 2整圆 3椭圆 4圆弧 5浮点数 6整数型 7字符
-              graphic1.grapic_data_struct[0].graphic_name[0]=0;
-              graphic1.grapic_data_struct[0].graphic_name[1]=0;
-              graphic1.grapic_data_struct[0].graphic_name[2]=1;
-              graphic1.grapic_data_struct[0].start_x=960;
-              graphic1.grapic_data_struct[0].start_y=540;
-            if(shoot.poke_run)
-			{
-				graphic1.grapic_data_struct[0].color=UI_RB;
-			}else
-			{
-				graphic1.grapic_data_struct[0].color=UI_GREEN;
-			}
-			graphic1.grapic_data_struct[0].radius=1;
-            graphic1.grapic_data_struct[0].width=3;//竖
-            if(new_location.flag||My_Auto_Shoot.Auto_Aim.Flag_Get_Target)
-			{
-                  graphic1.grapic_data_struct[1].operate_type=1;  //1 增加 2修改图形 3删除单个图形 5删除一个图层的图形 6删除所有图形
-                  graphic1.grapic_data_struct[1].layer=1;   //图层
-                  graphic1.grapic_data_struct[1].graphic_type=2;  //0 直线 1矩形 2整圆 3椭圆 4圆弧 5浮点数 6整数型 7字符
-                  graphic1.grapic_data_struct[1].graphic_name[0]=0;
-                  graphic1.grapic_data_struct[1].graphic_name[1]=0;
-                  graphic1.grapic_data_struct[1].graphic_name[2]=2;
-                  graphic1.grapic_data_struct[1].start_x=960;
-                  graphic1.grapic_data_struct[1].start_y=540;
-                    graphic1.grapic_data_struct[1].color=UI_YELLOW;
-                    graphic1.grapic_data_struct[1].radius=3;
-                    graphic1.grapic_data_struct[1].width=3;//竖
-			}else
-			{
-				graphic1.grapic_data_struct[1].operate_type=3;  //1 增加 2修改图形 3删除单个图形 5删除一个图层的图形 6删除所有图形
-                graphic1.grapic_data_struct[1].layer=1;   //图层
-                graphic1.grapic_data_struct[1].graphic_type=2;  //0 直线 1矩形 2整圆 3椭圆 4圆弧 5浮点数 6整数型 7字符
-                graphic1.grapic_data_struct[1].graphic_name[0]=0;
-                graphic1.grapic_data_struct[1].graphic_name[1]=0;
-                graphic1.grapic_data_struct[1].graphic_name[2]=2;
-			}
-            /*********************底盘模式显示****************************************/
-                    graphic1.grapic_data_struct[2].operate_type=2;  //1 增加 2修改图形 3删除单个图形 5删除一个图层的图形 6删除所有图形
-					graphic1.grapic_data_struct[2].layer=1;   //图层
-					graphic1.grapic_data_struct[2].graphic_type=0;  //0 直线 1矩形 2整圆 3椭圆 4圆弧 5浮点数 6整数型 7字符
-					graphic1.grapic_data_struct[2].graphic_name[0]=0;
-					graphic1.grapic_data_struct[2].graphic_name[1]=0;
-					graphic1.grapic_data_struct[2].graphic_name[2]=3;					
-					graphic1.grapic_data_struct[2].color = UI_PINK;
-					graphic1.grapic_data_struct[2].start_x = 1320;
-					graphic1.grapic_data_struct[2].start_y = 108;
-					graphic1.grapic_data_struct[2].end_x = 1320;
-					graphic1.grapic_data_struct[2].end_y = 195;
-					graphic1.grapic_data_struct[2].width = 3;
-					
-					graphic1.grapic_data_struct[3].operate_type=2;  //1 增加 2修改图形 3删除单个图形 5删除一个图层的图形 6删除所有图形
-					graphic1.grapic_data_struct[3].layer=1;   //图层
-					graphic1.grapic_data_struct[3].graphic_type=0;  //0 直线 1矩形 2整圆 3椭圆 4圆弧 5浮点数 6整数型 7字符
-					graphic1.grapic_data_struct[3].graphic_name[0]=0;
-					graphic1.grapic_data_struct[3].graphic_name[1]=0;
-					graphic1.grapic_data_struct[3].graphic_name[2]=4;					
-					graphic1.grapic_data_struct[3].color = UI_YELLOW;
-					graphic1.grapic_data_struct[3].start_x = 1285;
-					graphic1.grapic_data_struct[3].start_y = 143;
-					graphic1.grapic_data_struct[3].end_x = 1354;
-					graphic1.grapic_data_struct[3].end_y = 143;
-					graphic1.grapic_data_struct[3].width = 4;
-					
-					graphic1.grapic_data_struct[4].operate_type=2;  //1 增加 2修改图形 3删除单个图形 5删除一个图层的图形 6删除所有图形
-					graphic1.grapic_data_struct[4].layer=1;   //图层
-					graphic1.grapic_data_struct[4].graphic_type=0;  //0 直线 1矩形 2整圆 3椭圆 4圆弧 5浮点数 6整数型 7字符
-					graphic1.grapic_data_struct[4].graphic_name[0]=0;
-					graphic1.grapic_data_struct[4].graphic_name[1]=0;
-					graphic1.grapic_data_struct[4].graphic_name[2]=5;				
-					graphic1.grapic_data_struct[4].color = UI_YELLOW;
-					graphic1.grapic_data_struct[4].start_x = 1285;
-					graphic1.grapic_data_struct[4].start_y = 85;
-					graphic1.grapic_data_struct[4].end_x = 1354;
-					graphic1.grapic_data_struct[4].end_y = 85;
-					graphic1.grapic_data_struct[4].width = 4;
-                    
-                    switch(chassis.ctrl_mode)
-			{
-				case MANUAL_FOLLOW_GIMBAL:
-				{
-					graphic1.grapic_data_struct[2].operate_type=2;  //1 增加 2修改图形 3删除单个图形 5删除一个图层的图形 6删除所有图形
-					graphic1.grapic_data_struct[2].layer=1;   //图层
-					graphic1.grapic_data_struct[2].graphic_type=0;  //0 直线 1矩形 2整圆 3椭圆 4圆弧 5浮点数 6整数型 7字符
-					graphic1.grapic_data_struct[2].graphic_name[0]=0;
-					graphic1.grapic_data_struct[2].graphic_name[1]=0;
-					graphic1.grapic_data_struct[2].graphic_name[2]=3;
-					
-					graphic1.grapic_data_struct[2].color = UI_PINK;
-					graphic1.grapic_data_struct[2].start_x = 1320;
-					graphic1.grapic_data_struct[2].start_y = 108;
-					graphic1.grapic_data_struct[2].end_x = 1320;
-					graphic1.grapic_data_struct[2].end_y = 195;
-					graphic1.grapic_data_struct[2].width = 3;
-					
-					graphic1.grapic_data_struct[3].operate_type=2;  //1 增加 2修改图形 3删除单个图形 5删除一个图层的图形 6删除所有图形
-					graphic1.grapic_data_struct[3].layer=1;   //图层
-					graphic1.grapic_data_struct[3].graphic_type=0;  //0 直线 1矩形 2整圆 3椭圆 4圆弧 5浮点数 6整数型 7字符
-					graphic1.grapic_data_struct[3].graphic_name[0]=0;
-					graphic1.grapic_data_struct[3].graphic_name[1]=0;
-					graphic1.grapic_data_struct[3].graphic_name[2]=4;
-					
-					graphic1.grapic_data_struct[3].color = UI_YELLOW;
-					graphic1.grapic_data_struct[3].start_x = 1285;
-					graphic1.grapic_data_struct[3].start_y = 143;
-					graphic1.grapic_data_struct[3].end_x = 1354;
-					graphic1.grapic_data_struct[3].end_y = 143;
-					graphic1.grapic_data_struct[3].width = 4;
-					
-					graphic1.grapic_data_struct[4].operate_type=2;  //1 增加 2修改图形 3删除单个图形 5删除一个图层的图形 6删除所有图形
-					graphic1.grapic_data_struct[4].layer=1;   //图层
-					graphic1.grapic_data_struct[4].graphic_type=0;  //0 直线 1矩形 2整圆 3椭圆 4圆弧 5浮点数 6整数型 7字符
-					graphic1.grapic_data_struct[4].graphic_name[0]=0;
-					graphic1.grapic_data_struct[4].graphic_name[1]=0;
-					graphic1.grapic_data_struct[4].graphic_name[2]=5;
-					
-					graphic1.grapic_data_struct[4].color = UI_YELLOW;
-					graphic1.grapic_data_struct[4].start_x = 1285;
-					graphic1.grapic_data_struct[4].start_y = 85;
-					graphic1.grapic_data_struct[4].end_x = 1354;
-					graphic1.grapic_data_struct[4].end_y = 85;
-					graphic1.grapic_data_struct[4].width = 4;
-					
-				}break;
-				case CHASSIS_REVERSE:
-				{
-					graphic1.grapic_data_struct[2].operate_type=2;  //1 增加 2修改图形 3删除单个图形 5删除一个图层的图形 6删除所有图形
-					graphic1.grapic_data_struct[2].layer=1;   //图层
-					graphic1.grapic_data_struct[2].graphic_type=0;  //0 直线 1矩形 2整圆 3椭圆 4圆弧 5浮点数 6整数型 7字符
-					graphic1.grapic_data_struct[2].graphic_name[0]=0;
-					graphic1.grapic_data_struct[2].graphic_name[1]=0;
-					graphic1.grapic_data_struct[2].graphic_name[2]=3;
-					graphic1.grapic_data_struct[2].color = UI_PINK;
-					graphic1.grapic_data_struct[2].start_x = 1320;
-					graphic1.grapic_data_struct[2].start_y = 108;
-					graphic1.grapic_data_struct[2].end_x = 1320;
-					graphic1.grapic_data_struct[2].end_y = 195;
-					graphic1.grapic_data_struct[2].width = 3;
-					
-					graphic1.grapic_data_struct[3].operate_type=2;  //1 增加 2修改图形 3删除单个图形 5删除一个图层的图形 6删除所有图形
-					graphic1.grapic_data_struct[3].layer=1;   //图层
-					graphic1.grapic_data_struct[3].graphic_type=0;  //0 直线 1矩形 2整圆 3椭圆 4圆弧 5浮点数 6整数型 7字符
-					graphic1.grapic_data_struct[3].graphic_name[0]=0;
-					graphic1.grapic_data_struct[3].graphic_name[1]=0;
-					graphic1.grapic_data_struct[3].graphic_name[2]=4;
-					graphic1.grapic_data_struct[3].color = UI_YELLOW;
-					graphic1.grapic_data_struct[3].start_x = 1285;
-					graphic1.grapic_data_struct[3].start_y = 74;
-					graphic1.grapic_data_struct[3].end_x = 1285;
-					graphic1.grapic_data_struct[3].end_y = 146;
-					graphic1.grapic_data_struct[3].width = 4;
-					
-					graphic1.grapic_data_struct[4].operate_type=2;  //1 增加 2修改图形 3删除单个图形 5删除一个图层的图形 6删除所有图形
-					graphic1.grapic_data_struct[4].layer=1;   //图层
-					graphic1.grapic_data_struct[4].graphic_type=0;  //0 直线 1矩形 2整圆 3椭圆 4圆弧 5浮点数 6整数型 7字符
-					graphic1.grapic_data_struct[4].graphic_name[0]=0;
-					graphic1.grapic_data_struct[4].graphic_name[1]=0;
-					graphic1.grapic_data_struct[4].graphic_name[2]=5;
-					graphic1.grapic_data_struct[4].color = UI_YELLOW;
-					graphic1.grapic_data_struct[4].start_x = 1355;
-					graphic1.grapic_data_struct[4].start_y = 74;
-					graphic1.grapic_data_struct[4].end_x = 1355;
-					graphic1.grapic_data_struct[4].end_y = 146;
-					graphic1.grapic_data_struct[4].width = 4;
-				}break;
-				case CHASSIS_ROTATE:
-				{
-					graphic1.grapic_data_struct[2].operate_type=2;  //1 增加 2修改图形 3删除单个图形 5删除一个图层的图形 6删除所有图形
-					graphic1.grapic_data_struct[2].layer=1;   //图层
-					graphic1.grapic_data_struct[2].graphic_type=0;  //0 直线 1矩形 2整圆 3椭圆 4圆弧 5浮点数 6整数型 7字符
-					graphic1.grapic_data_struct[2].graphic_name[0]=0;
-					graphic1.grapic_data_struct[2].graphic_name[1]=0;
-					graphic1.grapic_data_struct[2].graphic_name[2]=3;
-					graphic1.grapic_data_struct[2].color = UI_PINK;
-					graphic1.grapic_data_struct[2].start_x = 1320;
-					graphic1.grapic_data_struct[2].start_y = 108;
-					graphic1.grapic_data_struct[2].end_x = 1320;
-					graphic1.grapic_data_struct[2].end_y = 195;
-					graphic1.grapic_data_struct[2].width = 3;
-					
-					graphic1.grapic_data_struct[3].operate_type=2;  //1 增加 2修改图形 3删除单个图形 5删除一个图层的图形 6删除所有图形
-					graphic1.grapic_data_struct[3].layer=1;   //图层
-					graphic1.grapic_data_struct[3].graphic_type=2;  //0 直线 1矩形 2整圆 3椭圆 4圆弧 5浮点数 6整数型 7字符
-					graphic1.grapic_data_struct[3].graphic_name[0]=0;
-					graphic1.grapic_data_struct[3].graphic_name[1]=0;
-					graphic1.grapic_data_struct[3].graphic_name[2]=4;
-					graphic1.grapic_data_struct[3].start_x=1320;
-					graphic1.grapic_data_struct[3].start_y=108;
-					graphic1.grapic_data_struct[3].color=UI_YELLOW;
-					graphic1.grapic_data_struct[3].radius=49;
-					graphic1.grapic_data_struct[3].width=4;//竖
-					
-					graphic1.grapic_data_struct[4].operate_type=2;  //1 增加 2修改图形 3删除单个图形 5删除一个图层的图形 6删除所有图形
-					graphic1.grapic_data_struct[4].layer=1;   //图层
-					graphic1.grapic_data_struct[4].graphic_type=0;  //0 直线 1矩形 2整圆 3椭圆 4圆弧 5浮点数 6整数型 7字符
-					graphic1.grapic_data_struct[4].graphic_name[0]=0;
-					graphic1.grapic_data_struct[4].graphic_name[1]=0;
-					graphic1.grapic_data_struct[4].graphic_name[2]=5;
-					graphic1.grapic_data_struct[4].color = UI_PINK;
-					graphic1.grapic_data_struct[4].start_x = 1279;
-					graphic1.grapic_data_struct[4].start_y = 108;
-					graphic1.grapic_data_struct[4].end_x = 1368;
-					graphic1.grapic_data_struct[4].end_y = 108;
-					graphic1.grapic_data_struct[4].width = 3;
-				}break;
-			}
-                    
-           /*************************视觉显示*******************************/
-                  //视觉模式
-            switch(gimbal_data.vision_mode)
-            {
-                case AIM_NORMAL:
-                {
-                      graphic1.grapic_data_struct[5].operate_type=2;  //1 增加 2修改图形 3删除单个图形 5删除一个图层的图形 6删除所有图形
-                      graphic1.grapic_data_struct[5].layer=1;   //图层
-                      graphic1.grapic_data_struct[5].graphic_type=2;  //0 直线 1矩形 2整圆 3椭圆 4圆弧 5浮点数 6整数型 7字符
-                      graphic1.grapic_data_struct[5].graphic_name[0]=0;
-                      graphic1.grapic_data_struct[5].graphic_name[1]=2;
-                      graphic1.grapic_data_struct[5].graphic_name[2]=0;
-                      graphic1.grapic_data_struct[5].start_x=1650;
-                      graphic1.grapic_data_struct[5].start_y=530;
-                      graphic1.grapic_data_struct[5].color=UI_RB;
-                      graphic1.grapic_data_struct[5].radius=9;
-                      graphic1.grapic_data_struct[5].width=5;//竖
-                    
-                }break;
-                case AIM_ROTATE:
-                {
-                      graphic1.grapic_data_struct[5].operate_type=2;  //1 增加 2修改图形 3删除单个图形 5删除一个图层的图形 6删除所有图形
-                      graphic1.grapic_data_struct[5].layer=1;   //图层
-                      graphic1.grapic_data_struct[5].graphic_type=2;  //0 直线 1矩形 2整圆 3椭圆 4圆弧 5浮点数 6整数型 7字符
-                      graphic1.grapic_data_struct[5].graphic_name[0]=0;
-                      graphic1.grapic_data_struct[5].graphic_name[1]=2;
-                      graphic1.grapic_data_struct[5].graphic_name[2]=0;
-                      graphic1.grapic_data_struct[5].start_x=1650;
-                      graphic1.grapic_data_struct[5].start_y=560;
-                      graphic1.grapic_data_struct[5].color=UI_RB;
-                      graphic1.grapic_data_struct[5].radius=9;
-                      graphic1.grapic_data_struct[5].width=5;//竖
-                }break;
-                case SMALL_BUFF:
-                {
-                      graphic1.grapic_data_struct[5].operate_type=2;  //1 增加 2修改图形 3删除单个图形 5删除一个图层的图形 6删除所有图形
-                      graphic1.grapic_data_struct[5].layer=1;   //图层
-                      graphic1.grapic_data_struct[5].graphic_type=2;  //0 直线 1矩形 2整圆 3椭圆 4圆弧 5浮点数 6整数型 7字符
-                      graphic1.grapic_data_struct[5].graphic_name[0]=0;
-                      graphic1.grapic_data_struct[5].graphic_name[1]=2;
-                      graphic1.grapic_data_struct[5].graphic_name[2]=0;
-                      graphic1.grapic_data_struct[5].start_x=1650;
-                      graphic1.grapic_data_struct[5].start_y=590;
-                      graphic1.grapic_data_struct[5].color=UI_RB;
-                      graphic1.grapic_data_struct[5].radius=9;
-                      graphic1.grapic_data_struct[5].width=5;//竖
-                }break;
-                case BIG_BUFF:
-                {
-                      graphic1.grapic_data_struct[5].operate_type=2;  //1 增加 2修改图形 3删除单个图形 5删除一个图层的图形 6删除所有图形
-                      graphic1.grapic_data_struct[5].layer=1;   //图层
-                      graphic1.grapic_data_struct[5].graphic_type=2;  //0 直线 1矩形 2整圆 3椭圆 4圆弧 5浮点数 6整数型 7字符
-                      graphic1.grapic_data_struct[5].graphic_name[0]=0;
-                      graphic1.grapic_data_struct[5].graphic_name[1]=2;
-                      graphic1.grapic_data_struct[5].graphic_name[2]=0;
-                      graphic1.grapic_data_struct[5].start_x=1650;
-                      graphic1.grapic_data_struct[5].start_y=620;
-                      graphic1.grapic_data_struct[5].color=UI_RB;
-                      graphic1.grapic_data_struct[5].radius=9;
-                      graphic1.grapic_data_struct[5].width=5;//竖
-                }break;
-            }
-                  
-          /*************************电容条显示********************************/
-                    graphic1.grapic_data_struct[6].operate_type=2;  //1 增加 2修改图形 3删除单个图形 5删除一个图层的图形 6删除所有图形
-                    graphic1.grapic_data_struct[6].layer=1;   //图层
-                    graphic1.grapic_data_struct[6].graphic_type=0;  //0 直线 1矩形 2整圆 3椭圆 4圆弧 5浮点数 6整数型 7字符
-                    graphic1.grapic_data_struct[6].graphic_name[0]=0;
-                    graphic1.grapic_data_struct[6].graphic_name[1]=0;
-                    graphic1.grapic_data_struct[6].graphic_name[2]=7;                                             
-                    graphic1.grapic_data_struct[6].start_x=600;
-                    graphic1.grapic_data_struct[6].start_y=110;
-                    graphic1.grapic_data_struct[6].end_y=110;
-                        
-                  if(usart_gimbal_data.cap_v>=0.0f&&usart_gimbal_data.cap_v<=7.0f)
-                    {
-                      graphic1.grapic_data_struct[6].end_x=600;
-                      graphic1.grapic_data_struct[6].color=UI_PINK;
-                    }
-                  else if(usart_gimbal_data.cap_v>7.0f)
-                    {
-                      graphic1.grapic_data_struct[6].end_x=600+((int)(usart_gimbal_data.cap_v-7.0))*35.29f;
-                      graphic1.grapic_data_struct[6].color=UI_PINK;
-                    }
-
-                    graphic1.grapic_data_struct[6].width=30;
-                    
-               *(ext_client_custom_graphic_seven_t*)(&ddata[6])=graphic1;
-                data_upload_handle(STUDENT_INTERACTIVE_HEADER_DATA_ID, ddata,6+sizeof(graphic1),DN_REG_ID,tx_buf);
-                }break;
-                case 15:
-                {
-                      ddata[0]=0x0104;
-                      ddata[1]=0x0104>>8;	 //数据内容id
-                      //0x0100  删除图形 0x0101 绘制一个图形 0x0102 绘制二个图形 0x0103 绘制五个图形 0x0104绘制七个图形 0x0110客户端绘制字符图形
-                      ddata[2]=judge_rece_mesg.game_robot_state.robot_id;
-                      ddata[3]=judge_rece_mesg.game_robot_state.robot_id>>8;    //机器人id
-                      ddata[4]=client_custom_ID;
-                      ddata[5]=client_custom_ID>>8;       //客户端id
-                        //摩擦轮
-                      graphic2.grapic_data_struct[0].operate_type=2;  //1 增加 2修改图形 3删除单个图形 5删除一个图层的图形 6删除所有图形
-                      graphic2.grapic_data_struct[0].layer=1;   //图层
-                      graphic2.grapic_data_struct[0].graphic_type=2;  //0 直线 1矩形 2整圆 3椭圆 4圆弧 5浮点数 6整数型 7字符
-                      graphic2.grapic_data_struct[0].graphic_name[0]=0;
-                      graphic2.grapic_data_struct[0].graphic_name[1]=1;
-                      graphic2.grapic_data_struct[0].graphic_name[2]=8;
-                      graphic2.grapic_data_struct[0].start_x=300;
-                      graphic2.grapic_data_struct[0].start_y=530;
-                    if(shoot.fric_wheel_run==1)
-                    {
-                        graphic2.grapic_data_struct[0].color=UI_RB;
-                    }else
-                    {
-                        graphic2.grapic_data_struct[0].color=UI_YELLOW;
-                    }
-                    graphic2.grapic_data_struct[0].radius=9;
-                    graphic2.grapic_data_struct[0].width=5;//竖
-                      //加速
-                      graphic2.grapic_data_struct[1].operate_type=2;  //1 增加 2修改图形 3删除单个图形 5删除一个图层的图形 6删除所有图形
-                      graphic2.grapic_data_struct[1].layer=1;   //图层
-                      graphic2.grapic_data_struct[1].graphic_type=2;  //0 直线 1矩形 2整圆 3椭圆 4圆弧 5浮点数 6整数型 7字符
-                      graphic2.grapic_data_struct[1].graphic_name[0]=0;
-                      graphic2.grapic_data_struct[1].graphic_name[1]=1;
-                      graphic2.grapic_data_struct[1].graphic_name[2]=9;
-                      graphic2.grapic_data_struct[1].start_x=300;
-                      graphic2.grapic_data_struct[1].start_y=560;
-                    if(RC_CtrlData.Key_Flag.Key_SHIFT_Flag==1)
-                    {
-                        graphic2.grapic_data_struct[1].color=UI_RB;
-                    }else
-                    {
-                        graphic2.grapic_data_struct[1].color=UI_YELLOW;
-                    }
-                    graphic2.grapic_data_struct[1].radius=9;
-                    graphic2.grapic_data_struct[1].width=5;//竖
-                    
-                    //换电池提醒
-                    if(usart_gimbal_data.input_V < 21)
-                    {
-                      graphic2.grapic_data_struct[2].operate_type=1;  //1 增加 2修改图形 3删除单个图形 5删除一个图层的图形 6删除所有图形
-                      graphic2.grapic_data_struct[2].layer=1;   //图层
-                      graphic2.grapic_data_struct[2].graphic_type=1;  //0 直线 1矩形 2整圆 3椭圆 4圆弧 5浮点数 6整数型 7字符
-                      graphic2.grapic_data_struct[2].graphic_name[0]=0;
-                      graphic2.grapic_data_struct[2].graphic_name[1]=2;
-                      graphic2.grapic_data_struct[2].graphic_name[2]=3;
-                      graphic2.grapic_data_struct[2].start_x=1104;
-                      graphic2.grapic_data_struct[2].start_y=589;
-                      graphic2.grapic_data_struct[2].end_x=1154;
-                      graphic2.grapic_data_struct[2].end_y=689;
-                      graphic2.grapic_data_struct[2].color=UI_RB;
-                      graphic2.grapic_data_struct[2].radius=5;
-                      graphic2.grapic_data_struct[2].width=10;//竖
-                        
-                      graphic2.grapic_data_struct[3].operate_type=1;  //1 增加 2修改图形 3删除单个图形 5删除一个图层的图形 6删除所有图形
-                      graphic2.grapic_data_struct[3].layer=1;   //图层
-                      graphic2.grapic_data_struct[3].graphic_type=0;  //0 直线 1矩形 2整圆 3椭圆 4圆弧 5浮点数 6整数型 7字符
-                      graphic2.grapic_data_struct[3].graphic_name[0]=0;
-                      graphic2.grapic_data_struct[3].graphic_name[1]=2;
-                      graphic2.grapic_data_struct[3].graphic_name[2]=4;
-                      graphic2.grapic_data_struct[3].start_x=1104;
-                      graphic2.grapic_data_struct[3].start_y=610;
-                      graphic2.grapic_data_struct[3].end_x=1154;
-                      graphic2.grapic_data_struct[3].end_y=610;
-                      graphic2.grapic_data_struct[3].color=UI_RB;
-                      graphic2.grapic_data_struct[3].radius=5;
-                      graphic2.grapic_data_struct[3].width=10;//竖
-                    }else
-                    {
-                      graphic2.grapic_data_struct[2].operate_type=3;  //1 增加 2修改图形 3删除单个图形 5删除一个图层的图形 6删除所有图形
-                      graphic2.grapic_data_struct[2].layer=1;   //图层
-                      graphic2.grapic_data_struct[2].graphic_type=1;  //0 直线 1矩形 2整圆 3椭圆 4圆弧 5浮点数 6整数型 7字符
-                      graphic2.grapic_data_struct[2].graphic_name[0]=0;
-                      graphic2.grapic_data_struct[2].graphic_name[1]=2;
-                      graphic2.grapic_data_struct[2].graphic_name[2]=3;
-                      
-                        
-                      graphic2.grapic_data_struct[3].operate_type=3;  //1 增加 2修改图形 3删除单个图形 5删除一个图层的图形 6删除所有图形
-                      graphic2.grapic_data_struct[3].layer=1;   //图层
-                      graphic2.grapic_data_struct[3].graphic_type=0;  //0 直线 1矩形 2整圆 3椭圆 4圆弧 5浮点数 6整数型 7字符
-                      graphic2.grapic_data_struct[3].graphic_name[0]=0;
-                      graphic2.grapic_data_struct[3].graphic_name[1]=2;
-                      graphic2.grapic_data_struct[3].graphic_name[2]=4;
-                      
-                    }
-                    *(ext_client_custom_graphic_seven_t*)(&ddata[6])=graphic2;
-                data_upload_handle(STUDENT_INTERACTIVE_HEADER_DATA_ID, ddata,6+sizeof(graphic2),DN_REG_ID,tx_buf);
-                }break;
-                case 16:
-                {
-                      
-                  
-                  
-                  //----------------------------------弹量----------------------------------------//
-                      ddata[0]=0x0110;
-                      ddata[1]=0x0110>>8;	 //数据内容id
-                      //0x0100  删除图形 0x0101 绘制一个图形 0x0102 绘制二个图形 0x0103 绘制五个图形 0x0104绘制七个图形 0x0110客户端绘制字符图形
-                      ddata[2]=judge_rece_mesg.game_robot_state.robot_id;
-                      ddata[3]=judge_rece_mesg.game_robot_state.robot_id>>8;    //机器人id
-                      ddata[4]=client_custom_ID;
-                      ddata[5]=client_custom_ID>>8;       //客户端id
-                        
-                        bullet_sight.grapic_data_struct.operate_type=2;  //1 增加 2修改图形 3删除单个图形 5删除一个图层的图形 6删除所有图形
-                        bullet_sight.grapic_data_struct.layer=1;   //图层
-                        bullet_sight.grapic_data_struct.graphic_type=7;  //0 直线 1矩形 2整圆 3椭圆 4圆弧 5浮点数 6整数型 7字符
-                        bullet_sight.grapic_data_struct.graphic_name[0]=0;
-                        bullet_sight.grapic_data_struct.graphic_name[1]=1;
-                        bullet_sight.grapic_data_struct.graphic_name[2]=3;
-                        
-                        bullet_sight.grapic_data_struct.start_x=230;
-                        bullet_sight.grapic_data_struct.start_y=630;
-                        bullet_sight.grapic_data_struct.width=4;
-                        bullet_sight.grapic_data_struct.start_angle=20;
-                        bullet_sight.grapic_data_struct.end_angle=4;
-
-                        sprintf(bullet_sight.data,"%f",already_shoot*1.0f);
-
-
-                                bullet_sight.grapic_data_struct.color = UI_RB;
-                                        
-                  *(ext_client_custom_character_t*)(&ddata[6])=bullet_sight;
-                  data_upload_handle(STUDENT_INTERACTIVE_HEADER_DATA_ID, ddata,6+sizeof(bullet_sight),DN_REG_ID,tx_buf);
-                }break;
-                
+		case 10:/*动态显示*/
+		{
+			UI.MODIFY_7Graph_0(A,cap_up_arc,heat_up_arc,yaw_up_arc,vision_cl,bullet,level,battery);
+		}break;
+		case 11:
+		{
+			UI.MODIFY_7Graph_1(AA,sight,l1,l2,l3,l4,l5,wheel);
+		}break;
+		
+		default:
+     break;
     }
-    
-    draw_cnt++;
-	draw_int++;
- 
-  if(draw_cnt>16)//在需要刷新的图层刷新
-  {
-      if(time_tick%1000 == 0)
-          draw_cnt=13;
-      else
-          draw_cnt=14;
-  }
+		
 	
-	
-	if(RC_CtrlData.Key_Flag.Key_R_Flag)
+	if(UI.circle_360<360)
+	  {UI.circle_360+=40;}
+	else
+	  {UI.circle_360-=360;}
+		
+	UI.cnt++;
+  if(UI.cnt>11)/*在需要刷新的图层刷新*/
+     UI.cnt=10;
+  
+  if(RC_CtrlData.Key_Flag.Key_R_Flag)
 	{
-		draw_cnt = 1;
+		UI.cnt = 1;
 	}
-    
-
 }
 
-void delete_Coverage(u8 coverage)
+
+
+//建议范围 x（960+-120*2.75） y（540+-280）
+typedef struct
 {
-  ddata[6]=4;//1增加2修改3删除单个4删除图层5删除所有
-  ddata[13]=coverage;//图层0-9
+  int16_t x;
+  int16_t y;
+} point;
+
+point rotate_point(int16_t x,int16_t y,float angle)
+{
+  point result;
+  float rad_angle=angle*ANGLE_TO_RAD;
+  result.x=(int)(x*cos(rad_angle)-y*sin(rad_angle));
+  result.y=(int)(x*sin(rad_angle)+y*cos(rad_angle));
+    
+  return result;
 }
+
+
+void VMC_ui_cal(int x1,int y1)
+{
+    VMC_point.x[0] = x1;VMC_point.y[0] = y1;
+    
+    VMC_point.x[1] = x1+L5;VMC_point.y[1] = y1;
+    
+    VMC_point.x[2] = x1 - L4*cosf(usart_gimbal_data.phi4);VMC_point.y[2] = y1 - L4*sinf(usart_gimbal_data.phi4);
+    
+    VMC_point.x[3] = VMC_point.x[1] - L1*cosf(usart_gimbal_data.phi1);VMC_point.y[3] = VMC_point.y[1] - L1*sinf(usart_gimbal_data.phi1);
+    
+    VMC_point.x[4] = x1 + L5/2 - (usart_gimbal_data.L0*1000/2)*cosf(usart_gimbal_data.phi0);VMC_point.y[4] = y1 - (usart_gimbal_data.L0*1000/2)*sinf(usart_gimbal_data.phi0);
+}
+
+void ADD_Character(client_custom_character_t _0,interaction_figure_t __0,uint8_t *data0,uint8_t size0)
+{
+		robot_interaction_data_t UI_data;
+
+		UI_data.id_data.data_cmd_id=0x0110;
+		UI_data.id_data.sender_id =judge_rece_mesg.game_robot_state.robot_id;
+    UI_data.id_data.receiver_id=client_custom_ID; //客户端id
+
+		memcpy((uint8_t *)dddata,(uint8_t *)&UI_data.id_data,sizeof(UI_data.id_data));
+	
+		_0.interaction_figure=__0;
+		memcpy(_0.data,data0,size0);
+		*(client_custom_character_t*)(&dddata[6])=_0;
+//		memcpy((uint8_t *)&UI_data.user_data,(uint8_t *)&_0,sizeof(client_custom_character_t));
+	
+		memcpy((uint8_t *)(dddata+6+sizeof(client_custom_character_t)),(uint8_t *)&UI_data.id_data,sizeof(UI_data.id_data));
+	
+		data_upload_handle(STUDENT_INTERACTIVE_HEADER_DATA_ID,dddata,2*sizeof(UI_data.id_data)+sizeof(client_custom_character_t),DN_REG_ID,tx_buf);
+}
+
+void ADD_7_Graph(interaction_figure_4_t _7,interaction_figure_t _0,interaction_figure_t _1,interaction_figure_t _2,interaction_figure_t _3,interaction_figure_t _4,interaction_figure_t _5,interaction_figure_t _6)
+{
+     robot_interaction_data_t UI_data;
+	
+			UI_data.id_data.data_cmd_id=0x0104;//0x0100  删除图形 0x0101 绘制一个图形 0x0102 绘制二个图形 0x0103 绘制五个图形 0x0104绘制七个图形 0x0110客户端绘制字符图形
+      UI_data.id_data.sender_id =judge_rece_mesg.game_robot_state.robot_id;
+      UI_data.id_data.receiver_id=client_custom_ID; //客户端id
+
+			_7.interaction_figure[0]=_0;
+			_7.interaction_figure[1]=_1;
+			_7.interaction_figure[2]=_2;
+			_7.interaction_figure[3]=_3;
+			_7.interaction_figure[4]=_4;
+			_7.interaction_figure[5]=_5;
+			_7.interaction_figure[6]=_6;
+
+			memcpy(dddata,(uint8_t *)&UI_data.id_data,sizeof(UI_data.id_data));
+		  *(interaction_figure_4_t*)(&dddata[6])=_7;
+//			memcpy(dddata+sizeof(UI_data.id_data),(interaction_figure_4_t *)&_7,sizeof(interaction_figure_4_t));
+      data_upload_handle(STUDENT_INTERACTIVE_HEADER_DATA_ID,dddata,sizeof(UI_data.id_data)+sizeof(interaction_figure_4_t),DN_REG_ID,tx_buf);
+		}
+
+void MODIFY_2_Character_Num(client_custom_character_t _0,interaction_figure_t __0,float data0,client_custom_character_t _1,interaction_figure_t __1,float data1)
+{
+		robot_interaction_data_t UI_data;
+
+		UI_data.id_data.data_cmd_id=0x0110;
+		UI_data.id_data.sender_id =judge_rece_mesg.game_robot_state.robot_id;
+    UI_data.id_data.receiver_id=client_custom_ID; //客户端id
+	
+    memcpy(dddata,(uint8_t *)&UI_data.id_data,sizeof(UI_data.id_data));	
+	
+		_0.interaction_figure=__0;
+		_0.interaction_figure=__1;
+	
+		_0.interaction_figure.operate_tpye=2;
+		sprintf((char *)_0.data,"%f",data0);
+		*(client_custom_character_t*)(&dddata[6])=_0;
+	
+		_1.interaction_figure.operate_tpye=2;
+		sprintf((char *)_1.data,"%f",data1);
+		*(client_custom_character_t*)(&dddata[6+sizeof(client_custom_character_t)])=_1;
+//		memcpy((uint8_t *)&UI_data.user_data,(uint8_t *)&_0,sizeof(client_custom_character_t));
+//		memcpy((uint8_t *)&UI_data.user_data+sizeof(client_custom_character_t),(uint8_t *)&_1,sizeof(client_custom_character_t));
+	 data_upload_handle(STUDENT_INTERACTIVE_HEADER_DATA_ID,dddata ,sizeof(UI_data.id_data)+2*sizeof(client_custom_character_t),DN_REG_ID,tx_buf);
+}
+
+void MODIFY_7_Graph_DIY(interaction_figure_4_t _7,interaction_figure_t _0,interaction_figure_t _1,interaction_figure_t _2,interaction_figure_t _3,interaction_figure_t _4,interaction_figure_t _5,interaction_figure_t _6)
+{
+		robot_interaction_data_t UI_data;
+	
+		UI_data.id_data.data_cmd_id=0x0104;//0x0100  删除图形 0x0101 绘制一个图形 0x0102 绘制二个图形 0x0103 绘制五个图形 0x0104绘制七个图形 0x0110客户端绘制字符图形
+    UI_data.id_data.sender_id =judge_rece_mesg.game_robot_state.robot_id;
+    UI_data.id_data.receiver_id=client_custom_ID; //客户端id
+	
+		_7.interaction_figure[0]=_0;
+		_7.interaction_figure[1]=_1;
+		_7.interaction_figure[2]=_2;
+		_7.interaction_figure[3]=_3;
+		_7.interaction_figure[4]=_4;
+		_7.interaction_figure[5]=_5;
+		_7.interaction_figure[6]=_6;
+	
+		_7.interaction_figure[0].operate_tpye=MODIFY;
+		_7.interaction_figure[1].operate_tpye=MODIFY;
+		_7.interaction_figure[2].operate_tpye=MODIFY;
+		_7.interaction_figure[3].operate_tpye=MODIFY;
+		_7.interaction_figure[4].operate_tpye=MODIFY;
+		_7.interaction_figure[5].operate_tpye=MODIFY;
+		_7.interaction_figure[6].operate_tpye=MODIFY;
+/*第1个图形*/
+		_7.interaction_figure[0].details_b=225+usart_gimbal_data.cap_v*90.0f/24.0f;
+        VAL_LIMIT(_7.interaction_figure[0].details_b,225,315);
+		if(usart_gimbal_data.cap_v<=0)
+			{
+					_7.interaction_figure[0].color=UI_YELLOW;
+					_7.interaction_figure[0].details_b=315;
+			}
+		
+		if(usart_gimbal_data.cap_v>5)
+			{
+               if(RC_CtrlData.Key_Flag.Key_SHIFT_Flag==1)
+               {
+                   _7.interaction_figure[0].color=UI_GREEN;
+               }else
+               {
+				   _7.interaction_figure[0].color=UI_YELLOW;
+               }
+			}
+
+		 
+/*第2个图形*/	
+		_7.interaction_figure[1].details_a=45+(judge_rece_mesg.power_heat_data.shooter_id1_17mm_cooling_heat)*90.0f/judge_rece_mesg.game_robot_state.shooter_barrel_heat_limit;
+		_7.interaction_figure[1].details_b = 135;
+		
+		if(shoot.fric_wheel_run==1)
+			{
+               _7.interaction_figure[1].color=UI_RB;
+			}
+		else 
+		  {
+			_7.interaction_figure[1].color=UI_YELLOW;
+
+		  }
+/*第3个图形*/			
+		float yaw__180_180;
+			float yaw_0_360	=fmod(yaw_Encoder.ecd_angle*YAW_POLARITY,360);	
+			if(yaw_0_360<0){yaw_0_360+=360;}
+				if(yaw_0_360>=180)/*将0-2PI转换到-PI-PI范围内*/
+					{yaw__180_180=yaw_0_360-360;}
+				else
+					{yaw__180_180=yaw_0_360;}
+		
+		_7.interaction_figure[2].details_a=yaw_0_360+15;//gimbal_gyro.yaw_Angle+15;		
+
+		if(yaw_0_360+345>360)
+			yaw_0_360=yaw_0_360-360;
+		_7.interaction_figure[2].details_b=yaw_0_360+345;//gimbal_gyro.yaw_Angle+345;
+/*第4个图形*/			
+         switch(gimbal_data.vision_mode)
+            {
+                case AIM_NORMAL:
+                {
+                      _7.interaction_figure[3].start_x=1650;
+                      _7.interaction_figure[3].start_y=530;
+                }break;
+                case AIM_ROTATE:
+                {
+                      _7.interaction_figure[3].start_x=1650;
+                      _7.interaction_figure[3].start_y=560;
+                }break;
+                case SMALL_BUFF:
+                {
+                      _7.interaction_figure[3].start_x=1650;
+                      _7.interaction_figure[3].start_y=590;
+                }break;
+                case BIG_BUFF:
+                {
+                      _7.interaction_figure[3].start_x=1650;
+                      _7.interaction_figure[3].start_y=620;
+                }break;
+            }
+/*第5个图形 */			
+			uint32_t  cap_temp=(already_shoot*1000.0f);
+			_7.interaction_figure[4].details_c=cap_temp;
+		  _7.interaction_figure[4].details_d=cap_temp>>10;
+			_7.interaction_figure[4].details_e=cap_temp>>21;
+/*第6个图形*/			
+		uint32_t  cap_temp1=(judge_rece_mesg.game_robot_state.robot_level*1000.0f);
+			_7.interaction_figure[5].details_c=cap_temp1;
+		  _7.interaction_figure[5].details_d=cap_temp1>>10;
+			_7.interaction_figure[5].details_e=cap_temp1>>21;
+/*第7个图形*/			
+		uint32_t  cap_temp2=((usart_gimbal_data.input_V-22)/3.0*100*1000.0f);
+			_7.interaction_figure[6].details_c=cap_temp2;
+		  _7.interaction_figure[6].details_d=cap_temp2>>10;
+			_7.interaction_figure[6].details_e=cap_temp2>>21;
+			
+			memcpy((uint8_t *)dddata,(uint8_t *)&UI_data.id_data,sizeof(UI_data.id_data));
+			*(interaction_figure_4_t*)(&dddata[6])=_7;
+//			memcpy((uint8_t *)(dddata+sizeof(UI_data.id_data)),(interaction_figure_4_t*)&_7,sizeof(interaction_figure_4_t));
+      data_upload_handle(STUDENT_INTERACTIVE_HEADER_DATA_ID, dddata,sizeof(UI_data.id_data)+sizeof(interaction_figure_4_t),DN_REG_ID,tx_buf);
+}
+
+void MODIFY_7_Graph_DIY1(interaction_figure_4_t _7,interaction_figure_t _0,interaction_figure_t _1,interaction_figure_t _2,interaction_figure_t _3,interaction_figure_t _4,interaction_figure_t _5,interaction_figure_t _6)
+{
+		robot_interaction_data_t UI_data;
+	
+		UI_data.id_data.data_cmd_id=0x0104;//0x0100  删除图形 0x0101 绘制一个图形 0x0102 绘制二个图形 0x0103 绘制五个图形 0x0104绘制七个图形 0x0110客户端绘制字符图形
+    UI_data.id_data.sender_id =judge_rece_mesg.game_robot_state.robot_id;
+    UI_data.id_data.receiver_id=client_custom_ID; //客户端id
+	
+		_7.interaction_figure[0]=_0;
+		_7.interaction_figure[1]=_1;
+		_7.interaction_figure[2]=_2;
+		_7.interaction_figure[3]=_3;
+		_7.interaction_figure[4]=_4;
+		_7.interaction_figure[5]=_5;
+		_7.interaction_figure[6]=_6;
+	
+		_7.interaction_figure[0].operate_tpye=MODIFY;
+		_7.interaction_figure[1].operate_tpye=MODIFY;
+		_7.interaction_figure[2].operate_tpye=MODIFY;
+		_7.interaction_figure[3].operate_tpye=MODIFY;
+		_7.interaction_figure[4].operate_tpye=MODIFY;
+		_7.interaction_figure[5].operate_tpye=MODIFY;
+		_7.interaction_figure[6].operate_tpye=MODIFY;
+		
+/*第1个图形 累计发弹数*/
+		if(new_location.flag||My_Auto_Shoot.Auto_Aim.Flag_Get_Target)
+			{
+                 _7.interaction_figure[0].color =  UI_RB;
+            }else
+            {
+                _7.interaction_figure[0].color =  UI_YELLOW;
+            }
+		 
+/*第2-6个图形 预计发弹数*/	
+         VMC_ui_cal(1250,200);
+		_7.interaction_figure[1].start_x = VMC_point.x[1];
+        _7.interaction_figure[1].start_y = VMC_point.y[1];
+        _7.interaction_figure[1].details_d = VMC_point.x[3];
+        _7.interaction_figure[1].details_e = VMC_point.y[3];
+            
+        _7.interaction_figure[2].start_x = VMC_point.x[3];
+        _7.interaction_figure[2].start_y = VMC_point.y[3];
+        _7.interaction_figure[2].details_d = VMC_point.x[4];
+        _7.interaction_figure[2].details_e = VMC_point.y[4];
+            
+        _7.interaction_figure[3].start_x = VMC_point.x[2];
+        _7.interaction_figure[3].start_y = VMC_point.y[2];
+        _7.interaction_figure[3].details_d = VMC_point.x[4];
+        _7.interaction_figure[3].details_e = VMC_point.y[4];
+            
+        _7.interaction_figure[4].start_x = VMC_point.x[0];
+        _7.interaction_figure[4].start_y = VMC_point.y[0];
+        _7.interaction_figure[4].details_d = VMC_point.x[2];
+        _7.interaction_figure[4].details_e = VMC_point.y[2];
+        
+        _7.interaction_figure[5].start_x = VMC_point.x[0];
+        _7.interaction_figure[5].start_y = VMC_point.y[0];
+        _7.interaction_figure[5].details_d = VMC_point.x[1];
+        _7.interaction_figure[5].details_e = VMC_point.y[1];
+			
+		_7.interaction_figure[6].start_x = VMC_point.x[4];	
+		_7.interaction_figure[6].start_y = VMC_point.y[4];
+        
+        if(RC_CtrlData.Key_Flag.Key_Z_TFlag)
+        {
+            _7.interaction_figure[1].color = UI_GREEN;
+            _7.interaction_figure[2].color = UI_GREEN;
+            _7.interaction_figure[3].color = UI_GREEN;
+            _7.interaction_figure[4].color = UI_GREEN;
+        }else if(usart_gimbal_data.jump_flag==1)
+        {
+           _7.interaction_figure[1].color = UI_PINK;
+           _7.interaction_figure[2].color = UI_PINK;
+           _7.interaction_figure[3].color = UI_PINK;
+           _7.interaction_figure[4].color = UI_PINK; 
+        }else
+        {
+           _7.interaction_figure[1].color = UI_YELLOW;
+           _7.interaction_figure[2].color = UI_YELLOW;
+           _7.interaction_figure[3].color = UI_YELLOW;
+           _7.interaction_figure[4].color = UI_YELLOW; 
+        }
+			
+			memcpy((uint8_t *)dddata,(uint8_t *)&UI_data.id_data,sizeof(UI_data.id_data));
+			*(interaction_figure_4_t*)(&dddata[6])=_7;
+//			memcpy((uint8_t *)(dddata+sizeof(UI_data.id_data)),(interaction_figure_4_t*)&_7,sizeof(interaction_figure_4_t));
+      data_upload_handle(STUDENT_INTERACTIVE_HEADER_DATA_ID, dddata,sizeof(UI_data.id_data)+sizeof(interaction_figure_4_t),DN_REG_ID,tx_buf);
+}
+
+
+	

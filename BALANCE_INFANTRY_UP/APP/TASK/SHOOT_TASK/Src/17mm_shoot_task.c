@@ -386,15 +386,15 @@ void shoot_state_mode_switch()
 				{
 					if(RC_CtrlData.mouse.press_r==1)
 					{
-						if(RC_CtrlData.mouse.press_l==1&&new_location.flag)
+						if(RC_CtrlData.mouse.press_l==1&&gimbal_data.if_auto_shoot==1)
 							shoot.poke_run=1;
-					else
+                        else
 							shoot.poke_run=0;
 					}else
 					{
 						if(RC_CtrlData.mouse.press_l==1)
 							shoot.poke_run=1;
-					else
+                        else
 							shoot.poke_run=0;
 					}
 					

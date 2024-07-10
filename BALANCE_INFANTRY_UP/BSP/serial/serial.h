@@ -17,7 +17,7 @@
 #define USART2_Data_Receive_Process_0				do{}while(0);
 #define USART2_Data_Receive_Process_1				do{}while(0);
 	
-#define USART3_Data_Receive_Process_0				do{usart_gimbal_receive(usart3.RX_BUFF);}while(0);
+#define USART3_Data_Receive_Process_0				do{usart_gimbal_receive(&usart_gimbal_data,usart3.RX_BUFF);}while(0);
 #define USART3_Data_Receive_Process_1				do{}while(0);
     
 #define UART4_Data_Receive_Process_0				do{vision_process_general_message(usart4.RX_BUFF,this_time_rx_len4);}while(0);

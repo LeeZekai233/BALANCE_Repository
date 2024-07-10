@@ -52,7 +52,7 @@ void   host_to_device__frame__free_unpacked
   assert(message->base.descriptor == &host_to_device__frame__descriptor);
   protobuf_c_message_free_unpacked ((ProtobufCMessage*)message, allocator);
 }
-static const ProtobufCFieldDescriptor host_to_device__frame__field_descriptors[6] =
+static const ProtobufCFieldDescriptor host_to_device__frame__field_descriptors[5] =
 {
   {
     "Target_Pitch_",
@@ -79,10 +79,10 @@ static const ProtobufCFieldDescriptor host_to_device__frame__field_descriptors[6
     0,NULL,NULL    /* reserved1,reserved2, etc */
   },
   {
-    "X_",
+    "x_",
     3,
     PROTOBUF_C_LABEL_NONE,
-    PROTOBUF_C_TYPE_INT32,
+    PROTOBUF_C_TYPE_FLOAT,
     0,   /* quantifier_offset */
     offsetof(HostToDevice__Frame, x_),
     NULL,
@@ -94,7 +94,7 @@ static const ProtobufCFieldDescriptor host_to_device__frame__field_descriptors[6
     "Y_",
     4,
     PROTOBUF_C_LABEL_NONE,
-    PROTOBUF_C_TYPE_INT32,
+    PROTOBUF_C_TYPE_FLOAT,
     0,   /* quantifier_offset */
     offsetof(HostToDevice__Frame, y_),
     NULL,
@@ -103,24 +103,12 @@ static const ProtobufCFieldDescriptor host_to_device__frame__field_descriptors[6
     0,NULL,NULL    /* reserved1,reserved2, etc */
   },
   {
-    "yaw_speed",
+    "Enable_Shoot",
     5,
     PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_FLOAT,
     0,   /* quantifier_offset */
-    offsetof(HostToDevice__Frame, yaw_speed),
-    NULL,
-    NULL,
-    0,             /* flags */
-    0,NULL,NULL    /* reserved1,reserved2, etc */
-  },
-  {
-    "pitch_speed",
-    6,
-    PROTOBUF_C_LABEL_NONE,
-    PROTOBUF_C_TYPE_FLOAT,
-    0,   /* quantifier_offset */
-    offsetof(HostToDevice__Frame, pitch_speed),
+    offsetof(HostToDevice__Frame, enable_shoot),
     NULL,
     NULL,
     0,             /* flags */
@@ -128,17 +116,16 @@ static const ProtobufCFieldDescriptor host_to_device__frame__field_descriptors[6
   },
 };
 static const unsigned host_to_device__frame__field_indices_by_name[] = {
+  4,   /* field[4] = Enable_Shoot */
   0,   /* field[0] = Target_Pitch_ */
   1,   /* field[1] = Target_Yaw_ */
-  2,   /* field[2] = X_ */
   3,   /* field[3] = Y_ */
-  5,   /* field[5] = pitch_speed */
-  4,   /* field[4] = yaw_speed */
+  2,   /* field[2] = x_ */
 };
 static const ProtobufCIntRange host_to_device__frame__number_ranges[1 + 1] =
 {
   { 1, 0 },
-  { 0, 6 }
+  { 0, 5 }
 };
 const ProtobufCMessageDescriptor host_to_device__frame__descriptor =
 {
@@ -148,7 +135,7 @@ const ProtobufCMessageDescriptor host_to_device__frame__descriptor =
   "HostToDevice__Frame",
   "host_to_device",
   sizeof(HostToDevice__Frame),
-  6,
+  5,
   host_to_device__frame__field_descriptors,
   host_to_device__frame__field_indices_by_name,
   1,  host_to_device__frame__number_ranges,

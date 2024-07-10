@@ -66,16 +66,15 @@ void vision_process_general_message(unsigned char* address, unsigned int length)
 			new_location.last_y = new_location.y;
 			new_location.x = Uart4_Protobuf_Receive_Gimbal_Angle->target_yaw_;
 			new_location.y = Uart4_Protobuf_Receive_Gimbal_Angle->target_pitch_;
-			new_location.pitch_speed = Uart4_Protobuf_Receive_Gimbal_Angle->pitch_speed;
-			new_location.yaw_speed = Uart4_Protobuf_Receive_Gimbal_Angle->yaw_speed;
+			gimbal_data.if_auto_shoot = Uart4_Protobuf_Receive_Gimbal_Angle->enable_shoot;
             new_location.flag = 1;
             
 			
-			if (fabs(new_location.x - gimbal_gyro.yaw_Angle) > 45 || fabs(new_location.y - gimbal_gyro.pitch_Angle) > 70)
-			{
+//			if (fabs(new_location.x - gimbal_gyro.yaw_Angle) > 45 || fabs(new_location.y - gimbal_gyro.pitch_Angle) > 70)
+//			{
 
-					new_location.flag = 0;
-			}
+//					new_location.flag = 0;
+//			}
 		}else
 		{
 			new_location.flag = 0;
@@ -141,7 +140,7 @@ void send_protocol(float x, float y, float r, int id, float ammo_speed, u8 visio
 	msg.mode_ = vision_mode;
 
 	msg.current_pitch_ = y;
-    if(vision_mode == AIM_ROTATE)
+    if(vision_mode == AIM_ROTATE||vision_mode == AIM_NORMAL)
     {
        msg.current_yaw_ = yaw_angle__pi_pi; 
     }else
@@ -149,7 +148,14 @@ void send_protocol(float x, float y, float r, int id, float ammo_speed, u8 visio
        msg.current_yaw_ = x; 
     }
 	msg.current_color_ = id;
-	msg.bullet_speed_ = ammo_speed;
+    if(ammo_speed==0)
+    {
+        msg.bullet_speed_ = 28;
+    }else
+    {
+        msg.bullet_speed_ = ammo_speed;
+    }
+	
 
 	device_to_host__frame__pack(&msg, data + 2);
 	DateLength = device_to_host__frame__get_packed_size(&msg);

@@ -23,6 +23,9 @@ u16 last_security,this_security;
 int last_remain,this_remain;
 int already_shoot;
 
+float last_shoot_speed;
+float this_shoot_speed;
+
 /***********************************    ↓    DJI提供的CRC校检函数   ↓  ***********************************/
 //crc8 generator polynomial:G(x)=x8+x5+x4+1
 const unsigned char CRC8_INIT = 0xff;
@@ -242,28 +245,28 @@ void judgement_data_handle(uint8_t *p_frame, u16 rec_len)
 						this_base = judge_rece_mesg.game_robot_HP.red_base_HP;
 						this_security = judge_rece_mesg.game_robot_HP.red_7_robot_HP;
 						
-						if(this_base!=last_base)
-						{
-							base_attacked = 1;
-						}
-						if(this_security!=last_security)
-						{
-							security_attacked = 1;
-						}
+//						if(this_base!=last_base)
+//						{
+//							base_attacked = 1;
+//						}
+//						if(this_security!=last_security)
+//						{
+//							security_attacked = 1;
+//						}
 					}else
 					{
 						last_base = this_base;
 						last_security = this_security;
 						this_base = judge_rece_mesg.game_robot_HP.blue_base_HP;
 						this_security = judge_rece_mesg.game_robot_HP.blue_7_robot_HP;
-						if(this_base!=last_base)
-						{
-							base_attacked = 1;
-						}
-						if(this_security!=last_security)
-						{
-							security_attacked = 1;
-						}
+//						if(this_base!=last_base)
+//						{
+//							base_attacked = 1;
+//						}
+//						if(this_security!=last_security)
+//						{
+//							security_attacked = 1;
+//						}
 					}
 				}
 				break;
@@ -331,17 +334,22 @@ void judgement_data_handle(uint8_t *p_frame, u16 rec_len)
                             First_Order_Kalman_Filter_Cal(&shoot.Bullet_Speed_Kalman, judge_rece_mesg.shoot_data.bullet_speed);
                         }
                         
+                        last_shoot_speed = this_shoot_speed;
+                        this_shoot_speed = judge_rece_mesg.shoot_data.bullet_speed;
+                        if(this_shoot_speed!=last_shoot_speed)
+                            already_shoot++;
+                        
 					}
 				}
 				break;
 				case BULLET_REMAINING_ID:
 				{
 					memcpy(&judge_rece_mesg.ext_bullet_remaining, data_addr, data_length);
-                    last_remain = this_remain;
-                    this_remain = judge_rece_mesg.ext_bullet_remaining.bullet_remaining_num_17mm;
-                    if(this_remain - last_remain > 0||this_remain==0)
-                        break;
-                    already_shoot+=last_remain-this_remain;
+//                    last_remain = this_remain;
+//                    this_remain = judge_rece_mesg.ext_bullet_remaining.bullet_remaining_num_17mm;
+//                    if(this_remain - last_remain > 0||this_remain==0)
+//                        break;
+//                    already_shoot+=last_remain-this_remain;
                     
 				}
 				break;

@@ -28,14 +28,13 @@ struct  _HostToDevice__Frame
   ProtobufCMessage base;
   float target_pitch_;
   float target_yaw_;
-  int32_t x_;
-  int32_t y_;
-  float yaw_speed;
-  float pitch_speed;
+  float x_;
+  float y_;
+  float enable_shoot;
 };
 #define HOST_TO_DEVICE__FRAME__INIT \
  { PROTOBUF_C_MESSAGE_INIT (&host_to_device__frame__descriptor) \
-    , 0, 0, 0, 0, 0, 0 }
+    , 0, 0, 0, 0, 0 }
 
 
 /* HostToDevice__Frame methods */
