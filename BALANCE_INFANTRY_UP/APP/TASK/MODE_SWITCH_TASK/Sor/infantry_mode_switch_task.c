@@ -66,7 +66,7 @@ void infantry_mode_switch_task(void)
 			{
 				gimbal_data.ctrl_mode = GIMBAL_FOLLOW_ZGYRO;
 				
-				if (RC_CtrlData.RemoteSwitch.s3to2)
+				if (0)//RC_CtrlData.RemoteSwitch.s3to2)
         {
 
             chassis.ctrl_mode = CHASSIS_ROTATE;
