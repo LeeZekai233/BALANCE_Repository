@@ -154,15 +154,15 @@ void gimbal_parameter_Init(void)
                     
 
     //自瞄陀螺下参数
-    PID_struct_init ( &gimbal_data.pid_pit_rotate, POSITION_PID, 200, 30, 20
-                    , 0.1, 5 );
+    PID_struct_init ( &gimbal_data.pid_pit_rotate, POSITION_PID, 200, 30, 15
+                    , 0.01, 12 );
 										
     PID_struct_init ( &gimbal_data.pid_pit_speed_rotate, POSITION_PID, 27000, 25000, 300.0f, 0.001f, 0 ); 
 
     PID_struct_init ( &gimbal_data.pid_yaw_rotate, POSITION_PID,  150,13,
-                    30, 0.1, 5);//15 0 80
+                    9, 0.1, 10);//15 0 80
     PID_struct_init ( &gimbal_data.pid_yaw_speed_rotate, POSITION_PID, 29800, 29800,
-                    450.0f, 0.8, 0 ); //160 0.8 40
+                    400.0f, 0.8, 0 ); //160 0.8 40
                     
     //自瞄平移下参数
     PID_struct_init ( &gimbal_data.pid_pit_follow, POSITION_PID, 200, 30, 20
