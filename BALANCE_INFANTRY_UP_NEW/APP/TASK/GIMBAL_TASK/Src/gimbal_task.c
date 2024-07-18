@@ -71,12 +71,16 @@ float pitch_max = 0;
 #if STANDARD == 3
 
 		#define INFANTRY_PITCH_MAX 27.0f
-		#define INFANTRY_PITCH_MIN -19.0f
+		#define INFANTRY_PITCH_MIN -22.0f
+        
+        #define CHASSIS_RE_PITCH_MAX 27.0f
+        #define CHASSIS_RE_PITCH_MIN -34.0f
+        
     float pitch_middle = 0;
     float Pitch_min = INFANTRY_PITCH_MIN;
     float Pitch_max = INFANTRY_PITCH_MAX;
 
-    #define VISION_PITCH_MIN            -19
+    #define VISION_PITCH_MIN            -22
     #define VISION_PITCH_MAX            27
 
     #define YAW_INIT_ANGLE_FDB          -yaw_Encoder.ecd_angle   //步兵机械将电机反着装导致yaw轴电机向右编码器角度为负，与期望极性相反，需要加负号
@@ -137,7 +141,7 @@ void gimbal_parameter_Init(void)
                     150, 0.001, 60); //170, 0.001f, 60
     //------------------------------------------------
     PID_struct_init(&gimbal_data.pid_init_yaw_Angle, POSITION_PID, 500, 4,
-                    7, 0.15f, 8); 
+                    13, 0.15f, 8); 
     PID_struct_init(&gimbal_data.pid_init_yaw_speed, POSITION_PID, 29000, 10000,
                     150, 0.8f, 40); 
 
@@ -148,7 +152,7 @@ void gimbal_parameter_Init(void)
                     150, 0.001, 60); //170, 0.001f, 60
     //------------------------------------------------
 		PID_struct_init(&gimbal_data.pid_yaw_Angle, POSITION_PID, 5000, 0,
-                    9, 0.1f, 10);
+                    12.5, 0.02f, 5);
     PID_struct_init(&gimbal_data.pid_yaw_speed, POSITION_PID, 29000, 10000,
                     400, 0.8f, 0); 
                     
@@ -239,7 +243,15 @@ void gimbal_task(void)
     default:
         break;
     }
-    
+      if(chassis.ctrl_mode==CHASSIS_REVERSE)
+      {
+          pitch_min = CHASSIS_RE_PITCH_MIN;
+          pitch_max = CHASSIS_RE_PITCH_MAX;
+      }else
+      {
+          pitch_min = Pitch_min;
+          pitch_max = Pitch_max;
+      }
          VAL_LIMIT(gimbal_data.gim_ref_and_fdb.pit_angle_ref, pitch_min - chassis.roll, pitch_max - chassis.roll);		//pitch轴云台限幅
      
     
@@ -333,6 +345,7 @@ void gimbal_init_handle	( void )
 
 float feed_forward;
 float feed_forward_limit = 70;
+float feed_forward_k = 3;
 float rotate_feed_forward;
 float rotate_torque_fed = -170;
 
@@ -456,7 +469,7 @@ void gimbal_follow_gyro_handle(void)
         }else
         {
            rotate_feed_forward = 0; 
-           feed_forward = RC_CtrlData.mouse.x*2;
+           feed_forward = RC_CtrlData.mouse.x*feed_forward_k;
         }
         VAL_LIMIT(feed_forward,-feed_forward_limit,+feed_forward_limit);
         

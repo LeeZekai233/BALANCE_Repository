@@ -152,8 +152,8 @@ void balance_chassis_task(void)
         default:
             break;
         }
-        b_chassis.max_speed = 2.7;
-        b_chassis.min_speed = -2.7;
+        b_chassis.max_speed = 2.5;
+        b_chassis.min_speed = -2.5;
 //        b_chassis.Max_power_to_PM01 = input_power_cal();
 //        b_chassis.predict_power[0] = all_power_cal(balance_chassis.Driving_Encoder[0].Torque,4.626,0.0001699,1.629,balance_chassis.Driving_Encoder[0].rate_rpm) + \
                                     all_power_cal(balance_chassis.Driving_Encoder[1].Torque,4.626,0.0001699,1.629,balance_chassis.Driving_Encoder[1].rate_rpm);
@@ -565,7 +565,7 @@ void balance_jump_handle(void)
         
 		b_chassis.chassis_ref.vw = -pid_calc(&b_chassis.pid_follow_gim,b_chassis.yaw_angle__pi_pi,target_angle); 
         
-		if(mea_distance < 0.6)
+		if(mea_distance < 0.5&&mea_distance > 0.1)
 		{
 			jump_state++;
 		}

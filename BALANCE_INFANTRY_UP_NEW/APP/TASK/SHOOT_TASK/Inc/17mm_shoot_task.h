@@ -109,4 +109,6 @@ extern u8 press_l_state_switch;
 
 extern pid_t pid_trigger_speed_buf;
 extern pid_t pid_trigger_angle_buf;
+extern pid_t pid_rotate[2];
+
 #endif
