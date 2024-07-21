@@ -401,11 +401,6 @@
               <FilePath>.\system_stm32f4xx.c</FilePath>
             </File>
             <File>
-              <FileName>balance_task.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\APP\TASK\CHASSIS_TASK\Src\balance_task.c</FilePath>
-            </File>
-            <File>
               <FileName>BSP.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\BSP.c</FilePath>
@@ -425,6 +420,11 @@
         <Group>
           <GroupName>TASK</GroupName>
           <Files>
+            <File>
+              <FileName>balance_task.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\APP\TASK\CHASSIS_TASK\Src\balance_task.c</FilePath>
+            </File>
             <File>
               <FileName>leg_task.c</FileName>
               <FileType>1</FileType>

@@ -187,7 +187,7 @@ void balance_cmd_select(void)
             b_chassis.chassis_dynemic_ref.vy = usart_chassis_data.y;
             b_chassis.chassis_dynemic_ref.vx = usart_chassis_data.x;
             VAL_LIMIT(b_chassis.chassis_dynemic_ref.vy,b_chassis.min_speed,b_chassis.max_speed);
-            VAL_LIMIT(b_chassis.chassis_dynemic_ref.vx,-1.6,1.6);
+            VAL_LIMIT(b_chassis.chassis_dynemic_ref.vx,-1.5,1.5);
         }
         if(b_chassis.ctrl_mode != CHASSIS_INIT&&usart_chassis_data.chassis_mode != CHASSIS_RELAX&&b_chassis.last_ctrl_mode == CHASSIS_RELAX&&usart_chassis_data.if_follow_gim)
         {
@@ -261,7 +261,7 @@ void balance_cmd_select(void)
                 VAL_LIMIT(b_chassis.chassis_ref.remote_speed,b_chassis.min_speed,b_chassis.max_speed);
             }else
             {
-                VAL_LIMIT(b_chassis.chassis_ref.remote_speed,-1.6,1.6);
+                VAL_LIMIT(b_chassis.chassis_ref.remote_speed,-1.5,1.5);
             }
 				
 }
@@ -456,7 +456,7 @@ float target_angle;
 void follow_gimbal_handle(void)
 {
 		
-            PID_struct_init(&b_chassis.roll_pid, POSITION_PID, 50, 0, 500, 0, 12000);
+            PID_struct_init(&b_chassis.roll_pid, POSITION_PID, 150, 20, 500, 0, 12000);
         b_chassis.roll_pid.iout = 0;
 		   
 	     
@@ -562,8 +562,9 @@ void balance_jump_handle(void)
 		}
 		
         b_chassis.chassis_ref.vy = trackRamp(b_chassis.chassis_ref.vy,ecd_speed);
+        VAL_LIMIT(b_chassis.chassis_ref.vy,-1.8,1.8);
         
-		b_chassis.chassis_ref.vw = -pid_calc(&b_chassis.pid_follow_gim,b_chassis.yaw_angle__pi_pi,target_angle); 
+		b_chassis.chassis_ref.vw = -pid_calc(&b_chassis.pid_follow_gim,b_chassis.yaw_angle__pi_pi,0); //这里不使用remoteangle，因为测距在前面
         
 		if(mea_distance < 0.5&&mea_distance > 0.1)
 		{
@@ -636,7 +637,7 @@ void chassis_rotate_handle(void)
 void chassis_side_handle(void)
 {
         
-           PID_struct_init(&b_chassis.roll_pid, POSITION_PID, 50, 20000, 500, 0, 12000);
+           PID_struct_init(&b_chassis.roll_pid, POSITION_PID, 150, 20000, 500, 0, 12000);
 	     b_chassis.roll_pid.iout = 0;
     b_chassis.chassis_ref.vx = b_chassis.chassis_dynemic_ref.vx;
 		if(fabs(b_chassis.balance_loop.dx) > 0.5||b_chassis.chassis_ref.vy != 0||usart_chassis_data.ctrl_mode==1||b_chassis.chassis_ref.vw >= 0.2)
@@ -683,7 +684,7 @@ void chassis_side_handle(void)
         {
             b_chassis.chassis_ref.leglength = b_chassis.chassis_dynemic_ref.leglength;
         }
-		VAL_LIMIT(b_chassis.chassis_ref.vy,-1.6,1.6);
+		VAL_LIMIT(b_chassis.chassis_ref.vy,-1.5,1.5);
 }
 
 /**

@@ -9,6 +9,8 @@ u8 last_input_mode = 0;
 u8 reserve_flag = 0;
 int press_X_time;
 int rotate_cnt;
+u8 sperate_flag;
+
 void infantry_mode_switch_task(void)
 {
 		//切换遥控模式的时候所有任务归位重新开始
@@ -66,7 +68,7 @@ void infantry_mode_switch_task(void)
 			{
 				gimbal_data.ctrl_mode = GIMBAL_FOLLOW_ZGYRO;
 				
-				if (0)//RC_CtrlData.RemoteSwitch.s3to2)
+				if (RC_CtrlData.RemoteSwitch.s3to2)
         {
 
             chassis.ctrl_mode = CHASSIS_ROTATE;
@@ -112,7 +114,7 @@ void infantry_mode_switch_task(void)
 						
 						if(RC_CtrlData.Key_Flag.Key_CTRL_Flag)
 						{
-							leg_length = 0.30;
+							leg_length = 0.34;
 						}else
 						{
                            if(RC_CtrlData.Key_Flag.Key_Z_TFlag)
@@ -233,15 +235,9 @@ void infantry_mode_switch_task(void)
                     {
                         press_X_time = 0;;
                     }
-                  if(RC_CtrlData.mouse.z > 0)
-                  {
-                      gimbal_data.vision_mode = AIM_ROTATE;
-                  }else if(RC_CtrlData.mouse.z < 0)
+                  if(fabs(RC_CtrlData.mouse.z) > 0)
                   {
                       gimbal_data.vision_mode = AIM_NORMAL;
-                  }else
-                  {
-                      
                   }
            //云台模式选择
 				if (gimbal_data.vision_mode == BIG_BUFF&&RC_CtrlData.mouse.press_r)
@@ -258,12 +254,21 @@ void infantry_mode_switch_task(void)
                     chassis.ctrl_mode = MANUAL_FOLLOW_GIMBAL;
                 }
            //底盘模式选择
-								
+			if(RC_CtrlData.mouse.z > 0||(gimbal_data.vision_mode == BIG_BUFF)||gimbal_data.vision_mode == SMALL_BUFF)
+            {
+                    sperate_flag = 1;
+            }else if(RC_CtrlData.mouse.z < 0)
+            {
+                sperate_flag = 0;
+            }else
+            {
+                
+            }					
 			if (RC_CtrlData.Key_Flag.Key_B_TFlag)
             {
                 chassis.ctrl_mode = CHASSIS_ROTATE;
 				chassis.ChassisSpeed_Ref.rotate_ref = 10;
-            }else if(gimbal_data.vision_mode==BIG_BUFF||gimbal_data.vision_mode==SMALL_BUFF)
+            }else if(sperate_flag)
             {
                 chassis.ctrl_mode = CHASSIS_SEPARATE;
             }

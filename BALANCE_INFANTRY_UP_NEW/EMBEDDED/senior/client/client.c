@@ -31,7 +31,7 @@ interaction_figure_t cap_up_arc =           ARC(ADD,0,0,2,960,540,140*3-30,140*3
 interaction_figure_t heat_down_arc =        ARC(ADD,0,0,3,960,540,140*3-30,140*3-30,45,135,6,0,UI_BLACK);
 interaction_figure_t heat_up_arc =          ARC(ADD,0,0,4,960,540,140*3-30,140*3-30,45,135,5,1,UI_RB);
 /*底盘状态*/    
-interaction_figure_t yaw_down_arc =         ARC(ADD,0,0,5,960,130,40,40,0,359,15,0,UI_RB);/*yaw底圈*/
+interaction_figure_t yaw_down_arc =         ARC(ADD,0,0,5,960,130,40,40,0,359,15,0,UI_YELLOW);/*yaw底圈*/
 interaction_figure_t yaw_up_arc =           ARC(ADD,0,0,6,960,130,40,40,0,359,15,1,UI_CYAN);
 /*视觉状态*/    
 interaction_figure_t vision_cl =         CIRCLE(ADD,0,0,7,1650,530,9,5,0,UI_RB);
@@ -44,7 +44,7 @@ interaction_figure_t battery_ract =   RECTANGLE(ADD,0,1,0,600,730,115,155,3,0,UI
 interaction_figure_t battery =        FLOAT_NUM(ADD,0,1,1,607,144,0,17,4,1,UI_CYAN);
 /*准星*/
 interaction_figure_t sight =             CIRCLE(ADD,0,1,2,960,540,1,3,0,UI_YELLOW);
-interaction_figure_t sight1 =            CIRCLE(ADD,0,1,9,970,490,2,4,0,UI_YELLOW);   
+interaction_figure_t sight1 =            CIRCLE(ADD,0,1,9,970,515,2,4,0,UI_YELLOW);   
 /*五连杆*/
 interaction_figure_t l1 =                  LINE(ADD,0,2,0,0,0,0,0,WIDTH,1,UI_YELLOW);
 interaction_figure_t l2 =                  LINE(ADD,0,2,1,0,0,0,0,WIDTH,1,UI_YELLOW);
@@ -56,24 +56,23 @@ interaction_figure_t wheel =             CIRCLE(ADD,0,2,5,0,0,100/2,WIDTH,1,UI_R
 interaction_figure_t X1;
 
 /*字符*/
-interaction_figure_t _1=CHARACTER(ADD,0,1,3,100,540,20,20,WIDTH,0,UI_YELLOW);/*bullet*/
-interaction_figure_t _2=CHARACTER(ADD,0,1,4,100,570,20,20,WIDTH,0,UI_YELLOW);/*level*/
-interaction_figure_t _3=CHARACTER(ADD,0,1,5,1700,630,20,20,2,0,UI_RB);/*BIG_BUFF*/
-interaction_figure_t _4=CHARACTER(ADD,0,1,6,1700,600,20,20,2,0,UI_RB);/*SMALL_BUFF*/
-interaction_figure_t _5=CHARACTER(ADD,0,1,7,1700,570,20,20,2,0,UI_RB);/*AIM_ROTATE*/
-interaction_figure_t _6=CHARACTER(ADD,0,1,8,1700,540,20,20,2,0,UI_RB);/*AIM_NORMAL*/
+interaction_figure_t _b1=CHARACTER(ADD,0,1,3,1800,540,20,20,2,0,UI_YELLOW);/*bullet*/    interaction_figure_t _r1=CHARACTER(ADD,0,1,3,50,540,20,20,2,0,UI_YELLOW);/*bullet*/
+interaction_figure_t _b2=CHARACTER(ADD,0,1,4,1800,570,20,20,2,0,UI_YELLOW);/*level*/     interaction_figure_t _r2=CHARACTER(ADD,0,1,4,50,570,20,20,2,0,UI_YELLOW);/*level*/ 
+interaction_figure_t _b3=CHARACTER(ADD,0,1,5,1700,660,20,20,2,0,UI_RB);/*BIG_BUFF*/      interaction_figure_t _r3=CHARACTER(ADD,0,1,5,50,660,20,20,2,0,UI_RB);/*BIG_BUFF*/
+interaction_figure_t _b4=CHARACTER(ADD,0,1,6,1700,630,20,20,2,0,UI_RB);/*SMALL_BUFF*/    interaction_figure_t _r4=CHARACTER(ADD,0,1,6,50,630,20,20,2,0,UI_RB);/*SMALL_BUFF*/ 
+interaction_figure_t _b5=CHARACTER(ADD,0,1,7,1700,600,20,20,2,0,UI_RB);/*AIM_NORMAL*/    interaction_figure_t _r5=CHARACTER(ADD,0,1,7,50,600,20,20,2,0,UI_RB);/*AIM_NORMAL*/ 
+
 /*创建 组合图形对象*/
 interaction_figure_4_t A;
 interaction_figure_4_t AA;
 interaction_figure_4_t AB;
 
 /*创建 字符对象*/
-client_custom_character_t B;uint8_t dataB[]="BULLET:";
-client_custom_character_t C;uint8_t dataC[]="LEVEL:";
+client_custom_character_t B;uint8_t dataB[]="BULLET";
+client_custom_character_t C;uint8_t dataC[]="LEVEL";
 client_custom_character_t D;uint8_t dataD[]="BIG_BUFF";
 client_custom_character_t E;uint8_t dataE[]="SMALL_BUFF";
-client_custom_character_t F;uint8_t dataF[]="AIM_ROTATE";
-client_custom_character_t G;uint8_t dataG[]="AIM_NORMAL";
+client_custom_character_t F;uint8_t dataF[]="AIM_NORMAL";
 
 
 /*UI刷新主函数*/
@@ -118,33 +117,60 @@ void Client_Send_Handle()
         }break;
 		case 4:
 		{
-			UI.ADD_Char(B,_1,dataB,7);
+           if(UI.id < 50)
+           {
+               UI.ADD_Char(B,_r1,dataB,6);
+           }else
+           {
+               UI.ADD_Char(B,_b1,dataB,6);
+           }
+			
 		}break;
 		case 5:
 		{
-			UI.ADD_Char(C,_2,dataC,6);
+            if(UI.id < 50)
+           {
+               UI.ADD_Char(C,_r2,dataC,5);
+           }else
+           {
+               UI.ADD_Char(C,_b2,dataC,5);
+           }
 		}break;
 		case 6:
 		{
-			UI.ADD_Char(D,_3,dataD,8);
+            if(UI.id < 50)
+           {
+               UI.ADD_Char(D,_r3,dataD,8);
+           }else
+           {
+               UI.ADD_Char(D,_b3,dataD,8);
+           }
 		}break;
 		case 7:
 		{
-			UI.ADD_Char(E,_4,dataE,10);
+            if(UI.id < 50)
+           {
+               UI.ADD_Char(E,_r4,dataE,10);
+           }else
+           {
+               UI.ADD_Char(E,_b4,dataE,10);
+           }
 		}break;
 		case 8:
 		{
-			UI.ADD_Char(F,_5,dataF,10);
+            if(UI.id < 50)
+           {
+               UI.ADD_Char(F,_r5,dataF,10);
+           }else
+           {
+               UI.ADD_Char(F,_b5,dataF,10);
+           }
 		}break;
-        case 9:
-        {
-            UI.ADD_Char(G,_6,dataG,10);
-        }break;
-		case 10:/*动态显示*/
+		case 9:/*动态显示*/
 		{
 			UI.MODIFY_7Graph_0(A,cap_up_arc,heat_up_arc,yaw_up_arc,vision_cl,bullet,level,battery);
 		}break;
-		case 11:
+		case 10:
 		{
 			UI.MODIFY_7Graph_1(AA,sight,l1,l2,l3,l4,l5,wheel);
 		}break;
@@ -160,8 +186,8 @@ void Client_Send_Handle()
 	  {UI.circle_360-=360;}
 		
 	UI.cnt++;
-  if(UI.cnt>11)/*在需要刷新的图层刷新*/
-     UI.cnt=10;
+  if(UI.cnt>10)/*在需要刷新的图层刷新*/
+     UI.cnt=9;
   
   if(RC_CtrlData.Key_Flag.Key_R_Flag)
 	{
@@ -340,40 +366,70 @@ void MODIFY_7_Graph_DIY(interaction_figure_4_t _7,interaction_figure_t _0,intera
 		if(yaw_0_360+345>360)
 			yaw_0_360=yaw_0_360-360;
 		_7.interaction_figure[2].details_b=yaw_0_360+345;//gimbal_gyro.yaw_Angle+345;
+        
+        if(chassis.ctrl_mode == CHASSIS_REVERSE)
+        {
+            _7.interaction_figure[2].color = UI_PINK;
+        }else
+        {
+            _7.interaction_figure[2].color = UI_CYAN;
+        }
 /*第4个图形*/			
          switch(gimbal_data.vision_mode)
             {
                 case AIM_NORMAL:
                 {
-                      _7.interaction_figure[3].start_x=1650;
-                      _7.interaction_figure[3].start_y=530;
-                }break;
-                case AIM_ROTATE:
-                {
-                      _7.interaction_figure[3].start_x=1650;
-                      _7.interaction_figure[3].start_y=560;
+                      _7.interaction_figure[3].start_y=590;
                 }break;
                 case SMALL_BUFF:
                 {
-                      _7.interaction_figure[3].start_x=1650;
-                      _7.interaction_figure[3].start_y=590;
+                      _7.interaction_figure[3].start_y=620;
                 }break;
                 case BIG_BUFF:
                 {
-                      _7.interaction_figure[3].start_x=1650;
-                      _7.interaction_figure[3].start_y=620;
+                      _7.interaction_figure[3].start_y=650;
                 }break;
+                
+            }
+            if(UI.id < 50)
+           {
+               _7.interaction_figure[3].start_x=300;
+           }else
+           {
+               _7.interaction_figure[3].start_x=1650;
+           }
+                   
+            if(chassis.ctrl_mode == CHASSIS_SEPARATE)
+            {
+                _7.interaction_figure[3].color = UI_RB;
+            }else
+            {
+               _7.interaction_figure[3].color = UI_YELLOW; 
             }
 /*第5个图形 */			
-			uint32_t  cap_temp=(already_shoot*1000.0f);
+			uint32_t  cap_temp=((450-already_shoot)*1000.0f);
 			_7.interaction_figure[4].details_c=cap_temp;
 		  _7.interaction_figure[4].details_d=cap_temp>>10;
 			_7.interaction_figure[4].details_e=cap_temp>>21;
+             if(UI.id < 50)
+           {
+               _7.interaction_figure[4].start_x = 230;
+           }else
+           {
+               _7.interaction_figure[4].start_x = 1700;
+           }
 /*第6个图形*/			
 		uint32_t  cap_temp1=(judge_rece_mesg.game_robot_state.robot_level*1000.0f);
 			_7.interaction_figure[5].details_c=cap_temp1;
 		  _7.interaction_figure[5].details_d=cap_temp1>>10;
 			_7.interaction_figure[5].details_e=cap_temp1>>21;
+            if(UI.id < 50)
+           {
+               _7.interaction_figure[5].start_x = 230;
+           }else
+           {
+               _7.interaction_figure[5].start_x = 1700;
+           }
 /*第7个图形*/			
 		uint32_t  cap_temp2=((usart_gimbal_data.input_V-22)/3.0*100*1000.0f);
 			_7.interaction_figure[6].details_c=cap_temp2;

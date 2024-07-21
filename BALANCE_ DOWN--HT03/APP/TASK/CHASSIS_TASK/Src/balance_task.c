@@ -563,9 +563,9 @@ void balance_jump_handle(void)
 		
         b_chassis.chassis_ref.vy = trackRamp(b_chassis.chassis_ref.vy,ecd_speed);
         
-		b_chassis.chassis_ref.vw = -pid_calc(&b_chassis.pid_follow_gim,b_chassis.yaw_angle__pi_pi,target_angle); 
+		b_chassis.chassis_ref.vw = -pid_calc(&b_chassis.pid_follow_gim,b_chassis.yaw_angle__pi_pi,0); 
         
-		if(mea_distance < 0.6)
+		if(mea_distance < 0.5&&mea_distance > 0.1)
 		{
 			jump_state++;
 		}

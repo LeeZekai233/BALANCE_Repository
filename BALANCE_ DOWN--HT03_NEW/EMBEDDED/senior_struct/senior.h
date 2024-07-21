@@ -12,10 +12,10 @@
 #define  GM3Encoder_Offset   4141
 #define  GM4Encoder_Offset   6732
 //平步底盘电机初始位置
-#define  JM1Encoder_Offset   59293
-#define  JM2Encoder_Offset   14405
-#define  JM3Encoder_Offset   44930
-#define  JM4Encoder_Offset   32570
+#define  JM1Encoder_Offset   59368
+#define  JM2Encoder_Offset   14645
+#define  JM3Encoder_Offset   44220
+#define  JM4Encoder_Offset   33544
 
 #define  TM1Encoder_Offset   0
 #define  TM2Encoder_Offset   0
