@@ -59,7 +59,6 @@ else if(val>=max)\
 #include "JUDGE.h"
 #include "DJI_MOTOR.h"
 #include "Auto_shoot.h"
-#include "OLD_Auto_shoot.h"
 #include "REMOTE.h"
 #include "client.h"
 #include "can_chassis_transmit.h"

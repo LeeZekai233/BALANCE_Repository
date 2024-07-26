@@ -20,7 +20,7 @@
 #define USART3_Data_Receive_Process_0				do{usart_gimbal_receive(&usart_gimbal_data,usart3.RX_BUFF);}while(0);
 #define USART3_Data_Receive_Process_1				do{}while(0);
     
-#define UART4_Data_Receive_Process_0				do{vision_process_general_message(usart4.RX_BUFF,this_time_rx_len4);}while(0);
+#define UART4_Data_Receive_Process_0				do{Vision_Process_General_Message_New(usart4.RX_BUFF,this_time_rx_len4,&My_Auto_Shoot);}while(0);
 #define UART4_Data_Receive_Process_1				do{}while(0);
 	
 #define UART5_Data_Receive_Process_0				do{judgement_data_handle(usart5.RX_double_BUFF[0],this_time_rx_len5);}while(0);

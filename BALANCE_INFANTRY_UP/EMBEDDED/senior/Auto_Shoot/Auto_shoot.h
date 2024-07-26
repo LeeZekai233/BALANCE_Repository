@@ -34,17 +34,25 @@ typedef struct
 
 typedef struct
 {
-	int Yaw_Angle;//目标yaw轴位置
-	int Pitch_Angle;//目标Pitch轴位置
+	float Yaw_Angle;//目标yaw轴位置
+	float Pitch_Angle;//目标Pitch轴位置
 	
-	int Yaw_Angle_Last;//上一时刻目标yaw轴位置
-	int Pitch_Angle_Last;//上一时刻Pitch轴位置
+	float Yaw_Delta_Point;
+	float Pitch_Delta_Point;
+	
+	float Yaw_Angle_Last;//上一时刻目标yaw轴位置
+	float Pitch_Angle_Last;//上一时刻Pitch轴位置
 	
 	float Yaw_Speed;//目标yaw轴速度
 	float Pitch_Speed;//目标pitch轴速度
 	
 	uint8_t  Flag_Get_Target;//目标锁定标志位，1：锁定目标，0：未识别到目标
 	uint16_t Lost_Cnt;//目标丢失计数器
+	
+	uint16_t xy_o_time;
+	u8 xy_0_flag;
+	u8 buff_kf_flag;
+	
 }Buff_t;
 
 
@@ -54,33 +62,27 @@ typedef struct
 	Buff_t Buff;
 }Auto_Shoot_t;
 
-typedef struct
+typedef __packed struct
 {
 	uint8_t Header;
 	float Pitch_Angle;
 	float Yaw_Angle; 
-	uint8_t Priority;
-	uint8_t Attack_Choice;
+	float buff_X;
+	float buff_Y;
 	uint8_t enable_shoot;
+  uint8_t if_receive_data;
 	uint16_t Check_Sum;
 	uint8_t Tail;
 }New_Auto_Aim_t;
 
-typedef struct
+typedef __packed struct
 {
 	float Pitch;
 	float Yaw;
 	float Roll;
 	float Shoot_Speed;
 	uint8_t 	Current_Color;//蓝：1，红0；
-	uint8_t Enemy_Survical_State_1;//存活：1，死亡：0；
-	uint8_t Enemy_Survical_State_2;
-	uint8_t Enemy_Survical_State_3;
-	uint8_t Enemy_Survical_State_4;
-	uint8_t Enemy_Survical_State_5;
-	uint8_t Enemy_Survical_State_7;
-	uint8_t Enemy_Output;
-	uint8_t Another_Priority;
+  uint8_t  mode;
 }New_Auto_Aim_Send_t;	
 
 typedef struct
@@ -99,8 +101,10 @@ extern New_Auto_Aim_t New_Auto_Aim;
 extern New_Auto_Aim_Send_t New_Auto_Aim_Send;
 extern Visual_Data_Need_t Visual_Data_Need;
 
+void Vision_Process_General_Message(unsigned char* address, unsigned int length, Auto_Shoot_t *Auto_Shoot);
 void Vision_Process_General_Message_New(unsigned char* address, unsigned int length, Auto_Shoot_t *Auto_Shoot);
-void send_protocol_New(float Yaw, float Pitch, float Roll, int id, float ammo_speed, int Attack_Engineer_Flag, uint8_t* data);
+void send_protocol(float x, float y, float r, int id, float ammo_speed, int gimbal_mode, uint8_t *data);
+void send_protocol_New(float Yaw, float Pitch, float Roll, int id, float ammo_speed, uint8_t mode, u8* data);
 void AUTO_Shoot_CAN_Send_Handle(CAN_TypeDef *CANx, uint8_t *address_1,uint8_t *address_2,uint8_t *address_3,uint8_t *address_4,uint8_t *address_5);
 void AUTO_Shoot_CAN_Send_Handle_2_1(CAN_TypeDef *CANx, uint8_t *address_1);
 

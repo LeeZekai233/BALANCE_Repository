@@ -367,7 +367,7 @@ void MODIFY_7_Graph_DIY(interaction_figure_4_t _7,interaction_figure_t _0,intera
 			yaw_0_360=yaw_0_360-360;
 		_7.interaction_figure[2].details_b=yaw_0_360+345;//gimbal_gyro.yaw_Angle+345;
         
-        if(chassis.ctrl_mode == CHASSIS_REVERSE)
+        if(RC_CtrlData.Key_Flag.Key_F_TFlag)
         {
             _7.interaction_figure[2].color = UI_PINK;
         }else
@@ -467,7 +467,7 @@ void MODIFY_7_Graph_DIY1(interaction_figure_4_t _7,interaction_figure_t _0,inter
 		_7.interaction_figure[6].operate_tpye=MODIFY;
 		
 /*第1个图形 累计发弹数*/
-		if(new_location.flag||My_Auto_Shoot.Auto_Aim.Flag_Get_Target)
+		if(My_Auto_Shoot.Auto_Aim.Flag_Get_Target)
 			{
                  _7.interaction_figure[0].color =  UI_RB;
             }else

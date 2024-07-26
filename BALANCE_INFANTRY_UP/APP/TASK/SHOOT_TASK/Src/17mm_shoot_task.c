@@ -384,9 +384,9 @@ void shoot_state_mode_switch()
 				}break;
 					case KEY_MOUSE_INPUT:
 				{
-					if(RC_CtrlData.mouse.press_r==1)
+					if(RC_CtrlData.mouse.press_r==1&&gimbal_data.vision_mode == AIM_NORMAL)
 					{
-						if(RC_CtrlData.mouse.press_l==1&&gimbal_data.if_auto_shoot==1)
+						if(RC_CtrlData.mouse.press_l==1&&My_Auto_Shoot.Auto_Aim.enable_shoot==1)
 							shoot.poke_run=1;
                         else
 							shoot.poke_run=0;

@@ -52,7 +52,7 @@ void   device_to_host__frame__free_unpacked
   assert(message->base.descriptor == &device_to_host__frame__descriptor);
   protobuf_c_message_free_unpacked ((ProtobufCMessage*)message, allocator);
 }
-static const ProtobufCFieldDescriptor device_to_host__frame__field_descriptors[14] =
+static const ProtobufCFieldDescriptor device_to_host__frame__field_descriptors[5] =
 {
   {
     "Current_Pitch_",
@@ -79,20 +79,8 @@ static const ProtobufCFieldDescriptor device_to_host__frame__field_descriptors[1
     0,NULL,NULL    /* reserved1,reserved2, etc */
   },
   {
-    "Current_Roll_",
-    3,
-    PROTOBUF_C_LABEL_NONE,
-    PROTOBUF_C_TYPE_FLOAT,
-    0,   /* quantifier_offset */
-    offsetof(DeviceToHost__Frame, current_roll_),
-    NULL,
-    NULL,
-    0,             /* flags */
-    0,NULL,NULL    /* reserved1,reserved2, etc */
-  },
-  {
     "Current_Color_",
-    4,
+    3,
     PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_INT32,
     0,   /* quantifier_offset */
@@ -104,7 +92,7 @@ static const ProtobufCFieldDescriptor device_to_host__frame__field_descriptors[1
   },
   {
     "Bullet_Speed_",
-    5,
+    4,
     PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_FLOAT,
     0,   /* quantifier_offset */
@@ -116,7 +104,7 @@ static const ProtobufCFieldDescriptor device_to_host__frame__field_descriptors[1
   },
   {
     "Mode_",
-    6,
+    5,
     PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_INT32,
     0,   /* quantifier_offset */
@@ -126,123 +114,18 @@ static const ProtobufCFieldDescriptor device_to_host__frame__field_descriptors[1
     0,             /* flags */
     0,NULL,NULL    /* reserved1,reserved2, etc */
   },
-  {
-    "Enemies_Blood_0",
-    7,
-    PROTOBUF_C_LABEL_NONE,
-    PROTOBUF_C_TYPE_INT32,
-    0,   /* quantifier_offset */
-    offsetof(DeviceToHost__Frame, enemies_blood_0),
-    NULL,
-    NULL,
-    0,             /* flags */
-    0,NULL,NULL    /* reserved1,reserved2, etc */
-  },
-  {
-    "Enemies_Blood_1",
-    8,
-    PROTOBUF_C_LABEL_NONE,
-    PROTOBUF_C_TYPE_INT32,
-    0,   /* quantifier_offset */
-    offsetof(DeviceToHost__Frame, enemies_blood_1),
-    NULL,
-    NULL,
-    0,             /* flags */
-    0,NULL,NULL    /* reserved1,reserved2, etc */
-  },
-  {
-    "Enemies_Blood_2",
-    9,
-    PROTOBUF_C_LABEL_NONE,
-    PROTOBUF_C_TYPE_INT32,
-    0,   /* quantifier_offset */
-    offsetof(DeviceToHost__Frame, enemies_blood_2),
-    NULL,
-    NULL,
-    0,             /* flags */
-    0,NULL,NULL    /* reserved1,reserved2, etc */
-  },
-  {
-    "Enemies_Blood_3",
-    10,
-    PROTOBUF_C_LABEL_NONE,
-    PROTOBUF_C_TYPE_INT32,
-    0,   /* quantifier_offset */
-    offsetof(DeviceToHost__Frame, enemies_blood_3),
-    NULL,
-    NULL,
-    0,             /* flags */
-    0,NULL,NULL    /* reserved1,reserved2, etc */
-  },
-  {
-    "Enemies_Blood_4",
-    11,
-    PROTOBUF_C_LABEL_NONE,
-    PROTOBUF_C_TYPE_INT32,
-    0,   /* quantifier_offset */
-    offsetof(DeviceToHost__Frame, enemies_blood_4),
-    NULL,
-    NULL,
-    0,             /* flags */
-    0,NULL,NULL    /* reserved1,reserved2, etc */
-  },
-  {
-    "Enemies_Blood_5",
-    12,
-    PROTOBUF_C_LABEL_NONE,
-    PROTOBUF_C_TYPE_INT32,
-    0,   /* quantifier_offset */
-    offsetof(DeviceToHost__Frame, enemies_blood_5),
-    NULL,
-    NULL,
-    0,             /* flags */
-    0,NULL,NULL    /* reserved1,reserved2, etc */
-  },
-  {
-    "Enemies_outpost",
-    13,
-    PROTOBUF_C_LABEL_NONE,
-    PROTOBUF_C_TYPE_INT32,
-    0,   /* quantifier_offset */
-    offsetof(DeviceToHost__Frame, enemies_outpost),
-    NULL,
-    NULL,
-    0,             /* flags */
-    0,NULL,NULL    /* reserved1,reserved2, etc */
-  },
-  {
-    "IfAttackEngineer",
-    14,
-    PROTOBUF_C_LABEL_NONE,
-    PROTOBUF_C_TYPE_INT32,
-    0,   /* quantifier_offset */
-    offsetof(DeviceToHost__Frame, ifattackengineer),
-    NULL,
-    NULL,
-    0,             /* flags */
-    0,NULL,NULL    /* reserved1,reserved2, etc */
-  },
 };
 static const unsigned device_to_host__frame__field_indices_by_name[] = {
-  4,   /* field[4] = Bullet_Speed_ */
-  3,   /* field[3] = Current_Color_ */
+  3,   /* field[3] = Bullet_Speed_ */
+  2,   /* field[2] = Current_Color_ */
   0,   /* field[0] = Current_Pitch_ */
-  2,   /* field[2] = Current_Roll_ */
   1,   /* field[1] = Current_Yaw_ */
-  6,   /* field[6] = Enemies_Blood_0 */
-  7,   /* field[7] = Enemies_Blood_1 */
-  8,   /* field[8] = Enemies_Blood_2 */
-  9,   /* field[9] = Enemies_Blood_3 */
-  10,   /* field[10] = Enemies_Blood_4 */
-  11,   /* field[11] = Enemies_Blood_5 */
-  12,   /* field[12] = Enemies_outpost */
-  13,   /* field[13] = IfAttackEngineer */
-  5,   /* field[5] = Mode_ */
+  4,   /* field[4] = Mode_ */
 };
 static const ProtobufCIntRange device_to_host__frame__number_ranges[1 + 1] =
 {
   { 1, 0 },
-  { 0, 14 }
+  { 0, 5 }
 };
 const ProtobufCMessageDescriptor device_to_host__frame__descriptor =
 {
@@ -252,7 +135,7 @@ const ProtobufCMessageDescriptor device_to_host__frame__descriptor =
   "DeviceToHost__Frame",
   "device_to_host",
   sizeof(DeviceToHost__Frame),
-  14,
+  5,
   device_to_host__frame__field_descriptors,
   device_to_host__frame__field_indices_by_name,
   1,  device_to_host__frame__number_ranges,

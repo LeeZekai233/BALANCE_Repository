@@ -340,7 +340,7 @@
               <MiscControls></MiscControls>
               <Define>STM32F40_41xxx,USE_STDPERIPH_DRIVER</Define>
               <Undefine></Undefine>
-              <IncludePath>..\CORE;..\USER;..\README;..\HEADFILE;..\STLIB\inc;..\STLIB\src;..\APP\BAL\Ins;..\APP\RTOS\Ins;..\APP\TASK\CHASSIS_TASK\Inc;..\APP\TASK\GIMBAL_TASK\Ins;..\BSP\can\Inc;..\BSP\delay\Inc;..\BSP\usart\Inc;..\BSP\sys\Inc;..\EMBEDDED\CAN_BUS;..\EMBEDDED\senior\CH100;..\EMBEDDED\senior\DJI_MOTOR;..\EMBEDDED\senior\HI220;..\EMBEDDED\senior\HT430;..\EMBEDDED\senior\JUDGE;..\EMBEDDED\senior\LK_TECH;..\EMBEDDED\senior\PM01;..\EMBEDDED\senior_struct;..\EMBEDDED\senior\REMOTE;..\APP\TASK\MODE_SWITCH_TASK\Inc;..\BSP\timer\Inc;..\EMBEDDED\senior\CAN_CHASSIS_TRANSMIT;..\EMBEDDED\senior\USART_chassis_transmit;..\BSP\LED\LED;..\APP\TASK\SHOOT_TASK\Inc;..\EMBEDDED\senior\Auto_Shoot;..\EMBEDDED\senior\OLD_Auto_shoot;..\EMBEDDED\senior\OLD_Auto_shoot\proto;..\EMBEDDED\senior\OLD_Auto_shoot\Protocol;..\EMBEDDED\senior\client;..\BSP\iwdg;..\BSP\serial;..\BSP\dwt</IncludePath>
+              <IncludePath>..\CORE;..\USER;..\README;..\HEADFILE;..\STLIB\inc;..\STLIB\src;..\APP\BAL\Ins;..\APP\RTOS\Ins;..\APP\TASK\CHASSIS_TASK\Inc;..\APP\TASK\GIMBAL_TASK\Ins;..\BSP\can\Inc;..\BSP\delay\Inc;..\BSP\usart\Inc;..\BSP\sys\Inc;..\EMBEDDED\CAN_BUS;..\EMBEDDED\senior\CH100;..\EMBEDDED\senior\DJI_MOTOR;..\EMBEDDED\senior\HI220;..\EMBEDDED\senior\HT430;..\EMBEDDED\senior\JUDGE;..\EMBEDDED\senior\LK_TECH;..\EMBEDDED\senior\PM01;..\EMBEDDED\senior_struct;..\EMBEDDED\senior\REMOTE;..\APP\TASK\MODE_SWITCH_TASK\Inc;..\BSP\timer\Inc;..\EMBEDDED\senior\CAN_CHASSIS_TRANSMIT;..\EMBEDDED\senior\USART_chassis_transmit;..\BSP\LED\LED;..\APP\TASK\SHOOT_TASK\Inc;..\EMBEDDED\senior\Auto_Shoot;..\EMBEDDED\senior\client;..\BSP\iwdg;..\BSP\serial;..\BSP\dwt</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -498,26 +498,6 @@
               <FileName>Auto_shoot.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\EMBEDDED\senior\Auto_Shoot\Auto_shoot.c</FilePath>
-            </File>
-            <File>
-              <FileName>OLD_Auto_shoot.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\EMBEDDED\senior\OLD_Auto_shoot\OLD_Auto_shoot.c</FilePath>
-            </File>
-            <File>
-              <FileName>protobuf-c.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\EMBEDDED\senior\OLD_Auto_shoot\proto\protobuf-c.c</FilePath>
-            </File>
-            <File>
-              <FileName>Recieve.pb-c.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\EMBEDDED\senior\OLD_Auto_shoot\proto\Recieve.pb-c.c</FilePath>
-            </File>
-            <File>
-              <FileName>Send.pb-c.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\EMBEDDED\senior\OLD_Auto_shoot\proto\Send.pb-c.c</FilePath>
             </File>
             <File>
               <FileName>client.c</FileName>

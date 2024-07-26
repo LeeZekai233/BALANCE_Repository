@@ -173,7 +173,7 @@ void infantry_mode_switch_task(void)
             }
 					 
            /*******************************º¸ Û‘∆Ã®∏≥÷µ****************************************/
-            if (gimbal_data.ctrl_mode == GIMBAL_FOLLOW_ZGYRO&&RC_CtrlData.mouse.press_r == 0)
+            if (gimbal_data.ctrl_mode == GIMBAL_FOLLOW_ZGYRO&&!((RC_CtrlData.mouse.press_r)&&(gimbal_data.vision_mode==AIM_NORMAL)&&My_Auto_Shoot.Auto_Aim.Flag_Get_Target))
             {
                 VAL_LIMIT(RC_CtrlData.mouse.x, -100, 100);
                 VAL_LIMIT(RC_CtrlData.mouse.y, -100, 100);
@@ -189,6 +189,7 @@ void infantry_mode_switch_task(void)
 //									reserve_flag++;
 //								}
 //							}else
+                
 //							{
 //								reserve_flag = 0;
 //							}

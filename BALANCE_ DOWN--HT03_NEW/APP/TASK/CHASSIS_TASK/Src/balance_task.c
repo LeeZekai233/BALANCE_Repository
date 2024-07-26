@@ -42,7 +42,7 @@ void balance_param_init(void)
     PID_struct_init(&b_chassis.vw_pid, POSITION_PID,5,5,2,0,0);
     PID_struct_init(&b_chassis.roll_pid, POSITION_PID, 50000, 20000, 800, 0, 12000);
 	
-    PID_struct_init(&b_chassis.pid_follow_gim, POSITION_PID, 5, 200, 12, 0, 5);
+    PID_struct_init(&b_chassis.pid_follow_gim, POSITION_PID, 5, 200, 12, 0, 10);
     
     PID_struct_init(&b_chassis.pid_seperate_gim, POSITION_PID, 500, 200, 0.5, 0, 5);
 	

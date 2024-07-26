@@ -10,9 +10,9 @@
 //相机焦距mm
 #define FOCAL_LENGTH                8.0F
 //靶面长mm
-#define TARGET_SURFACE_LENGTH      4.96e-3F
+#define TARGET_SURFACE_LENGTH      3.52e-3F
 //靶面宽mm
-#define TARGET_SURFACE_WIDTH        4.96e-3F
+#define TARGET_SURFACE_WIDTH        3.52e-3F
 
 
 
