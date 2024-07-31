@@ -17,10 +17,13 @@
 u16 client_custom_ID=0;
 uint8_t dddata[120];
 uint8_t  tx_buf[150];
+uint8_t ddata[120];
 
 UI_t UI=UI_DEFAULT;
 
 VMC_t VMC_point;
+
+id_data_t send_to_aerial;
 
 
 /*创建图形对象*/
@@ -532,4 +535,26 @@ void MODIFY_7_Graph_DIY1(interaction_figure_4_t _7,interaction_figure_t _0,inter
 }
 
 
-	
+void Send_bullet_remaining_num(void)
+{
+    
+    send_to_aerial.data_cmd_id = 0x0200 + (uint16_t)(judge_rece_mesg.game_robot_state.robot_id%100);//按兵种标号向后顺序排 0x0202 0x0203 0x0204----0x02FF
+    send_to_aerial.sender_id = judge_rece_mesg.game_robot_state.robot_id;
+    if(judge_rece_mesg.game_robot_state.robot_id < 50)//红方一号
+    {
+        send_to_aerial.receiver_id = 6;
+    }
+    else//蓝方一号
+    {
+        send_to_aerial.receiver_id = 106;
+    }
+    
+   
+    
+    
+    memcpy((uint8_t *)ddata,(uint8_t *)&send_to_aerial,sizeof(send_to_aerial));
+    ddata[6] = (uint8_t)judge_rece_mesg.ext_bullet_remaining.bullet_remaining_num_17mm;
+    ddata[7] = (uint8_t)(judge_rece_mesg.ext_bullet_remaining.bullet_remaining_num_17mm >> 8);
+    data_upload_handle(ROBOT_INTERACTIVE_DATA_ID,ddata,sizeof(send_to_aerial)+sizeof(judge_rece_mesg.ext_bullet_remaining.bullet_remaining_num_17mm),DN_REG_ID,tx_buf);
+
+}	

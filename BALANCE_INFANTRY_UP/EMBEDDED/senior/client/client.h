@@ -255,5 +255,6 @@ void MODIFY_7_Graph_DIY(interaction_figure_4_t _7,interaction_figure_t _0,intera
 void MODIFY_7_Graph_DIY1(interaction_figure_4_t _7,interaction_figure_t _0,interaction_figure_t _1,interaction_figure_t _2,interaction_figure_t _3,interaction_figure_t _4,interaction_figure_t _5,interaction_figure_t _6);
 void Client_Send_Handle(void);
 void VMC_ui_cal(int x1,int y1);
+void Send_bullet_remaining_num(void);
 extern uint8_t  tx_buf[150];
 #endif

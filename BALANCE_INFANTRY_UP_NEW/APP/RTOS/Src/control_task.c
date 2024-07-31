@@ -44,6 +44,11 @@ void control_task(void)
     {
       Client_Send_Handle();
     }
+    
+    if(time_tick%100 == 50) //上传用户信息
+    {
+      Send_bullet_remaining_num();
+    }
 		
 		if(time_tick%1000==0)
 		{

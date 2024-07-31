@@ -320,6 +320,16 @@
           <WinNumber>1</WinNumber>
           <ItemText>general_poke,0x0A</ItemText>
         </Ww>
+        <Ww>
+          <count>32</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>ddata</ItemText>
+        </Ww>
+        <Ww>
+          <count>33</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>judge_rece_mesg.game_robot_state.robot_id%100</ItemText>
+        </Ww>
       </WatchWindow1>
       <WatchWindow2>
         <Ww>
