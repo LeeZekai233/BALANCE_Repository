@@ -102,7 +102,7 @@ void heat_shoot_frequency_limit()//步兵射频限制部分
             case 1:
             {shoot.will_time_shoot=(shoot.remain_bullets-2)*1000/shoot.shoot_frequency;}break;
             case 2:
-            {shoot.will_time_shoot=(shoot.remain_bullets-2)*1000/shoot.shoot_frequency;}break;
+            {shoot.will_time_shoot=(shoot.remain_bullets-3)*1000/shoot.shoot_frequency;}break;
             case 3:
             {shoot.will_time_shoot=(shoot.remain_bullets-3)*1000/shoot.shoot_frequency;}break;
             case 4:

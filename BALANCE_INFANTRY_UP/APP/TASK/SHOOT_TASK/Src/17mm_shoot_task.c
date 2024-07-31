@@ -100,25 +100,25 @@ void heat_shoot_frequency_limit()//步兵射频限制部分
 			  switch(judge_rece_mesg.game_robot_state.robot_level)
         {
             case 1:
-            {shoot.will_time_shoot=(shoot.remain_bullets-2)*1000/shoot.shoot_frequency;}break;
+            {shoot.will_time_shoot=(shoot.remain_bullets-1)*1000/shoot.shoot_frequency;}break;
             case 2:
-            {shoot.will_time_shoot=(shoot.remain_bullets-2)*1000/shoot.shoot_frequency;}break;
+            {shoot.will_time_shoot=(shoot.remain_bullets-3)*1000/shoot.shoot_frequency;}break;
             case 3:
-            {shoot.will_time_shoot=(shoot.remain_bullets-3)*1000/shoot.shoot_frequency;}break;
+            {shoot.will_time_shoot=(shoot.remain_bullets-3.5)*1000/shoot.shoot_frequency;}break;
             case 4:
-            {shoot.will_time_shoot=(shoot.remain_bullets-3)*1000/shoot.shoot_frequency;}break;
+            {shoot.will_time_shoot=(shoot.remain_bullets-4)*1000/shoot.shoot_frequency;}break;
             case 5:
-            {shoot.will_time_shoot=(shoot.remain_bullets-3)*1000/shoot.shoot_frequency;}break;
+            {shoot.will_time_shoot=(shoot.remain_bullets-4)*1000/shoot.shoot_frequency;}break;
             case 6:
-            {shoot.will_time_shoot=(shoot.remain_bullets-3)*1000/shoot.shoot_frequency;}break;
+            {shoot.will_time_shoot=(shoot.remain_bullets-4)*1000/shoot.shoot_frequency;}break;
             case 7:
-            {shoot.will_time_shoot=(shoot.remain_bullets-3)*1000/shoot.shoot_frequency;}break;
+            {shoot.will_time_shoot=(shoot.remain_bullets-4)*1000/shoot.shoot_frequency;}break;
             case 8:
-            {shoot.will_time_shoot=(shoot.remain_bullets-3.5)*1000/shoot.shoot_frequency;}break;
+            {shoot.will_time_shoot=(shoot.remain_bullets-4)*1000/shoot.shoot_frequency;}break;
             case 9:
-            {shoot.will_time_shoot=(shoot.remain_bullets-3.5)*1000/shoot.shoot_frequency;}break;
+            {shoot.will_time_shoot=(shoot.remain_bullets-4)*1000/shoot.shoot_frequency;}break;
             case 10:
-            {shoot.will_time_shoot=(shoot.remain_bullets-3.5)*1000/shoot.shoot_frequency;}break;
+            {shoot.will_time_shoot=(shoot.remain_bullets-4)*1000/shoot.shoot_frequency;}break;
             default :
             {shoot.will_time_shoot=(shoot.remain_bullets-1)*1000/shoot.shoot_frequency;} break;
             

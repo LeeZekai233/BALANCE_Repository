@@ -407,7 +407,7 @@ void MODIFY_7_Graph_DIY(interaction_figure_4_t _7,interaction_figure_t _0,intera
                _7.interaction_figure[3].color = UI_YELLOW; 
             }
 /*µÚ5¸öÍ¼ÐÎ */			
-			uint32_t  cap_temp=((450-already_shoot)*1000.0f);
+			uint32_t  cap_temp=((580-already_shoot)*1000.0f);
 			_7.interaction_figure[4].details_c=cap_temp;
 		  _7.interaction_figure[4].details_d=cap_temp>>10;
 			_7.interaction_figure[4].details_e=cap_temp>>21;
