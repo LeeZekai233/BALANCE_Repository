@@ -205,7 +205,8 @@ void balance_cmd_select(void)
 				{
 					b_chassis.jump_flag = usart_chassis_data.jump_cmd;
 				}
-                if(b_chassis.chassis_dynemic_ref.vx != 0)
+
+                if(b_chassis.chassis_dynemic_ref.vx != 0||TF02_state==0)
                 {
                     b_chassis.jump_flag = 0;
                 }

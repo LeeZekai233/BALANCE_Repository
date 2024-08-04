@@ -43,6 +43,7 @@ void control_task(void)
     }
 	online_detective(&balance_chassis.Driving_Encoder[0]);
     online_detective(&balance_chassis.Driving_Encoder[1]);
+    TF02_online_detective();
 }
 
 void control_task_Init(void)
