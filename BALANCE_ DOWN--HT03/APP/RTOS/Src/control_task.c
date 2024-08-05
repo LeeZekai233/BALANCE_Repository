@@ -16,7 +16,7 @@ void control_task(void)
 		can_bus_send_task();//底盘电机发送任务
 	}
 	
-	if(time_tick%10==9)
+	if(time_tick%5==0)
 	{
 //		power_data_set_handle(CAN2,(uint16_t)(b_chassis.Max_power_to_PM01));//超电控制任务
         POWER_Control(&Super_Cap_Send);
@@ -43,6 +43,7 @@ void control_task(void)
     }
 	online_detective(&balance_chassis.Driving_Encoder[0]);
     online_detective(&balance_chassis.Driving_Encoder[1]);
+    TF02_online_detective();
 }
 
 void control_task_Init(void)

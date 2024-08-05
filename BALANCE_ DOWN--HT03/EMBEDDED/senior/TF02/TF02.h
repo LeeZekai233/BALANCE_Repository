@@ -42,10 +42,11 @@ typedef struct
 
 
 void TF02_DataProgress(uint8_t *pdata,float *distance);
-
+void TF02_online_detective(void);
 
 extern TF02_t TF02;
-
+extern int32_t TF02_heart_cnt;
+extern uint8_t TF02_state;
 
 #endif
 
