@@ -21,7 +21,7 @@ void control_task(void)
 //		power_data_set_handle(CAN2,(uint16_t)(b_chassis.Max_power_to_PM01));//超电控制任务
         POWER_Control(&Super_Cap_Send);
 	}
-	if(time_tick%10==5)
+	if(time_tick%5==0)
 	{
 //		power_data_read_handle(CAN2);//超电获取信息任务
 		usart_gimbal_send(usart_capacitance_message.cap_voltage_filte,usart_capacitance_message.in_v,(b_chassis.left_leg.phi4+b_chassis.right_leg.phi4)/2.0,(b_chassis.left_leg.phi1+b_chassis.right_leg.phi1)/2.0,(b_chassis.left_leg.phi0 + b_chassis.right_leg.phi0)/2.0f,b_chassis.balance_loop.L0,b_chassis.jump_flag);//电容上发至云台ui

@@ -434,7 +434,7 @@ void MODIFY_7_Graph_DIY(interaction_figure_4_t _7,interaction_figure_t _0,intera
                _7.interaction_figure[5].start_x = 1700;
            }
 /*µÚ7¸öÍ¼ÐÎ*/			
-		uint32_t  cap_temp2=((usart_gimbal_data.input_V-22)/3.0*100*1000.0f);
+		uint32_t  cap_temp2=(usart_gimbal_data.cap_v*1000.0f);
 			_7.interaction_figure[6].details_c=cap_temp2;
 		  _7.interaction_figure[6].details_d=cap_temp2>>10;
 			_7.interaction_figure[6].details_e=cap_temp2>>21;

@@ -104,8 +104,8 @@ float pitch_max = 0;
     #define YAW_BIG_FEED          1
     #define PITCH_BIG_FEED        1
     
-    float Buff_Yaw_remain = 1;
-    float Buff_pitch_remain= -1;
+    float Buff_Yaw_remain = 0.6;
+    float Buff_pitch_remain= -0.6;
 
     float auto_aim_Yaw_remain = 0;
     float auto_aim_pitch_remain = 0;
@@ -136,14 +136,14 @@ void gimbal_parameter_Init(void)
 #if STANDARD == 3
     // 初始化下的参数
     PID_struct_init(&gimbal_data.pid_init_pit_Angle, POSITION_PID, 500, 4,
-                    15, 0.01f, 8); //15, 0.01f, 8
+                    20, 0.01f, 8); //15, 0.01f, 8
     PID_struct_init(&gimbal_data.pid_init_pit_speed, POSITION_PID, 27000, 20000,
                     150, 0.001, 60); //170, 0.001f, 60
     //------------------------------------------------
     PID_struct_init(&gimbal_data.pid_init_yaw_Angle, POSITION_PID, 500, 4,
-                    13, 0.15f, 8); 
+                    20, 0.15f, 8); 
     PID_struct_init(&gimbal_data.pid_init_yaw_speed, POSITION_PID, 29000, 10000,
-                    150, 0.8f, 40); 
+                    500, 0.8f, 0); 
 
     // 跟随陀螺仪下的参数
     PID_struct_init(&gimbal_data.pid_pit_Angle, POSITION_PID, 500, 30,
@@ -317,7 +317,7 @@ void gimbal_init_handle	( void )
                                                                       gimbal_data.gim_ref_and_fdb.pit_speed_fdb,
                                                                       0 )*PITCH_MOTOR_POLARITY;
 	 //自主判断是否完成初始化
-	if (fabs(gimbal_data.gim_ref_and_fdb.pit_angle_ref - gimbal_data.gim_ref_and_fdb.pit_angle_fdb)<=4&&fabs(gimbal_data.gim_ref_and_fdb.yaw_angle_ref - gimbal_data.gim_ref_and_fdb.yaw_angle_fdb)<=3)
+	if (fabs(gimbal_data.gim_ref_and_fdb.pit_angle_ref - gimbal_data.gim_ref_and_fdb.pit_angle_fdb)<=10&&fabs(gimbal_data.gim_ref_and_fdb.yaw_angle_ref - gimbal_data.gim_ref_and_fdb.yaw_angle_fdb)<=10)
     {
 			
         gimbal_data.if_finish_Init = 1;		//初始化标志位置1
