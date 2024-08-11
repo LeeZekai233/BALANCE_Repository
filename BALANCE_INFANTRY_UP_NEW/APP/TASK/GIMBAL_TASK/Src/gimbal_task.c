@@ -486,10 +486,16 @@ void auto_small_buff_handle(void)
 		last_yaw_angle=VISION_YAW_ANGLE_FDB;
 		first_flag = 1;
 	}
-    gimbal_data.gim_ref_and_fdb.pit_angle_fdb = VISION_PITCH_ANGLE_FDB;
-    gimbal_data.gim_ref_and_fdb.yaw_angle_fdb = VISION_YAW_ANGLE_FDB;
-    gimbal_data.gim_ref_and_fdb.pit_speed_fdb = VISION_PITCH_SPEED_FDB;
-    gimbal_data.gim_ref_and_fdb.yaw_speed_fdb = VISION_YAW_SPEED_FDB;
+     //云台反馈
+									/**/
+										float pitch,yaw;
+										pitch = convert_ecd_angle_to__pi_pi(VISION_PITCH_ANGLE_FDB,pitch);
+										yaw = convert_ecd_angle_to__pi_pi(VISION_YAW_ANGLE_FDB,yaw);
+										gimbal_data.gim_ref_and_fdb.pit_angle_fdb = pitch;
+                                        gimbal_data.gim_ref_and_fdb.yaw_angle_fdb = yaw;
+									/**/
+                                    gimbal_data.gim_ref_and_fdb.pit_speed_fdb = VISION_PITCH_SPEED_FDB;
+                                    gimbal_data.gim_ref_and_fdb.yaw_speed_fdb = VISION_YAW_SPEED_FDB;
     if(My_Auto_Shoot.Buff.xy_0_flag)
     {
         My_Auto_Shoot.Buff.xy_o_time++;
@@ -514,6 +520,14 @@ void auto_small_buff_handle(void)
         gimbal_data.gim_ref_and_fdb.yaw_angle_ref = yaw_angle_ref_aim;
         gimbal_data.gim_ref_and_fdb.pit_angle_ref = raw_data_to_pitch_angle(pit_angle_ref_aim)+Buff_pitch_remain;;
     }
+		
+		if(gimbal_data.gim_ref_and_fdb.yaw_angle_ref - gimbal_data.gim_ref_and_fdb.yaw_angle_fdb > 180.0)
+		{
+				gimbal_data.gim_ref_and_fdb.yaw_angle_ref-=360;
+		}else if(gimbal_data.gim_ref_and_fdb.yaw_angle_ref - gimbal_data.gim_ref_and_fdb.yaw_angle_fdb < -180.0)
+		{
+				gimbal_data.gim_ref_and_fdb.yaw_angle_ref+=360;
+		}
     VAL_LIMIT(gimbal_data.gim_ref_and_fdb.pit_angle_ref, VISION_PITCH_MIN , VISION_PITCH_MAX );
     if(ved==0)
     {
@@ -557,10 +571,16 @@ void auto_big_buff_handle(void)
 		last_yaw_angle=VISION_YAW_ANGLE_FDB;
 		first_flag = 1;
 	}
-    gimbal_data.gim_ref_and_fdb.pit_angle_fdb = VISION_PITCH_ANGLE_FDB;
-    gimbal_data.gim_ref_and_fdb.yaw_angle_fdb = VISION_YAW_ANGLE_FDB;
-    gimbal_data.gim_ref_and_fdb.pit_speed_fdb = VISION_PITCH_SPEED_FDB;
-    gimbal_data.gim_ref_and_fdb.yaw_speed_fdb = VISION_YAW_SPEED_FDB;
+    //云台反馈
+									/**/
+										float pitch,yaw;
+										pitch = convert_ecd_angle_to__pi_pi(VISION_PITCH_ANGLE_FDB,pitch);
+										yaw = convert_ecd_angle_to__pi_pi(VISION_YAW_ANGLE_FDB,yaw);
+										gimbal_data.gim_ref_and_fdb.pit_angle_fdb = pitch;
+                                        gimbal_data.gim_ref_and_fdb.yaw_angle_fdb = yaw;
+									/**/
+                                    gimbal_data.gim_ref_and_fdb.pit_speed_fdb = VISION_PITCH_SPEED_FDB;
+                                    gimbal_data.gim_ref_and_fdb.yaw_speed_fdb = VISION_YAW_SPEED_FDB;
     if(My_Auto_Shoot.Buff.xy_0_flag)
     {
         My_Auto_Shoot.Buff.xy_o_time++;
@@ -585,6 +605,13 @@ void auto_big_buff_handle(void)
         gimbal_data.gim_ref_and_fdb.yaw_angle_ref = yaw_angle_ref_aim;
         gimbal_data.gim_ref_and_fdb.pit_angle_ref = raw_data_to_pitch_angle(pit_angle_ref_aim)+Buff_pitch_remain;;
     }
+		if(gimbal_data.gim_ref_and_fdb.yaw_angle_ref - gimbal_data.gim_ref_and_fdb.yaw_angle_fdb > 180.0)
+		{
+				gimbal_data.gim_ref_and_fdb.yaw_angle_ref-=360;
+		}else if(gimbal_data.gim_ref_and_fdb.yaw_angle_ref - gimbal_data.gim_ref_and_fdb.yaw_angle_fdb < -180.0)
+		{
+				gimbal_data.gim_ref_and_fdb.yaw_angle_ref+=360;
+		}
     VAL_LIMIT(gimbal_data.gim_ref_and_fdb.pit_angle_ref, VISION_PITCH_MIN , VISION_PITCH_MAX );
     if(ved==0)
     {

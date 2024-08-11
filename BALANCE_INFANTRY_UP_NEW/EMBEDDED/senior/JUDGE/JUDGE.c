@@ -292,6 +292,7 @@ void judgement_data_handle(uint8_t *p_frame, u16 rec_len)
 						{
 								judge_rece_mesg.robot_color = blue;
 						}
+						VAL_LIMIT(judge_rece_mesg.game_robot_state.chassis_power_limit,0,100);
 					}
 
 					break;
