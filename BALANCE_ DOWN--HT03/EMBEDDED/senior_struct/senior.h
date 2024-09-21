@@ -170,7 +170,7 @@ extern volatile Encoder yaw_Encoder;
 extern hero_small_gimbal_t hero_small_gimbal;
 extern friction_t general_friction;
 extern poke_t general_poke;
-
+extern float mea_distance;
 
 
 #endif

@@ -16,6 +16,7 @@ void infantry_mode_switch_task(void);
 
 extern chassis_t chassis;
 extern float leg_length;
+extern u8 sperate_flag;
 
 
 

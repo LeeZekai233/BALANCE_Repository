@@ -35,12 +35,19 @@ void control_task(void)
 
 	if(time_tick%4 == 0)
 	{
-		send_protocol(gimbal_gyro.yaw_Angle,gimbal_gyro.pitch_Angle,gimbal_gyro.roll_Angle,judge_rece_mesg.game_robot_state.robot_id,judge_rece_mesg.shoot_data.bullet_speed,gimbal_data.vision_mode,UART4_DMA_TX_BUF);
-	}
+        
+		send_protocol_New(gimbal_gyro.yaw_Angle,gimbal_gyro.pitch_Angle,gimbal_gyro.roll_Angle,judge_rece_mesg.game_robot_state.robot_id,judge_rece_mesg.shoot_data.bullet_speed,gimbal_data.vision_mode,usart4.TX_BUFF);
+        
+    }
 	
 	  if(time_tick%100 == 0) //上传用户信息
     {
-      Client_send_handle();
+      Client_Send_Handle();
+    }
+    
+    if(time_tick%100 == 50) //上传用户信息
+    {
+      Send_bullet_remaining_num();
     }
 		
 		if(time_tick%1000==0)

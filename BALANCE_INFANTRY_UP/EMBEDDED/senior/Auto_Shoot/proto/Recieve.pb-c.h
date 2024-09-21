@@ -28,22 +28,13 @@ struct  _DeviceToHost__Frame
   ProtobufCMessage base;
   float current_pitch_;
   float current_yaw_;
-  float current_roll_;
   int32_t current_color_;
   float bullet_speed_;
   int32_t mode_;
-  int32_t enemies_blood_0;
-  int32_t enemies_blood_1;
-  int32_t enemies_blood_2;
-  int32_t enemies_blood_3;
-  int32_t enemies_blood_4;
-  int32_t enemies_blood_5;
-  int32_t enemies_outpost;
-  int32_t ifattackengineer;
 };
 #define DEVICE_TO_HOST__FRAME__INIT \
  { PROTOBUF_C_MESSAGE_INIT (&device_to_host__frame__descriptor) \
-    , 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }
+    , 0, 0, 0, 0, 0 }
 
 
 /* DeviceToHost__Frame methods */

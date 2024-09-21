@@ -6,7 +6,7 @@
 
 /************************buff*****************************/
 //摄像头和枪管中心的距离
-#define HEIGHT_BETWEEN_GUN_CAMERA 	4.89f
+#define HEIGHT_BETWEEN_GUN_CAMERA 	6.0f//4.89f
 //相机焦距mm
 #define FOCAL_LENGTH                8.0F
 //靶面长mm
