@@ -42,7 +42,7 @@ void balance_param_init(void)
     PID_struct_init(&b_chassis.vw_pid, POSITION_PID,5,5,2,0,0);
     PID_struct_init(&b_chassis.roll_pid, POSITION_PID, 50000, 20000, 800, 0, 12000);
 	
-    PID_struct_init(&b_chassis.pid_follow_gim, POSITION_PID, 500, 200, 7, 0, 10);
+    PID_struct_init(&b_chassis.pid_follow_gim, POSITION_PID, 5, 200, 12, 0, 5);
     
     PID_struct_init(&b_chassis.pid_seperate_gim, POSITION_PID, 500, 200, 0.5, 0, 5);
 	
@@ -122,7 +122,7 @@ void balance_chassis_task(void)
             }break;
         case CHASSIS_SEPARATE:
         {
-                    chassis_seperate_handle();
+            chassis_seperate_handle();
             balance_task();
         }
         break;
@@ -155,7 +155,7 @@ void balance_chassis_task(void)
         b_chassis.max_speed = 2.7;
         b_chassis.min_speed = -2.7;
 //        b_chassis.Max_power_to_PM01 = input_power_cal();
-        b_chassis.predict_power[0] = all_power_cal(balance_chassis.Driving_Encoder[0].Torque,4.626,0.0001699,1.629,balance_chassis.Driving_Encoder[0].rate_rpm) + \
+//        b_chassis.predict_power[0] = all_power_cal(balance_chassis.Driving_Encoder[0].Torque,4.626,0.0001699,1.629,balance_chassis.Driving_Encoder[0].rate_rpm) + \
                                     all_power_cal(balance_chassis.Driving_Encoder[1].Torque,4.626,0.0001699,1.629,balance_chassis.Driving_Encoder[1].rate_rpm);
 
 
@@ -187,7 +187,7 @@ void balance_cmd_select(void)
             b_chassis.chassis_dynemic_ref.vy = usart_chassis_data.y;
             b_chassis.chassis_dynemic_ref.vx = usart_chassis_data.x;
             VAL_LIMIT(b_chassis.chassis_dynemic_ref.vy,b_chassis.min_speed,b_chassis.max_speed);
-            VAL_LIMIT(b_chassis.chassis_dynemic_ref.vx,-1.5,1.5);
+            VAL_LIMIT(b_chassis.chassis_dynemic_ref.vx,-1.6,1.6);
         }
         if(b_chassis.ctrl_mode != CHASSIS_INIT&&usart_chassis_data.chassis_mode != CHASSIS_RELAX&&b_chassis.last_ctrl_mode == CHASSIS_RELAX&&usart_chassis_data.if_follow_gim)
         {
@@ -205,7 +205,10 @@ void balance_cmd_select(void)
 				{
 					b_chassis.jump_flag = usart_chassis_data.jump_cmd;
 				}
-                
+                if(b_chassis.chassis_dynemic_ref.vx != 0||TF02_state==0)
+                {
+                    b_chassis.jump_flag = 0;
+                }
                 
                     b_chassis.chassis_dynemic_ref.leglength = usart_chassis_data.cmd_leg_length;
    }else
@@ -236,11 +239,11 @@ void balance_cmd_select(void)
                 down_cnt_flag = 1;
             }else
             {
-                if(usart_chassis_data.chassis_power_buffer < 10)
-                {
-                    down_flag = 1;
-                    down_cnt_flag = 1;
-                }
+//                if(usart_chassis_data.chassis_power_buffer < 10)
+//                {
+//                    down_flag = 1;
+//                    down_cnt_flag = 1;
+//                }
                 if(usart_capacitance_message.cap_voltage_filte > 13&&down_cnt > 1000)
                 {
                     down_flag = 0;
@@ -258,7 +261,7 @@ void balance_cmd_select(void)
                 VAL_LIMIT(b_chassis.chassis_ref.remote_speed,b_chassis.min_speed,b_chassis.max_speed);
             }else
             {
-                VAL_LIMIT(b_chassis.chassis_ref.remote_speed,-1.4,1.4);
+                VAL_LIMIT(b_chassis.chassis_ref.remote_speed,-1.6,1.6);
             }
 				
 }
@@ -327,7 +330,7 @@ void get_remote_angle(void)
 **/
 void chassis_standup_handle(void)
 {
-	b_chassis.chassis_ref.leglength = 0.15f;
+	b_chassis.chassis_ref.leglength = 0.10f;
     b_chassis.chassis_ref.vy = 0;
     b_chassis.chassis_ref.vx = 0;
     b_chassis.chassis_ref.vw = 0;
@@ -351,7 +354,7 @@ void chassis_standup_handle(void)
 **/
 void chassis_Init_handle(void)
 {
-    b_chassis.chassis_ref.leglength = 0.14f;
+    b_chassis.chassis_ref.leglength = 0.10f;
     b_chassis.chassis_ref.vy = 0;
     b_chassis.chassis_ref.vx = 0;
     b_chassis.chassis_ref.vw = 0;
@@ -423,12 +426,6 @@ void chassis_seperate_handle(void)
         seperate_cnt++;
         sep_target_yaw = chassis_gyro.yaw_Angle;
     }
-    
-    
-//        if(fabs(b_chassis.balance_loop.dx) > 0.2||b_chassis.chassis_ref.vy != 0||usart_chassis_data.ctrl_mode==1||b_chassis.chassis_ref.vw >= 0.2)
-//			b_chassis.chassis_ref.y_position = b_chassis.balance_loop.x;
-//		else
-//			b_chassis.normal_Y_erroffset-=b_chassis.balance_loop.dx*0.001*TIME_STEP;
         
         b_chassis.chassis_ref.vy = 0; 
         b_chassis.chassis_ref.roll = 0;
@@ -459,8 +456,10 @@ float target_angle;
 void follow_gimbal_handle(void)
 {
 		
-		   PID_struct_init(&b_chassis.roll_pid, POSITION_PID, 50000, 20000, 800, 0, 12000);
-	     b_chassis.roll_pid.iout = 0;
+            PID_struct_init(&b_chassis.roll_pid, POSITION_PID, 50, 0, 500, 0, 12000);
+        b_chassis.roll_pid.iout = 0;
+		   
+	     
     b_chassis.chassis_ref.vx = b_chassis.chassis_dynemic_ref.vx;
 		if(fabs(b_chassis.balance_loop.dx) > 0.5||b_chassis.chassis_ref.vy != 0||usart_chassis_data.ctrl_mode==1||b_chassis.chassis_ref.vw >= 0.2)
 			b_chassis.chassis_ref.y_position = b_chassis.balance_loop.x;
@@ -498,7 +497,6 @@ void follow_gimbal_handle(void)
         b_chassis.chassis_ref.vy = trackRamp(b_chassis.chassis_ref.vy,ecd_speed);
         
 		b_chassis.chassis_ref.vw = -pid_calc(&b_chassis.pid_follow_gim,b_chassis.yaw_angle__pi_pi,target_angle); 
-		VAL_LIMIT(b_chassis.chassis_ref.vw,-5,5);
 		
         if(if_middle_leg)
         {
@@ -523,19 +521,57 @@ void follow_gimbal_handle(void)
 u8 jump_state = 0;
 void balance_jump_handle(void)
 {
-	b_chassis.chassis_ref.vy = b_chassis.balance_loop.dx;
+	
 	b_chassis.chassis_ref.vx = 0;
 	b_chassis.chassis_ref.vw = 0;
-	b_chassis.chassis_ref.y_position = b_chassis.balance_loop.x;
+	
 	if(jump_state == 0)
 	{
 		b_chassis.chassis_ref.leglength = 0.14f;
-		if(fabs(b_chassis.balance_loop.L0 - b_chassis.chassis_ref.leglength)<=0.02)
+        if(fabs(b_chassis.balance_loop.dx) > 0.5||b_chassis.chassis_ref.vy != 0||usart_chassis_data.ctrl_mode==1||b_chassis.chassis_ref.vw >= 0.2)
+			b_chassis.chassis_ref.y_position = b_chassis.balance_loop.x;
+		else
+			b_chassis.normal_Y_erroffset-=b_chassis.balance_loop.dx*0.001*TIME_STEP;
+		
+       if(fabs(b_chassis.chassis_ref.remote_angle-b_chassis.yaw_angle__pi_pi)<PI/2)
+		{
+			target_angle = b_chassis.chassis_ref.remote_angle;
+			ecd_speed = b_chassis.chassis_ref.remote_speed;
+            b_chassis.chassis_ref.roll = usart_chassis_data.roll;
+		}else if(b_chassis.chassis_ref.remote_angle-b_chassis.yaw_angle__pi_pi > 3*PI/2)
+		{
+			target_angle = b_chassis.chassis_ref.remote_angle-2*PI;
+			ecd_speed = b_chassis.chassis_ref.remote_speed;
+            b_chassis.chassis_ref.roll = usart_chassis_data.roll;
+		}else if(b_chassis.chassis_ref.remote_angle-b_chassis.yaw_angle__pi_pi < -3*PI/2)
+		{
+			target_angle = b_chassis.chassis_ref.remote_angle+2*PI;
+			ecd_speed = b_chassis.chassis_ref.remote_speed;
+            b_chassis.chassis_ref.roll = usart_chassis_data.roll;
+		}
+		else if(b_chassis.chassis_ref.remote_angle-b_chassis.yaw_angle__pi_pi>0)
+		{
+			target_angle = b_chassis.chassis_ref.remote_angle - PI;
+			ecd_speed = -b_chassis.chassis_ref.remote_speed;
+            b_chassis.chassis_ref.roll = -usart_chassis_data.roll;
+		}else if(b_chassis.chassis_ref.remote_angle-b_chassis.yaw_angle__pi_pi<0)
+		{
+			target_angle = b_chassis.chassis_ref.remote_angle + PI;
+			ecd_speed = -b_chassis.chassis_ref.remote_speed;
+            b_chassis.chassis_ref.roll = -usart_chassis_data.roll;
+		}
+		
+        b_chassis.chassis_ref.vy = trackRamp(b_chassis.chassis_ref.vy,ecd_speed);        
+		b_chassis.chassis_ref.vw = -pid_calc(&b_chassis.pid_follow_gim,b_chassis.yaw_angle__pi_pi,0); 
+        
+		if(mea_distance < 0.5&&mea_distance > 0.1)
 		{
 			jump_state++;
 		}
 	}else if(jump_state == 1)
 	{
+        b_chassis.chassis_ref.vy = b_chassis.balance_loop.dx;
+        b_chassis.chassis_ref.y_position = b_chassis.balance_loop.x;
 		PID_struct_init(&b_chassis.left_leg.leglengthpid, POSITION_PID,20000,20000,4000,0,15000);
     PID_struct_init(&b_chassis.right_leg.leglengthpid, POSITION_PID, 20000, 20000, 4000, 0, 15000);
 		b_chassis.chassis_ref.leglength = 0.34f;
@@ -544,6 +580,8 @@ void balance_jump_handle(void)
 		
 	}else if(jump_state == 2)
 	{
+        b_chassis.chassis_ref.vy = b_chassis.balance_loop.dx;
+        b_chassis.chassis_ref.y_position = b_chassis.balance_loop.x;
 		b_chassis.chassis_ref.leglength = 0.14f;
 		if(fabs(b_chassis.balance_loop.L0 - b_chassis.chassis_ref.leglength)<=0.01)
 		{
@@ -568,7 +606,7 @@ void balance_jump_handle(void)
 **/
 void chassis_rotate_handle(void)
 {
-	PID_struct_init(&b_chassis.roll_pid, POSITION_PID, 50000, 40, 1000, 10, 12000);
+	PID_struct_init(&b_chassis.roll_pid, POSITION_PID, 150, 40, 1000, 10, 12000);
 	if(b_chassis.yaw_angle_0_2pi>=PI)
 		{b_chassis.yaw_angle__pi_pi=b_chassis.yaw_angle_0_2pi-(2*PI);}
 		else
@@ -597,7 +635,7 @@ void chassis_rotate_handle(void)
 void chassis_side_handle(void)
 {
         
-           PID_struct_init(&b_chassis.roll_pid, POSITION_PID, 50000, 20000, 800, 0, 12000);
+           PID_struct_init(&b_chassis.roll_pid, POSITION_PID, 50, 20000, 500, 0, 12000);
 	     b_chassis.roll_pid.iout = 0;
     b_chassis.chassis_ref.vx = b_chassis.chassis_dynemic_ref.vx;
 		if(fabs(b_chassis.balance_loop.dx) > 0.5||b_chassis.chassis_ref.vy != 0||usart_chassis_data.ctrl_mode==1||b_chassis.chassis_ref.vw >= 0.2)
@@ -636,7 +674,6 @@ void chassis_side_handle(void)
         b_chassis.chassis_ref.vy = trackRamp(b_chassis.chassis_ref.vy,ecd_speed);
         
 		b_chassis.chassis_ref.vw = -pid_calc(&b_chassis.pid_follow_gim,b_chassis.yaw_angle__pi_pi,target_angle); 
-		VAL_LIMIT(b_chassis.chassis_ref.vw,-5,5);
 		
         if(if_middle_leg)
         {
@@ -645,7 +682,7 @@ void chassis_side_handle(void)
         {
             b_chassis.chassis_ref.leglength = b_chassis.chassis_dynemic_ref.leglength;
         }
-		VAL_LIMIT(b_chassis.chassis_ref.vy,-1.4,1.4);
+		VAL_LIMIT(b_chassis.chassis_ref.vy,-1.6,1.6);
 }
 
 /**
@@ -747,7 +784,7 @@ void balance_task(void)
 	b_chassis.balance_loop.state_err[5] = 0 - b_chassis.balance_loop.dphi;
     
     float x_err;
-    if(b_chassis.jump_flag==1)
+    if(jump_state>=1)
     {
         x_err = 0;
     }else
@@ -908,11 +945,9 @@ void balance_task(void)
     }else 
     {
         
-            VAL_LIMIT(b_chassis.driving_T[0], 0, 0);
-            VAL_LIMIT(b_chassis.driving_T[1], 0, 0);
-            
+            VAL_LIMIT(b_chassis.driving_T[0], -5, 5);
+            VAL_LIMIT(b_chassis.driving_T[1], -5, 5);
     }
-
         //电机输出限幅
 //    VAL_LIMIT(b_chassis.driving_T[0], -5, 5);
 //    VAL_LIMIT(b_chassis.driving_T[1], -5, 5);
