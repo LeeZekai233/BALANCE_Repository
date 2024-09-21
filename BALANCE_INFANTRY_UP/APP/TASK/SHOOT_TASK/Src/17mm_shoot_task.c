@@ -100,25 +100,25 @@ void heat_shoot_frequency_limit()//步兵射频限制部分
 			  switch(judge_rece_mesg.game_robot_state.robot_level)
         {
             case 1:
-            {shoot.will_time_shoot=(shoot.remain_bullets-2)*1000/shoot.shoot_frequency;}break;
+            {shoot.will_time_shoot=(shoot.remain_bullets-1)*1000/shoot.shoot_frequency;}break;
             case 2:
-            {shoot.will_time_shoot=(shoot.remain_bullets-2)*1000/shoot.shoot_frequency;}break;
+            {shoot.will_time_shoot=(shoot.remain_bullets-3)*1000/shoot.shoot_frequency;}break;
             case 3:
-            {shoot.will_time_shoot=(shoot.remain_bullets-3)*1000/shoot.shoot_frequency;}break;
+            {shoot.will_time_shoot=(shoot.remain_bullets-3.5)*1000/shoot.shoot_frequency;}break;
             case 4:
-            {shoot.will_time_shoot=(shoot.remain_bullets-3)*1000/shoot.shoot_frequency;}break;
+            {shoot.will_time_shoot=(shoot.remain_bullets-4)*1000/shoot.shoot_frequency;}break;
             case 5:
-            {shoot.will_time_shoot=(shoot.remain_bullets-3)*1000/shoot.shoot_frequency;}break;
+            {shoot.will_time_shoot=(shoot.remain_bullets-4)*1000/shoot.shoot_frequency;}break;
             case 6:
-            {shoot.will_time_shoot=(shoot.remain_bullets-3)*1000/shoot.shoot_frequency;}break;
+            {shoot.will_time_shoot=(shoot.remain_bullets-4)*1000/shoot.shoot_frequency;}break;
             case 7:
-            {shoot.will_time_shoot=(shoot.remain_bullets-3)*1000/shoot.shoot_frequency;}break;
+            {shoot.will_time_shoot=(shoot.remain_bullets-4)*1000/shoot.shoot_frequency;}break;
             case 8:
-            {shoot.will_time_shoot=(shoot.remain_bullets-3.5)*1000/shoot.shoot_frequency;}break;
+            {shoot.will_time_shoot=(shoot.remain_bullets-4)*1000/shoot.shoot_frequency;}break;
             case 9:
-            {shoot.will_time_shoot=(shoot.remain_bullets-3.5)*1000/shoot.shoot_frequency;}break;
+            {shoot.will_time_shoot=(shoot.remain_bullets-4)*1000/shoot.shoot_frequency;}break;
             case 10:
-            {shoot.will_time_shoot=(shoot.remain_bullets-3.5)*1000/shoot.shoot_frequency;}break;
+            {shoot.will_time_shoot=(shoot.remain_bullets-4)*1000/shoot.shoot_frequency;}break;
             default :
             {shoot.will_time_shoot=(shoot.remain_bullets-1)*1000/shoot.shoot_frequency;} break;
             
@@ -245,7 +245,7 @@ if(general_friction.left_motor.if_online==1&&general_friction.right_motor.if_onl
 	{
         if(buff_time==0)
         {
-            buff_check_flag = 0;//1;
+            buff_check_flag = 1;
             shoot.poke_pid.angle_fdb=general_poke.poke.ecd_angle/36.109;
             shoot.poke_pid.angle_ref = shoot.poke_pid.angle_fdb;
         }
@@ -384,17 +384,17 @@ void shoot_state_mode_switch()
 				}break;
 					case KEY_MOUSE_INPUT:
 				{
-					if(RC_CtrlData.mouse.press_r==1)
+					if(RC_CtrlData.mouse.press_r==1&&gimbal_data.vision_mode == AIM_NORMAL)
 					{
-						if(RC_CtrlData.mouse.press_l==1&&new_location.flag)
+						if(RC_CtrlData.mouse.press_l==1&&My_Auto_Shoot.Auto_Aim.enable_shoot==1)
 							shoot.poke_run=1;
-					else
+                        else
 							shoot.poke_run=0;
 					}else
 					{
 						if(RC_CtrlData.mouse.press_l==1)
 							shoot.poke_run=1;
-					else
+                        else
 							shoot.poke_run=0;
 					}
 					
