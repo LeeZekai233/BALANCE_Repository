@@ -1,0 +1,59 @@
+#ifndef __DJI_MOTOR_H
+#define __DJI_MOTOR_H
+#include <stm32f4xx.h>
+#include "Generic_Encoder.h"
+/********************DJI Encoder******************************/
+#define RATE_BUF_SIZE 6
+#define M3508_ENCODER_TO_ANGLE 0.04394531f
+#define RPM_TO_RAD_PER_SEC 0.10472f
+#define M3508_KT_MOTOR  0.015789f//不带减速箱
+typedef struct 
+{
+	 
+	int32_t raw_value;   									//编码器不经处理的原始值
+	int32_t last_raw_value;								//上一次的编码器原始值
+	int32_t ecd_value;                       //经过处理后连续的编码器值
+	int32_t diff;													//两次编码器之间的差值
+	int32_t temp_count;                   //计数用
+	uint8_t buf_count;								//滤波更新buf用
+	int32_t ecd_bias;											//初始编码器值	
+	int32_t ecd_raw_rate;									//通过编码器计算得到的速度原始值
+	int32_t rate_buf[RATE_BUF_SIZE];	//buf，for filter
+	int32_t round_cnt;										//圈数
+	int32_t can_cnt;					//记录函数的使用次数，在电机初始完成部分任务	
+    int32_t heart_cnt;
+	
+}Encoder_cal;
+
+
+typedef struct{
+	Encoder_cal cal_data;
+
+    uint8_t online_flag;
+	int32_t filter_rate;											//速度,滤波用
+	double ecd_angle;											    //角度,单位°
+	int16_t rate_rpm;                                               //速度
+	double angle;          //暂时不用                              
+	double speed;           //暂时不用
+
+	float Torque;    //暂时不用
+	u32 temperature;
+    float currtent;//转矩电流
+	
+}DJI_Encoder_t;
+	
+
+extern DJI_Encoder_t Driving_M3508[2];
+
+
+void GetEncoderBias(volatile DJI_Encoder_t *v, CanRxMsg * msg);
+void EncoderProcess(volatile DJI_Encoder_t *v, CanRxMsg * msg);
+void GM6020EncoderProcess(volatile DJI_Encoder_t *v, CanRxMsg * msg);
+void M3508orM2006EncoderTask(volatile DJI_Encoder_t *v, CanRxMsg * msg);
+void GM6020EncoderTask(volatile DJI_Encoder_t *v, CanRxMsg * msg,int offset);
+void Set_GM6020_IQ1(CAN_TypeDef *CANx, int16_t motor1_iq, int16_t motor2_iq, int16_t motor3_iq, int16_t motor4_iq);
+void Set_GM6020_IQ2(CAN_TypeDef *CANx, int16_t motor5_iq, int16_t motor6iq, int16_t motor7_iq, int16_t motor8_iq);
+void Set_C620andC610_IQ1(CAN_TypeDef *CANx, int16_t motor1_iq, int16_t motor2_iq, int16_t motor3_iq, int16_t motor4_iq);
+void Set_C620andC610_IQ2(CAN_TypeDef *CANx, int16_t motor5_iq, int16_t motor6_iq, int16_t motor7_iq, int16_t motor8_iq);
+void M3508_Encoder_To_Generic_Encoder(DJI_Encoder_t* DJI_Encoder,Encoder_t* Encoder);
+#endif
