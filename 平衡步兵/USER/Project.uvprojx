@@ -134,11 +134,11 @@
             <RunIndependent>0</RunIndependent>
             <UpdateFlashBeforeDebugging>1</UpdateFlashBeforeDebugging>
             <Capability>1</Capability>
-            <DriverSelection>-1</DriverSelection>
+            <DriverSelection>4096</DriverSelection>
           </Flash1>
           <bUseTDR>1</bUseTDR>
           <Flash2>BIN\UL2CM3.DLL</Flash2>
-          <Flash3></Flash3>
+          <Flash3>"" ()</Flash3>
           <Flash4></Flash4>
           <pFcarmOut></pFcarmOut>
           <pFcarmGrp></pFcarmGrp>
@@ -758,6 +758,51 @@
               <FileName>Generic_Encoder.h</FileName>
               <FileType>5</FileType>
               <FilePath>..\MOTOR\Generic_Encoder.h</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>DSP</GroupName>
+          <Files>
+            <File>
+              <FileName>arm_mat_add_f32.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\STM32Code\平衡步兵\DSP\Source\MatrixFunctions\arm_mat_add_f32.c</FilePath>
+            </File>
+            <File>
+              <FileName>arm_mat_init_f32.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\STM32Code\平衡步兵\DSP\Source\MatrixFunctions\arm_mat_init_f32.c</FilePath>
+            </File>
+            <File>
+              <FileName>arm_mat_sub_f32.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\STM32Code\平衡步兵\DSP\Source\MatrixFunctions\arm_mat_sub_f32.c</FilePath>
+            </File>
+            <File>
+              <FileName>arm_mat_vec_mult_f32.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\STM32Code\平衡步兵\DSP\Source\MatrixFunctions\arm_mat_vec_mult_f32.c</FilePath>
+            </File>
+            <File>
+              <FileName>arm_mat_mult_f32.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\STM32Code\平衡步兵\DSP\Source\MatrixFunctions\arm_mat_mult_f32.c</FilePath>
+            </File>
+            <File>
+              <FileName>arm_mat_trans_f32.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\STM32Code\平衡步兵\DSP\Source\MatrixFunctions\arm_mat_trans_f32.c</FilePath>
+            </File>
+            <File>
+              <FileName>arm_mat_inverse_f32.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\STM32Code\平衡步兵\DSP\Source\MatrixFunctions\arm_mat_inverse_f32.c</FilePath>
+            </File>
+            <File>
+              <FileName>arm_copy_f32.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\STM32Code\平衡步兵\DSP\Source\SupportFunctions\arm_copy_f32.c</FilePath>
             </File>
           </Files>
         </Group>

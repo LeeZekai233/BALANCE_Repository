@@ -179,10 +179,17 @@ void Chassis_Init_State_Update(Balance_Chassis_t* Chassis)
         Chassis->Right_Leg.dphi0 = 0.0f;
         Chassis->Left_Leg.dphi0 = 0.0f;
     }
+    Chassis->dphi0 = (Chassis->Left_Leg.dphi0 + Chassis->Right_Leg.phi0)/2.0f; //所有的电机解算都还没调整极性 7878
+    Chassis->phi0 = (Chassis->Left_Leg.phi0 + Chassis->Right_Leg.phi0)/2.0f;
     
-    
-    
-    
+    if(Chassis->Left_Leg.phi1<1.1f)//没写完7878
+    {
+        
+    }
+    else
+    {
+        Chassis->Init_State = NORMOL_STATE;
+    }
 }
 
 void Balance_Task(Balance_Chassis_t* Chassis)
