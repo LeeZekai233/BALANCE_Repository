@@ -140,10 +140,10 @@ void Chassis_State_Update(Balance_Chassis_t* Chassis)
 //    
 //    leg_pos(Chassis->Driving_Motor[0].Single_Angle_fdb , Chassis->Joint_Motor[3].Single_Angle_fdb , &Chassis->Right_Leg.l0 , &Chassis->Right_Leg.phi0);//求得右腿位置
 //    leg_pos(Chassis->Driving_Motor[1].Single_Angle_fdb , Chassis->Joint_Motor[2].Single_Angle_fdb , &Chassis->Left_Leg.l0 , &Chassis->Left_Leg.phi0);//求得左腿位置
-    VMC_Data_Get(Chassis->Joint_Motor[0].Speed_fdb,Chassis->Joint_Motor[3].Speed_fdb,
-    Chassis->Joint_Motor[0].Single_Angle_fdb,Chassis->Joint_Motor[3].Single_Angle_fdb,&Chassis->Right_Leg);//求得右腿状态
-    VMC_Data_Get(Chassis->Joint_Motor[1].Speed_fdb,Chassis->Joint_Motor[2].Speed_fdb,
-    Chassis->Joint_Motor[1].Single_Angle_fdb,Chassis->Joint_Motor[2].Single_Angle_fdb,&Chassis->Left_Leg);//求得左腿状态 //极性和角度没调7878
+    VMC_Data_Get(Chassis->Joint_Motor[3].Speed_fdb,Chassis->Joint_Motor[0].Speed_fdb,
+    Chassis->Joint_Motor[3].Single_Angle_fdb,Chassis->Joint_Motor[0].Single_Angle_fdb,&Chassis->Right_Leg);//求得右腿状态
+    VMC_Data_Get(Chassis->Joint_Motor[2].Speed_fdb,Chassis->Joint_Motor[1].Speed_fdb,
+    Chassis->Joint_Motor[2].Single_Angle_fdb,Chassis->Joint_Motor[1].Single_Angle_fdb,&Chassis->Left_Leg);//求得左腿状态 //极性和角度没调7878解算之后再改
     
     Chassis->Chassis_Remote_Ref.V_x = Chassis->USART_Chassis_Data.V_x ;//暂时只有一个速度和角速度
     Chassis->Chassis_Remote_Ref.V_w = Chassis->USART_Chassis_Data.Omega ;
@@ -268,6 +268,8 @@ void Chassis_Init_Handle(Balance_Chassis_t* Chassis)
                 if(Chassis->Left_Leg.l0 > Chassis->Right_Leg.l0)//右腿在车下
                 {
                     Chassis->Init_Tp = PID_Calc(&Chassis->Init_Tp_Pid , Chassis->Right_Leg.phi0,Chassis->Left_Leg.phi0);
+                    Init_Tp_Calc(Chassis->Left_Leg.l0,0,Chassis->Init_Tp,Chassis);
+                    Motor_Torque_Set(Chassis,Chassis->Right_Leg.T[0],0,0,Chassis->Right_Leg.T[1],0,0);
                     
                 }
                 
