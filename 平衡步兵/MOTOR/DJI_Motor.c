@@ -213,7 +213,7 @@ void M3508_Encoder_To_Generic_Encoder(DJI_Encoder_t* DJI_Encoder,Encoder_t* Enco
     Encoder->Single_Angle_fdb = (float)(DJI_Encoder->cal_data.raw_value - DJI_Encoder->cal_data.ecd_bias)*M3508_ENCODER_TO_ANGLE;
     Encoder->Multi_Angle_fdb = DJI_Encoder->ecd_angle ;
   //  Encoder->online_flag = DJI_Encoder->online_flag ;
-    Encoder->Angular_Vel_fdb = DJI_Encoder->rate_rpm * RPM_TO_RAD_PER_SEC;
+    Encoder->Speed_fdb = DJI_Encoder->rate_rpm * RPM_TO_RAD_PER_SEC;
     Encoder->temperature = DJI_Encoder->temperature;
     Encoder->Torque = DJI_Encoder->currtent * M3508_KT_MOTOR;
 }

@@ -3,6 +3,7 @@
 Balance_Chassis_t Chassis;
 
 
+
 //调整角度至-PI~PI，并且舍弃非正常数据
 float Normalize_Angle_PI(float angle)
 {
@@ -29,12 +30,58 @@ float Normalize_Angle_PI(float angle)
 
 
 
+
 float Transform_Angle_0_2PI(float angle)
 {
     float new_angle=fmod(angle+2*PI,2*PI);
     {
         return (new_angle<0)?new_angle+2*PI:new_angle;
     }
+}
+
+
+
+//力矩限幅
+void Motor_Out_Limit(Balance_Chassis_t* Chassis)
+{
+    VAL_LIMIT(Chassis->joint_T[1],-JOINT_MAX_T,JOINT_MAX_T);
+    VAL_LIMIT(Chassis->joint_T[2], -JOINT_MAX_T, JOINT_MAX_T);
+    VAL_LIMIT(Chassis->driving_T[0], -WHEEL_MAX_T, WHEEL_MAX_T);
+
+    VAL_LIMIT(Chassis->joint_T[0], -JOINT_MAX_T, JOINT_MAX_T);
+    VAL_LIMIT(Chassis->joint_T[3], -JOINT_MAX_T, JOINT_MAX_T);
+    VAL_LIMIT(Chassis->driving_T[1], -WHEEL_MAX_T, WHEEL_MAX_T);
+}
+
+
+void Motor_Torque_Set(Balance_Chassis_t* Chassis,float Joint_T_0,float Joint_T_1,float Joint_T_2,float Joint_T_3,float Driving_T_1,float Driving_T_2)
+{
+    //左
+    Chassis->joint_T[1] = Joint_T_1;//前  //老车注释，不一定对
+    Chassis->joint_T[2] = Joint_T_2;
+    Chassis->driving_T[0] = Driving_T_1;
+    //右
+    Chassis->joint_T[0] = Joint_T_0;//前
+    Chassis->joint_T[3] = Joint_T_3;
+    Chassis->driving_T[1] = Driving_T_2;
+}
+
+
+
+
+void Init_Tp_Calc(float Ref_Leglength,float Harmonize,float Init_Tp,Balance_Chassis_t* Chassis)
+{
+    Chassis->Chassis_Ref.Leglength  = Ref_Leglength; // 期望腿长
+    // 腿部竖直力F的计算
+    Chassis->Left_Leg.leg_length_outer= PID_Calc(&Chassis->Left_Leg.leglengthpid_outer, Chassis->Left_Leg.l0, Chassis->Chassis_Ref.Leglength);
+    Chassis->Left_Leg.leg_F = PID_Calc(&Chassis->Left_Leg.leglengthpid_inner, Chassis->Left_Leg.dl0, Chassis->Left_Leg.leg_length_outer);
+
+    Chassis->Right_Leg.leg_length_outer= PID_Calc(&Chassis->Right_Leg.leglengthpid_outer, Chassis->Right_Leg.l0, Chassis->Chassis_Ref.Leglength);
+    Chassis->Right_Leg.leg_F = PID_Calc(&Chassis->Right_Leg.leglengthpid_inner, Chassis->Right_Leg.dl0, Chassis->Right_Leg.leg_length_outer);
+ 
+    leg_conv(Chassis->Left_Leg.leg_F, Init_Tp - Harmonize, Chassis->Left_Leg.phi1, Chassis->Left_Leg.phi4, Chassis->Left_Leg.T);//正负号不知道对不对
+    leg_conv(Chassis->Right_Leg.leg_F, Init_Tp + Harmonize, Chassis->Right_Leg.phi1, Chassis->Right_Leg.phi4, Chassis->Right_Leg.T);
+
 }
 
 
@@ -83,16 +130,20 @@ void Chassis_State_Update(Balance_Chassis_t* Chassis)
     
     
     /****************************************************************/
-    leg_spd(Chassis->Joint_Motor[0].Angular_Vel_fdb , Chassis->Joint_Motor[3].Angular_Vel_fdb , 
-    Chassis->Driving_Motor[0].Single_Angle_fdb , Chassis->Joint_Motor[3].Single_Angle_fdb , 
-    &Chassis->Right_Leg);//求得右腿速度
-    
-    leg_spd(Chassis->Joint_Motor[1].Angular_Vel_fdb , Chassis->Joint_Motor[2].Angular_Vel_fdb , 
-    Chassis->Driving_Motor[1].Single_Angle_fdb , Chassis->Joint_Motor[2].Single_Angle_fdb , 
-    &Chassis->Left_Leg);//求得左腿速度
-    
-    leg_pos(Chassis->Driving_Motor[0].Single_Angle_fdb , Chassis->Joint_Motor[3].Single_Angle_fdb , &Chassis->Right_Leg.l0 , &Chassis->Right_Leg.phi0);//求得右腿位置
-    leg_pos(Chassis->Driving_Motor[1].Single_Angle_fdb , Chassis->Joint_Motor[2].Single_Angle_fdb , &Chassis->Left_Leg.l0 , &Chassis->Left_Leg.phi0);//求得左腿位置
+//    leg_spd(Chassis->Joint_Motor[0].Angular_Vel_fdb , Chassis->Joint_Motor[3].Angular_Vel_fdb , 
+//    Chassis->Driving_Motor[0].Single_Angle_fdb , Chassis->Joint_Motor[3].Single_Angle_fdb , 
+//    &Chassis->Right_Leg);//求得右腿速度
+//    
+//    leg_spd(Chassis->Joint_Motor[1].Angular_Vel_fdb , Chassis->Joint_Motor[2].Angular_Vel_fdb , 
+//    Chassis->Driving_Motor[1].Single_Angle_fdb , Chassis->Joint_Motor[2].Single_Angle_fdb , 
+//    &Chassis->Left_Leg);//求得左腿速度
+//    
+//    leg_pos(Chassis->Driving_Motor[0].Single_Angle_fdb , Chassis->Joint_Motor[3].Single_Angle_fdb , &Chassis->Right_Leg.l0 , &Chassis->Right_Leg.phi0);//求得右腿位置
+//    leg_pos(Chassis->Driving_Motor[1].Single_Angle_fdb , Chassis->Joint_Motor[2].Single_Angle_fdb , &Chassis->Left_Leg.l0 , &Chassis->Left_Leg.phi0);//求得左腿位置
+    VMC_Data_Get(Chassis->Joint_Motor[0].Speed_fdb,Chassis->Joint_Motor[3].Speed_fdb,
+    Chassis->Joint_Motor[0].Single_Angle_fdb,Chassis->Joint_Motor[3].Single_Angle_fdb,&Chassis->Right_Leg);//求得右腿状态
+    VMC_Data_Get(Chassis->Joint_Motor[1].Speed_fdb,Chassis->Joint_Motor[2].Speed_fdb,
+    Chassis->Joint_Motor[1].Single_Angle_fdb,Chassis->Joint_Motor[2].Single_Angle_fdb,&Chassis->Left_Leg);//求得左腿状态 //极性和角度没调7878
     
     Chassis->Chassis_Remote_Ref.V_x = Chassis->USART_Chassis_Data.V_x ;//暂时只有一个速度和角速度
     Chassis->Chassis_Remote_Ref.V_w = Chassis->USART_Chassis_Data.Omega ;
@@ -150,6 +201,10 @@ void Chassis_Relax_Handle(Balance_Chassis_t* Chassis)
     Chassis->Right_Leg.leg_FN = 100;
 }
 
+
+
+
+
 void Chassis_Init_State_Update(Balance_Chassis_t* Chassis)
 {
     //
@@ -168,7 +223,7 @@ void Chassis_Init_State_Update(Balance_Chassis_t* Chassis)
     Chassis->Chassis_Ref.V_x = 0;
     Chassis->Chassis_Ref.V_w = 0;
     
-//    float Left_Leg_phi1  = Normalize_Angle_PI(Chassis->Left_Leg.phi1);
+//    float Left_Leg_phi1  = Normalize_Angle_PI(Chassis->Left_Leg.phi1);//先不使用老代码的局部变量
 //    float Right_Leg_phi1 = Normalize_Angle_PI(Chassis->Left_Leg.phi1);
 //    float phi0_0_To_2PI_Left = Transform_Angle_0_2PI(Chassis->Left_Leg.phi0 )
     Chassis->balance_loop.theta = ((((Chassis->Left_Leg.phi0 + Chassis->Right_Leg.phi0)/2.0f) - 1.57f) - Chassis->Chassis_GYRO.Pitch_Angle * PI /180.0f);
@@ -179,12 +234,18 @@ void Chassis_Init_State_Update(Balance_Chassis_t* Chassis)
         Chassis->Right_Leg.dphi0 = 0.0f;
         Chassis->Left_Leg.dphi0 = 0.0f;
     }
-    Chassis->dphi0 = (Chassis->Left_Leg.dphi0 + Chassis->Right_Leg.phi0)/2.0f; //所有的电机解算都还没调整极性 7878
+    
+    Chassis->dphi0 = (Chassis->Left_Leg.dphi0 + Chassis->Right_Leg.phi0)/2.0f;
     Chassis->phi0 = (Chassis->Left_Leg.phi0 + Chassis->Right_Leg.phi0)/2.0f;
     
-    if(Chassis->Left_Leg.phi1<1.1f)//没写完7878
+    if((Chassis->Left_Leg.phi1<1.1f && Chassis->Left_Leg.phi1>-2.5f && Chassis->Left_Leg.l0 > 0.28f && fabs(Chassis->Chassis_GYRO.Pitch_Angle)<30 && fabs(Chassis->Chassis_GYRO.Roll_Angle)<95) ||
+       (Chassis->Right_Leg.phi1<1.1f && Chassis->Right_Leg.phi1>-2.5f && Chassis->Right_Leg.l0 >0.28f && fabs(Chassis->Chassis_GYRO.Pitch_Angle)<30 && fabs(Chassis->Chassis_GYRO.Roll_Angle)<95) )
+    {//老代码里的侧翻
+        Chassis->Init_State = RELAX_STATE;//先复刻老代码，其他姿势全relax
+    }
+    else if((fabs(Chassis->Chassis_GYRO.Pitch_Angle) > 45 && fabs(Chassis->Chassis_GYRO.Pitch_Angle)<100) ||fabs(Chassis->Chassis_GYRO.Roll_Angle)>95)//老代码里的倒翻
     {
-        
+        Chassis->Init_State = RELAX_STATE;
     }
     else
     {
@@ -192,10 +253,38 @@ void Chassis_Init_State_Update(Balance_Chassis_t* Chassis)
     }
 }
 
+
+
+
+
+
+void Chassis_Init_Handle(Balance_Chassis_t* Chassis)
+{
+    switch (Chassis->Init_State) //这里注意老代码里phi0减过1.57，我这里没减过
+    {
+        case NORMOL_STATE:
+            if(fabs(Chassis->Left_Leg.l0 - Chassis->Right_Leg.l0) > 0.08f)//两条腿一长一短，说明一条在车下，一条在车外
+            {
+                if(Chassis->Left_Leg.l0 > Chassis->Right_Leg.l0)//右腿在车下
+                {
+                    Chassis->Init_Tp = PID_Calc(&Chassis->Init_Tp_Pid , Chassis->Right_Leg.phi0,Chassis->Left_Leg.phi0);
+                    
+                }
+                
+            }
+            
+    }
+}
+
+
+
 void Balance_Task(Balance_Chassis_t* Chassis)
 {
     
 }
+
+
+
 void Chassis_Control_Loop(Balance_Chassis_t* Chassis)
 {
     switch (Chassis->Control_Mode)

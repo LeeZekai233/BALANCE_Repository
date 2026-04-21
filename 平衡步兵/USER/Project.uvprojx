@@ -340,7 +340,7 @@
               <MiscControls>--diag_suppress=177,1035</MiscControls>
               <Define>STM32F40_41xxx,USE_STDPERIPH_DRIVER,ARM_MATH_CM4</Define>
               <Undefine></Undefine>
-              <IncludePath>..\FWLIB\inc;..\FWLIB\src;..\USER;..\Judge_System;..\SYSTEM;..\TASK;..\USER;..\Control_Algorithm;..\SYSTEM\CAN2;..\SYSTEM\TIM6;..\SYSTEM\USART1;..\SYSTEM\CAN1;..\SYSTEM\USART3;..\SYSTEM\USART6;..\SYSTEM\BSP;..\TASK\Remote_Task;..\SYSTEM\TIM2;..\TASK\Chassis_Task;..\Control_Algorithm\PID;..\FWLIB;..\SYSTEM\USART4;..\TASK\Leg_Task;..\MOTOR;..\TASK\Control_Task;..\TASK\Board_Connected_Task;..\DSP\Core_Include;..\DSP\PrivateInclude;..\DSP\Include;..\CORE;..\TASK\Whell_Observe_Task</IncludePath>
+              <IncludePath>..\FWLIB\inc;..\FWLIB\src;..\USER;..\Judge_System;..\SYSTEM;..\TASK;..\USER;..\Control_Algorithm;..\SYSTEM\CAN2;..\SYSTEM\TIM6;..\SYSTEM\USART1;..\SYSTEM\CAN1;..\SYSTEM\USART3;..\SYSTEM\USART6;..\SYSTEM\BSP;..\TASK\Remote_Task;..\SYSTEM\TIM2;..\TASK\Chassis_Task;..\Control_Algorithm\PID;..\FWLIB;..\SYSTEM\USART4;..\TASK\Leg_Task;..\MOTOR;..\TASK\Control_Task;..\TASK\Board_Connected_Task;..\DSP\Core_Include;..\DSP\PrivateInclude;..\DSP\Include;..\CORE;..\TASK\Whell_Observe_Task;..\Control_Algorithm\Ramp</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -655,19 +655,9 @@
               <FilePath>..\TASK\Leg_Task\Leg_Task.c</FilePath>
             </File>
             <File>
-              <FileName>Leg_Task.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\TASK\Leg_Task\Leg_Task.h</FilePath>
-            </File>
-            <File>
               <FileName>Chassis_Task.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\TASK\Chassis_Task\Chassis_Task.c</FilePath>
-            </File>
-            <File>
-              <FileName>Chassis_Task.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\TASK\Chassis_Task\Chassis_Task.h</FilePath>
             </File>
             <File>
               <FileName>Control_Task.c</FileName>
@@ -675,29 +665,14 @@
               <FilePath>..\TASK\Control_Task\Control_Task.c</FilePath>
             </File>
             <File>
-              <FileName>Control_Task.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\TASK\Control_Task\Control_Task.h</FilePath>
-            </File>
-            <File>
               <FileName>Board_Connected_Task.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\TASK\Board_Connected_Task\Board_Connected_Task.c</FilePath>
             </File>
             <File>
-              <FileName>Board_Connected_Task.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\TASK\Board_Connected_Task\Board_Connected_Task.h</FilePath>
-            </File>
-            <File>
               <FileName>Whell_Observe_Task.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\TASK\Whell_Observe_Task\Whell_Observe_Task.c</FilePath>
-            </File>
-            <File>
-              <FileName>Whell_Observe_Task.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\TASK\Whell_Observe_Task\Whell_Observe_Task.h</FilePath>
             </File>
           </Files>
         </Group>
@@ -718,6 +693,11 @@
               <FileName>PID.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\Control_Algorithm\PID\PID.c</FilePath>
+            </File>
+            <File>
+              <FileName>Ramp.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Control_algorithm\Ramp\Ramp.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -740,19 +720,9 @@
               <FilePath>..\MOTOR\DaMiao_8009.c</FilePath>
             </File>
             <File>
-              <FileName>DaMiao_8009.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\MOTOR\DaMiao_8009.h</FilePath>
-            </File>
-            <File>
               <FileName>DJI_Motor.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\MOTOR\DJI_Motor.c</FilePath>
-            </File>
-            <File>
-              <FileName>DJI_Motor.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\MOTOR\DJI_Motor.h</FilePath>
             </File>
             <File>
               <FileName>Generic_Encoder.h</FileName>

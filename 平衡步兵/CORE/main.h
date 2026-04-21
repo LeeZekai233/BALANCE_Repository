@@ -33,6 +33,7 @@
 #include "Generic_Encoder.h"
 
 #include "PID.h"
+#include "Ramp.h"
 
 #endif
 

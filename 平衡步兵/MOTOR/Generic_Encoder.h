@@ -10,7 +10,7 @@ typedef struct
     float Single_Angle_fdb;	     //当前单圈角度   单位°
     float Multi_Angle_fdb;       //当前多圈角度   单位°
     
-    float Angular_Vel_fdb;		//电机当前转速  rad/s
+    float Speed_fdb;		//电机当前转速  rad/s
     
     uint8_t online_flag;
     

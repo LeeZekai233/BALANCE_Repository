@@ -305,7 +305,7 @@ void DaMiao_8009_To_Generic_Encoder(DaMiao_8009_t* DaMiao_8009,Encoder_t* Encode
 {
     Encoder->Single_Angle_fdb = DaMiao_8009->Single_Angle_fdb;
     Encoder->Multi_Angle_fdb = DaMiao_8009->Multi_Angle_fdb;
-    Encoder->Angular_Vel_fdb = DaMiao_8009->V_fdb ;
+    Encoder->Speed_fdb = DaMiao_8009->V_fdb ;
     Encoder->temperature = DaMiao_8009->Temperature_Rotor ;//选用转子温度
     Encoder->Torque = DaMiao_8009->T_fdb ;
 }

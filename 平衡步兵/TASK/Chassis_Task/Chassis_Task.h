@@ -5,6 +5,32 @@
 #include "Generic_Encoder.h"
 #include "Board_Connected_Task.h"
 #include "USART3.h"
+
+
+
+#define VAL_LIMIT(val, min, max)\
+            if(val<=min)\
+            {\
+                val = min;\
+            }\
+            else if(val>=max)\
+            {\
+                val = max;\
+            }\
+
+            
+            
+#define JM1_POLARITY                    1//右前电机极性   //老代码里的电机极性
+#define JM2_POLARITY                    -1//左前电机极性
+#define JM3_POLARITY                    -1//左后电机极性
+#define JM4_POLARITY                    1//右后电机极性
+
+#define JOINT_MAX_T                      34          //老代码里的限幅
+#define WHEEL_MAX_T                      4.35 // 4.3
+
+
+            
+            
 typedef enum
 {
   CHASSIS_RELAX          = 0,
@@ -181,22 +207,33 @@ typedef struct
     float Balance_Tpgain;
     float Balance_Tpoutlandgain;
     
-    uint8_t Jump_State;
+    uint8_t Jump_State;//跳跃状态
     
-    USART_Chassis_Data_t USART_Chassis_Data;
+    USART_Chassis_Data_t USART_Chassis_Data;//串口传来的控制底盘数据
     
     float dphi0;//左右腿平均dphi0
     float phi0;//左右腿平均phi0
     
+    float Init_Tp;//初始化调整腿角度的力矩
+    
 }Balance_Chassis_t;//复制来的，有些没用
+
+
 
 
 extern Balance_Chassis_t Chassis;
 
 
+
+float Normalize_Angle_PI(float angle);
+float Transform_Angle_0_2PI(float angle);
+void Motor_Out_Limit(Balance_Chassis_t* Chassis);
+void Motor_Torque_Set(Balance_Chassis_t* Chassis,float Joint_T_0,float Joint_T_1,float Joint_T_2,float Joint_T_3,float Driving_T_1,float Driving_T_2);
+void Init_Tp_Calc(float Ref_Leglength,float Harmonize,float Init_Tp,Balance_Chassis_t* Chassis);
 void Chassis_Param_Init(Balance_Chassis_t* Chassis);
 void Chassis_State_Update(Balance_Chassis_t* Chassis);
 void Chassis_Relax_Handle(Balance_Chassis_t* Chassis);
+void Chassis_Init_State_Update(Balance_Chassis_t* Chassis);
 void Chassis_Init_Handle(Balance_Chassis_t* Chassis);
 void Balance_Task(Balance_Chassis_t* Chassis);
 void Chassis_Control_Loop(Balance_Chassis_t* Chassis);

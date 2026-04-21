@@ -10,6 +10,5 @@ void Infantry_Init(void)
     CAN2_Init( );
     TIM6_Init( );
     TIM2_Init( );
-    
 }
 
