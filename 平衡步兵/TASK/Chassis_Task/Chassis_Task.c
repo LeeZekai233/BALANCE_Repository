@@ -1,7 +1,7 @@
 #include "main.h"
 
-Balance_Chassis_t Chassis;
 
+Balance_Chassis_t Chassis;
 
 
 //调整角度至-PI~PI，并且舍弃非正常数据
@@ -40,7 +40,6 @@ float Transform_Angle_0_2PI(float angle)
 }
 
 
-
 //力矩限幅
 void Motor_Out_Limit(Balance_Chassis_t* Chassis)
 {
@@ -68,19 +67,16 @@ void Motor_Torque_Set(Balance_Chassis_t* Chassis,float Joint_T_0,float Joint_T_1
 
 
 
-
 void Init_Tp_Calc(float Ref_Leglength,float Harmonize,float Init_Tp,Balance_Chassis_t* Chassis)
 {
     Chassis->Chassis_Ref.Leglength  = Ref_Leglength; // 期望腿长
     // 腿部竖直力F的计算
-    Chassis->Left_Leg.leg_length_outer= PID_Calc(&Chassis->Left_Leg.leglengthpid_outer, Chassis->Left_Leg.l0, Chassis->Chassis_Ref.Leglength);
-    Chassis->Left_Leg.leg_F = PID_Calc(&Chassis->Left_Leg.leglengthpid_inner, Chassis->Left_Leg.dl0, Chassis->Left_Leg.leg_length_outer);
+    Chassis->Left_Leg.Leg_F = PID_Calc(&Chassis->Left_Leg.Leg_Length_PID, Chassis->Left_Leg.l0, Chassis->Chassis_Ref.Leglength);
+    //还得加入气弹簧拟合7878
+    Chassis->Right_Leg.Leg_F = PID_Calc(&Chassis->Right_Leg.Leg_Length_PID, Chassis->Right_Leg.l0, Chassis->Chassis_Ref.Leglength);
 
-    Chassis->Right_Leg.leg_length_outer= PID_Calc(&Chassis->Right_Leg.leglengthpid_outer, Chassis->Right_Leg.l0, Chassis->Chassis_Ref.Leglength);
-    Chassis->Right_Leg.leg_F = PID_Calc(&Chassis->Right_Leg.leglengthpid_inner, Chassis->Right_Leg.dl0, Chassis->Right_Leg.leg_length_outer);
- 
-    leg_conv(Chassis->Left_Leg.leg_F, Init_Tp - Harmonize, Chassis->Left_Leg.phi1, Chassis->Left_Leg.phi4, Chassis->Left_Leg.T);//正负号不知道对不对
-    leg_conv(Chassis->Right_Leg.leg_F, Init_Tp + Harmonize, Chassis->Right_Leg.phi1, Chassis->Right_Leg.phi4, Chassis->Right_Leg.T);
+    leg_conv(Chassis->Left_Leg.Leg_F, Init_Tp - Harmonize, Chassis->Left_Leg.phi1, Chassis->Left_Leg.phi4, Chassis->Left_Leg.T);//正负号不知道对不对
+    leg_conv(Chassis->Right_Leg.Leg_F, Init_Tp + Harmonize, Chassis->Right_Leg.phi1, Chassis->Right_Leg.phi4, Chassis->Right_Leg.T);
 
 }
 
@@ -95,12 +91,10 @@ void Chassis_Param_Init(Balance_Chassis_t* Chassis)
     PID_Init(&Chassis->Init_Tp_Pid,PID_POSITION,250,0,10,500,200);
     
     //左腿腿长
-    PID_Init(&Chassis->Left_Leg.leglengthpid_inner,PID_POSITION,90,0,50,20000,20000);
-    PID_Init(&Chassis->Left_Leg.leglengthpid_outer,PID_POSITION,30,0,0,3000,20000);
+    PID_Init(&Chassis->Left_Leg.Leg_Length_PID,PID_POSITION,90,0,50,20000,20000);
     
     //右腿腿长
-    PID_Init(&Chassis->Right_Leg.leglengthpid_inner,PID_POSITION,90,0,50,20000,20000);
-    PID_Init(&Chassis->Right_Leg.leglengthpid_outer,PID_POSITION,30,0,0,3000,20000);
+    PID_Init(&Chassis->Right_Leg.Leg_Length_PID,PID_POSITION,90,0,50,20000,20000);
     
     //双腿协调
     PID_Init(&Chassis->Leg_Harmonize_Pid_Inner,PID_POSITION,9.3,0,1.0,35,3);
@@ -197,8 +191,8 @@ void Chassis_Relax_Handle(Balance_Chassis_t* Chassis)
     Chassis->Init_State = (Init_State_e)0;
     Chassis->rotate_flag = 0;//后续会改成枚举 7878
     
-    Chassis->Left_Leg.leg_FN = 100;
-    Chassis->Right_Leg.leg_FN = 100;
+    Chassis->Left_Leg.Leg_FN = 100;
+    Chassis->Right_Leg.Leg_FN = 100;
 }
 
 
@@ -213,11 +207,10 @@ void Chassis_Init_State_Update(Balance_Chassis_t* Chassis)
     
     PID_Init(&Chassis->Init_Tp_Pid,PID_POSITION,180,0,10,500,200);
     
-    PID_Init(&Chassis->Left_Leg.leglengthpid_inner,PID_POSITION,85,0,0,20000,20000);
-    PID_Init(&Chassis->Left_Leg.leglengthpid_outer,PID_POSITION,25,0,0,20000,20000);
-    
-    PID_Init(&Chassis->Right_Leg.leglengthpid_inner,PID_POSITION,85,0,0,20000,20000);
-    PID_Init(&Chassis->Right_Leg.leglengthpid_outer,PID_POSITION,25,0,0,20000,20000);
+    PID_Init(&Chassis->Left_Leg.Leg_Length_PID,PID_POSITION,85,0,0,20000,20000);
+
+    PID_Init(&Chassis->Right_Leg.Leg_Length_PID,PID_POSITION,85,0,0,20000,20000);
+
     
     Chassis->Chassis_Ref.V_y = 0;
     Chassis->Chassis_Ref.V_x = 0;

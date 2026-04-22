@@ -737,42 +737,62 @@
             <File>
               <FileName>arm_mat_add_f32.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\STM32Code\平衡步兵\DSP\Source\MatrixFunctions\arm_mat_add_f32.c</FilePath>
+              <FilePath>..\DSP\Source\MatrixFunctions\arm_mat_add_f32.c</FilePath>
             </File>
             <File>
               <FileName>arm_mat_init_f32.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\STM32Code\平衡步兵\DSP\Source\MatrixFunctions\arm_mat_init_f32.c</FilePath>
+              <FilePath>..\DSP\Source\MatrixFunctions\arm_mat_init_f32.c</FilePath>
             </File>
             <File>
               <FileName>arm_mat_sub_f32.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\STM32Code\平衡步兵\DSP\Source\MatrixFunctions\arm_mat_sub_f32.c</FilePath>
-            </File>
-            <File>
-              <FileName>arm_mat_vec_mult_f32.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\..\STM32Code\平衡步兵\DSP\Source\MatrixFunctions\arm_mat_vec_mult_f32.c</FilePath>
+              <FilePath>..\DSP\Source\MatrixFunctions\arm_mat_sub_f32.c</FilePath>
             </File>
             <File>
               <FileName>arm_mat_mult_f32.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\STM32Code\平衡步兵\DSP\Source\MatrixFunctions\arm_mat_mult_f32.c</FilePath>
+              <FilePath>..\DSP\Source\MatrixFunctions\arm_mat_mult_f32.c</FilePath>
             </File>
             <File>
               <FileName>arm_mat_trans_f32.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\STM32Code\平衡步兵\DSP\Source\MatrixFunctions\arm_mat_trans_f32.c</FilePath>
+              <FilePath>..\DSP\Source\MatrixFunctions\arm_mat_trans_f32.c</FilePath>
             </File>
             <File>
               <FileName>arm_mat_inverse_f32.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\STM32Code\平衡步兵\DSP\Source\MatrixFunctions\arm_mat_inverse_f32.c</FilePath>
+              <FilePath>..\DSP\Source\MatrixFunctions\arm_mat_inverse_f32.c</FilePath>
+            </File>
+            <File>
+              <FileName>arm_atan2_f32.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\DSP\Source\FastMathFunctions\arm_atan2_f32.c</FilePath>
             </File>
             <File>
               <FileName>arm_copy_f32.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\STM32Code\平衡步兵\DSP\Source\SupportFunctions\arm_copy_f32.c</FilePath>
+              <FilePath>..\DSP\Source\SupportFunctions\arm_copy_f32.c</FilePath>
+            </File>
+            <File>
+              <FileName>arm_cos_f32.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\DSP\Source\FastMathFunctions\arm_cos_f32.c</FilePath>
+            </File>
+            <File>
+              <FileName>arm_sin_f32.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\DSP\Source\FastMathFunctions\arm_sin_f32.c</FilePath>
+            </File>
+            <File>
+              <FileName>arm_sin_cos_f32.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\DSP\Source\ControllerFunctions\arm_sin_cos_f32.c</FilePath>
+            </File>
+            <File>
+              <FileName>arm_common_tables.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\DSP\Source\CommonTables\arm_common_tables.c</FilePath>
             </File>
           </Files>
         </Group>

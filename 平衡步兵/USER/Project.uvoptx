@@ -255,7 +255,7 @@
 
   <Group>
     <GroupName>USER</GroupName>
-    <tvExp>0</tvExp>
+    <tvExp>1</tvExp>
     <tvExpOptDlg>0</tvExpOptDlg>
     <cbSel>0</cbSel>
     <RteFlg>0</RteFlg>
@@ -1059,7 +1059,7 @@
 
   <Group>
     <GroupName>DSP</GroupName>
-    <tvExp>0</tvExp>
+    <tvExp>1</tvExp>
     <tvExpOptDlg>0</tvExpOptDlg>
     <cbSel>0</cbSel>
     <RteFlg>0</RteFlg>
@@ -1070,7 +1070,7 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\..\..\STM32Code\平衡步兵\DSP\Source\MatrixFunctions\arm_mat_add_f32.c</PathWithFileName>
+      <PathWithFileName>..\DSP\Source\MatrixFunctions\arm_mat_add_f32.c</PathWithFileName>
       <FilenameWithoutPath>arm_mat_add_f32.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
@@ -1082,7 +1082,7 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\..\..\STM32Code\平衡步兵\DSP\Source\MatrixFunctions\arm_mat_init_f32.c</PathWithFileName>
+      <PathWithFileName>..\DSP\Source\MatrixFunctions\arm_mat_init_f32.c</PathWithFileName>
       <FilenameWithoutPath>arm_mat_init_f32.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
@@ -1094,7 +1094,7 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\..\..\STM32Code\平衡步兵\DSP\Source\MatrixFunctions\arm_mat_sub_f32.c</PathWithFileName>
+      <PathWithFileName>..\DSP\Source\MatrixFunctions\arm_mat_sub_f32.c</PathWithFileName>
       <FilenameWithoutPath>arm_mat_sub_f32.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
@@ -1106,8 +1106,8 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\..\..\STM32Code\平衡步兵\DSP\Source\MatrixFunctions\arm_mat_vec_mult_f32.c</PathWithFileName>
-      <FilenameWithoutPath>arm_mat_vec_mult_f32.c</FilenameWithoutPath>
+      <PathWithFileName>..\DSP\Source\MatrixFunctions\arm_mat_mult_f32.c</PathWithFileName>
+      <FilenameWithoutPath>arm_mat_mult_f32.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>
@@ -1118,8 +1118,8 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\..\..\STM32Code\平衡步兵\DSP\Source\MatrixFunctions\arm_mat_mult_f32.c</PathWithFileName>
-      <FilenameWithoutPath>arm_mat_mult_f32.c</FilenameWithoutPath>
+      <PathWithFileName>..\DSP\Source\MatrixFunctions\arm_mat_trans_f32.c</PathWithFileName>
+      <FilenameWithoutPath>arm_mat_trans_f32.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>
@@ -1130,8 +1130,8 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\..\..\STM32Code\平衡步兵\DSP\Source\MatrixFunctions\arm_mat_trans_f32.c</PathWithFileName>
-      <FilenameWithoutPath>arm_mat_trans_f32.c</FilenameWithoutPath>
+      <PathWithFileName>..\DSP\Source\MatrixFunctions\arm_mat_inverse_f32.c</PathWithFileName>
+      <FilenameWithoutPath>arm_mat_inverse_f32.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>
@@ -1142,8 +1142,8 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\..\..\STM32Code\平衡步兵\DSP\Source\MatrixFunctions\arm_mat_inverse_f32.c</PathWithFileName>
-      <FilenameWithoutPath>arm_mat_inverse_f32.c</FilenameWithoutPath>
+      <PathWithFileName>..\DSP\Source\FastMathFunctions\arm_atan2_f32.c</PathWithFileName>
+      <FilenameWithoutPath>arm_atan2_f32.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>
@@ -1154,8 +1154,56 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\..\..\STM32Code\平衡步兵\DSP\Source\SupportFunctions\arm_copy_f32.c</PathWithFileName>
+      <PathWithFileName>..\DSP\Source\SupportFunctions\arm_copy_f32.c</PathWithFileName>
       <FilenameWithoutPath>arm_copy_f32.c</FilenameWithoutPath>
+      <RteFlg>0</RteFlg>
+      <bShared>0</bShared>
+    </File>
+    <File>
+      <GroupNumber>10</GroupNumber>
+      <FileNumber>70</FileNumber>
+      <FileType>1</FileType>
+      <tvExp>0</tvExp>
+      <tvExpOptDlg>0</tvExpOptDlg>
+      <bDave2>0</bDave2>
+      <PathWithFileName>..\DSP\Source\FastMathFunctions\arm_cos_f32.c</PathWithFileName>
+      <FilenameWithoutPath>arm_cos_f32.c</FilenameWithoutPath>
+      <RteFlg>0</RteFlg>
+      <bShared>0</bShared>
+    </File>
+    <File>
+      <GroupNumber>10</GroupNumber>
+      <FileNumber>71</FileNumber>
+      <FileType>1</FileType>
+      <tvExp>0</tvExp>
+      <tvExpOptDlg>0</tvExpOptDlg>
+      <bDave2>0</bDave2>
+      <PathWithFileName>..\DSP\Source\FastMathFunctions\arm_sin_f32.c</PathWithFileName>
+      <FilenameWithoutPath>arm_sin_f32.c</FilenameWithoutPath>
+      <RteFlg>0</RteFlg>
+      <bShared>0</bShared>
+    </File>
+    <File>
+      <GroupNumber>10</GroupNumber>
+      <FileNumber>72</FileNumber>
+      <FileType>1</FileType>
+      <tvExp>0</tvExp>
+      <tvExpOptDlg>0</tvExpOptDlg>
+      <bDave2>0</bDave2>
+      <PathWithFileName>..\DSP\Source\ControllerFunctions\arm_sin_cos_f32.c</PathWithFileName>
+      <FilenameWithoutPath>arm_sin_cos_f32.c</FilenameWithoutPath>
+      <RteFlg>0</RteFlg>
+      <bShared>0</bShared>
+    </File>
+    <File>
+      <GroupNumber>10</GroupNumber>
+      <FileNumber>73</FileNumber>
+      <FileType>1</FileType>
+      <tvExp>0</tvExp>
+      <tvExpOptDlg>0</tvExpOptDlg>
+      <bDave2>0</bDave2>
+      <PathWithFileName>..\DSP\Source\CommonTables\arm_common_tables.c</PathWithFileName>
+      <FilenameWithoutPath>arm_common_tables.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>

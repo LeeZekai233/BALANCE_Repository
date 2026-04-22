@@ -111,16 +111,15 @@ typedef struct
 	float phi0;
 	float dphi0;
     
-	float leg_length_outer;
-	float leg_F;
+	float Leg_Length_Outer;
+	float Leg_F;
 	float ddzw;
-	float leg_FN;
-	float leg_final_FN;
+	float Leg_FN;
+	float Leg_Final_FN;
 
-	uint8_t wheel_state;
+	uint8_t Wheel_State;
 
-	PID_t leglengthpid_inner;//腿长内环
-	PID_t leglengthpid_outer;//腿长外环
+	PID_t Leg_Length_PID;//腿长PID
 	
 }Leg_State_t;//腿状态
 
