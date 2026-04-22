@@ -10,6 +10,7 @@ void leg_pos(float phi1, float phi4, float* pos1,float* pos2);//输入phi1和phi4，
 void leg_spd(float dphi1, float dphi4, float phi1, float phi4,
              Leg_State_t* Leg_State);//输入phi1，phi4，dphi1，dphi4，得出dphi0和dl0
 void lqr_k(float L0, float K[12]);
-void VMC_Data_Get(float dphi1, float dphi4, float phi1, float phi4, Leg_State_t* Leg_State);
+void leg_J_cal(float phi1, float phi4, float J[4]);
+void VMC_Data_Get(Leg_State_t* Leg_State , float phi4, float dphi4, float phi1, float dphi1);
 
 #endif

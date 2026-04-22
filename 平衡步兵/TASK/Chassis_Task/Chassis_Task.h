@@ -20,15 +20,20 @@
 
             
             
-#define JM1_POLARITY                    1//右前电机极性   //老代码里的电机极性
-#define JM2_POLARITY                    -1//左前电机极性
-#define JM3_POLARITY                    -1//左后电机极性
-#define JM4_POLARITY                    1//右后电机极性
+#define WHEEL_R                        0.058
+            
+#define JM1_POLARITY                      1//右前电机极性   //老代码里的电机极性
+#define JM2_POLARITY                     -1//左前电机极性
+#define JM3_POLARITY                     -1//左后电机极性
+#define JM4_POLARITY                      1//右后电机极性
+            
+#define LEFT_WHEEL_POLARITY              -1//左轮电机极性 //老车上的
+#define RIGHT_WHEEL_POLARITY              1//右轮电机极性
 
-#define JOINT_MAX_T                      34          //老代码里的限幅
-#define WHEEL_MAX_T                      4.35 // 4.3
+#define JOINT_MAX_T                       34          //老代码里的限幅
+#define WHEEL_MAX_T                       4.35 // 4.3
 
-
+#define TIME_STEP                         2
             
             
 typedef enum
@@ -87,13 +92,13 @@ typedef struct
 
 typedef struct
 {
-	float pos[2];//pos=[l0; phi0];
-	float spd[2];//spd[2]=[dl0; dphi0];
-	float T[2];//T[2]=[motor4;motor1];
+	//float pos[2];//pos=[l0; phi0];
+	//float spd[2];//spd[2]=[dl0; dphi0];
+	float T_Set[2];//T[2]=[motor4;motor1];
 
 	//支持力解算用计算变量
-	float J[4];
-	float j[2][2];
+	float J[4];   //解雅可比矩阵的中间变量
+	float j[2][2];//最终的雅可比矩阵
 	float F_fdb;
 	float Tp_fdb;
 
@@ -148,9 +153,9 @@ typedef struct
     
 	float vw_limit_rate;
 	
-	Leg_State_t Left_Leg;
-	Leg_State_t Right_Leg;
-    Leg_State_t Double_Leg;
+	Leg_State_t Left_Leg;       //左腿状态
+	Leg_State_t Right_Leg;      //右腿状态
+   // Leg_State_t Double_Leg;
 	
 	PID_t Leg_Harmonize_Pid_Inner;
 	PID_t Leg_Harmonize_Pid_Outer;
@@ -183,8 +188,8 @@ typedef struct
 	PID_t Init_dphi0_pid_right;
 	u16 Max_power_to_PM01;//好像没用过
 	
-	float theta_left;
-    float theta_right;
+	float Left_theta;
+    float Right_theta;
 
 
 	double yaw_encoder_ecd_angle;
@@ -212,8 +217,12 @@ typedef struct
     
     float dphi0;//左右腿平均dphi0
     float phi0;//左右腿平均phi0
+    float dtheta;//平均dtheta
     
     float Init_Tp;//初始化调整腿角度的力矩
+    
+    float Harmonize_Outer;//双腿协调外环
+    float Harmonize_Inner;//双腿协调内环
     
 }Balance_Chassis_t;//复制来的，有些没用
 

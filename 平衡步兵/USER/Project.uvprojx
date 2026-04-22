@@ -340,7 +340,7 @@
               <MiscControls>--diag_suppress=177,1035</MiscControls>
               <Define>STM32F40_41xxx,USE_STDPERIPH_DRIVER,ARM_MATH_CM4</Define>
               <Undefine></Undefine>
-              <IncludePath>..\FWLIB\inc;..\FWLIB\src;..\USER;..\Judge_System;..\SYSTEM;..\TASK;..\USER;..\Control_Algorithm;..\SYSTEM\CAN2;..\SYSTEM\TIM6;..\SYSTEM\USART1;..\SYSTEM\CAN1;..\SYSTEM\USART3;..\SYSTEM\USART6;..\SYSTEM\BSP;..\TASK\Remote_Task;..\SYSTEM\TIM2;..\TASK\Chassis_Task;..\Control_Algorithm\PID;..\FWLIB;..\SYSTEM\USART4;..\TASK\Leg_Task;..\MOTOR;..\TASK\Control_Task;..\TASK\Board_Connected_Task;..\DSP\Core_Include;..\DSP\PrivateInclude;..\DSP\Include;..\CORE;..\TASK\Whell_Observe_Task;..\Control_Algorithm\Ramp</IncludePath>
+              <IncludePath>..\FWLIB\inc;..\FWLIB\src;..\USER;..\Judge_System;..\SYSTEM;..\TASK;..\USER;..\Control_Algorithm;..\SYSTEM\CAN2;..\SYSTEM\TIM6;..\SYSTEM\USART1;..\SYSTEM\CAN1;..\SYSTEM\USART3;..\SYSTEM\USART6;..\SYSTEM\BSP;..\TASK\Remote_Task;..\SYSTEM\TIM2;..\TASK\Chassis_Task;..\Control_Algorithm\PID;..\FWLIB;..\SYSTEM\USART4;..\TASK\Leg_Task;..\MOTOR;..\TASK\Control_Task;..\TASK\Board_Connected_Task;..\DSP\Core_Include;..\DSP\PrivateInclude;..\DSP\Include;..\CORE;..\TASK\Whell_Observe_Task;..\Control_Algorithm\Ramp;..\TASK\Log_Task;..\Control_Algorithm\Low_Pass_Filter</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -674,6 +674,11 @@
               <FileType>1</FileType>
               <FilePath>..\TASK\Whell_Observe_Task\Whell_Observe_Task.c</FilePath>
             </File>
+            <File>
+              <FileName>Log_Task.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\TASK\Log_Task\Log_Task.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -699,6 +704,11 @@
               <FileType>1</FileType>
               <FilePath>..\Control_algorithm\Ramp\Ramp.c</FilePath>
             </File>
+            <File>
+              <FileName>Low_Pass_Filter.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Control_Algorithm\Low_Pass_Filter\Low_Pass_Filter.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -714,6 +724,11 @@
         <Group>
           <GroupName>MOTOR</GroupName>
           <Files>
+            <File>
+              <FileName>ReadMe.txt</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\ReadMe\ReadMe.txt</FilePath>
+            </File>
             <File>
               <FileName>DaMiao_8009.c</FileName>
               <FileType>1</FileType>
