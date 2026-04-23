@@ -30,7 +30,6 @@ float Normalize_Angle_PI(float angle)
 
 
 
-
 float Transform_Angle_0_2PI(float angle)
 {
     float new_angle=fmod(angle+2*PI,2*PI);
@@ -38,6 +37,7 @@ float Transform_Angle_0_2PI(float angle)
         return (new_angle<0)?new_angle+2*PI:new_angle;
     }
 }
+
 
 
 //力矩限幅
@@ -53,6 +53,7 @@ void Motor_Out_Limit(Balance_Chassis_t* Chassis)
 }
 
 
+
 void Motor_Torque_Set(Balance_Chassis_t* Chassis,float Joint_T_0,float Joint_T_1,float Joint_T_2,float Joint_T_3,float Driving_T_1,float Driving_T_2)
 {
     //左
@@ -63,6 +64,67 @@ void Motor_Torque_Set(Balance_Chassis_t* Chassis,float Joint_T_0,float Joint_T_1
     Chassis->joint_T[0] = Joint_T_0;//前
     Chassis->joint_T[3] = Joint_T_3;
     Chassis->driving_T[1] = Driving_T_2;
+}
+
+
+
+
+/*********************支持力解算*******************///改过，之前theta用的是车平均theta，这里我换成单腿，不知道行不行
+//定义矩阵
+mat Jacobian,
+    JacobianT,
+    JacobinT_inv,
+    mat_F,
+    mat_T;
+
+static float  Jacobian_data[4];
+static float  JacobianT_data[4];
+static float  JacobinT_inv_data[4];
+static float  mat_F_data[2];
+static float  mat_T_data[2];
+
+void FN_calculate(CH040DATA_t* Chassis_GYRO, Leg_State_t* Leg_State, Lpf1stObj *ft,float MT1_torque,float MT4_torque)
+{
+    static float  last_dtheta;
+    float costheta = arm_cos_f32((Leg_State->phi0 - 1.57f) - Chassis_GYRO->Pitch_Angle*DEG_TO_RAD);
+    float sintheta = arm_sin_f32((Leg_State->phi0 - 1.57f) - Chassis_GYRO->Pitch_Angle*DEG_TO_RAD);
+
+    Leg_State->ddtheta = (Leg_State->dtheta - last_dtheta) / ((TIME_STEP * 0.001));//ddzw的计算   差分
+    float ddz = arm_cos_f32(Chassis_GYRO->Z_Acc * Chassis_GYRO->Pitch_Angle*DEG_TO_RAD);//机体加速度 ddz
+    float ddzw = ddz - Leg_State->ddl0 * costheta + \
+                  2 * Leg_State->dl0 * Leg_State->dtheta * sintheta + \
+                    Leg_State->l0 * Leg_State->ddtheta * sintheta + \
+                    Leg_State->l0 * (Leg_State->dtheta * Leg_State->dtheta) * costheta;
+    Leg_State->ddzw = Lpf_1st_calcu(ft,ddzw,5,0.002);// 计算一阶低通滤波器的输出值，并返回
+    //P和Tp的计算
+    mat_init(&Jacobian,2,2,(float *)Jacobian_data);
+    mat_init(&JacobianT,2,2,(float *)JacobianT_data);
+    mat_init(&JacobinT_inv,2,2,(float *)JacobinT_inv_data);
+    mat_init(&mat_F,2,1,(float *)mat_F_data);
+    mat_init(&mat_T,2,1,(float *)mat_T_data);
+
+    Jacobian_data[0] = Leg_State->j[0][0];
+    Jacobian_data[1] = Leg_State->j[0][1];
+    Jacobian_data[2] = Leg_State->j[1][0];
+    Jacobian_data[3] = Leg_State->j[1][1];
+
+    mat_T_data[0] = MT1_torque;
+    mat_T_data[1] = MT4_torque;
+
+    //求得VMC逆转换矩阵
+    // FTp = (J')\[MT1;MT4];
+    mat_trans(&Jacobian,&JacobianT);//求得J的转置
+    mat_inv(&JacobianT,&JacobinT_inv);//求得J的逆   //其实是求得J的转置的逆
+    mat_mult(&JacobinT_inv,&mat_T,&mat_F);//求得J的逆和T的乘积
+
+    Leg_State->F_fdb = mat_F.pData[0];
+    Leg_State->Tp_fdb = mat_F.pData[1];
+
+    float P = Leg_State->F_fdb*costheta + (Leg_State->Tp_fdb*sintheta)/Leg_State->l0;
+    //支持力的计算
+    Leg_State->Leg_FN = WHEEL_MASS * Leg_State->ddzw + P + WHEEL_MASS * 9.81;
+    
+    last_dtheta = Leg_State->dtheta;
 }
 
 
@@ -137,9 +199,15 @@ void Chassis_State_Update(Balance_Chassis_t* Chassis)
 //    leg_pos(Chassis->Driving_Motor[0].Single_Angle_fdb , Chassis->Joint_Motor[3].Single_Angle_fdb , &Chassis->Right_Leg.l0 , &Chassis->Right_Leg.phi0);//求得右腿位置
 //    leg_pos(Chassis->Driving_Motor[1].Single_Angle_fdb , Chassis->Joint_Motor[2].Single_Angle_fdb , &Chassis->Left_Leg.l0 , &Chassis->Left_Leg.phi0);//求得左腿位置
     VMC_Data_Get(&Chassis->Right_Leg,Chassis->Joint_Motor[3].Speed_fdb,Chassis->Joint_Motor[0].Speed_fdb,
-    Chassis->Joint_Motor[3].Single_Angle_fdb*PI/180.0f,Chassis->Joint_Motor[0].Single_Angle_fdb*PI/180.0f);//求得右腿状态
+    Chassis->Joint_Motor[3].Single_Angle_fdb*DEG_TO_RAD,Chassis->Joint_Motor[0].Single_Angle_fdb*DEG_TO_RAD);//求得右腿状态
     VMC_Data_Get(&Chassis->Left_Leg,Chassis->Joint_Motor[2].Speed_fdb,Chassis->Joint_Motor[1].Speed_fdb,
-    Chassis->Joint_Motor[2].Single_Angle_fdb*PI/180.0f,Chassis->Joint_Motor[1].Single_Angle_fdb*PI/180.0f);//求得左腿状态 //极性和角度没调7878解算之后再改
+    Chassis->Joint_Motor[2].Single_Angle_fdb*DEG_TO_RAD,Chassis->Joint_Motor[1].Single_Angle_fdb*DEG_TO_RAD);//求得左腿状态 //极性和角度没调7878解算之后再改
+    
+    Chassis->Left_Leg.dtheta = Chassis->Left_Leg.dphi0-1.57f-Chassis->Chassis_GYRO.Pitch_Gyro_Omega*DEG_TO_RAD;
+    Chassis->Right_Leg.dtheta = Chassis->Right_Leg.dphi0-1.57f-Chassis->Chassis_GYRO.Pitch_Gyro_Omega*DEG_TO_RAD;
+    Chassis->Left_Leg.theta = Chassis->Left_Leg.phi0-1.57f-Chassis->Chassis_GYRO.Pitch_Angle*DEG_TO_RAD;
+    Chassis->Right_Leg.theta = Chassis->Right_Leg.phi0-1.57f-Chassis->Chassis_GYRO.Pitch_Angle*DEG_TO_RAD;
+    
     //对dphi0出现NUN的情况进行的处理
     if(isnan(Chassis->Left_Leg.dphi0 - Chassis->Right_Leg.dphi0))
     {
@@ -150,7 +218,7 @@ void Chassis_State_Update(Balance_Chassis_t* Chassis)
     Chassis->dphi0 = (Chassis->Left_Leg.dphi0 + Chassis->Right_Leg.phi0)/2.0f;
     Chassis->phi0 = (Chassis->Left_Leg.phi0 + Chassis->Right_Leg.phi0)/2.0f;
     
-    Chassis->dtheta = ((Chassis->Left_Leg.dphi0 + Chassis->Right_Leg.dphi0)/2.0f - Chassis->Chassis_GYRO.Pitch_Gyro_Omega*PI/180.0f);
+    Chassis->dtheta = ((Chassis->Left_Leg.dphi0 + Chassis->Right_Leg.dphi0)/2.0f - Chassis->Chassis_GYRO.Pitch_Gyro_Omega*DEG_TO_RAD);
     if(isnan(Chassis->dtheta) || isinf(Chassis->dtheta))
     {
         Chassis->dphi0 = 0.0f;
@@ -322,21 +390,105 @@ void Balance_Task(Balance_Chassis_t* Chassis)
     //balance_loop数据获取
     if(Chassis->Control_Mode == CHASSIS_ROTATE)//小陀螺补偿phi0
     {
-        Chassis->balance_loop.phi = (Chassis->Chassis_GYRO.Pitch_Angle+0.5f)*PI/180.0f;
+        Chassis->balance_loop.phi = (Chassis->Chassis_GYRO.Pitch_Angle+0.5f)*DEG_TO_RAD;
     }
     else
     {
-        Chassis->balance_loop.phi = Chassis->Chassis_GYRO.Pitch_Angle*PI/180.0f;
+        Chassis->balance_loop.phi = Chassis->Chassis_GYRO.Pitch_Angle*DEG_TO_RAD;
     }
-    
-    Chassis->balance_loop.dphi = Chassis->Chassis_GYRO.Pitch_Gyro_Omega*PI/180.0f;
+    Chassis->balance_loop.dphi = Chassis->Chassis_GYRO.Pitch_Gyro_Omega*DEG_TO_RAD;
     Chassis->balance_loop.x = ((LEFT_WHEEL_POLARITY * Chassis->Driving_Motor[0].Multi_Angle_fdb + RIGHT_WHEEL_POLARITY * Chassis->Driving_Motor[1].Multi_Angle_fdb)/2.0f) * WHEEL_R;
     //Chassis->balance_loop.dx = (LEFT_WHEEL_POLARITY * Chassis->Driving_Motor[0].Speed_fdb + RIGHT_WHEEL_POLARITY * Chassis->Driving_Motor[1].Speed_fdb) * WHEEL_R ;//1.没加减速比，2.最后是要卡尔曼滤波的 7878
-    Chassis->balance_loop.theta = ((Chassis->Left_Leg.phi0 + Chassis->Right_Leg.phi0)/2.0f - 1.57f)-Chassis->Chassis_GYRO.Pitch_Angle*PI/180.0f;
-    Chassis->balance_loop.dtheta = ((Chassis->Left_Leg.dphi0 + Chassis->Right_Leg.dphi0)/2.0f - Chassis->Chassis_GYRO.Pitch_Gyro_Omega * PI/180.0f);
+    Chassis->balance_loop.theta = ((Chassis->Left_Leg.phi0 + Chassis->Right_Leg.phi0)/2.0f - 1.57f)-Chassis->Chassis_GYRO.Pitch_Angle*DEG_TO_RAD;
+    Chassis->balance_loop.dtheta = ((Chassis->Left_Leg.dphi0 + Chassis->Right_Leg.dphi0)/2.0f - Chassis->Chassis_GYRO.Pitch_Gyro_Omega*DEG_TO_RAD);
     
-    Chassis->Left_theta = Chassis->Left_Leg.phi0 - 1.57f - Chassis->Chassis_GYRO.Pitch_Angle*PI/180.0f;
-    Chassis->Right_theta = Chassis->Right_Leg.phi0 - 1.57f -Chassis->Chassis_GYRO.Pitch_Angle*PI/180.0f;
+    //机体重力加速度
+    Chassis->balance_loop.ddz = Chassis->Chassis_GYRO.Z_Acc * arm_cos_f32(Chassis->Chassis_GYRO.Pitch_Angle*DEG_TO_RAD);
+    //底盘轮子平均线速度变化
+    Chassis->balance_loop.wheel_dx = ((LEFT_WHEEL_POLARITY * Chassis->Driving_Motor[0].Speed_fdb + RIGHT_WHEEL_POLARITY * Chassis->Driving_Motor[1].Speed_fdb)/2.0f)*WHEEL_R*RPM_TO_RAD_PER_SED;
+    //底盘轮子平均转速
+    Chassis->balance_loop.RPM = (LEFT_WHEEL_POLARITY * Chassis->Driving_Motor[0].Speed_fdb + RIGHT_WHEEL_POLARITY * Chassis->Driving_Motor[1].Speed_fdb)/2.0f;
+    //腿长平均值
+    Chassis->balance_loop.L0 = (Chassis->Left_Leg.l0 + Chassis->Right_Leg.l0)/2.0f;
+    //不用陀螺仪的向心力
+    Chassis->balance_loop.Fm = Chassis->Chassis_Ref.V_w*Chassis->Chassis_Ref.V_y * BODY_MASS;
+    //先不写7878
+  //  Chassis->balance_loop.Current_Fm = 
+    
+    
+    //支持力计算
+    FN_calculate(&Chassis->Chassis_GYRO,&Chassis->Left_Leg,&Chassis->L_DDZW_LPF,Chassis->Joint_Motor[1].Torque,Chassis->Joint_Motor[2].Torque);//没调极性7878
+    FN_calculate(&Chassis->Chassis_GYRO,&Chassis->Right_Leg,&Chassis->R_DDZW_LPF,Chassis->Joint_Motor[0].Torque,Chassis->Joint_Motor[3].Torque);
+    
+    
+    //LQR增益获取
+    lqr_k(Chassis->balance_loop.L0,Chassis->balance_loop.K);
+    for(uint8_t i = 0; i < 6; i++)
+    {
+        for(uint8_t j = 0; j < 2; j++)
+        {
+            Chassis->balance_loop.k[j][i] = Chassis->balance_loop.K[i * 2 + j];
+        }
+    }
+    
+    //
+    //这里有跳跃相关处理7878
+    //
+    
+    //误差计算
+    Chassis->balance_loop.state_err[0] = 0 - Chassis->balance_loop.theta;
+    Chassis->balance_loop.state_err[1] = 0 - Chassis->balance_loop.dtheta;
+    Chassis->balance_loop.state_err[2] = 0;//这里先认为位移没误差7878
+    Chassis->balance_loop.state_err[3] = Chassis->Chassis_Ref.V_y - Chassis->balance_loop.dx;//dx还没算 7878
+    Chassis->balance_loop.state_err[4] = 0 - Chassis->balance_loop.phi;//这里参考角度先给0 7878
+    Chassis->balance_loop.state_err[5] = 0 - Chassis->balance_loop.dphi;
+    
+    
+    
+    //
+    //还没添加其他处理
+    //
+    
+    Chassis->balance_loop.K_error[0][0] = Chassis->balance_loop.k[0][0] * Chassis->balance_loop.state_err[0];//        
+    Chassis->balance_loop.K_error[0][1] = Chassis->balance_loop.k[0][1] * Chassis->balance_loop.state_err[1];
+    Chassis->balance_loop.K_error[0][2] = Chassis->balance_loop.k[0][2] * Chassis->balance_loop.state_err[2];
+    Chassis->balance_loop.K_error[0][3] = Chassis->balance_loop.k[0][3] * Chassis->balance_loop.state_err[3];
+    Chassis->balance_loop.K_error[0][4] = Chassis->balance_loop.k[0][4] * Chassis->balance_loop.state_err[4];
+    Chassis->balance_loop.K_error[0][5] = Chassis->balance_loop.k[0][5] * Chassis->balance_loop.state_err[5];
+
+    Chassis->balance_loop.K_error[1][0] = Chassis->balance_loop.k[1][0] * Chassis->balance_loop.state_err[0];
+    Chassis->balance_loop.K_error[1][1] = Chassis->balance_loop.k[1][1] * Chassis->balance_loop.state_err[1];
+    Chassis->balance_loop.K_error[1][2] = Chassis->balance_loop.k[1][2] * Chassis->balance_loop.state_err[2];
+    Chassis->balance_loop.K_error[1][3] = Chassis->balance_loop.k[1][3] * Chassis->balance_loop.state_err[3];
+    Chassis->balance_loop.K_error[1][4] = Chassis->balance_loop.k[1][4] * Chassis->balance_loop.state_err[4];
+    Chassis->balance_loop.K_error[1][5] = Chassis->balance_loop.k[1][5] * Chassis->balance_loop.state_err[5];
+    
+    
+    //
+    //处理打滑,没加7878
+    //
+    
+    
+    //触地增益计算
+    Chassis->Balance_Tgain = Chassis->balance_loop.K_error[0][0] + 
+                             Chassis->balance_loop.K_error[0][1] + 
+                             Chassis->balance_loop.K_error[0][2] + 
+                             Chassis->balance_loop.K_error[0][3] + 
+                             Chassis->balance_loop.K_error[0][4] + 
+                             Chassis->balance_loop.K_error[0][5] ;
+                             
+    Chassis->Balance_Tpgain = Chassis->balance_loop.K_error[1][0] + 
+                              Chassis->balance_loop.K_error[1][1] + 
+                              Chassis->balance_loop.K_error[1][2] + 
+                              Chassis->balance_loop.K_error[1][3] + 
+                              Chassis->balance_loop.K_error[1][4] + 
+                              Chassis->balance_loop.K_error[1][5] ;
+                              
+     
+    //离地增益计算
+    Chassis->Balance_Toutlandgain = 0.0f;
+    Chassis->Balance_Tpoutlandgain = Chassis->balance_loop.K_error[1][0] + Chassis->balance_loop.K_error[1][1];
+     
 }
 
 

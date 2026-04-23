@@ -1,5 +1,5 @@
 #include "main.h"
-Lpf1stObj ACC_LPF;
+
 
 
 

@@ -5,7 +5,8 @@
 #include "Generic_Encoder.h"
 #include "Board_Connected_Task.h"
 #include "USART3.h"
-
+#include "Leg_Task.h"
+#include "Low_Pass_Filter.h"
 
 
 #define VAL_LIMIT(val, min, max)\
@@ -20,7 +21,7 @@
 
             
             
-#define WHEEL_R                        0.058
+#define WHEEL_R                        0.058f
             
 #define JM1_POLARITY                      1//右前电机极性   //老代码里的电机极性
 #define JM2_POLARITY                     -1//左前电机极性
@@ -31,11 +32,17 @@
 #define RIGHT_WHEEL_POLARITY              1//右轮电机极性
 
 #define JOINT_MAX_T                       34          //老代码里的限幅
-#define WHEEL_MAX_T                       4.35 // 4.3
+#define WHEEL_MAX_T                       4.35f // 4.3
+            
+#define BODY_MASS                         23.20f
+#define WHEEL_MASS                        1.112f   
 
 #define TIME_STEP                         2
             
-            
+#define RPM_TO_RAD_PER_SED                0.10472f
+#define DEG_TO_RAD                        0.017453f
+
+                        
 typedef enum
 {
   CHASSIS_RELAX          = 0,
@@ -64,16 +71,18 @@ typedef struct
 	float dx;
 	float ddz;
 	float wheel_dx;
-	float Fm;
+	float Fm;//向心力，去陀螺仪
     float RPM;
-	double K_error[2][6];
-	double L0;
-	double K[12];
+	float K_error[2][6];
+	float L0;
+	float K[12];
 	float k[2][6];
 	float state_err[6];
 
-	double lqrOutT;
-	double lqrOutTp;
+	float lqrOutT;
+	float lqrOutTp;
+    
+    float Current_Fm;//实际向心力
     
 }LQR_System;//LQR参数
 
@@ -90,43 +99,6 @@ typedef struct
 	float Leglength;
 }Chassis_Ref_t;
 
-typedef struct
-{
-	//float pos[2];//pos=[l0; phi0];
-	//float spd[2];//spd[2]=[dl0; dphi0];
-	float T_Set[2];//T[2]=[motor4;motor1];
-
-	//支持力解算用计算变量
-	float J[4];   //解雅可比矩阵的中间变量
-	float j[2][2];//最终的雅可比矩阵
-	float F_fdb;
-	float Tp_fdb;
-
-	float phi4;
-	float phi1;
-	float dphi4;
-	float dphi1;
-
-	float this_dl0;
-	float last_dl0;
-
-	float l0;
-	float dl0;
-	float ddl0;
-	float phi0;
-	float dphi0;
-    
-	float Leg_Length_Outer;
-	float Leg_F;
-	float ddzw;
-	float Leg_FN;
-	float Leg_Final_FN;
-
-	uint8_t Wheel_State;
-
-	PID_t Leg_Length_PID;//腿长PID
-	
-}Leg_State_t;//腿状态
 
 typedef enum
 {
@@ -209,6 +181,9 @@ typedef struct
     Encoder_t Joint_Motor[4];
     
     float Balance_Tpgain;
+    float Balance_Tgain;
+    
+    float Balance_Toutlandgain;
     float Balance_Tpoutlandgain;
     
     uint8_t Jump_State;//跳跃状态
@@ -223,6 +198,10 @@ typedef struct
     
     float Harmonize_Outer;//双腿协调外环
     float Harmonize_Inner;//双腿协调内环
+    
+    Lpf1stObj ACC_LPF;//计算加速度用 低通滤波
+    Lpf1stObj L_DDZW_LPF;//计算左腿支持力用 低通滤波
+    Lpf1stObj R_DDZW_LPF;//计算右腿支持力用 低通滤波
     
 }Balance_Chassis_t;//复制来的，有些没用
 
