@@ -32,7 +32,6 @@ typedef struct
 	float phi0;
 	float dphi0;
     
-	float Leg_Length_Outer;
 	float Leg_F;
 	float ddzw;
 	float Leg_FN;

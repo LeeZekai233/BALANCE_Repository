@@ -9,6 +9,7 @@
 #include "Low_Pass_Filter.h"
 
 
+
 #define VAL_LIMIT(val, min, max)\
             if(val<=min)\
             {\
@@ -42,6 +43,7 @@
 #define RPM_TO_RAD_PER_SED                0.10472f
 #define DEG_TO_RAD                        0.017453f
 
+
                         
 typedef enum
 {
@@ -59,6 +61,8 @@ typedef enum
   CHASSIS_AUTO_SUP       = 11,
   CHASSIS_SINGLE_LEG_HANDLE =12,
 } Chassis_Mode_e;//µ×ÅÌÄ£Ê½
+
+
 
 typedef struct
 {
@@ -86,6 +90,8 @@ typedef struct
     
 }LQR_System;//LQR²ÎÊý
 
+
+
 typedef struct
 {
 	float V_x;
@@ -100,6 +106,7 @@ typedef struct
 }Chassis_Ref_t;
 
 
+
 typedef enum
 {
     RELAX_STATE  = 0,//·ÅËÉ×´Ì¬
@@ -107,6 +114,8 @@ typedef enum
     ROLL_STATE   = 2,//²à·­×´Ì¬
     FLIP_STATE   = 3,//µ¹¿Û×´Ì¬
 }Init_State_e;
+
+
 
 typedef struct
 {
@@ -186,6 +195,9 @@ typedef struct
     float Balance_Toutlandgain;
     float Balance_Tpoutlandgain;
     
+//    float Roll_Output_Angle;
+//    float Roll_leglengh_inner;//rollÆ½ºâ
+    
     uint8_t Jump_State;//ÌøÔ¾×´Ì¬
     
     USART_Chassis_Data_t USART_Chassis_Data;//´®¿Ú´«À´µÄ¿ØÖÆµ×ÅÌÊý¾Ý
@@ -209,11 +221,11 @@ typedef struct
 
 
 
-
 extern Balance_Chassis_t Chassis;
 
 
 
+uint8_t Wheel_State_Estimate(Leg_State_t *Leg_State);
 float Normalize_Angle_PI(float angle);
 float Transform_Angle_0_2PI(float angle);
 void Motor_Out_Limit(Balance_Chassis_t* Chassis);

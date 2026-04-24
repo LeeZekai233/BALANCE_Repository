@@ -128,6 +128,32 @@ void FN_calculate(CH040DATA_t* Chassis_GYRO, Leg_State_t* Leg_State, Lpf1stObj *
 }
 
 
+/**
+************************************************************************************************************************
+* @Name     : wheel_state_estimate
+* @brief    : 底盘离地检测函数
+* @param		: leg
+* @retval   : wheel_state
+* @Note     :
+************************************************************************************************************************
+**/
+
+uint8_t Wheel_State_Estimate(Leg_State_t *Leg_State)
+{
+    if (Leg_State->Leg_FN < 20) // 如果支持力小于20N 离地 轮子状态为0  leg->leg_FN < 20
+    {
+
+        Leg_State->Wheel_State = 0;
+        return 0;
+    }
+    else // 未离地 轮子状态为1
+    {
+        Leg_State->Wheel_State = 1;
+        return 1;
+    }
+}
+
+
 
 void Init_Tp_Calc(float Ref_Leglength,float Harmonize,float Init_Tp,Balance_Chassis_t* Chassis)
 {
@@ -385,6 +411,24 @@ void Chassis_Init_Handle(Balance_Chassis_t* Chassis)
 
 
 
+void Chassis_Standup_Handle(Balance_Chassis_t* Chassis)
+{
+    PID_Init(&Chassis->Leg_Harmonize_Pid_Inner, PID_POSITION, 9.3f, 0.0f, 1.0f, 35.0f, 3.0f);
+    PID_Init(&Chassis->Leg_Harmonize_Pid_Outer, PID_POSITION, 35.0f, 0.0f, 0.8f, 50.0f, 3.0f);
+    
+    Chassis->Chassis_Ref.Leglength = 0.14f;
+    Chassis->Chassis_Ref.V_y = 0;
+    Chassis->Chassis_Ref.V_x = 0;
+    Chassis->Chassis_Ref.V_w = 0;
+    Chassis->Chassis_Ref.Y_position = Chassis->balance_loop.x;
+    if(fabs(Chassis->balance_loop.state_err[4]) < 8*DEG_TO_RAD)
+    {
+        Chassis->
+    }
+}
+    
+
+
 void Balance_Task(Balance_Chassis_t* Chassis)
 {
     //balance_loop数据获取
@@ -502,8 +546,50 @@ void Balance_Task(Balance_Chassis_t* Chassis)
 //暂时不转向
     
     //roll平衡PID
+    //暂时无roll平衡7878
+    //
     
+    //腿部竖直力F的计算
+    Chassis->Left_Leg.Leg_F = PID_Calc(&Chassis->Left_Leg.Leg_Length_PID,Chassis->Left_Leg.l0,Chassis->Chassis_Ref.Leglength) + BODY_MASS/2*9.8f;
+    Chassis->Right_Leg.Leg_F = PID_Calc(&Chassis->Right_Leg.Leg_Length_PID,Chassis->Right_Leg.l0,Chassis->Chassis_Ref.Leglength) + BODY_MASS/2*9.8f;
+    
+    
+    //设置左腿关节扭矩
+    if(Wheel_State_Estimate(&Chassis->Left_Leg))
+    {
+        leg_conv(Chassis->Left_Leg.Leg_F, (Chassis->Balance_Tpgain-Chassis->Harmonize_Inner)/2.0f, //7878
+        Chassis->Left_Leg.phi1, Chassis->Left_Leg.phi4, Chassis->Left_Leg.T_Set);
+        
+        Chassis->joint_T[1] = JM2_POLARITY * Chassis->Left_Leg.T_Set[0];//极性7878
+        Chassis->joint_T[2] = JM3_POLARITY * Chassis->Left_Leg.T_Set[1];
+        
+        Chassis->driving_T[0] = (Chassis->Balance_Tgain/2.0f) * LEFT_WHEEL_POLARITY;//还得叠加转向
+    }
+    
+    
+    //设置右腿关节扭矩
+    if(Wheel_State_Estimate(&Chassis->Right_Leg))
+    {
+        leg_conv(Chassis->Right_Leg.Leg_F,(Chassis->Balance_Tpgain-Chassis->Harmonize_Inner)/2.0f, 
+        Chassis->Right_Leg.phi1, Chassis->Right_Leg.phi4, Chassis->Right_Leg.T_Set);
+        
+        Chassis->joint_T[0] = JM1_POLARITY * Chassis->Right_Leg.T_Set[0];
+        Chassis->joint_T[3] = JM4_POLARITY * Chassis->Right_Leg.T_Set[1];
+        
+        Chassis->driving_T[1] = (Chassis->Balance_Tgain/2.0f) * RIGHT_WHEEL_POLARITY;
+    }
+    
+    
+    //力矩限幅
+    VAL_LIMIT(Chassis->joint_T[1],-JOINT_MAX_T, JOINT_MAX_T);
+    VAL_LIMIT(Chassis->joint_T[2],-JOINT_MAX_T, JOINT_MAX_T);
+    VAL_LIMIT(Chassis->joint_T[0],-JOINT_MAX_T, JOINT_MAX_T);
+    VAL_LIMIT(Chassis->joint_T[3],-JOINT_MAX_T, JOINT_MAX_T);
+    
+    VAL_LIMIT(Chassis->driving_T[0],-WHEEL_MAX_T,WHEEL_MAX_T);
+    VAL_LIMIT(Chassis->driving_T[1],-WHEEL_MAX_T,WHEEL_MAX_T);
 }
+
 
 
 

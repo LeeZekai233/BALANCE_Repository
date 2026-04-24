@@ -20,13 +20,18 @@ uint8_t send_time=0;
 uint8_t flag1=0;
 uint8_t flag_color_ready_to_change=0;
 bool state=1;
-void rand_big_energe(void)
+void rand_big_energe(void)//没调用过
 {
 
-	turn_a = rand()%265/1000.0+0.78;
+//	turn_a = rand()%265/1000.0+0.78;
+////	turn_a=0.9;
+//	turn_b = 2.09-turn_a;
+//	turn_w = rand()%116/1000.0+1.884;
+////	turn_w =1.921;
+    turn_a = 0*265/1000.0+0.78;
 //	turn_a=0.9;
 	turn_b = 2.09-turn_a;
-	turn_w = rand()%116/1000.0+1.884;
+	turn_w = 0*116/1000.0+1.884;
 //	turn_w =1.921;
 }
 
