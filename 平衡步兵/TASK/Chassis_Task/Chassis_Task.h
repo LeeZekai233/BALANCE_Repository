@@ -199,6 +199,8 @@ typedef struct
     float Harmonize_Outer;//双腿协调外环
     float Harmonize_Inner;//双腿协调内环
     
+    float V_w_Torque;//转向力矩
+    
     Lpf1stObj ACC_LPF;//计算加速度用 低通滤波
     Lpf1stObj L_DDZW_LPF;//计算左腿支持力用 低通滤波
     Lpf1stObj R_DDZW_LPF;//计算右腿支持力用 低通滤波

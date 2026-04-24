@@ -488,7 +488,21 @@ void Balance_Task(Balance_Chassis_t* Chassis)
     //离地增益计算
     Chassis->Balance_Toutlandgain = 0.0f;
     Chassis->Balance_Tpoutlandgain = Chassis->balance_loop.K_error[1][0] + Chassis->balance_loop.K_error[1][1];
-     
+    
+    
+    //双腿协调PID
+    Chassis->Harmonize_Outer = PID_Calc(&Chassis->Leg_Harmonize_Pid_Outer, (Chassis->Left_Leg.phi0 - Chassis->Right_Leg.phi0), 0.0f);
+    Chassis->Harmonize_Inner = PID_Calc(&Chassis->Leg_Harmonize_Pid_Inner, (Chassis->Left_Leg.dphi0 - Chassis->Right_Leg.dphi0), Chassis->Harmonize_Outer);
+    
+    
+    //转向PID
+//    Chassis->V_w_Torque = PID_Calc(&Chassis->V_w_Pid, Chassis->Chassis_GYRO.Yaw_Gyro_Omega*DEG_TO_RAD, Chassis->Chassis_Ref.V_w);
+//    Chassis->vw_limit_rate = 1.0f;
+//    VAL_LIMIT(Chassis->V_w_Torque,-3.5,3.5);
+//暂时不转向
+    
+    //roll平衡PID
+    
 }
 
 
