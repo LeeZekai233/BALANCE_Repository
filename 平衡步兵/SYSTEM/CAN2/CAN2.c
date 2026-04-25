@@ -26,7 +26,7 @@ void CAN2_Init(void)
 	CAN_InitStructure.CAN_TTCM=DISABLE;
 	CAN_InitStructure.CAN_ABOM=ENABLE;
 	CAN_InitStructure.CAN_AWUM=DISABLE;
-	CAN_InitStructure.CAN_NART=DISABLE;//失能禁止自动重传
+	CAN_InitStructure.CAN_NART=ENABLE;//失能禁止自动重传
 	CAN_InitStructure.CAN_RFLM=DISABLE;
 	CAN_InitStructure.CAN_TXFP=DISABLE;
 	CAN_InitStructure.CAN_Mode=CAN_Mode_Normal;
@@ -108,7 +108,7 @@ void CAN2_RX0_IRQHandler(void)
 	if (CAN_GetITStatus(CAN2,CAN_IT_FMP0)!= RESET) 
 		{
 			CAN_Receive(CAN2, CAN_FIFO0, &rx_message);
-//            CAN_Motor_Data_Receive(&rx_message,&Gimbal.Yaw_Motor_Encoder,&Gimbal.Pitch_Motor_Encoder,Chassis.Chassis_M2006_Encoder);
+
             CAN_ClearITPendingBit(CAN2, CAN_IT_FMP0);
 			CAN_ClearFlag(CAN2, CAN_FLAG_FF0);
 		}	

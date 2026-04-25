@@ -31,6 +31,8 @@ typedef struct
 
 } USART_Chassis_Data_t;//底盘接收的云台数据
 
+
+
 typedef __packed struct
 {
 	uint16_t shooter_id1_17mm_cooling_heat;//

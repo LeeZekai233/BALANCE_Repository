@@ -1,10 +1,22 @@
 #include "main.h"
-
 uint32_t time_tick = 0;
+void Remote_DT7_To_USART_Chassis_Data(Remote_DT7_t* ,USART_Chassis_Data_t* );//不加报警告
+
+
 
 void Contorl_Task(Balance_Chassis_t* Chassis)
 {
     time_tick++;
+    
+    //控动作判断
+    Remote_Switch_Action_Detect(&Remote_DT7_data);
+    Remote_DT7_To_USART_Chassis_Data(&Remote_DT7_data,&Chassis->USART_Chassis_Data);
+    
+    //驱动轮在线检测
+    Motor_Online_Detective(&Chassis->Driving_Motor[0]);
+    Motor_Online_Detective(&Chassis->Driving_Motor[1]);
+    
+    //底盘控制
     if(time_tick%2==0)
     {
         Chassis_Task(Chassis);

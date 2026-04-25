@@ -17,6 +17,8 @@ typedef struct
     float Torque;             //Á¦¾Ø
     
     uint32_t temperature;    //ÎÂ¶È
+    
+    uint32_t heart_cnt;//
 }Encoder_t;
 
 

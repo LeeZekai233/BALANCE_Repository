@@ -226,6 +226,7 @@ extern Balance_Chassis_t Chassis;
 
 
 uint8_t Wheel_State_Estimate(Leg_State_t *Leg_State);
+void Motor_Online_Detective(Encoder_t *Encoder);
 float Normalize_Angle_PI(float angle);
 float Transform_Angle_0_2PI(float angle);
 void Motor_Out_Limit(Balance_Chassis_t* Chassis);

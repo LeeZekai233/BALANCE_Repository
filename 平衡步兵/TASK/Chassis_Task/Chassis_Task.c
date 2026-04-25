@@ -30,6 +30,21 @@ float Normalize_Angle_PI(float angle)
 
 
 
+void Motor_Online_Detective(Encoder_t *Encoder)
+{
+    if((time_tick - Encoder->heart_cnt) > 100)
+    {
+        Encoder->online_flag = 0;
+    }
+    else
+    {
+         Encoder->online_flag = 1;
+    }
+}
+
+
+
+
 float Transform_Angle_0_2PI(float angle)
 {
     float new_angle=fmod(angle+2*PI,2*PI);
@@ -213,9 +228,9 @@ void Chassis_State_Update(Balance_Chassis_t* Chassis)
     
     /****************************************************************/
     //底盘各数据获取
-    VMC_Data_Get(&Chassis->Right_Leg,Chassis->Joint_Motor[3].Speed_fdb,Chassis->Joint_Motor[0].Speed_fdb,
+    VMC_Data_Get(&Chassis->Right_Leg,Chassis->Joint_Motor[3].Speed_fdb*JM4_POLARITY,Chassis->Joint_Motor[0].Speed_fdb*JM1_POLARITY,
     Chassis->Joint_Motor[3].Single_Angle_fdb*DEG_TO_RAD,Chassis->Joint_Motor[0].Single_Angle_fdb*DEG_TO_RAD);//求得右腿状态
-    VMC_Data_Get(&Chassis->Left_Leg,Chassis->Joint_Motor[2].Speed_fdb,Chassis->Joint_Motor[1].Speed_fdb,
+    VMC_Data_Get(&Chassis->Left_Leg,Chassis->Joint_Motor[2].Speed_fdb*JM3_POLARITY,Chassis->Joint_Motor[1].Speed_fdb*JM2_POLARITY,
     Chassis->Joint_Motor[2].Single_Angle_fdb*DEG_TO_RAD,Chassis->Joint_Motor[1].Single_Angle_fdb*DEG_TO_RAD);//求得左腿状态 //极性和角度没调7878解算之后再改
     
     Chassis->Left_Leg.dtheta = Chassis->Left_Leg.dphi0 - 1.57f - Chassis->Chassis_GYRO.Pitch_Gyro_Omega*DEG_TO_RAD;
@@ -242,24 +257,31 @@ void Chassis_State_Update(Balance_Chassis_t* Chassis)
     
     
     //模式切换判断
-    if( (Chassis->Control_Mode != CHASSIS_INIT && Chassis->Control_Mode != CHASSIS_STAND_MODE) || (Chassis->USART_Chassis_Data.Chassis_Mode == 0) )//正常进行切换
+    if((Chassis->Driving_Motor[0].online_flag == 1) | (Chassis->Driving_Motor[1].online_flag == 1))
     {
-       Chassis->Control_Mode = (Chassis_Mode_e)Chassis->USART_Chassis_Data.Chassis_Mode;
+        if( (Chassis->Control_Mode != CHASSIS_INIT && Chassis->Control_Mode != CHASSIS_STAND_MODE) || (Chassis->USART_Chassis_Data.Chassis_Mode == 0) )//正常进行切换
+        {
+           Chassis->Control_Mode = (Chassis_Mode_e)Chassis->USART_Chassis_Data.Chassis_Mode;
+        }
+        
+        if(judge_rece_mesg.game_robot_state.power_management_chassis_output==0||judge_rece_mesg.game_robot_state.current_HP==0)
+        {
+            Chassis->Control_Mode = CHASSIS_RELAX ;
+        }
+        
+        if(Chassis->Last_Control_Mode == CHASSIS_RELAX && Chassis->Control_Mode != CHASSIS_RELAX)//空闲之后必衔接初始化
+        {
+            Chassis->Control_Mode = CHASSIS_INIT ;
+        }
+        
+        if( ( (Chassis->Control_Mode == CHASSIS_ROTATE||Chassis->Control_Mode == MANUAL_FOLLOW_REMOTE) && (fabs(Chassis->Chassis_GYRO.Pitch_Angle)>15) ) )//抬头太多进初始化，之后还要改的
+        {
+            Chassis->Control_Mode = CHASSIS_INIT ;
+        }
     }
-    
-    if(judge_rece_mesg.game_robot_state.power_management_chassis_output==0||judge_rece_mesg.game_robot_state.current_HP==0)
+    else
     {
-        Chassis->Control_Mode = CHASSIS_RELAX ;
-    }
-    
-    if(Chassis->Last_Control_Mode == CHASSIS_RELAX && Chassis->Control_Mode != CHASSIS_RELAX)//空闲之后必衔接初始化
-    {
-        Chassis->Control_Mode = CHASSIS_INIT ;
-    }
-    
-    if( ( (Chassis->Control_Mode == CHASSIS_ROTATE||Chassis->Control_Mode == MANUAL_FOLLOW_REMOTE) && (fabs(Chassis->Chassis_GYRO.Pitch_Angle)>15) ) )//抬头太多进初始化，之后还要改的
-    {
-        Chassis->Control_Mode = CHASSIS_INIT ;
+         Chassis->Control_Mode = CHASSIS_RELAX ;
     }
      
     
@@ -267,11 +289,11 @@ void Chassis_State_Update(Balance_Chassis_t* Chassis)
     //控制量获取
     if(Chassis->Control_Mode != CHASSIS_INIT)//非Init控制
     {
-        //
+        
         Chassis->Chassis_Remote_Ref.V_y = Chassis->USART_Chassis_Data.V_y ;
         Chassis->Chassis_Remote_Ref.V_w = Chassis->USART_Chassis_Data.Omega ;
-//        Chassis->Chassis_Remote_Ref.Roll = Chassis->USART_Chassis_Data.Roll ;
-//        Chassis->Chassis_Remote_Ref.V_x = Chassis->USART_Chassis_Data.V_x ;
+        Chassis->Chassis_Remote_Ref.Roll = Chassis->USART_Chassis_Data.Roll ;
+        Chassis->Chassis_Remote_Ref.V_x = Chassis->USART_Chassis_Data.V_x ;
         //速度限幅
         VAL_LIMIT(Chassis->Chassis_Remote_Ref.V_y ,Chassis->Min_Speed ,Chassis->Max_Speed);
         VAL_LIMIT(Chassis->Chassis_Remote_Ref.V_x ,-1.2f,1.2f);
