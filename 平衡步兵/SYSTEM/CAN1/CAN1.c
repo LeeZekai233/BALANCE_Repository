@@ -26,7 +26,7 @@ void CAN1_Init(void)
 	
 	CAN_InitStruecture.CAN_ABOM=ENABLE;
 	CAN_InitStruecture.CAN_AWUM=DISABLE;
-	CAN_InitStruecture.CAN_NART=ENABLE;
+	CAN_InitStruecture.CAN_NART=DISABLE;//失能禁止自动重传
 	CAN_InitStruecture.CAN_RFLM=DISABLE;
 	CAN_InitStruecture.CAN_TTCM=DISABLE;
 	CAN_InitStruecture.CAN_TXFP=DISABLE;
@@ -49,11 +49,7 @@ void CAN1_Init(void)
 	CAN_FilterInitStructure.CAN_FilterActivation=ENABLE;
 	CAN_FilterInit(&CAN_FilterInitStructure);
 	
-//	NVIC_InitStructure.NVIC_IRQChannel=CAN1_TX_IRQn;
-//	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority=0;
-//	NVIC_InitStructure.NVIC_IRQChannelSubPriority=0;
-//	NVIC_InitStructure.NVIC_IRQChannelCmd=ENABLE;
-//	NVIC_Init(&NVIC_InitStructure);
+    
 	
 	NVIC_InitStructure.NVIC_IRQChannel=CAN1_RX0_IRQn;
 	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority=0;
@@ -66,58 +62,22 @@ void CAN1_Init(void)
 }
 
 
-//uint8_t CAN1_Receive_Msg(uint8_t* buf)
-//{
-//	CanRxMsg RxMessage;
-//	CAN_Receive(CAN1,CAN_FIFO0,&RxMessage);
-//	return 1;
-//}
 
 
-//void CAN1_TX_IRQHandler(void) //CAN TX
-//{
-//	if (CAN_GetITStatus(CAN1,CAN_IT_TME)!= RESET)
-//		{
-//			CAN_ClearITPendingBit(CAN1,CAN_IT_TME);
-//		}
-//}
 
-
-CanRxMsg rx_message_1;
 void CAN1_RX0_IRQHandler(void)
 {   
-	
+	CanRxMsg rx_message_1;
 	if (CAN_GetITStatus(CAN1,CAN_IT_FMP0)!= RESET)
-		{
-			CAN_Receive(CAN1, CAN_FIFO0, &rx_message_1);
-			//CAN1数据处理
-//			CAN_Motor_Data_Receive(&rx_message_1,&Gimbal.Yaw_Motor_Encoder,&Gimbal.Pitch_Motor_Encoder,Chassis.Chassis_M2006_Encoder);
- //           DaMiao_8009_Information_Receive(&rx_message_1,&DaMiao_8009);
-			CAN_ClearITPendingBit(CAN1, CAN_IT_FMP0);
-			CAN_ClearFlag(CAN1, CAN_FLAG_FF0);
-		}
+    {
+        CAN_Receive(CAN1, CAN_FIFO0, &rx_message_1);
+        //CAN1数据处理
+
+        CAN_ClearITPendingBit(CAN1, CAN_IT_FMP0);
+        CAN_ClearFlag(CAN1, CAN_FLAG_FF0);
+    }
 }
 
-//    /**********************
-//    *@Brief:can发送函数
-//    *@Call:内部或外部
-//    *@Param:
-//    *@Note:无
-//    *@RetVal:无
-//    **********************/
-//    void CAN_Send_Data(CAN_TypeDef *CANx,int _DLC,int Std_ID,u8* adress)
-//    {
-//    CanTxMsg CanTxMsg;
-
-//    CanTxMsg.IDE = CAN_Id_Standard;
-//    CanTxMsg.RTR = CAN_RTR_Data;
-//    CanTxMsg.DLC = _DLC;
-//    CanTxMsg.StdId = Std_ID;
-//    memcpy(&CanTxMsg.Data[0],adress,_DLC);
-
-//    while((CANx->TSR&CAN_TSR_TME)==0);//等待发送邮箱空闲
-//    CAN_Transmit(CANx,&CanTxMsg);
-//    }
 
 
 

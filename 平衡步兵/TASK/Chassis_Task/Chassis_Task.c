@@ -213,26 +213,15 @@ void Chassis_State_Update(Balance_Chassis_t* Chassis)
     
     /****************************************************************/
     //底盘各数据获取
-    
-//    leg_spd(Chassis->Joint_Motor[0].Angular_Vel_fdb , Chassis->Joint_Motor[3].Angular_Vel_fdb , 
-//    Chassis->Driving_Motor[0].Single_Angle_fdb , Chassis->Joint_Motor[3].Single_Angle_fdb , 
-//    &Chassis->Right_Leg);//求得右腿速度
-//    
-//    leg_spd(Chassis->Joint_Motor[1].Angular_Vel_fdb , Chassis->Joint_Motor[2].Angular_Vel_fdb , 
-//    Chassis->Driving_Motor[1].Single_Angle_fdb , Chassis->Joint_Motor[2].Single_Angle_fdb , 
-//    &Chassis->Left_Leg);//求得左腿速度
-//    
-//    leg_pos(Chassis->Driving_Motor[0].Single_Angle_fdb , Chassis->Joint_Motor[3].Single_Angle_fdb , &Chassis->Right_Leg.l0 , &Chassis->Right_Leg.phi0);//求得右腿位置
-//    leg_pos(Chassis->Driving_Motor[1].Single_Angle_fdb , Chassis->Joint_Motor[2].Single_Angle_fdb , &Chassis->Left_Leg.l0 , &Chassis->Left_Leg.phi0);//求得左腿位置
     VMC_Data_Get(&Chassis->Right_Leg,Chassis->Joint_Motor[3].Speed_fdb,Chassis->Joint_Motor[0].Speed_fdb,
     Chassis->Joint_Motor[3].Single_Angle_fdb*DEG_TO_RAD,Chassis->Joint_Motor[0].Single_Angle_fdb*DEG_TO_RAD);//求得右腿状态
     VMC_Data_Get(&Chassis->Left_Leg,Chassis->Joint_Motor[2].Speed_fdb,Chassis->Joint_Motor[1].Speed_fdb,
     Chassis->Joint_Motor[2].Single_Angle_fdb*DEG_TO_RAD,Chassis->Joint_Motor[1].Single_Angle_fdb*DEG_TO_RAD);//求得左腿状态 //极性和角度没调7878解算之后再改
     
-    Chassis->Left_Leg.dtheta = Chassis->Left_Leg.dphi0-1.57f-Chassis->Chassis_GYRO.Pitch_Gyro_Omega*DEG_TO_RAD;
-    Chassis->Right_Leg.dtheta = Chassis->Right_Leg.dphi0-1.57f-Chassis->Chassis_GYRO.Pitch_Gyro_Omega*DEG_TO_RAD;
-    Chassis->Left_Leg.theta = Chassis->Left_Leg.phi0-1.57f-Chassis->Chassis_GYRO.Pitch_Angle*DEG_TO_RAD;
-    Chassis->Right_Leg.theta = Chassis->Right_Leg.phi0-1.57f-Chassis->Chassis_GYRO.Pitch_Angle*DEG_TO_RAD;
+    Chassis->Left_Leg.dtheta = Chassis->Left_Leg.dphi0 - 1.57f - Chassis->Chassis_GYRO.Pitch_Gyro_Omega*DEG_TO_RAD;
+    Chassis->Right_Leg.dtheta = Chassis->Right_Leg.dphi0 - 1.57f - Chassis->Chassis_GYRO.Pitch_Gyro_Omega*DEG_TO_RAD;
+    Chassis->Left_Leg.theta = Chassis->Left_Leg.phi0 - 1.57f - Chassis->Chassis_GYRO.Pitch_Angle*DEG_TO_RAD;
+    Chassis->Right_Leg.theta = Chassis->Right_Leg.phi0 - 1.57f - Chassis->Chassis_GYRO.Pitch_Angle*DEG_TO_RAD;
     
     //对dphi0出现NUN的情况进行的处理
     if(isnan(Chassis->Left_Leg.dphi0 - Chassis->Right_Leg.dphi0))
@@ -273,6 +262,8 @@ void Chassis_State_Update(Balance_Chassis_t* Chassis)
         Chassis->Control_Mode = CHASSIS_INIT ;
     }
      
+    
+    
     //控制量获取
     if(Chassis->Control_Mode != CHASSIS_INIT)//非Init控制
     {
@@ -423,7 +414,7 @@ void Chassis_Standup_Handle(Balance_Chassis_t* Chassis)
     Chassis->Chassis_Ref.Y_position = Chassis->balance_loop.x;
     if(fabs(Chassis->balance_loop.state_err[4]) < 8*DEG_TO_RAD)
     {
-        Chassis->
+        Chassis->Control_Mode = (Chassis_Mode_e)Chassis->USART_Chassis_Data.Chassis_Mode;
     }
 }
     
@@ -605,7 +596,12 @@ void Chassis_Control_Loop(Balance_Chassis_t* Chassis)
             Chassis_Init_Handle(Chassis);
             break;
         CHASSIS_STAND_MODE :
-            
+            Chassis_Standup_Handle(Chassis);
+            Balance_Task(Chassis);
+            break;
+        CHASSIS_SEPARATE :
+            Balance_Task(Chassis);
+            break;
         default:
             break;
             
@@ -614,8 +610,11 @@ void Chassis_Control_Loop(Balance_Chassis_t* Chassis)
 
 
 
-
-
+void Chassis_Task(Balance_Chassis_t* Chassis)
+{
+    Chassis_State_Update(Chassis);
+    Chassis_Control_Loop(Chassis);
+}
 
 
 

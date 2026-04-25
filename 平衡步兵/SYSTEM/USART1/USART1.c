@@ -1,6 +1,7 @@
 #include "main.h"
 
 
+
 /*****************************************USART1初始化**************************************************/
 static uint8_t _USART1_DMA_RX_BUF[2][BSP_USART1_DMA_RX_BUF_LEN];
 void USART1_Init(uint32_t baud_rate)//串口1 DMA2 channel 4 8字节 	PB7
@@ -94,10 +95,12 @@ void USART1_IRQHandler(void)
 			//包长度正确进行数据处理
             if(this_time_rx_len == RC_DATA_FRAME_LENGTH)
 			{
-                DT7_Remote_Data_Dispose(_USART1_DMA_RX_BUF[0],&Remote_DT7_data);
+                 DT7_Remote_Data_Dispose(_USART1_DMA_RX_BUF[0],&Remote_DT7_data);
+                 Key_Mouse_State_Update(&Remote_DT7_data);
+                 Remote_DT7_To_USART_Chassis_Data(&Remote_DT7_data,&Chassis.USART_Chassis_Data);
 			}
 		}
-		else 
+		else
 		{
 			DMA_Cmd(DMA2_Stream2, DISABLE);
 			DMA_ClearFlag(DMA2_Stream2, DMA_FLAG_TCIF2 | DMA_FLAG_HTIF2);
@@ -107,10 +110,12 @@ void USART1_IRQHandler(void)
 			DMA_Cmd(DMA2_Stream2, ENABLE);
            if(this_time_rx_len == RC_DATA_FRAME_LENGTH)
            {
-             DT7_Remote_Data_Dispose(_USART1_DMA_RX_BUF[1],&Remote_DT7_data);
+                DT7_Remote_Data_Dispose(_USART1_DMA_RX_BUF[1],&Remote_DT7_data);
+                Key_Mouse_State_Update(&Remote_DT7_data);
+                Remote_DT7_To_USART_Chassis_Data(&Remote_DT7_data,&Chassis.USART_Chassis_Data);
            }
 	    }
-	}       
+	}
 }
 
 

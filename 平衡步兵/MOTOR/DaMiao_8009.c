@@ -272,6 +272,8 @@ void DaMiao_8009_Disable(CAN_TypeDef* CANx, int16_t CAN_ID)
 	CAN_TransmitStatus(CANx,CAN_Transmit(CANx,&Motor_DaMiao_Init_CanTxMsg));
 }
 
+
+
 /********************************
 *@Brief：   达妙电机 	清除错误信息
 *@Cal：     内部和外部
@@ -299,6 +301,8 @@ void DaMiao_8009_Claer_Error_Information(CAN_TypeDef* CANx, int16_t CAN_ID)
 	
 	CAN_TransmitStatus(CANx,CAN_Transmit(CANx,&Motor_DaMiao_Init_CanTxMsg));
 }
+
+
 
 
 void DaMiao_8009_To_Generic_Encoder(DaMiao_8009_t* DaMiao_8009,Encoder_t* Encoder)

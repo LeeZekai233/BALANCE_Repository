@@ -22,11 +22,11 @@ void CAN2_Init(void)
 	//引脚复用映射配置
 	GPIO_PinAFConfig(GPIOB,GPIO_PinSource12,GPIO_AF_CAN2);
 	GPIO_PinAFConfig(GPIOB,GPIO_PinSource13,GPIO_AF_CAN2);
-  //CAN单元配置
+    //CAN单元配置
 	CAN_InitStructure.CAN_TTCM=DISABLE;
 	CAN_InitStructure.CAN_ABOM=ENABLE;
 	CAN_InitStructure.CAN_AWUM=DISABLE;
-	CAN_InitStructure.CAN_NART=ENABLE;
+	CAN_InitStructure.CAN_NART=DISABLE;//失能禁止自动重传
 	CAN_InitStructure.CAN_RFLM=DISABLE;
 	CAN_InitStructure.CAN_TXFP=DISABLE;
 	CAN_InitStructure.CAN_Mode=CAN_Mode_Normal;

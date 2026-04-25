@@ -26,12 +26,12 @@ void TIM6_Init(void)
 }
 
 
-int Timer_6;
+
 void TIM6_DAC_IRQHandler(void)
 {
 	if(TIM_GetITStatus(TIM6,TIM_IT_Update))
 	{
-		
+		Contorl_Task(&Chassis);
 		TIM_ClearITPendingBit(TIM6,TIM_IT_Update);//清除中断标志位
 	}
 }

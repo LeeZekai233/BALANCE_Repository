@@ -31,6 +31,7 @@
 #include "Board_Connected_Task.h"
 #include "Whell_Observe_Task.h"
 #include "Log_Task.h"
+#include "Can_Bus_Task.h"
 
 
 //Judge_System

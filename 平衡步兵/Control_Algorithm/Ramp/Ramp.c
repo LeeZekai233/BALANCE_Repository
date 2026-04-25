@@ -8,21 +8,24 @@ float trackRamp(float current, float reference)
 {
     float delta = reference - current;
 
-     if (fabs(delta) > MAX_DELTA) {
-        if (delta > 0) {
+     if (fabs(delta) > MAX_DELTA) 
+     {
+        if (delta > 0) 
+        {
             return current + MAX_DELTA;
-        } else {
+        } 
+        else 
+        {
             return current - MAX_DELTA;
         }
     }
-
     return reference;
 }
 
 
 
 
-float trackRamp_leg(float max_delta_leg ,float current, float reference) //ÍÈ³¤µÄÏŞ·ù
+float trackRamp_leg(float max_delta_leg ,float current, float reference)
 	
 {
     float delta = reference - current;
@@ -38,7 +41,6 @@ float trackRamp_leg(float max_delta_leg ,float current, float reference) //ÍÈ³¤µ
             return current - max_delta_leg;
         }
     }
-
     return reference;
 }
 

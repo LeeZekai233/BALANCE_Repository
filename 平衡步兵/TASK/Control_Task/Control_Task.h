@@ -6,5 +6,8 @@
 extern uint32_t time_tick;
 
 
+void Contorl_Task(Balance_Chassis_t* Chassis);
+void Control_Task_Init(Balance_Chassis_t* Chassis);
+
 
 #endif

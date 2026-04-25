@@ -183,11 +183,11 @@ typedef struct
 	float Max_Speed;
 	float Min_Speed;
 	//tqouce
-	double joint_T[4];
-	double driving_T[2];
+	float joint_T[4];// 左轮0 右轮1
+	float driving_T[2];// 右前1 左前2 左后3 右后4
     
-    Encoder_t Driving_Motor[2];
-    Encoder_t Joint_Motor[4];
+    Encoder_t Driving_Motor[2];// 左轮0 右轮1
+    Encoder_t Joint_Motor[4];//  右前1 左前2 左后3 右后4
     
     float Balance_Tpgain;
     float Balance_Tgain;
@@ -238,5 +238,7 @@ void Chassis_Init_State_Update(Balance_Chassis_t* Chassis);
 void Chassis_Init_Handle(Balance_Chassis_t* Chassis);
 void Balance_Task(Balance_Chassis_t* Chassis);
 void Chassis_Control_Loop(Balance_Chassis_t* Chassis);
+void Chassis_Task(Balance_Chassis_t* Chassis);
+
 
 #endif
