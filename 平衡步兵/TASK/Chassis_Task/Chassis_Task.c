@@ -220,6 +220,31 @@ void Chassis_Param_Init(Balance_Chassis_t* Chassis)
     //先写这些，其他的再说
 }
 
+void Remote_Angle_Get(Balance_Chassis_t* Chassis)
+{
+    float V_y;
+    float V_x;
+    float Temp_Angle;
+    Chassis->Yaw_Angle_0_To_2PI = Chassis->USART_Chassis_Data.Yaw_Encoder_Angle;
+    //劣弧优化
+    if(Chassis->Yaw_Angle_0_To_2PI >= PI)
+    {
+        Chassis->Yaw_Angle__PI_To_PI = Chassis->Yaw_Angle_0_To_2PI - PI;
+    }
+    else
+    {
+        Chassis->Yaw_Angle__PI_To_PI = Chassis->Yaw_Angle_0_To_2PI ;
+    }
+    
+    V_x = Chassis->Chassis_Remote_Ref.V_x ;
+    V_y = Chassis->Chassis_Remote_Ref.V_y ;
+    
+    if(V_x == 0 && V_y == 0)
+    {
+
+    }
+}
+
 
 void Chassis_State_Update(Balance_Chassis_t* Chassis)
 {
@@ -299,6 +324,9 @@ void Chassis_State_Update(Balance_Chassis_t* Chassis)
         VAL_LIMIT(Chassis->Chassis_Remote_Ref.V_x ,-1.2f,1.2f);
         
     }
+    
+    
+    
     
     Chassis->Last_Control_Mode = Chassis->Control_Mode;
 }
@@ -506,7 +534,7 @@ void Balance_Task(Balance_Chassis_t* Chassis)
     //还没添加其他处理
     //
     
-    Chassis->balance_loop.K_error[0][0] = Chassis->balance_loop.k[0][0] * Chassis->balance_loop.state_err[0];//        
+    Chassis->balance_loop.K_error[0][0] = Chassis->balance_loop.k[0][0] * Chassis->balance_loop.state_err[0];        
     Chassis->balance_loop.K_error[0][1] = Chassis->balance_loop.k[0][1] * Chassis->balance_loop.state_err[1];
     Chassis->balance_loop.K_error[0][2] = Chassis->balance_loop.k[0][2] * Chassis->balance_loop.state_err[2];
     Chassis->balance_loop.K_error[0][3] = Chassis->balance_loop.k[0][3] * Chassis->balance_loop.state_err[3];
@@ -556,15 +584,14 @@ void Balance_Task(Balance_Chassis_t* Chassis)
 //    Chassis->V_w_Torque = PID_Calc(&Chassis->V_w_Pid, Chassis->Chassis_GYRO.Yaw_Gyro_Omega*DEG_TO_RAD, Chassis->Chassis_Ref.V_w);
 //    Chassis->vw_limit_rate = 1.0f;
 //    VAL_LIMIT(Chassis->V_w_Torque,-3.5,3.5);
-//暂时不转向
+
     
     //roll平衡PID
-    //暂时无roll平衡7878
-    //
+    Chassis->Roll_Balance_Leglength = PID_Calc(&Chassis->Roll_Pid_Angle,Chassis->Chassis_GYRO.Roll_Angle, 0);//可能之后能peek，之后再说
     
     //腿部竖直力F的计算
-    Chassis->Left_Leg.Leg_F = PID_Calc(&Chassis->Left_Leg.Leg_Length_PID,Chassis->Left_Leg.l0,Chassis->Chassis_Ref.Leglength) + BODY_MASS/2*9.8f;
-    Chassis->Right_Leg.Leg_F = PID_Calc(&Chassis->Right_Leg.Leg_Length_PID,Chassis->Right_Leg.l0,Chassis->Chassis_Ref.Leglength) + BODY_MASS/2*9.8f;
+    Chassis->Left_Leg.Leg_F = PID_Calc(&Chassis->Left_Leg.Leg_Length_PID,Chassis->Left_Leg.l0,Chassis->Chassis_Ref.Leglength + Chassis->Roll_Balance_Leglength) + BODY_MASS/2*9.8f;
+    Chassis->Right_Leg.Leg_F = PID_Calc(&Chassis->Right_Leg.Leg_Length_PID,Chassis->Right_Leg.l0,Chassis->Chassis_Ref.Leglength - Chassis->Roll_Balance_Leglength) + BODY_MASS/2*9.8f;
     
     
     //设置左腿关节扭矩
@@ -624,9 +651,11 @@ void Chassis_Control_Loop(Balance_Chassis_t* Chassis)
         CHASSIS_SEPARATE :
             Balance_Task(Chassis);
             break;
+        MANUAL_FOLLOW_REMOTE :
+            
+        
         default:
             break;
-            
     }
 }
 

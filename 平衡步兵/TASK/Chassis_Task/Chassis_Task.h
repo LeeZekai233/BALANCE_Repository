@@ -47,17 +47,17 @@
                         
 typedef enum
 {
-  CHASSIS_RELAX          = 0,
-  CHASSIS_STOP           = 1,
-  CHASSIS_INIT 			 = 2,
-  MANUAL_FOLLOW_REMOTE   = 3,
-  CHASSIS_STAND_MODE     = 4,
+  CHASSIS_RELAX          = 0,//底盘失能
+  CHASSIS_STOP           = 1,//底盘停止
+  CHASSIS_INIT 			 = 2,//底盘初始化
+  MANUAL_FOLLOW_REMOTE   = 3,//底盘手动遥控跟随
+  CHASSIS_STAND_MODE     = 4,//底盘站立
   AUTO_SEPARATE_GIMBAL   = 5,
   AUTO_FOLLOW_GIMBAL     = 6,
   CHASSIS_ROTATE         = 7,
   CHASSIS_REVERSE        = 8,
   CHASSIS_DOWN_MODE      = 9,
-  CHASSIS_SEPARATE 		 = 10,
+  CHASSIS_SEPARATE 		 = 10,//底盘独立
   CHASSIS_AUTO_SUP       = 11,
   CHASSIS_SINGLE_LEG_HANDLE =12,
 } Chassis_Mode_e;//底盘模式
@@ -173,9 +173,9 @@ typedef struct
     float Right_theta;
 
 
-	double yaw_encoder_ecd_angle;
-	float yaw_angle_0_2pi;
-	float yaw_angle__pi_pi;
+//	double yaw_encoder_ecd_angle;
+	float Yaw_Angle_0_To_2PI;
+	float Yaw_Angle__PI_To_PI;
 	float normal_Y_erroffset;
 	float remote_ref_vx;
 	
@@ -216,6 +216,8 @@ typedef struct
     Lpf1stObj ACC_LPF;//计算加速度用 低通滤波
     Lpf1stObj L_DDZW_LPF;//计算左腿支持力用 低通滤波
     Lpf1stObj R_DDZW_LPF;//计算右腿支持力用 低通滤波
+    
+    float Roll_Balance_Leglength;//roll平衡补偿腿长
     
 }Balance_Chassis_t;//复制来的，有些没用
 

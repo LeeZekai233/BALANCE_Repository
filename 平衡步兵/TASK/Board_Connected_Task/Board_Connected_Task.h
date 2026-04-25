@@ -10,7 +10,7 @@ typedef struct
 	u8 Jump_Cmd;//跳跃命令
 	u8 Overstep_Cmd;//上台阶命令
 	u8 Chassis_Mode;//底盘控制模式
-	float Yaw_Encoder_Ecd_Angle;//yaw轴电机编码器角度
+	float Yaw_Encoder_Angle;//yaw轴电机编码器角度
 	float Cmd_Leg_Length;//命令腿长
 	float V_x;
 	float V_y;

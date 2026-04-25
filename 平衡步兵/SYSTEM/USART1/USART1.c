@@ -95,9 +95,6 @@ void USART1_IRQHandler(void)
             if(this_time_rx_len == RC_DATA_FRAME_LENGTH)
 			{
                  DT7_Remote_Data_Dispose(_USART1_DMA_RX_BUF[0],&Remote_DT7_data);
-                 Key_Mouse_State_Update(&Remote_DT7_data);
-            
-               //  Remote_DT7_To_USART_Chassis_Data(&Remote_DT7_data,&Chassis.USART_Chassis_Data);
 			}
 		}
 		else
@@ -110,10 +107,7 @@ void USART1_IRQHandler(void)
 			DMA_Cmd(DMA2_Stream2, ENABLE);
            if(this_time_rx_len == RC_DATA_FRAME_LENGTH)
            {
-                DT7_Remote_Data_Dispose(_USART1_DMA_RX_BUF[1],&Remote_DT7_data);
-                Key_Mouse_State_Update(&Remote_DT7_data);
-            
-           //     Remote_DT7_To_USART_Chassis_Data(&Remote_DT7_data,&Chassis.USART_Chassis_Data);
+                DT7_Remote_Data_Dispose(_USART1_DMA_RX_BUF[1],&Remote_DT7_data);;
            }
 	    }
 	}

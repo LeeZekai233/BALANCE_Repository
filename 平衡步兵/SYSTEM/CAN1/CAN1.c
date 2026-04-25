@@ -67,12 +67,12 @@ void CAN1_Init(void)
 
 void CAN1_RX0_IRQHandler(void)
 {   
-	CanRxMsg rx_message_1;
+	CanRxMsg rx_message;
 	if (CAN_GetITStatus(CAN1,CAN_IT_FMP0)!= RESET)
     {
-        CAN_Receive(CAN1, CAN_FIFO0, &rx_message_1);
+        CAN_Receive(CAN1, CAN_FIFO0, &rx_message);
         //CAN1数据处理
-
+        CAN_Receive_Task(&rx_message,&Chassis);
         CAN_ClearITPendingBit(CAN1, CAN_IT_FMP0);
         CAN_ClearFlag(CAN1, CAN_FLAG_FF0);
     }

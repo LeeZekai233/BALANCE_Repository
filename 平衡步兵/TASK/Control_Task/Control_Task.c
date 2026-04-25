@@ -10,6 +10,7 @@ void Contorl_Task(Balance_Chassis_t* Chassis)
     
     //控动作判断
     Remote_Switch_Action_Detect(&Remote_DT7_data);
+    Key_Mouse_State_Update(&Remote_DT7_data);
     Remote_DT7_To_USART_Chassis_Data(&Remote_DT7_data,&Chassis->USART_Chassis_Data);
     
     //驱动轮在线检测
