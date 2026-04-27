@@ -61,4 +61,28 @@ void usart_gimbal_send(
     
 }
 
+//白控到虚拟双板通信的转换，用于调试
+void Remote_DT7_To_USART_Chassis_Data(Remote_DT7_t* Remote,USART_Chassis_Data_t* USART_Chassis_Data)
+{
+    if(Remote->Remote_clicker.s1_Action == MIDDLE_TO_DOWN)
+    {
+        USART_Chassis_Data->Chassis_Mode = 0;
+    }
+    
+    if(Remote->Remote_clicker.s1 == MIDDLE)
+    {
+        if(Remote->Remote_clicker.s2_Action == MIDDLE_TO_DOWN)
+        {
+            USART_Chassis_Data->Chassis_Mode = 7;
+        }
+        else if(Remote->Remote_clicker.s2 == MIDDLE)
+        {
+            USART_Chassis_Data->Chassis_Mode = 10;
+        }
+    }
+    
+    USART_Chassis_Data->V_x = Remote->Remote_clicker.ch3 * 0.004;
+    USART_Chassis_Data->Omega = Remote->Remote_clicker.ch2 * 0.004;
+}
+
 

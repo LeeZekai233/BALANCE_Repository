@@ -1,6 +1,5 @@
 #include "main.h"
 uint32_t time_tick = 0;
-void Remote_DT7_To_USART_Chassis_Data(Remote_DT7_t* ,USART_Chassis_Data_t* );//不加报警告
 
 
 

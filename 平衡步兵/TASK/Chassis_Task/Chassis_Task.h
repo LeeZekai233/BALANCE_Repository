@@ -227,18 +227,20 @@ extern Balance_Chassis_t Chassis;
 
 
 
-uint8_t Wheel_State_Estimate(Leg_State_t *Leg_State);
+uint8_t Wheel_State_Estimate(Leg_State_t *Leg_State);//根据支持力检测离地
 void Motor_Online_Detective(Encoder_t *Encoder);
 float Normalize_Angle_PI(float angle);
 float Transform_Angle_0_2PI(float angle);
 void Motor_Out_Limit(Balance_Chassis_t* Chassis);
 void Motor_Torque_Set(Balance_Chassis_t* Chassis,float Joint_T_0,float Joint_T_1,float Joint_T_2,float Joint_T_3,float Driving_T_1,float Driving_T_2);
 void Init_Tp_Calc(float Ref_Leglength,float Harmonize,float Init_Tp,Balance_Chassis_t* Chassis);
+void Chassis_Referance_Update(Balance_Chassis_t* Chassis);
 void Chassis_Param_Init(Balance_Chassis_t* Chassis);
 void Chassis_State_Update(Balance_Chassis_t* Chassis);
 void Chassis_Relax_Handle(Balance_Chassis_t* Chassis);
 void Chassis_Init_State_Update(Balance_Chassis_t* Chassis);
 void Chassis_Init_Handle(Balance_Chassis_t* Chassis);
+void Chassis_Fallow_Gimbal_Handle(Balance_Chassis_t* Chassis);
 void Balance_Task(Balance_Chassis_t* Chassis);
 void Chassis_Control_Loop(Balance_Chassis_t* Chassis);
 void Chassis_Task(Balance_Chassis_t* Chassis);

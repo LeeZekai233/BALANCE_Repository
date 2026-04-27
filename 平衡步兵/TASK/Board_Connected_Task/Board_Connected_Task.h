@@ -1,6 +1,7 @@
 #ifndef __BOARD_CONNECTED_TASK_H
 #define __BOARD_CONNECTED_TASK_H
 #include <stm32f4xx.h>
+#include "Remote_Task.h"
 
 #define GIMBAL_SEND_DATA_LENGTH  22
 
@@ -51,6 +52,12 @@ typedef __packed struct
 } usart_gimbal_data_t;//发送给云台的数据
 
 
+//extern USART_Chassis_Data_t usart_chassis_data;
+//extern usart_gimbal_data_t usart_gimbal_data;	
+//extern u8 gimbal_control_state;	
+//extern u8 gimbal_control_state_longtime;
+
+
 void usart_gimbal_send(
 					   uint16_t shooter_id1_17mm_cooling_heat,
 	                   uint16_t shooter_barrel_heat_limit,
@@ -67,11 +74,8 @@ void usart_gimbal_send(
                        
 void usart_gimbal_receive(usart_gimbal_data_t *data,uint8_t *DataAddress);	
 void gimbal_control_online_detective(void);					   
-//extern USART_Chassis_Data_t usart_chassis_data;
-//extern usart_gimbal_data_t usart_gimbal_data;	
-//extern u8 gimbal_control_state;	
-//extern u8 gimbal_control_state_longtime;
-
+void Remote_DT7_To_USART_Chassis_Data(Remote_DT7_t* Remote,USART_Chassis_Data_t* USART_Chassis_Data);
 
 
 #endif
+                       

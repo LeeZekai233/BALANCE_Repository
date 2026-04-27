@@ -220,16 +220,22 @@ void Chassis_Param_Init(Balance_Chassis_t* Chassis)
     //先写这些，其他的再说
 }
 
-void Remote_Angle_Get(Balance_Chassis_t* Chassis)
+
+
+
+void Chassis_Referance_Update(Balance_Chassis_t* Chassis)
 {
+    //速度，角度参考值更新
     float V_y;
     float V_x;
     float Temp_Angle;
     Chassis->Yaw_Angle_0_To_2PI = Chassis->USART_Chassis_Data.Yaw_Encoder_Angle;
-    //劣弧优化
-    if(Chassis->Yaw_Angle_0_To_2PI >= PI)
+    
+    
+    //云台角度劣弧优化
+    if(Chassis->Yaw_Angle_0_To_2PI > PI)
     {
-        Chassis->Yaw_Angle__PI_To_PI = Chassis->Yaw_Angle_0_To_2PI - PI;
+        Chassis->Yaw_Angle__PI_To_PI = Chassis->Yaw_Angle_0_To_2PI - 2*PI;
     }
     else
     {
@@ -239,9 +245,25 @@ void Remote_Angle_Get(Balance_Chassis_t* Chassis)
     V_x = Chassis->Chassis_Remote_Ref.V_x ;
     V_y = Chassis->Chassis_Remote_Ref.V_y ;
     
-    if(V_x == 0 && V_y == 0)
+    
+    //参考速度和角度的更新
+    if(V_x == 0 && V_y == 0)  //如果都为0，设置底盘速度和角度为0
     {
-
+        Chassis->Chassis_Ref.Remote_Angle = 0;
+        Chassis->Chassis_Ref.Remote_Speed = 0;
+    }
+    else
+    {
+        Chassis->Chassis_Ref.Remote_Speed = sqrtf(V_x*V_x + V_y*V_y);
+        Temp_Angle = atan2f(V_y,V_x) - 1.57f;  //这里先抄老代码
+        if(Temp_Angle < -PI)
+        {
+            Chassis->Chassis_Ref.Remote_Angle = Temp_Angle + 2*PI;
+        }
+        else
+        {
+            Chassis->Chassis_Ref.Remote_Angle = Temp_Angle;
+        }
     }
 }
 
@@ -311,20 +333,19 @@ void Chassis_State_Update(Balance_Chassis_t* Chassis)
      
     
     
-    //控制量获取
-    if(Chassis->Control_Mode != CHASSIS_INIT)//非Init控制
-    {
-        
+    //遥控数据获取
+//    if(Chassis->Control_Mode != CHASSIS_INIT)
+//    {
+//        
         Chassis->Chassis_Remote_Ref.V_y = Chassis->USART_Chassis_Data.V_y ;
-        Chassis->Chassis_Remote_Ref.V_w = Chassis->USART_Chassis_Data.Omega ;
+        Chassis->Chassis_Remote_Ref.V_w = Chassis->USART_Chassis_Data.Omega ;//7878
         Chassis->Chassis_Remote_Ref.Roll = Chassis->USART_Chassis_Data.Roll ;
         Chassis->Chassis_Remote_Ref.V_x = Chassis->USART_Chassis_Data.V_x ;
         //速度限幅
         VAL_LIMIT(Chassis->Chassis_Remote_Ref.V_y ,Chassis->Min_Speed ,Chassis->Max_Speed);
         VAL_LIMIT(Chassis->Chassis_Remote_Ref.V_x ,-1.2f,1.2f);
-        
-    }
-    
+//    }
+    Chassis_Referance_Update(Chassis);
     
     
     
@@ -468,6 +489,52 @@ void Chassis_Standup_Handle(Balance_Chassis_t* Chassis)
     }
 }
     
+
+
+
+void Chassis_Fallow_Gimbal_Handle(Balance_Chassis_t* Chassis)
+{
+    float Target_Angle;
+    float Target_Speed;
+    
+    //转向的优化 先抄老代码
+    if(fabs(Chassis->Chassis_Ref.Remote_Angle - Chassis->Yaw_Angle__PI_To_PI) < PI/2)
+    {
+        Target_Angle = Chassis->Chassis_Ref.Remote_Angle ;
+        Target_Speed = Chassis->Chassis_Ref.Remote_Speed ;
+        Chassis->Chassis_Ref.Roll = Chassis->USART_Chassis_Data.Roll ;
+    }
+    else if(Chassis->Yaw_Angle__PI_To_PI - Chassis->Chassis_Ref.Remote_Angle > 3*PI/2)
+    {
+        Target_Angle = Chassis->Chassis_Ref.Remote_Angle - 2*PI;
+        Target_Speed = Chassis->Chassis_Ref.Remote_Speed ;
+        Chassis->Chassis_Ref.Roll = Chassis->USART_Chassis_Data.Roll;
+    }
+    else if(Chassis->Yaw_Angle__PI_To_PI - Chassis->Chassis_Ref.Remote_Angle > 3*PI/2)
+    {
+        Target_Angle = Chassis->Chassis_Ref.Remote_Angle - 2*PI;
+        Target_Speed = Chassis->Chassis_Ref.Remote_Speed ;
+        Chassis->Chassis_Ref.Roll = Chassis->USART_Chassis_Data.Roll;
+    }
+    else if(Chassis->Yaw_Angle__PI_To_PI - Chassis->Chassis_Ref.Remote_Angle < 0)
+    {
+        Target_Angle = Chassis->Chassis_Ref.Remote_Angle - PI;
+        Target_Speed = Chassis->Chassis_Ref.Remote_Speed ;
+        Chassis->Chassis_Ref.Roll = Chassis->USART_Chassis_Data.Roll;
+    }
+    else if(Chassis->Yaw_Angle__PI_To_PI - Chassis->Chassis_Ref.Remote_Angle < 0)
+    {
+        Target_Angle = Chassis->Chassis_Ref.Remote_Angle + PI;
+        Target_Speed = Chassis->Chassis_Ref.Remote_Speed ;
+        Chassis->Chassis_Ref.Roll = Chassis->USART_Chassis_Data.Roll;
+    }
+    
+    Chassis->Chassis_Ref.V_y = trackRamp(Chassis->Chassis_Ref.V_y,Target_Speed);
+    Chassis->Chassis_Ref.V_w = -PID_Calc(&Chassis->Pid_Follow_Gimbal,Chassis->Yaw_Angle__PI_To_PI,Target_Angle);
+}
+
+
+
 
 
 void Balance_Task(Balance_Chassis_t* Chassis)
