@@ -8,7 +8,8 @@ void Infantry_Init(void)
     USART4_Init(115200);
     CAN1_Init( );
     CAN2_Init( );
-    TIM6_Init( );
     TIM2_Init( );
+    TIM6_Init( );
 }
+
 

@@ -43,7 +43,7 @@ typedef struct
     
     float theta;
 	
-}Leg_State_t;//腿状态
+}Leg_State_t;//腿状态，采用论文中VMC的字母
 
 
 void leg_conv(float F, float Tp, float phi1, float phi4,

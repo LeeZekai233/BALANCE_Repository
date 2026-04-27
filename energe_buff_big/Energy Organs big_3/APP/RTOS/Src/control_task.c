@@ -49,7 +49,7 @@ void control_task(void)
 		}
 	}
 	if(state==1)
-	{buf_r=250;
+	{buf_r=170;//7878¸ÄÑÕÉ«
 	buf_b=0;
 	}
 	else

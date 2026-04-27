@@ -88,7 +88,7 @@ typedef struct
     
     float Current_Fm;//实际向心力
     
-}LQR_System;//LQR参数
+}LQR_System;//LQR参数,所有字母采用论文中字母
 
 
 
@@ -219,6 +219,10 @@ typedef struct
     
     float Roll_Balance_Leglength;//roll平衡补偿腿长
     
+
+    
+    //uint8_t Middle_Leg_Cmd;//
+    
 }Balance_Chassis_t;//复制来的，有些没用
 
 
@@ -241,6 +245,7 @@ void Chassis_Relax_Handle(Balance_Chassis_t* Chassis);
 void Chassis_Init_State_Update(Balance_Chassis_t* Chassis);
 void Chassis_Init_Handle(Balance_Chassis_t* Chassis);
 void Chassis_Fallow_Gimbal_Handle(Balance_Chassis_t* Chassis);
+void Leglength_Change(Balance_Chassis_t* Chassis);
 void Balance_Task(Balance_Chassis_t* Chassis);
 void Chassis_Control_Loop(Balance_Chassis_t* Chassis);
 void Chassis_Task(Balance_Chassis_t* Chassis);
