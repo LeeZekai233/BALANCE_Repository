@@ -1,7 +1,7 @@
 #ifndef __DJI_MOTOR_H
 #define __DJI_MOTOR_H
 #include <stm32f4xx.h>
-#include "Generic_Encoder.h"
+
 /********************DJI Encoder******************************/
 #define RATE_BUF_SIZE 6
 #define M3508_ENCODER_TO_ANGLE 0.04394531f
@@ -42,6 +42,35 @@ typedef struct{
 	
 }DJI_Encoder_t;
 	
+
+
+
+#ifndef GENERIC_ENCODER
+#define GENERIC_ENCODER
+
+typedef struct
+{
+    
+    float Angle_Deg_fdb;	         //单圈角度反馈   单位°
+    float Angle_Deg_Total_fdb;       //多圈角度反馈   单位°
+    
+    float Angle_Rad_fdb;             //单圈角度反馈   单位rad
+    float Angle_Rad_Total_fdb;       //多圈角度反馈   单位rad
+    
+    float Omega_Deg_fdb;		//电机转速反馈  单位rad/s
+    
+    uint8_t online_flag;
+    
+    float Torque;             //力矩
+    
+    uint32_t temperature;    //温度
+    
+    uint32_t heart_cnt;//
+}Encoder_t;//通用编码器
+
+#endif
+
+
 
 extern DJI_Encoder_t Driving_M3508[2];
 

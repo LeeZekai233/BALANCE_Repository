@@ -1,8 +1,6 @@
 #ifndef __DAMIAO_8009_H_
 #define __DAMIAO_8009_H_
-
 #include "stm32f4xx.h" 
-#include "Generic_Encoder.h"
 
 #define P_MAX 3.141593 
 #define P_MIN -3.141593
@@ -40,9 +38,9 @@ typedef struct
 	
 	float P_fdb;				//当前位置  rad
     
-	float Single_Angle_fdb;	     //当前单圈角度   单位°
-    float Single_Angle_fdb_last; //电机上一次单圈角度 
-    float Multi_Angle_fdb;       //当前多圈角度
+	float Angle_Deg_fdb;	          //当前单圈角度   单位°
+    float Angle_Deg_fdb_last;     //电机上一次单圈角度 
+    float Angle_Deg_Total_fdb;       //当前多圈角度
     
 	float V_fdb;				//电机当前转速  rad/s
 	
@@ -54,6 +52,35 @@ typedef struct
 	int16_t round_cnt;  //圈数
 	int8_t  Flag_init_direction;		//初始化时方向是正是负，解算±180在0°上
 }DaMiao_8009_t;
+
+
+#ifndef GENERIC_ENCODER
+#define GENERIC_ENCODER
+
+
+typedef struct
+{
+    
+    float Angle_Deg_fdb;	         //当前单圈角度   单位°
+    float Angle_Deg_Total_fdb;       //当前多圈角度   单位°
+    
+    float Angle_Rad_fdb;             //单圈角度反馈   单位rad
+    float Angle_Rad_Total_fdb;       //多圈角度反馈   单位rad
+    
+    float Omega_Deg_fdb;		//电机当前转速  rad/s
+    
+    uint8_t online_flag;        //在线标志位
+    
+    float Torque;             //力矩
+    
+    uint32_t temperature;    //温度
+    
+    uint32_t heart_cnt;//
+}Encoder_t;//通用编码器
+
+
+
+#endif
 
 /******************************************************************************************************************************/
 

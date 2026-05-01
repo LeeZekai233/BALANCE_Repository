@@ -275,10 +275,10 @@ void Chassis_State_Update(Balance_Chassis_t* Chassis)
     
     /****************************************************************/
     //底盘各数据获取
-    VMC_Data_Get(&Chassis->Right_Leg,Chassis->Joint_Motor[3].Speed_fdb*JM4_POLARITY,Chassis->Joint_Motor[0].Speed_fdb*JM1_POLARITY,
-    Chassis->Joint_Motor[3].Single_Angle_fdb*DEG_TO_RAD*JM4_POLARITY,Chassis->Joint_Motor[0].Single_Angle_fdb*DEG_TO_RAD*JM1_POLARITY + PI);//求得右腿状态
-    VMC_Data_Get(&Chassis->Left_Leg,Chassis->Joint_Motor[2].Speed_fdb*JM3_POLARITY,Chassis->Joint_Motor[1].Speed_fdb*JM2_POLARITY,
-    Chassis->Joint_Motor[2].Single_Angle_fdb*DEG_TO_RAD*JM3_POLARITY,Chassis->Joint_Motor[1].Single_Angle_fdb*DEG_TO_RAD*JM2_POLARITY + PI);//求得左腿状态     //极性和角度没调7878解算之后再改
+    VMC_Data_Get(&Chassis->Right_Leg,Chassis->Joint_Motor[3].Omega_Deg_fdb*JM4_POLARITY,Chassis->Joint_Motor[0].Omega_Deg_fdb*JM1_POLARITY,
+    Chassis->Joint_Motor[3].Angle_Deg_fdb*DEG_TO_RAD*JM4_POLARITY,Chassis->Joint_Motor[0].Angle_Deg_fdb*DEG_TO_RAD*JM1_POLARITY + PI);//求得右腿状态
+    VMC_Data_Get(&Chassis->Left_Leg,Chassis->Joint_Motor[2].Omega_Deg_fdb*JM3_POLARITY,Chassis->Joint_Motor[1].Omega_Deg_fdb*JM2_POLARITY,
+    Chassis->Joint_Motor[2].Angle_Deg_fdb*DEG_TO_RAD*JM3_POLARITY,Chassis->Joint_Motor[1].Angle_Deg_fdb*DEG_TO_RAD*JM2_POLARITY + PI);//求得左腿状态     //极性和角度没调7878解算之后再改
     
     Chassis->Left_Leg.dtheta = Chassis->Left_Leg.dphi0 - 1.57f - Chassis->Chassis_GYRO.Pitch_Gyro_Omega*DEG_TO_RAD;
     Chassis->Right_Leg.dtheta = Chassis->Right_Leg.dphi0 - 1.57f - Chassis->Chassis_GYRO.Pitch_Gyro_Omega*DEG_TO_RAD;
@@ -562,17 +562,17 @@ void Balance_Task(Balance_Chassis_t* Chassis)
         Chassis->balance_loop.phi = Chassis->Chassis_GYRO.Pitch_Angle*DEG_TO_RAD;
     }
     Chassis->balance_loop.dphi = Chassis->Chassis_GYRO.Pitch_Gyro_Omega*DEG_TO_RAD;
-    Chassis->balance_loop.x = ((LEFT_WHEEL_POLARITY * Chassis->Driving_Motor[0].Multi_Angle_fdb + RIGHT_WHEEL_POLARITY * Chassis->Driving_Motor[1].Multi_Angle_fdb)/2.0f) * WHEEL_R;
-    //Chassis->balance_loop.dx = (LEFT_WHEEL_POLARITY * Chassis->Driving_Motor[0].Speed_fdb + RIGHT_WHEEL_POLARITY * Chassis->Driving_Motor[1].Speed_fdb) * WHEEL_R ;//1.没加减速比，2.最后是要卡尔曼滤波的 7878
+    Chassis->balance_loop.x = ((LEFT_WHEEL_POLARITY * Chassis->Driving_Motor[0].Angle_Deg_Total_fdb + RIGHT_WHEEL_POLARITY * Chassis->Driving_Motor[1].Angle_Deg_Total_fdb)/2.0f) * WHEEL_R;
+    //Chassis->balance_loop.dx = (LEFT_WHEEL_POLARITY * Chassis->Driving_Motor[0].Omega_Deg_fdb + RIGHT_WHEEL_POLARITY * Chassis->Driving_Motor[1].Omega_Deg_fdb) * WHEEL_R ;//1.没加减速比，2.最后是要卡尔曼滤波的 7878
     Chassis->balance_loop.theta = ((Chassis->Left_Leg.phi0 + Chassis->Right_Leg.phi0)/2.0f - 1.57f)-Chassis->Chassis_GYRO.Pitch_Angle*DEG_TO_RAD;
     Chassis->balance_loop.dtheta = ((Chassis->Left_Leg.dphi0 + Chassis->Right_Leg.dphi0)/2.0f - Chassis->Chassis_GYRO.Pitch_Gyro_Omega*DEG_TO_RAD);
     
     //机体重力加速度
     Chassis->balance_loop.ddz = Chassis->Chassis_GYRO.Z_Acc * arm_cos_f32(Chassis->Chassis_GYRO.Pitch_Angle*DEG_TO_RAD);
     //底盘轮子平均线速度变化
-    Chassis->balance_loop.wheel_dx = ((LEFT_WHEEL_POLARITY * Chassis->Driving_Motor[0].Speed_fdb + RIGHT_WHEEL_POLARITY * Chassis->Driving_Motor[1].Speed_fdb)/2.0f)*WHEEL_R*RPM_TO_RAD_PER_SED;
+    Chassis->balance_loop.wheel_dx = ((LEFT_WHEEL_POLARITY * Chassis->Driving_Motor[0].Omega_Deg_fdb + RIGHT_WHEEL_POLARITY * Chassis->Driving_Motor[1].Omega_Deg_fdb)/2.0f)*WHEEL_R*RPM_TO_RAD_PER_SED;
     //底盘轮子平均转速
-    Chassis->balance_loop.RPM = (LEFT_WHEEL_POLARITY * Chassis->Driving_Motor[0].Speed_fdb + RIGHT_WHEEL_POLARITY * Chassis->Driving_Motor[1].Speed_fdb)/2.0f;
+    Chassis->balance_loop.RPM = (LEFT_WHEEL_POLARITY * Chassis->Driving_Motor[0].Omega_Deg_fdb + RIGHT_WHEEL_POLARITY * Chassis->Driving_Motor[1].Omega_Deg_fdb)/2.0f;
     //腿长平均值
     Chassis->balance_loop.L0 = (Chassis->Left_Leg.l0 + Chassis->Right_Leg.l0)/2.0f;
     //不用陀螺仪的向心力

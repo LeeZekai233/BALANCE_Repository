@@ -49,7 +49,7 @@ void control_task(void)
 		}
 	}
 	if(state==1)
-	{buf_r=170;//7878改颜色
+	{buf_r=250;//7878改颜色
 	buf_b=0;
 	}
 	else
@@ -84,6 +84,7 @@ void control_task(void)
 			//		energe_turn_input();
 					time_Small_energe++;
 					speed_small=PI/3.0*RAD_TO_ANGLE*REDUCTION_RATIO/6;
+            
 			speed_big=(turn_a*sin(turn_w*time_Big_energe/1000)+ turn_b)*RAD_TO_ANGLE*REDUCTION_RATIO/6;
 				if(flag_turn_way==0)
 				{speed_small=-speed_small; 

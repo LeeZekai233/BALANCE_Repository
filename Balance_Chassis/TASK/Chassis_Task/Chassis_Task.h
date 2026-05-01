@@ -1,13 +1,14 @@
 #ifndef __CHASSIS_TASK_H
 #define __CHASSIS_TASK_H
 #include <stm32f4xx.h>
+
 #include "PID.h"
-#include "Generic_Encoder.h"
 #include "Board_Connected_Task.h"
 #include "USART3.h"
 #include "Leg_Task.h"
 #include "Low_Pass_Filter.h"
-
+#include "DaMiao_8009.h"
+#include "DJI_Motor.h"
 
 
 #define VAL_LIMIT(val, min, max)\

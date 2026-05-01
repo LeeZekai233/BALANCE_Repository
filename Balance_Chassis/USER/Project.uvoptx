@@ -983,18 +983,6 @@
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>
-    <File>
-      <GroupNumber>5</GroupNumber>
-      <FileNumber>57</FileNumber>
-      <FileType>5</FileType>
-      <tvExp>0</tvExp>
-      <tvExpOptDlg>0</tvExpOptDlg>
-      <bDave2>0</bDave2>
-      <PathWithFileName>..\TASK\Can_Bus_Task\Can_Bus_Task.h</PathWithFileName>
-      <FilenameWithoutPath>Can_Bus_Task.h</FilenameWithoutPath>
-      <RteFlg>0</RteFlg>
-      <bShared>0</bShared>
-    </File>
   </Group>
 
   <Group>
@@ -1005,7 +993,7 @@
     <RteFlg>0</RteFlg>
     <File>
       <GroupNumber>6</GroupNumber>
-      <FileNumber>58</FileNumber>
+      <FileNumber>57</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -1025,7 +1013,7 @@
     <RteFlg>0</RteFlg>
     <File>
       <GroupNumber>7</GroupNumber>
-      <FileNumber>59</FileNumber>
+      <FileNumber>58</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -1037,7 +1025,7 @@
     </File>
     <File>
       <GroupNumber>7</GroupNumber>
-      <FileNumber>60</FileNumber>
+      <FileNumber>59</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -1049,7 +1037,7 @@
     </File>
     <File>
       <GroupNumber>7</GroupNumber>
-      <FileNumber>61</FileNumber>
+      <FileNumber>60</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -1061,25 +1049,13 @@
     </File>
     <File>
       <GroupNumber>7</GroupNumber>
-      <FileNumber>62</FileNumber>
+      <FileNumber>61</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
       <PathWithFileName>..\Control_algorithm\High_Pass_Filter\High_Pass_Filter.c</PathWithFileName>
       <FilenameWithoutPath>High_Pass_Filter.c</FilenameWithoutPath>
-      <RteFlg>0</RteFlg>
-      <bShared>0</bShared>
-    </File>
-    <File>
-      <GroupNumber>7</GroupNumber>
-      <FileNumber>63</FileNumber>
-      <FileType>5</FileType>
-      <tvExp>0</tvExp>
-      <tvExpOptDlg>0</tvExpOptDlg>
-      <bDave2>0</bDave2>
-      <PathWithFileName>..\Control_algorithm\High_Pass_Filter\High_Pass_Filter.h</PathWithFileName>
-      <FilenameWithoutPath>High_Pass_Filter.h</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>
@@ -1093,7 +1069,7 @@
     <RteFlg>0</RteFlg>
     <File>
       <GroupNumber>8</GroupNumber>
-      <FileNumber>64</FileNumber>
+      <FileNumber>62</FileNumber>
       <FileType>5</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -1113,37 +1089,25 @@
     <RteFlg>0</RteFlg>
     <File>
       <GroupNumber>9</GroupNumber>
-      <FileNumber>65</FileNumber>
+      <FileNumber>63</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\MOTOR\DaMiao_8009.c</PathWithFileName>
+      <PathWithFileName>..\MOTOR\DaMiao_8009\DaMiao_8009.c</PathWithFileName>
       <FilenameWithoutPath>DaMiao_8009.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>
     <File>
       <GroupNumber>9</GroupNumber>
-      <FileNumber>66</FileNumber>
+      <FileNumber>64</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\MOTOR\DJI_Motor.c</PathWithFileName>
+      <PathWithFileName>..\MOTOR\DJI_Motor\DJI_Motor.c</PathWithFileName>
       <FilenameWithoutPath>DJI_Motor.c</FilenameWithoutPath>
-      <RteFlg>0</RteFlg>
-      <bShared>0</bShared>
-    </File>
-    <File>
-      <GroupNumber>9</GroupNumber>
-      <FileNumber>67</FileNumber>
-      <FileType>5</FileType>
-      <tvExp>0</tvExp>
-      <tvExpOptDlg>0</tvExpOptDlg>
-      <bDave2>0</bDave2>
-      <PathWithFileName>..\MOTOR\Generic_Encoder.h</PathWithFileName>
-      <FilenameWithoutPath>Generic_Encoder.h</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>
@@ -1157,7 +1121,7 @@
     <RteFlg>0</RteFlg>
     <File>
       <GroupNumber>10</GroupNumber>
-      <FileNumber>68</FileNumber>
+      <FileNumber>65</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -1169,7 +1133,7 @@
     </File>
     <File>
       <GroupNumber>10</GroupNumber>
-      <FileNumber>69</FileNumber>
+      <FileNumber>66</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -1181,7 +1145,7 @@
     </File>
     <File>
       <GroupNumber>10</GroupNumber>
-      <FileNumber>70</FileNumber>
+      <FileNumber>67</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -1193,7 +1157,7 @@
     </File>
     <File>
       <GroupNumber>10</GroupNumber>
-      <FileNumber>71</FileNumber>
+      <FileNumber>68</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -1205,7 +1169,7 @@
     </File>
     <File>
       <GroupNumber>10</GroupNumber>
-      <FileNumber>72</FileNumber>
+      <FileNumber>69</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -1217,7 +1181,7 @@
     </File>
     <File>
       <GroupNumber>10</GroupNumber>
-      <FileNumber>73</FileNumber>
+      <FileNumber>70</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -1229,7 +1193,7 @@
     </File>
     <File>
       <GroupNumber>10</GroupNumber>
-      <FileNumber>74</FileNumber>
+      <FileNumber>71</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -1241,7 +1205,7 @@
     </File>
     <File>
       <GroupNumber>10</GroupNumber>
-      <FileNumber>75</FileNumber>
+      <FileNumber>72</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -1253,7 +1217,7 @@
     </File>
     <File>
       <GroupNumber>10</GroupNumber>
-      <FileNumber>76</FileNumber>
+      <FileNumber>73</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -1265,7 +1229,7 @@
     </File>
     <File>
       <GroupNumber>10</GroupNumber>
-      <FileNumber>77</FileNumber>
+      <FileNumber>74</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -1277,7 +1241,7 @@
     </File>
     <File>
       <GroupNumber>10</GroupNumber>
-      <FileNumber>78</FileNumber>
+      <FileNumber>75</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -1289,7 +1253,7 @@
     </File>
     <File>
       <GroupNumber>10</GroupNumber>
-      <FileNumber>79</FileNumber>
+      <FileNumber>76</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>

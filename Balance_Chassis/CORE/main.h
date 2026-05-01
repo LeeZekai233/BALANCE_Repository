@@ -42,7 +42,6 @@
 //MOTOR
 #include "DaMiao_8009.h"
 #include "DJI_Motor.h"
-#include "Generic_Encoder.h"
 
 
 //Control_algorithm

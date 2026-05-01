@@ -120,7 +120,7 @@
         <SetRegEntry>
           <Number>0</Number>
           <Key>DLGUARM</Key>
-          <Name>祺?</Name>
+          <Name>?</Name>
         </SetRegEntry>
         <SetRegEntry>
           <Number>0</Number>
@@ -265,6 +265,11 @@
           <WinNumber>1</WinNumber>
           <ItemText>time_tick,0x0A</ItemText>
         </Ww>
+        <Ww>
+          <count>21</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>Motor620_Encoder</ItemText>
+        </Ww>
       </WatchWindow1>
       <WatchWindow2>
         <Ww>
@@ -347,7 +352,7 @@
       <DebugFlag>
         <trace>0</trace>
         <periodic>1</periodic>
-        <aLwin>0</aLwin>
+        <aLwin>1</aLwin>
         <aCover>0</aCover>
         <aSer1>0</aSer1>
         <aSer2>0</aSer2>

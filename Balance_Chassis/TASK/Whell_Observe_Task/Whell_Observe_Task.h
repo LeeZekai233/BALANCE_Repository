@@ -53,6 +53,7 @@ typedef struct
 
 
 
+extern Mileage_kalman_filter_t Mileage_kalman_filter;
 
 
 void Mileage_karman_filter_Init(Mileage_kalman_filter_t *B);
@@ -63,7 +64,5 @@ void Mileage_kalman_filter_reset(Mileage_kalman_filter_t *B);
 float difference_left_calc(float omega,float dt);
 float difference_right_calc(float omega,float dt);
 
-
-extern Mileage_kalman_filter_t Mileage_kalman_filter;
 
 #endif

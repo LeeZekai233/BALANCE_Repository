@@ -16,6 +16,16 @@ void Contorl_Task(Balance_Chassis_t* Chassis)
     Motor_Online_Detective(&Chassis->Driving_Motor[0]);
     Motor_Online_Detective(&Chassis->Driving_Motor[1]);
     
+    
+    //里程和加速度的更新
+    if(fabs(Chassis->Chassis_Ref.V_w) > 0.8f)
+    {
+    //    Mileage_kalman_filter_calc(&Mileage_kalman_filter, LEFT_WHEEL_POLARITY*Chassis->Driving_Motor[0].Angle_Rad_Total_fdb)
+    }
+    
+    
+    
+    
     //底盘控制
     if(time_tick%2==0)
     {

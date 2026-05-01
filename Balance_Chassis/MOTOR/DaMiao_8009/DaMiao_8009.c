@@ -73,18 +73,18 @@ void DaMiao_8009_Information_Receive(CanRxMsg *msg,DaMiao_8009_t *DaMiao_8009)
 	DaMiao_8009->Temperature_MOS = msg->Data[6];
 	DaMiao_8009->Temperature_Rotor = msg->Data[7];
 	
-	DaMiao_8009->Single_Angle_fdb = DaMiao_8009->P_fdb * 57.2958f;
+	DaMiao_8009->Angle_Deg_fdb = DaMiao_8009->P_fdb * 57.2958f;
 	
-	if(DaMiao_8009->Single_Angle_fdb_last - DaMiao_8009->Single_Angle_fdb > 180) //达妙系列圈数
+	if(DaMiao_8009->Angle_Deg_fdb_last - DaMiao_8009->Angle_Deg_fdb > 180) //达妙系列圈数
 	{
 		DaMiao_8009->round_cnt++;
 	}
-	if(DaMiao_8009->Single_Angle_fdb_last - DaMiao_8009->Single_Angle_fdb < -180 ) 
+	if(DaMiao_8009->Angle_Deg_fdb_last - DaMiao_8009->Angle_Deg_fdb < -180 ) 
 	{
 		DaMiao_8009->round_cnt--;
 	}
-    DaMiao_8009->Multi_Angle_fdb = DaMiao_8009->round_cnt*360.0f + DaMiao_8009->Single_Angle_fdb;
-	DaMiao_8009->Single_Angle_fdb_last = DaMiao_8009->Single_Angle_fdb;
+    DaMiao_8009->Angle_Deg_Total_fdb = DaMiao_8009->round_cnt*360.0f + DaMiao_8009->Angle_Deg_fdb;
+	DaMiao_8009->Angle_Deg_fdb_last = DaMiao_8009->Angle_Deg_fdb;
 }
 
 
@@ -307,9 +307,13 @@ void DaMiao_8009_Claer_Error_Information(CAN_TypeDef* CANx, int16_t CAN_ID)
 
 void DaMiao_8009_To_Generic_Encoder(DaMiao_8009_t* DaMiao_8009,Encoder_t* Encoder)
 {
-    Encoder->Single_Angle_fdb = DaMiao_8009->Single_Angle_fdb;
-    Encoder->Multi_Angle_fdb = DaMiao_8009->Multi_Angle_fdb;
-    Encoder->Speed_fdb = DaMiao_8009->V_fdb ;
+    Encoder->Angle_Deg_fdb = DaMiao_8009->Angle_Deg_fdb;
+    Encoder->Angle_Deg_Total_fdb = DaMiao_8009->Angle_Deg_Total_fdb;
+    
+    Encoder->Angle_Rad_fdb = DaMiao_8009->Angle_Deg_fdb*DEG_TO_RAD;
+    Encoder->Angle_Rad_Total_fdb = Encoder->Angle_Deg_Total_fdb*DEG_TO_RAD;
+    
+    Encoder->Omega_Deg_fdb = DaMiao_8009->V_fdb ;
     Encoder->temperature = DaMiao_8009->Temperature_Rotor ;//选用转子温度
     Encoder->Torque = DaMiao_8009->T_fdb ;
     Encoder->heart_cnt = time_tick;
