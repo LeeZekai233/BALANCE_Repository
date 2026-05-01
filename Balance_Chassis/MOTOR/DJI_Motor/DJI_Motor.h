@@ -5,8 +5,11 @@
 /********************DJI Encoder******************************/
 #define RATE_BUF_SIZE 6
 #define M3508_ENCODER_TO_ANGLE 0.04394531f
-#define RPM_TO_RAD_PER_SEC 0.10472f
-#define M3508_KT_MOTOR  0.015789f//不带减速箱
+#define RPM_TO_RAD_PER_SEC 0.10472f                  //轮子减速比16.875
+#define M3508_CURRENT_TO_WHEEL_TORQUE 5.0625f        //反馈电流到驱动轮力矩的转换系数
+#define M3508_ENCODER_TO_WHEEL        0.0592f        //电机角度到驱动轮角度的系数
+#define M3508_TORQUE_TO_IQ            161.8172f      //设定驱动轮力矩到M3508控制电流值
+#define M3508_CURRETN_TO_TORQUE       0.3f
 typedef struct 
 {
 	 
@@ -57,7 +60,7 @@ typedef struct
     float Angle_Rad_fdb;             //单圈角度反馈   单位rad
     float Angle_Rad_Total_fdb;       //多圈角度反馈   单位rad
     
-    float Omega_Deg_fdb;		//电机转速反馈  单位rad/s
+    float Omega_Rad_fdb;		//电机转速反馈  单位rad/s
     
     uint8_t online_flag;
     

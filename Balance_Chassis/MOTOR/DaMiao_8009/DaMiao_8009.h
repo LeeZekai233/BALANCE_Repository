@@ -67,7 +67,7 @@ typedef struct
     float Angle_Rad_fdb;             //单圈角度反馈   单位rad
     float Angle_Rad_Total_fdb;       //多圈角度反馈   单位rad
     
-    float Omega_Deg_fdb;		//电机当前转速  rad/s
+    float Omega_Rad_fdb;		//电机当前转速  rad/s
     
     uint8_t online_flag;        //在线标志位
     

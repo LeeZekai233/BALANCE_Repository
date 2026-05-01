@@ -44,7 +44,6 @@
 #define RPM_TO_RAD_PER_SED                0.10472f
 #define DEG_TO_RAD                        0.017453f
 
-
                         
 typedef enum
 {
@@ -220,7 +219,8 @@ typedef struct
     
     float Roll_Balance_Leglength;//roll∆Ω∫‚≤π≥•Õ»≥§
     
-
+    float Left_Acc;
+    float Right_Acc;
     
     //uint8_t Middle_Leg_Cmd;//
     

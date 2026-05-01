@@ -20,10 +20,20 @@ void Contorl_Task(Balance_Chassis_t* Chassis)
     //里程和加速度的更新
     if(fabs(Chassis->Chassis_Ref.V_w) > 0.8f)
     {
-    //    Mileage_kalman_filter_calc(&Mileage_kalman_filter, LEFT_WHEEL_POLARITY*Chassis->Driving_Motor[0].Angle_Rad_Total_fdb)
+        Mileage_kalman_filter_calc(&Mileage_kalman_filter, 
+        ((LEFT_WHEEL_POLARITY*Chassis->Driving_Motor[0].Angle_Rad_Total_fdb + RIGHT_WHEEL_POLARITY*Chassis->Driving_Motor[1].Angle_Rad_Total_fdb)/2.0f)*WHEEL_R,
+        ((LEFT_WHEEL_POLARITY*Chassis->Driving_Motor[0].Omega_Rad_fdb + RIGHT_WHEEL_POLARITY*Chassis->Driving_Motor[1].Omega_Rad_fdb)/2.0f)*WHEEL_R,
+        0);
     }
-    
-    
+    else
+    {
+        Mileage_kalman_filter_calc(&Mileage_kalman_filter, 
+        ((LEFT_WHEEL_POLARITY*Chassis->Driving_Motor[0].Angle_Rad_Total_fdb + RIGHT_WHEEL_POLARITY*Chassis->Driving_Motor[1].Angle_Rad_Total_fdb)/2.0f)*WHEEL_R,
+        ((LEFT_WHEEL_POLARITY*Chassis->Driving_Motor[0].Omega_Rad_fdb + RIGHT_WHEEL_POLARITY*Chassis->Driving_Motor[1].Omega_Rad_fdb)/2.0f)*WHEEL_R,
+        Chassis->Chassis_GYRO.Y_Acc);
+    }
+    Chassis->Left_Acc = Chassis->Left_Acc * 0.60f + difference_left_calc(Chassis->Driving_Motor[0].Omega_Rad_fdb,0.001)*0.40f;
+    Chassis->Right_Acc = Chassis->Right_Acc * 0.60f + difference_left_calc(Chassis->Driving_Motor[1].Omega_Rad_fdb,0.001)*0.40f;
     
     
     //底盘控制

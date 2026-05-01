@@ -218,10 +218,10 @@ void M3508_Encoder_To_Generic_Encoder(DJI_Encoder_t* DJI_Encoder,Encoder_t* Enco
     Encoder->Angle_Rad_fdb = Encoder->Angle_Deg_fdb*DEG_TO_RAD;
     Encoder->Angle_Rad_Total_fdb = Encoder->Angle_Deg_Total_fdb*DEG_TO_RAD;
     
-    Encoder->Omega_Deg_fdb = DJI_Encoder->rate_rpm * RPM_TO_RAD_PER_SEC;
+    Encoder->Omega_Rad_fdb = DJI_Encoder->rate_rpm*RPM_TO_RAD_PER_SEC;
     
     Encoder->temperature = DJI_Encoder->temperature;
-    Encoder->Torque = DJI_Encoder->currtent * M3508_KT_MOTOR;
+    Encoder->Torque = DJI_Encoder->currtent * M3508_CURRETN_TO_TORQUE;
     Encoder->heart_cnt = time_tick;
 }
 

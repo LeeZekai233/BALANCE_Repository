@@ -313,7 +313,7 @@ void DaMiao_8009_To_Generic_Encoder(DaMiao_8009_t* DaMiao_8009,Encoder_t* Encode
     Encoder->Angle_Rad_fdb = DaMiao_8009->Angle_Deg_fdb*DEG_TO_RAD;
     Encoder->Angle_Rad_Total_fdb = Encoder->Angle_Deg_Total_fdb*DEG_TO_RAD;
     
-    Encoder->Omega_Deg_fdb = DaMiao_8009->V_fdb ;
+    Encoder->Omega_Rad_fdb = DaMiao_8009->V_fdb ;
     Encoder->temperature = DaMiao_8009->Temperature_Rotor ;//选用转子温度
     Encoder->Torque = DaMiao_8009->T_fdb ;
     Encoder->heart_cnt = time_tick;
