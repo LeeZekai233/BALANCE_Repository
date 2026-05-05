@@ -20,6 +20,7 @@ int float_to_uint(float x, float x_min, float x_max, int bits)
     return (int) ((x-offset)*((float)((1<<bits)-1))/span);
 }
 
+
 /********************************
 *@Brief： DaMiao_8009 接收函数
 *@Cal：   内部或外部
@@ -27,7 +28,7 @@ int float_to_uint(float x, float x_min, float x_max, int bits)
 *@Note:   无
 *@RetVal: 无
 ********************************/
-void DaMiao_8009_Information_Receive(CanRxMsg *msg,DaMiao_8009_t *DaMiao_8009)
+void DaMiao_8009_Information_Receive(CanRxMsg *msg,DaMiao_8009_t *DaMiao_8009,float offset)
 {
 	int8_t ERR_Flag = (msg->Data[0]>>4);
     if(ERR_Flag == (int8_t)0)
@@ -67,7 +68,7 @@ void DaMiao_8009_Information_Receive(CanRxMsg *msg,DaMiao_8009_t *DaMiao_8009)
 		DaMiao_8009->ERR = OVERLOAD;
 	}
     
-	DaMiao_8009->P_fdb = uint_to_float((msg->Data[1]<<8) | (msg->Data[2]), P_MIN , P_MAX , 16); //3.14由上位机决定
+	DaMiao_8009->P_fdb = AngleWrap( uint_to_float((msg->Data[1]<<8) | (msg->Data[2]), P_MIN , P_MAX , 16) + offset); //3.14由上位机决定
 	DaMiao_8009->V_fdb = uint_to_float((msg->Data[3]<<4) | (msg->Data[4]>>4), -45.0f , 45.0f , 12);//45由上位机得
 	DaMiao_8009->T_fdb = uint_to_float((msg->Data[4]&0x0f)<<8 | (msg->Data[5]), -40.0f , 40.0f , 12);
 	DaMiao_8009->Temperature_MOS = msg->Data[6];
@@ -244,6 +245,7 @@ void DaMiao_8009_Enable(CAN_TypeDef* CANx, int16_t CAN_ID)
 	CAN_TransmitStatus(CANx,CAN_Transmit(CANx,&Motor_DaMiao_Init_CanTxMsg));
 }
 
+
 /********************************
 *@Brief：   达妙电机 	失能
 *@Cal：     内部和外部
@@ -303,6 +305,13 @@ void DaMiao_8009_Claer_Error_Information(CAN_TypeDef* CANx, int16_t CAN_ID)
 }
 
 
+// 角度归一化到 [-180 , 180]
+float AngleWrap(float angle)
+{
+    while(angle > PI)  angle -= 2*PI;
+    while(angle < -PI) angle += 2*PI;
+    return angle;
+}
 
 
 void DaMiao_8009_To_Generic_Encoder(DaMiao_8009_t* DaMiao_8009,Encoder_t* Encoder)

@@ -19,19 +19,19 @@ void CAN_Receive_Task(CanRxMsg* RxMsg,Balance_Chassis_t* Chassis)
         
         //CAN1
         case 0xA1:
-            DaMiao_8009_Information_Receive(RxMsg,&Joint_Motor[0]);
+            DaMiao_8009_Information_Receive(RxMsg,&Joint_Motor[0],0);
             DaMiao_8009_To_Generic_Encoder(&Joint_Motor[0],&Chassis->Joint_Motor[0]);//右腿phi1
             break;
         case 0xA2:
-            DaMiao_8009_Information_Receive(RxMsg,&Joint_Motor[1]);
+            DaMiao_8009_Information_Receive(RxMsg,&Joint_Motor[1],0);
             DaMiao_8009_To_Generic_Encoder(&Joint_Motor[1],&Chassis->Joint_Motor[1]);//左腿phi1
             break;
         case 0xA3:
-            DaMiao_8009_Information_Receive(RxMsg,&Joint_Motor[2]);
+            DaMiao_8009_Information_Receive(RxMsg,&Joint_Motor[2],0);
             DaMiao_8009_To_Generic_Encoder(&Joint_Motor[2],&Chassis->Joint_Motor[2]);//左腿phi4
             break;
         case 0xA4:
-            DaMiao_8009_Information_Receive(RxMsg,&Joint_Motor[3]);
+            DaMiao_8009_Information_Receive(RxMsg,&Joint_Motor[3],0);
             DaMiao_8009_To_Generic_Encoder(&Joint_Motor[3],&Chassis->Joint_Motor[3]);//右腿phi4
             break;
     }
@@ -41,9 +41,25 @@ void CAN_Receive_Task(CanRxMsg* RxMsg,Balance_Chassis_t* Chassis)
 
 void CAN1_Send_Task_1(float Joint_T_Set1,float Joint_T_Set4)
 {
-    DaMiao_8009_Information_Send(CAN1,0x01,0,0,Joint_T_Set1,0,0);
+    if(Joint_Motor[0].ERR == 0)
+    {
+        DaMiao_8009_Enable(CAN1,0x01);
+    }
+    else if(Joint_Motor[0].ERR == 1)
+    {
+        DaMiao_8009_Information_Send(CAN1,0x01,0,0,Joint_T_Set1,0,0);
+    }
     while((CAN1->TSR & (CAN_TSR_TME0 | CAN_TSR_TME1 | CAN_TSR_TME2)) == 0);//等待有发送邮箱空
-    DaMiao_8009_Information_Send(CAN1,0x04,0,0,Joint_T_Set4,0,0);
+    
+    
+    if(Joint_Motor[3].ERR == 0)
+    {
+        DaMiao_8009_Enable(CAN1,0x04);
+    }
+    else if(Joint_Motor[3].ERR == 1)
+    {
+        DaMiao_8009_Information_Send(CAN1,0x04,0,0,Joint_T_Set4,0,0);
+    }
     while((CAN1->TSR & (CAN_TSR_TME0 | CAN_TSR_TME1 | CAN_TSR_TME2)) == 0);//等待有发送邮箱空
 }
 
@@ -51,9 +67,26 @@ void CAN1_Send_Task_1(float Joint_T_Set1,float Joint_T_Set4)
 
 void CAN1_Send_Task_2(float Joint_T_Set2, float Joint_T_Set3)
 {
+     
+    if(Joint_Motor[1].ERR == 0)
+    {
+          DaMiao_8009_Enable(CAN1,0x02);
+    }
+    else if(Joint_Motor[1].ERR == 1)
+    {
     DaMiao_8009_Information_Send(CAN1,0x02,0,0,Joint_T_Set2,0,0);
-    while((CAN1->TSR & (CAN_TSR_TME0 | CAN_TSR_TME1 | CAN_TSR_TME2)) == 0);//等待有发送邮箱空
-    DaMiao_8009_Information_Send(CAN1,0x03,0,0,Joint_T_Set3,0,0);
+    }
+    while((CAN1->TSR & (CAN_TSR_TME0 | CAN_TSR_TME1 | CAN_TSR_TME2)) == 0)//等待有发送邮箱空
+        
+    
+    if(Joint_Motor[2].ERR == 0)
+    {
+          DaMiao_8009_Enable(CAN1,0x03);
+    }
+    else if(Joint_Motor[2].ERR == 1)
+    {
+          DaMiao_8009_Information_Send(CAN1,0x03,0,0,Joint_T_Set3,0,0);
+    }
     while((CAN1->TSR & (CAN_TSR_TME0 | CAN_TSR_TME1 | CAN_TSR_TME2)) == 0);//等待有发送邮箱空
 }
 
