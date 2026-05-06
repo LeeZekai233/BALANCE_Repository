@@ -308,8 +308,14 @@ void DaMiao_8009_Claer_Error_Information(CAN_TypeDef* CANx, int16_t CAN_ID)
 // 角度归一化到 [-180 , 180]
 float AngleWrap(float angle)
 {
-    while(angle > PI)  angle -= 2*PI;
-    while(angle < -PI) angle += 2*PI;
+    if(angle > PI)  
+    {
+        angle -= 2*PI;
+    }
+    else if(angle < -PI) 
+    {
+        angle += 2*PI;
+    }
     return angle;
 }
 
@@ -319,8 +325,8 @@ void DaMiao_8009_To_Generic_Encoder(DaMiao_8009_t* DaMiao_8009,Encoder_t* Encode
     Encoder->Angle_Deg_fdb = DaMiao_8009->Angle_Deg_fdb;
     Encoder->Angle_Deg_Total_fdb = DaMiao_8009->Angle_Deg_Total_fdb;
     
-    Encoder->Angle_Rad_fdb = DaMiao_8009->Angle_Deg_fdb*DEG_TO_RAD;
-    Encoder->Angle_Rad_Total_fdb = Encoder->Angle_Deg_Total_fdb*DEG_TO_RAD;
+    Encoder->Angle_Rad_fdb = DaMiao_8009->P_fdb;
+    Encoder->Angle_Rad_Total_fdb = DaMiao_8009->P_fdb + DaMiao_8009->round_cnt*2*PI;
     
     Encoder->Omega_Rad_fdb = DaMiao_8009->V_fdb ;
     Encoder->temperature = DaMiao_8009->Temperature_Rotor ;//选用转子温度

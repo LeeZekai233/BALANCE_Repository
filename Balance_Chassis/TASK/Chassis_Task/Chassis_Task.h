@@ -25,12 +25,14 @@
             
 #define WHEEL_R                        0.058f
             
-#define JM1_POLARITY                      1//右前电机极性   //老代码里的电机极性
-#define JM2_POLARITY                     -1//左前电机极性
-#define JM3_POLARITY                     -1//左后电机极性
-#define JM4_POLARITY                      1//右后电机极性
+#define JM1_POSITION_POLARITY                      -1//右前电机极性
+#define JM2_POSITION_POLARITY                       1//左前电机极性
+#define JM3_POSITION_POLARITY                       1//左后电机极性
+#define JM4_POSITION_POLARITY                      -1//右后电机极性
             
-#define LEFT_WHEEL_POLARITY              -1//左轮电机极性 //老车上的
+
+            
+#define LEFT_WHEEL_POLARITY              -1//左轮电机极性 
 #define RIGHT_WHEEL_POLARITY              1//右轮电机极性
 
 #define JOINT_MAX_T                       34          //老代码里的限幅
@@ -60,6 +62,7 @@ typedef enum
   CHASSIS_SEPARATE 		 = 10,//底盘独立
   CHASSIS_AUTO_SUP       = 11,
   CHASSIS_SINGLE_LEG_HANDLE =12,
+  CHASSIS_TEXT              =13,
 } Chassis_Mode_e;//底盘模式
 
 

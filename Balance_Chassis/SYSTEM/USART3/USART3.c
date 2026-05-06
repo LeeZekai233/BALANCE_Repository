@@ -126,7 +126,7 @@ void USART3_IRQHandler(void)
       if(USART3_Data_Length==CH040_DATA_FARMER_LENGHT)
       {
          memcpy(&imu_data,&CH040_Rx_Buffer[CH040_FRAMER_HEADER_LENGHT],sizeof(imu_data_t));
-         CH040_Data_Get(&imu_data , &CH040DATA);
+         CH040_Data_Get(&imu_data , &Chassis.Chassis_GYRO);
       }
       DMA_SetCurrDataCounter(DMA1_Stream1,CH040_RX_BUFF_SIZE);
       USART_DMACmd(USART3,USART_DMAReq_Rx,ENABLE);
