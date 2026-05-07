@@ -173,102 +173,77 @@
         <Ww>
           <count>3</count>
           <WinNumber>1</WinNumber>
-          <ItemText>Chassis</ItemText>
+          <ItemText>Gimbal</ItemText>
         </Ww>
         <Ww>
           <count>4</count>
           <WinNumber>1</WinNumber>
-          <ItemText>Gimbal</ItemText>
+          <ItemText>\\Project\../TASK/Gimbal_Task/Gimbal_Task.c\Gimbal.Gimbal_Motor_Angle_PID[0].mode</ItemText>
         </Ww>
         <Ww>
           <count>5</count>
           <WinNumber>1</WinNumber>
-          <ItemText>\\Project\../TASK/Gimbal_Task/Gimbal_Task.c\Gimbal.Gimbal_Motor_Angle_PID[0].mode</ItemText>
+          <ItemText>sin_yaw</ItemText>
         </Ww>
         <Ww>
           <count>6</count>
           <WinNumber>1</WinNumber>
-          <ItemText>sin_yaw</ItemText>
+          <ItemText>cos_yaw</ItemText>
         </Ww>
         <Ww>
           <count>7</count>
           <WinNumber>1</WinNumber>
-          <ItemText>cos_yaw</ItemText>
+          <ItemText>DaMiao_8009</ItemText>
         </Ww>
         <Ww>
           <count>8</count>
           <WinNumber>1</WinNumber>
-          <ItemText>DaMiao_8009</ItemText>
+          <ItemText>Balance_Chassis_t</ItemText>
         </Ww>
         <Ww>
           <count>9</count>
           <WinNumber>1</WinNumber>
-          <ItemText>Balance_Chassis_t</ItemText>
+          <ItemText>Remote_DT7_t</ItemText>
         </Ww>
         <Ww>
           <count>10</count>
           <WinNumber>1</WinNumber>
-          <ItemText>time_tick</ItemText>
+          <ItemText>phi4_1,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>11</count>
           <WinNumber>1</WinNumber>
-          <ItemText>Remote_DT7_t</ItemText>
+          <ItemText>phi1_1</ItemText>
         </Ww>
         <Ww>
           <count>12</count>
           <WinNumber>1</WinNumber>
-          <ItemText>Remote_DT7_data</ItemText>
+          <ItemText>phi1_1</ItemText>
         </Ww>
         <Ww>
           <count>13</count>
           <WinNumber>1</WinNumber>
-          <ItemText>Joint_Motor</ItemText>
+          <ItemText>phi4_1</ItemText>
         </Ww>
         <Ww>
           <count>14</count>
           <WinNumber>1</WinNumber>
-          <ItemText>phi4_1,0x0A</ItemText>
+          <ItemText>Chassis</ItemText>
         </Ww>
         <Ww>
           <count>15</count>
           <WinNumber>1</WinNumber>
-          <ItemText>phi1_1</ItemText>
+          <ItemText>Remote_DT7_data</ItemText>
         </Ww>
         <Ww>
           <count>16</count>
           <WinNumber>1</WinNumber>
-          <ItemText>phi1_1</ItemText>
+          <ItemText>Chassis</ItemText>
         </Ww>
         <Ww>
           <count>17</count>
           <WinNumber>1</WinNumber>
-          <ItemText>leglength_cmd_temp</ItemText>
-        </Ww>
-        <Ww>
-          <count>18</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>control_mode_temp</ItemText>
-        </Ww>
-        <Ww>
-          <count>19</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>\\Project\../TASK/Chassis_Task/Chassis_Task.c\Chassis.Left_Leg.Leg_Length_PID.Kd</ItemText>
-        </Ww>
-        <Ww>
-          <count>20</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>temp_tp</ItemText>
-        </Ww>
-        <Ww>
-          <count>21</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>\\Project\../TASK/Chassis_Task/Chassis_Task.c\Chassis.Left_Leg</ItemText>
-        </Ww>
-        <Ww>
-          <count>22</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>\\Project\../TASK/Chassis_Task/Chassis_Task.c\Chassis.Leg_Harmonize_Pid_Outer.Kp</ItemText>
+          <ItemText>\\Project\../TASK/Chassis_Task/Chassis_Task.c\Chassis.balance_loop.x</ItemText>
         </Ww>
       </WatchWindow1>
       <Tracepoint>

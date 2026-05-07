@@ -25,27 +25,31 @@
             
 #define WHEEL_R                        0.058f
             
-#define JM1_POSITION_POLARITY                      -1//右前电机极性
-#define JM2_POSITION_POLARITY                       1//左前电机极性
-#define JM3_POSITION_POLARITY                       1//左后电机极性
-#define JM4_POSITION_POLARITY                      -1//右后电机极性
+#define JM1_POLARITY                      -1//右前电机极性
+#define JM2_POLARITY                       1//左前电机极性
+#define JM3_POLARITY                       1//左后电机极性
+#define JM4_POLARITY                      -1//右后电机极性
             
 
             
-#define LEFT_WHEEL_POLARITY              -1//左轮电机极性 
-#define RIGHT_WHEEL_POLARITY              1//右轮电机极性
+#define LEFT_WHEEL_POLARITY                        -1//左轮电机极性 
+#define RIGHT_WHEEL_POLARITY                        1//右轮电机极性
 
+            
 #define JOINT_MAX_T                       34          //老代码里的限幅
 #define WHEEL_MAX_T                       4.35f // 4.3
+        
             
-#define BODY_MASS                         23.20f
+#define BODY_MASS                         8.4f
 #define WHEEL_MASS                        1.112f   
+
 
 #define TIME_STEP                         2
             
+            
 #define RPM_TO_RAD_PER_SED                0.10472f
 #define DEG_TO_RAD                        0.017453f
-
+#define NORMAL_Y_ERROEOFFSET              0
                         
 typedef enum
 {
@@ -112,10 +116,11 @@ typedef struct
 
 typedef enum
 {
-    RELAX_STATE  = 0,//放松状态
-    NORMOL_STATE = 1,//正常状态
-    ROLL_STATE   = 2,//侧翻状态
-    FLIP_STATE   = 3,//倒扣状态
+    NORMAL_STATE_1 = 1,//正常状态1
+    NORMAL_STATE_2 = 2,//正常状态2
+    ROLL_STATE   = 3,//侧翻状态
+    FLIP_STATE   = 4,//倒扣状态
+    INIT_FINISH  = 5,//初始化完成
 }Init_State_e;
 
 
@@ -170,6 +175,7 @@ typedef struct
 	
     PID_t Init_dphi0_pid_left;
 	PID_t Init_dphi0_pid_right;
+    
 	u16 Max_power_to_PM01;//好像没用过
 	
 	float Left_theta;
@@ -220,10 +226,15 @@ typedef struct
     Lpf1stObj L_DDZW_LPF;//计算左腿支持力用 低通滤波
     Lpf1stObj R_DDZW_LPF;//计算右腿支持力用 低通滤波
     
-    float Roll_Balance_Leglength;//roll平衡补偿腿长
+    float Roll_Balance_F;//roll平衡力
     
     float Left_Acc;
     float Right_Acc;
+    
+    float Roll_Balance_F_Left;
+    float Roll_Balance_F_Right;
+    
+    float x_error;
     
     //uint8_t Middle_Leg_Cmd;//
     
@@ -246,7 +257,6 @@ void Chassis_Referance_Update(Balance_Chassis_t* Chassis);
 void Chassis_Param_Init(Balance_Chassis_t* Chassis);
 void Chassis_State_Update(Balance_Chassis_t* Chassis);
 void Chassis_Relax_Handle(Balance_Chassis_t* Chassis);
-void Chassis_Init_State_Update(Balance_Chassis_t* Chassis);
 void Chassis_Init_Handle(Balance_Chassis_t* Chassis);
 void Chassis_Fallow_Gimbal_Handle(Balance_Chassis_t* Chassis);
 void Leglength_Change(Balance_Chassis_t* Chassis);

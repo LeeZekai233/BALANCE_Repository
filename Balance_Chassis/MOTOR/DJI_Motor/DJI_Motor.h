@@ -6,10 +6,14 @@
 #define RATE_BUF_SIZE 6
 #define M3508_ENCODER_TO_ANGLE 0.04394531f
 #define RPM_TO_RAD_PER_SEC 0.10472f                  //轮子减速比16.875
+#define RPM_TO_WHEEL_RAD_PER_SED      0.006206f      //电机反馈转速 rpm 到轮子角速度 rad/s的转换系数
 #define M3508_CURRENT_TO_WHEEL_TORQUE 5.0625f        //反馈电流到驱动轮力矩的转换系数
-#define M3508_ENCODER_TO_WHEEL        0.0592f        //电机角度到驱动轮角度的系数
-#define M3508_TORQUE_TO_IQ            161.8172f      //设定驱动轮力矩到M3508控制电流值
+#define M3508_ENCODER_TO_WHEEL        0.0592592f        //电机角度到驱动轮角度的系数
+#define M3508_TORQUE_TO_IQ            3060.2f      //设定驱动轮力矩到M3508控制电流值
 #define M3508_CURRETN_TO_TORQUE       0.3f
+
+#define REDUCTION_RATIO_16            
+
 typedef struct 
 {
 	 
@@ -27,6 +31,7 @@ typedef struct
     int32_t heart_cnt;
 	
 }Encoder_cal;
+
 
 
 typedef struct{

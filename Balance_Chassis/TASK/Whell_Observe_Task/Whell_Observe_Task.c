@@ -21,7 +21,6 @@ float difference_right_calc(float omega,float dt)
 }
 
 
-
 /**
   ******************************************************************************
   * @file    Mileage.c
@@ -39,13 +38,13 @@ float difference_right_calc(float omega,float dt)
  //数值初始化
 Mileage_kalman_filter_t Mileage_kalman_filter =
 {
-	.Q_data = {
+	.Q_data = {                               //0.1 0 0 0.1
 	            0.1 , 0 ,
-	            0 , 0.1 
+	            0 , 0.09 
             },
 	.R_data = {
 		          1 , 0,
-		          0 , 1000
+		          0 , 2000//10000
 	          },
 	.A_data = {
 		         1 , DT ,
@@ -97,6 +96,7 @@ static float TEMP22___data[4] = {0};
 static float TEMP22____data[4] = {0};
 
 
+int test_flag;
 void Mileage_kalman_filter_calc(Mileage_kalman_filter_t *B,float ecd_position,float ecd_velocity,float acc)
 {
 	static u8 state_kalman_init = 0;
@@ -129,8 +129,11 @@ void Mileage_kalman_filter_calc(Mileage_kalman_filter_t *B,float ecd_position,fl
 	mat TEMP22___;
 	mat_init(&TEMP22___,2,2,(float *)TEMP22____data);	
 	
+	VAL_LIMIT(ecd_velocity,-4,4);
+	
 	B->Z.pData[0] = ecd_position;
 	B->Z.pData[1] = ecd_velocity;
+	VAL_LIMIT(acc,-4,4);	
 	B->U.pData[0] = acc;
 	
 	//1. xhat'(k)= A xhat(k-1) + B u(k-1)
@@ -138,6 +141,7 @@ void Mileage_kalman_filter_calc(Mileage_kalman_filter_t *B,float ecd_position,fl
 	mat_mult(&B->B, &B->U,&TEMP21_);
 	mat_add(&TEMP21,&TEMP21_,&TEMP21__);
 	mat_copy(TEMP21___data,B->xhat_data,2);
+	
 	
 	//2. P'(k) = A P(k-1) AT + Q
 	mat_mult(&B->A, &B->P,&TEMP22);
@@ -167,10 +171,21 @@ void Mileage_kalman_filter_calc(Mileage_kalman_filter_t *B,float ecd_position,fl
 	mat_mult(&TEMP22_,&B->P,&TEMP22);
 	mat_copy(TEMP22_data,B->P_data,4);
 	
+	if(fabs(B->xhat.pData[1]) > 3)
+	{
+		B->xhat.pData[1] = 0;
+		test_flag++;
+	}
+		
 	B->positon = B->xhat.pData[0];
 	B->velocity = B->xhat.pData[1];
+	VAL_LIMIT(B->velocity,-4,4);
+	if(fabs(B->velocity) > 3)
+	{
+		test_flag++;
+		Mileage_kalman_filter_reset(B);
+	}
 }
-
 
 //滤波器的重置
 void Mileage_kalman_filter_reset(Mileage_kalman_filter_t *B)
@@ -179,4 +194,6 @@ void Mileage_kalman_filter_reset(Mileage_kalman_filter_t *B)
 	B->xhat.pData[0] = 0;
 	B->xhat.pData[1] = 0;
 }
+
+
 

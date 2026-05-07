@@ -88,8 +88,8 @@ float Last_Yaw_Angle = 0 , Diff = 0;
 int16_t Yaw_Circle_Count=0;
 void CH040_Data_Get(imu_data_t* imu_data , CH040DATA_t* CH040DATA)
 {
-    CH040DATA->Pitch_Angle = imu_data->eul[0];
-    CH040DATA->Roll_Angle = imu_data->eul[1];
+    CH040DATA->Pitch_Angle = imu_data->eul[1];
+    CH040DATA->Roll_Angle = imu_data->eul[0];
     CH040DATA->Yaw_Angle = imu_data->eul[2];
     
     
@@ -99,7 +99,7 @@ void CH040_Data_Get(imu_data_t* imu_data , CH040DATA_t* CH040DATA)
     
     CH040DATA->Pitch_Gyro_Omega = imu_data->gyr[0];
     CH040DATA->Roll_Gyro_Omega = imu_data->gyr[1];
-    CH040DATA->Yaw_Gyro_Omega = imu_data->gyr[2];
+    CH040DATA->Yaw_Gyro_Omega =  -imu_data->gyr[2];
     
     Diff=CH040DATA->Yaw_Angle - Last_Yaw_Angle;
     if(Diff<-180.0f) Yaw_Circle_Count++;
