@@ -23,12 +23,11 @@ void CAN_Receive_Task(CanRxMsg* RxMsg,Balance_Chassis_t* Chassis)
             DaMiao_8009_To_Generic_Encoder(&Joint_Motor[0],&Chassis->Joint_Motor[0]);//ÓÒÍÈphi1
             break;
         case 0xA2:
-            DaMiao_8009_Information_Receive(RxMsg,&Joint_Motor[1],0.45449f + 0.33405f);
+            DaMiao_8009_Information_Receive(RxMsg,&Joint_Motor[1],+2.10815334 + 0.33405f);//+ 0.33405f
             DaMiao_8009_To_Generic_Encoder(&Joint_Motor[1],&Chassis->Joint_Motor[1]);//×óÍÈphi1
             break;
         case 0xA3:
-//            DaMiao_8009_Information_Receive(RxMsg,&Joint_Motor[2],-1.76089f - 0.75432f);
-        DaMiao_8009_Information_Receive(RxMsg,&Joint_Motor[2],-2.50632334f - 0.75432f);
+            DaMiao_8009_Information_Receive(RxMsg,&Joint_Motor[2],-2.50632334f - 0.75432f);
             DaMiao_8009_To_Generic_Encoder(&Joint_Motor[2],&Chassis->Joint_Motor[2]);//×óÍÈphi4
             break;
         case 0xA4:

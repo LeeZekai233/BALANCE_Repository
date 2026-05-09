@@ -36,7 +36,7 @@
 #define RIGHT_WHEEL_POLARITY                        1//右轮电机极性
 
             
-#define JOINT_MAX_T                       34          //老代码里的限幅
+#define JOINT_MAX_T                       35          //老代码里的限幅
 #define WHEEL_MAX_T                       4.35f // 4.3
         
             

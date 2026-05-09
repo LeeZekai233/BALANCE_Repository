@@ -6,6 +6,8 @@ uint32_t time_tick = 0;
 void Contorl_Task(Balance_Chassis_t* Chassis)
 {
     time_tick++;
+        Chassis->Left_Leg.spring_FN = Get_Left_GasSpring_FN(Chassis->Left_Leg.l0);
+    Chassis->Right_Leg.spring_FN = Get_Right_GasSpring_FN(Chassis->Right_Leg.l0);
     
 //    //¿Ø¶¯×÷ÅÐ¶Ï
     Remote_Switch_Action_Detect(&Remote_DT7_data);
@@ -40,12 +42,13 @@ void Contorl_Task(Balance_Chassis_t* Chassis)
     if(time_tick%2==0)
     {
         Chassis_Task(Chassis);
-        CAN1_Send_Task_2(Chassis->joint_T[1],Chassis->joint_T[2]);
+         CAN1_Send_Task_1(Chassis->joint_T[0],Chassis->joint_T[3]);
     }
     
     if(time_tick%2==1)
     {
-       CAN1_Send_Task_1(Chassis->joint_T[0],Chassis->joint_T[3]);
+       CAN1_Send_Task_2(Chassis->joint_T[1],Chassis->joint_T[2]);
+    
        CAN2_Send_Task(Chassis->driving_T[0],Chassis->driving_T[1]);
     }
     

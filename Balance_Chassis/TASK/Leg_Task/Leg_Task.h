@@ -40,8 +40,10 @@ typedef struct
 	uint8_t Wheel_State;
 
 	PID_t Leg_Length_PID;//腿长PID
-    
+    float spring_FN;
     float theta;
+    
+    
 	
 }Leg_State_t;//腿状态，采用论文中VMC的字母
 
@@ -53,6 +55,8 @@ void leg_spd(float dphi1, float dphi4, float phi1, float phi4, float spd[2]);
 void lqr_k(float L0, float K[12]);
 void leg_J_cal(float phi1, float phi4, float J[4]);
 void VMC_Data_Get(Leg_State_t* Leg_State , float phi4, float dphi4, float phi1, float dphi1);
+float Get_Left_GasSpring_FN(float Left_Leglength);
+float Get_Right_GasSpring_FN(float Right_Leglength);
 
 
 #endif
