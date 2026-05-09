@@ -103,7 +103,7 @@
         <bEvRecOn>1</bEvRecOn>
         <bSchkAxf>0</bSchkAxf>
         <bTchkAxf>0</bTchkAxf>
-        <nTsel>3</nTsel>
+        <nTsel>4</nTsel>
         <sDll></sDll>
         <sDllPa></sDllPa>
         <sDlgDll></sDlgDll>
@@ -114,13 +114,13 @@
         <tDlgDll></tDlgDll>
         <tDlgPa></tDlgPa>
         <tIfile></tIfile>
-        <pMon>BIN\CMSIS_AGDI.dll</pMon>
+        <pMon>Segger\JL2CM3.dll</pMon>
       </DebugOpt>
       <TargetDriverDllRegistry>
         <SetRegEntry>
           <Number>0</Number>
           <Key>DLGUARM</Key>
-          <Name></Name>
+          <Name>c</Name>
         </SetRegEntry>
         <SetRegEntry>
           <Number>0</Number>
@@ -228,7 +228,7 @@
         <Ww>
           <count>14</count>
           <WinNumber>1</WinNumber>
-          <ItemText>Chassis</ItemText>
+          <ItemText>Chassis,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>15</count>
@@ -238,7 +238,7 @@
         <Ww>
           <count>16</count>
           <WinNumber>1</WinNumber>
-          <ItemText>Chassis</ItemText>
+          <ItemText>Chassis,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>17</count>
@@ -274,6 +274,26 @@
           <count>23</count>
           <WinNumber>1</WinNumber>
           <ItemText>temp_leglength</ItemText>
+        </Ww>
+        <Ww>
+          <count>24</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>judge_rece_mesg</ItemText>
+        </Ww>
+        <Ww>
+          <count>25</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>temp_flagaaa,0x0A</ItemText>
+        </Ww>
+        <Ww>
+          <count>26</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>UART4_DMA_TX_BUF</ItemText>
+        </Ww>
+        <Ww>
+          <count>27</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>\\Project\../TASK/Chassis_Task/Chassis_Task.c\temp_flag1</ItemText>
         </Ww>
       </WatchWindow1>
       <Tracepoint>

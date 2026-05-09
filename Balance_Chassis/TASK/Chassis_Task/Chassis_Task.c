@@ -271,10 +271,10 @@ void Chassis_Mode_Select(Balance_Chassis_t* Chassis)
     if((Chassis->Driving_Motor[0].online_flag == 1) || (Chassis->Driving_Motor[1].online_flag == 1))
     {
 
-        if( (Chassis->Control_Mode != CHASSIS_INIT && Chassis->Control_Mode != CHASSIS_STAND_MODE) || (Chassis->USART_Chassis_Data.Chassis_Mode == 0) )//正常进行切换
-        {
-           Chassis->Control_Mode = (Chassis_Mode_e)Chassis->USART_Chassis_Data.Chassis_Mode;
-        }
+     //   if( (Chassis->Control_Mode != CHASSIS_INIT && Chassis->Control_Mode != CHASSIS_STAND_MODE) || (Chassis->USART_Chassis_Data.Chassis_Mode == 0) )//正常进行切换
+       // {
+ //          Chassis->Control_Mode = (Chassis_Mode_e)Chassis->USART_Chassis_Data.Chassis_Mode;
+        //}
         
 //        if(judge_rece_mesg.game_robot_state.power_management_chassis_output==0||judge_rece_mesg.game_robot_state.current_HP==0)
 //        {Chassis->V_w_Torque*Chassis->vw_limit_rate
@@ -313,15 +313,15 @@ void Chassis_Mode_Select(Balance_Chassis_t* Chassis)
 
 void Chassis_Referance_Update(Balance_Chassis_t* Chassis)    
 {     
-    Chassis->USART_Chassis_Data.Omega = Remote_DT7_data.Remote_clicker.ch2*0.008;
-    Chassis->USART_Chassis_Data.V_y = Remote_DT7_data.Remote_clicker.ch1*0.003;
+//    Chassis->USART_Chassis_Data.Omega = Remote_DT7_data.Remote_clicker.ch2*0.008;
+//   Chassis->USART_Chassis_Data.V_y = Remote_DT7_data.Remote_clicker.ch1*0.003;
 //    
 //    //遥控数据获取
     if(Chassis->Control_Mode != CHASSIS_INIT)
     {
         
-        Chassis->Chassis_Remote_Ref.V_y = Chassis->USART_Chassis_Data.V_y ;
-        Chassis->Chassis_Remote_Ref.V_w = Chassis->USART_Chassis_Data.Omega ;//7878
+ //       Chassis->Chassis_Remote_Ref.V_y = Chassis->USART_Chassis_Data.V_y ;
+//        Chassis->Chassis_Remote_Ref.V_w = Chassis->USART_Chassis_Data.Omega ;//7878
       //  Chassis->Chassis_Remote_Ref.Roll = Chassis->USART_Chassis_Data.Roll ;
       //  Chassis->Chassis_Remote_Ref.V_x = Chassis->USART_Chassis_Data.V_x ;
         //速度限幅
@@ -411,7 +411,7 @@ void Chassis_Relax_Handle(Balance_Chassis_t* Chassis)
     
     Chassis->Left_Leg.Leg_FN = 100;
     Chassis->Right_Leg.Leg_FN = 100;
-//    Chassis->Chassis_Ref.Leglength = 0.40f;
+    Chassis->Chassis_Ref.Leglength = 0.40f;
 }
 
 
@@ -507,11 +507,11 @@ void Chassis_Init_Handle(Balance_Chassis_t* Chassis)
                     Chassis->Harmonize_Inner = PID_Calc(&Chassis->Leg_Harmonize_Pid_Inner ,(Chassis->Right_Leg.dphi0 - Chassis->Left_Leg.dphi0),Chassis->Harmonize_Outer);
                     if(Chassis->balance_loop.L0 < 0.15f)
                     {
-                        Init_Tp_Calc(0.14f,Chassis->Harmonize_Inner/2,Chassis->Init_Tp,Chassis);
+                        Init_Tp_Calc(0.09f,Chassis->Harmonize_Inner/2,Chassis->Init_Tp,Chassis);
                     }
                     else
                     {
-                        Init_Tp_Calc(0.14f,Chassis->Harmonize_Inner/2,0,Chassis);
+                        Init_Tp_Calc(0.09f,Chassis->Harmonize_Inner/2,0,Chassis);
                     }
                     Motor_Torque_Set(Chassis,Chassis->Right_Leg.T_Set[0]*JM1_POLARITY, Chassis->Left_Leg.T_Set[0]*JM2_POLARITY, Chassis->Left_Leg.T_Set[1]*JM3_POLARITY, Chassis->Right_Leg.T_Set[1]*JM4_POLARITY, 0, 0);
                     Motor_Out_Limit(Chassis);
@@ -570,10 +570,10 @@ void Chassis_Init_Handle(Balance_Chassis_t* Chassis)
 
 void Chassis_Standup_Handle(Balance_Chassis_t* Chassis)
 {
-//    PID_Init(&Chassis->Leg_Harmonize_Pid_Inner, PID_POSITION, 9.3f, 0.0f, 1.0f, 35.0f, 3.0f);
-//    PID_Init(&Chassis->Leg_Harmonize_Pid_Outer, PID_POSITION, 35.0f, 0.0f, 0.8f, 50.0f, 3.0f);
+    PID_Init(&Chassis->Leg_Harmonize_Pid_Inner, PID_POSITION, 9.3f, 0.0f, 1.0f, 35.0f, 3.0f);
+    PID_Init(&Chassis->Leg_Harmonize_Pid_Outer, PID_POSITION, 35.0f, 0.0f, 0.8f, 50.0f, 3.0f);
     
-    Chassis->Chassis_Ref.Leglength = 0.14f;
+    Chassis->Chassis_Ref.Leglength = 0.09f;
     Chassis->Chassis_Ref.V_y = 0;
     Chassis->Chassis_Ref.V_x = 0;
     Chassis->Chassis_Ref.V_w = 0;
@@ -582,7 +582,7 @@ void Chassis_Standup_Handle(Balance_Chassis_t* Chassis)
     {
         Chassis->Control_Mode = (Chassis_Mode_e)Chassis->USART_Chassis_Data.Chassis_Mode;
     }*/
-    Chassis->Control_Mode = (Chassis_Mode_e)Chassis->USART_Chassis_Data.Chassis_Mode;
+//    Chassis->Control_Mode = (Chassis_Mode_e)Chassis->USART_Chassis_Data.Chassis_Mode;
 }
     
 
@@ -631,14 +631,14 @@ void Chassis_Fallow_Gimbal_Handle(Balance_Chassis_t* Chassis)
 //    Chassis->Chassis_Ref.V_w = -PID_Calc(&Chassis->Pid_Follow_Gimbal,Chassis->Yaw_Angle__PI_To_PI,Target_Angle);
 
     //左腿腿长
-    PID_Init(&Chassis->Left_Leg.Leg_Length_PID,PID_POSITION,150,0,500,20000,20000);
+    PID_Init(&Chassis->Left_Leg.Leg_Length_PID,PID_POSITION,2500,0,6000,20000,20000);
     
     //右腿腿长
-    PID_Init(&Chassis->Right_Leg.Leg_Length_PID,PID_POSITION,150,0,500,20000,20000);
+    PID_Init(&Chassis->Right_Leg.Leg_Length_PID,PID_POSITION,2500,0,6000,20000,20000);
     
     if(Remote_DT7_data.Remote_clicker.s2 == DOWN)
     {
-        Chassis->Chassis_Remote_Ref.Leglength = 0.14f;
+        Chassis->Chassis_Remote_Ref.Leglength = 0.12f;
     }
     if(Remote_DT7_data.Remote_clicker.s2 == MIDDLE)
     {
@@ -722,13 +722,13 @@ void Balance_Task(Balance_Chassis_t* Chassis)
     //误差计算
     Chassis->balance_loop.state_err[0] = 0 - Chassis->balance_loop.theta;
     Chassis->balance_loop.state_err[1] = 0 - Chassis->balance_loop.dtheta;
-    Chassis->balance_loop.state_err[2] = Chassis->Chassis_Ref.Y_position - Chassis->balance_loop.x;                           //这里先认为位移没误差7878
+    Chassis->balance_loop.state_err[2] = 0- Chassis->balance_loop.x;                           //这里先认为位移没误差7878
     Chassis->balance_loop.state_err[3] = Chassis->Chassis_Ref.V_y - Chassis->balance_loop.dx;
     Chassis->balance_loop.state_err[4] = 0 - Chassis->balance_loop.phi;//这里参考角度先给0 7878
     Chassis->balance_loop.state_err[5] = 0 - Chassis->balance_loop.dphi;
     
     
-    Chassis->x_error = (Chassis->balance_loop.state_err[2] + Chassis->normal_Y_erroffset);
+   // Chassis->x_error = (Chassis->balance_loop.state_err[2] + Chassis->normal_Y_erroffset);
     
     
     //
@@ -754,7 +754,7 @@ void Balance_Task(Balance_Chassis_t* Chassis)
     //触地增益计算
     Chassis->Balance_Tgain = Chassis->balance_loop.K_error[0][0] + 
                              Chassis->balance_loop.K_error[0][1] + 
-                             Chassis->balance_loop.k[0][2]*Chassis->x_error + 
+                             Chassis->balance_loop.K_error[0][2] + 
                              Chassis->balance_loop.K_error[0][3] + 
                              Chassis->balance_loop.K_error[0][4] + 
                              Chassis->balance_loop.K_error[0][5] ;
@@ -778,8 +778,8 @@ void Balance_Task(Balance_Chassis_t* Chassis)
 //    
     
     //转向PID
-    Chassis->V_w_Torque = PID_Calc(&Chassis->V_w_Pid, Chassis->Chassis_GYRO.Yaw_Gyro_Omega*DEG_TO_RAD, Chassis->Chassis_Ref.V_w);
-    Chassis->vw_limit_rate = 1.0f;
+//    Chassis->V_w_Torque = PID_Calc(&Chassis->V_w_Pid, Chassis->Chassis_GYRO.Yaw_Gyro_Omega*DEG_TO_RAD, Chassis->Chassis_Ref.V_w);
+//    Chassis->vw_limit_rate = 1.0f;
     VAL_LIMIT(Chassis->V_w_Torque,-3.5,3.5);
 
     
@@ -809,7 +809,8 @@ void Balance_Task(Balance_Chassis_t* Chassis)
         Chassis->joint_T[1] = JM2_POLARITY * Chassis->Left_Leg.T_Set[0];
         Chassis->joint_T[2] = JM3_POLARITY * Chassis->Left_Leg.T_Set[1];
         
-        Chassis->driving_T[0] = ((Chassis->Balance_Tgain + Chassis->V_w_Torque*Chassis->vw_limit_rate)/2) * LEFT_WHEEL_POLARITY;//还得叠加转向
+     //   Chassis->driving_T[0] = ((Chassis->Balance_Tgain + Chassis->V_w_Torque*Chassis->vw_limit_rate)/2) * LEFT_WHEEL_POLARITY;//还得叠加转向
+        Chassis->driving_T[0] = (Chassis->Balance_Tgain ) * LEFT_WHEEL_POLARITY;
    }
    else
    {
@@ -832,7 +833,8 @@ void Balance_Task(Balance_Chassis_t* Chassis)
         Chassis->joint_T[0] = JM1_POLARITY * Chassis->Right_Leg.T_Set[0];
         Chassis->joint_T[3] = JM4_POLARITY * Chassis->Right_Leg.T_Set[1];
         
-        Chassis->driving_T[1] = (Chassis->Balance_Tgain - Chassis->V_w_Torque*Chassis->vw_limit_rate/2) * RIGHT_WHEEL_POLARITY;
+        //Chassis->driving_T[1] = (Chassis->Balance_Tgain - Chassis->V_w_Torque*Chassis->vw_limit_rate/2) * RIGHT_WHEEL_POLARITY;
+         Chassis->driving_T[1] = (Chassis->Balance_Tgain ) * RIGHT_WHEEL_POLARITY;
     }
     else
    {
@@ -936,8 +938,8 @@ void Chassis_Control_Loop(Balance_Chassis_t* Chassis)
         break;
         case CHASSIS_INIT :
         {
-            Chassis_Test_Handle(Chassis);
-          //  Chassis_Init_Handle(Chassis);
+           // Chassis_Test_Handle(Chassis);
+            Chassis_Init_Handle(Chassis);
         }
         break;
         case CHASSIS_STAND_MODE :

@@ -36,7 +36,7 @@
 #define RIGHT_WHEEL_POLARITY                        1//右轮电机极性
 
             
-#define JOINT_MAX_T                       35          //老代码里的限幅
+#define JOINT_MAX_T                       30          //老代码里的限幅
 #define WHEEL_MAX_T                       4.35f // 4.3
         
             
@@ -210,6 +210,7 @@ typedef struct
     uint8_t Jump_State;//跳跃状态
     
     USART_Chassis_Data_t USART_Chassis_Data;//串口传来的控制底盘数据
+    usart_gimbal_data_t usart_gimbal_data;
     
     float dphi0;//左右腿平均dphi0
     float phi0;//左右腿平均phi0

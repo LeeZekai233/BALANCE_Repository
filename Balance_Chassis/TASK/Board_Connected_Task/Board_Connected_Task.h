@@ -3,26 +3,25 @@
 #include <stm32f4xx.h>
 #include "Remote_Task.h"
 
-#define GIMBAL_SEND_DATA_LENGTH  22
+#define GIMBAL_SEND_DATA_LENGTH  26
 
 typedef struct
 {
-	u8 Follow_Gimbal_Cmd;//是否跟随云台
-	u8 Jump_Cmd;//跳跃命令
-	u8 Overstep_Cmd;//上台阶命令
-	u8 Chassis_Mode;//底盘控制模式
-	float Yaw_Encoder_Angle;//yaw轴电机编码器角度
-	float Cmd_Leg_Length;//命令腿长
-	float V_x;
-	float V_y;
-    float Omega;
-	float Roll;
-	int16_t Rotate_Rpeed;//小陀螺速度
-	u8 Ctrl_Mode;//控制模式
-	u8 Remote_Online_Flag;
-	u8 Fric_Wheel_Run;
-	u8 Rollover_Posture_Cmd;
-	u8 low_speed_cmd;//有点问题
+	u8 if_follow_gim;//是否跟随云台
+	u8 jump_cmd;//跳跃命令
+	u8 overstep_cmd;//上台阶命令
+	u8 chassis_mode;//底盘模式
+	float yaw_Encoder_ecd_angle;//yaw轴电机编码器角度
+	float cmd_leg_length;//命令腿长
+	float vx;
+	float vy;
+	float roll;
+	int16_t rotate_speed;//小陀螺速度
+	u8 ctrl_mode;//控制模式
+	u8 remote_online_flag;
+	u8 fric_wheel_run;
+	u8 Rollover_posture_cmd;
+	u8 low_speed_cmd;
 	u8 UI_auto_aim_state;
 	u8 gimbal_data_if_finish_Init;
 	float leg_single_angle_handle_left;
@@ -30,7 +29,7 @@ typedef struct
 	u8 fn_2_trigger_flag;
 	u8 lock_shoot_check;
 
-} USART_Chassis_Data_t;//底盘接收的云台数据
+}  USART_Chassis_Data_t;//底盘接收的云台数据
 
 
 
@@ -46,6 +45,7 @@ typedef __packed struct
 	uint16_t current_HP;
     uint8_t  robot_id;
 	uint8_t  allow_gimbal_init;
+    float remain_heat;
 //	int16_t remain_heat;//剩余热量这里是老代码里Judeg_System里手动计算的，这里先注释掉
 	uint8_t game_state;
 	
@@ -69,10 +69,11 @@ void usart_gimbal_send(
 					   uint16_t current_HP,
 					   uint8_t  robot_id,
 					   uint8_t  allow_gimbal_init,
+                       float  remain_heat,
 					   uint8_t  game_state,usart_gimbal_data_t* usart_gimbal_data);
 					   
                        
-void usart_gimbal_receive(usart_gimbal_data_t *data,uint8_t *DataAddress);	
+void usart_chassis_receive(uint8_t *DataAddress,USART_Chassis_Data_t* USART_Chassis_Data);
 void gimbal_control_online_detective(void);					   
 void Remote_DT7_To_USART_Chassis_Data(Remote_DT7_t* Remote,USART_Chassis_Data_t* USART_Chassis_Data);
 

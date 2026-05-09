@@ -11,8 +11,10 @@ void USART4_Init(u32 bound)
 
     RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOC,ENABLE);
     RCC_APB1PeriphClockCmd(RCC_APB1Periph_UART4,ENABLE);
+    
     GPIO_PinAFConfig(GPIOC,GPIO_PinSource10,GPIO_AF_UART4);
     GPIO_PinAFConfig(GPIOC,GPIO_PinSource11,GPIO_AF_UART4);
+    
     RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_DMA1, ENABLE);
 
     gpio.GPIO_Pin = GPIO_Pin_10 | GPIO_Pin_11;
@@ -69,7 +71,7 @@ void USART4_Init(u32 bound)
     dma.DMA_PeripheralBaseAddr	= (uint32_t)(&UART4->DR);
     dma.DMA_Memory0BaseAddr   	= (uint32_t)&UART4_DMA_TX_BUF[0];
     dma.DMA_DIR 			   				 = DMA_DIR_MemoryToPeripheral;
-    dma.DMA_BufferSize					= 0;//sizeof(UART4_DMA_TX_BUF);
+    dma.DMA_BufferSize					= sizeof(UART4_DMA_TX_BUF);
     dma.DMA_PeripheralInc 			= DMA_PeripheralInc_Disable;
     dma.DMA_MemoryInc 					= DMA_MemoryInc_Enable;
     dma.DMA_PeripheralDataSize 	= DMA_PeripheralDataSize_Byte;
@@ -136,7 +138,7 @@ void UART4_IRQHandler(void)
       DMA_SetCurrDataCounter(DMA1_Stream2,UART4_RX_BUF_LENGTH);
 			//视觉数据处理,数据存在发送给下板的自瞄数据结构体内
 //			Vision_Process_General_Message_New(_UART4_DMA_RX_BUF,length,&My_Auto_Shoot);
-			
+			usart_chassis_receive(_UART4_DMA_RX_BUF,&Chassis.USART_Chassis_Data);
 			
       DMA_Cmd(DMA1_Stream2, ENABLE);
 			if(length==82)
