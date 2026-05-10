@@ -118,9 +118,11 @@ typedef enum
 {
     NORMAL_STATE_1 = 1,//正常状态1
     NORMAL_STATE_2 = 2,//正常状态2
-    ROLL_STATE   = 3,//侧翻状态
-    FLIP_STATE   = 4,//倒扣状态
-    INIT_FINISH  = 5,//初始化完成
+    ROLL_STATE_1   = 3,//侧翻状态1
+    ROLL_STATE_2   = 4,//侧翻状态2
+    FLIP_STATE_1   = 5,//倒扣状态1
+    FLIP_STATE_2   = 6,//倒扣状态2
+    INIT_FINISH    = 7,//初始化完成
 }Init_State_e;
 
 
@@ -210,7 +212,7 @@ typedef struct
     uint8_t Jump_State;//跳跃状态
     
     USART_Chassis_Data_t USART_Chassis_Data;//串口传来的控制底盘数据
-    usart_gimbal_data_t usart_gimbal_data;
+    USART_Gimbal_Data_t USART_Gimbal_Data;
     
     float dphi0;//左右腿平均dphi0
     float phi0;//左右腿平均phi0
@@ -236,6 +238,9 @@ typedef struct
     float Roll_Balance_F_Right;
     
     float x_error;
+    
+    float Chassis_Target_Angle;
+    float Chassis_Target_Speed;
     
     //uint8_t Middle_Leg_Cmd;//
     

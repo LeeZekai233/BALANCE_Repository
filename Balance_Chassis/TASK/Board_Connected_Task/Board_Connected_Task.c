@@ -1,20 +1,22 @@
 #include "main.h"
 
-//usart_gimbal_data_t usart_gimbal_data;
-//usart_chassis_data_t usart_chassis_data;
 
+uint32_t gimbal_control_online_heart_cnt;
 
-//void gimbal_control_online_detective(void)//云台心跳检测
-//{
-//    if(abs(time_tick - gimbal_control_online_heart_cnt) > 500)
-//    {
-//        gimbal_control_state = 0;
-//		
-//    }else
-//    {
-//        gimbal_control_state = 1;
-//    }
-//	
+uint8_t gimbal_control_online_detective(void)//云台心跳检测
+{
+    uint8_t gimbal_control_state;
+    if(time_tick - gimbal_control_online_heart_cnt > 500)
+    {
+        gimbal_control_state = 0;
+		
+    }
+    else
+    {
+        gimbal_control_state = 1;
+    }
+    return gimbal_control_state;
+	
 //	 if(abs(time_tick - gimbal_control_online_heart_cnt) > 8000)
 //    {
 //        gimbal_control_state_longtime=0;		
@@ -22,7 +24,7 @@
 //    {
 //        gimbal_control_state_longtime=1;
 //    }
-//}
+}
 
 
 void usart_gimbal_send(
@@ -37,24 +39,24 @@ void usart_gimbal_send(
 					   uint8_t  robot_id,
 					   uint8_t  allow_gimbal_init,
                        float remain_heat,
-					   uint8_t  game_state,usart_gimbal_data_t* usart_gimbal_data)
+					   uint8_t  game_state,USART_Gimbal_Data_t* USART_Gimbal_Data)
 {
     
     unsigned char tx_buff[GIMBAL_SEND_DATA_LENGTH];//要改78 78
-	usart_gimbal_data->shooter_id1_17mm_cooling_heat  = shooter_id1_17mm_cooling_heat;//存进结构体
-	usart_gimbal_data->shooter_barrel_heat_limit      = shooter_barrel_heat_limit;
-	usart_gimbal_data->shooter_barrel_cooling_value   = shooter_barrel_cooling_value;
-	usart_gimbal_data->robot_level                    = robot_level;
-	usart_gimbal_data->bullet_speed_x_hat             = bullet_speed_x_hat; 
-	usart_gimbal_data->bullet_speed                   = bullet_speed;
-	usart_gimbal_data->power_management_chassis_output= power_management_chassis_output;
-	usart_gimbal_data->current_HP                     = current_HP;
-	usart_gimbal_data->robot_id                       = robot_id;
-	usart_gimbal_data->allow_gimbal_init              = allow_gimbal_init;
-	usart_gimbal_data->remain_heat                    = remain_heat;
-	usart_gimbal_data->game_state                     = game_state;
+	USART_Gimbal_Data->shooter_id1_17mm_cooling_heat  = shooter_id1_17mm_cooling_heat;//存进结构体
+	USART_Gimbal_Data->shooter_barrel_heat_limit      = shooter_barrel_heat_limit;
+	USART_Gimbal_Data->shooter_barrel_cooling_value   = shooter_barrel_cooling_value;
+	USART_Gimbal_Data->robot_level                    = robot_level;
+	USART_Gimbal_Data->bullet_speed_x_hat             = bullet_speed_x_hat; 
+	USART_Gimbal_Data->bullet_speed                   = bullet_speed;
+	USART_Gimbal_Data->power_management_chassis_output= power_management_chassis_output;
+	USART_Gimbal_Data->current_HP                     = current_HP;
+	USART_Gimbal_Data->robot_id                       = robot_id;
+	USART_Gimbal_Data->allow_gimbal_init              = allow_gimbal_init;
+	USART_Gimbal_Data->remain_heat                    = remain_heat;
+	USART_Gimbal_Data->game_state                     = game_state;
     
-    memcpy(&tx_buff[0],&usart_gimbal_data,sizeof(usart_gimbal_data));
+    memcpy(&tx_buff[0],&USART_Gimbal_Data,sizeof(USART_Gimbal_Data));
     Append_CRC8_Check_Sum(&tx_buff[0],GIMBAL_SEND_DATA_LENGTH);//加入crc8
     memcpy(&UART4_DMA_TX_BUF,&tx_buff[0],26);
     
@@ -74,15 +76,15 @@ void usart_gimbal_send(
 
 void usart_chassis_receive(uint8_t *DataAddress,USART_Chassis_Data_t* USART_Chassis_Data)
 {
-    USART_Chassis_Data->yaw_Encoder_ecd_angle = ((int32_t)(((DataAddress[11]<<24)|(DataAddress[12]<<16)|(DataAddress[13]<<8)|DataAddress[14])))/10000.0f;
+    USART_Chassis_Data->Yaw_Encoder_Angle = ((int32_t)(((DataAddress[11]<<24)|(DataAddress[12]<<16)|(DataAddress[13]<<8)|DataAddress[14])))/10000.0f;
 	USART_Chassis_Data->if_follow_gim = DataAddress[0];
 	USART_Chassis_Data->jump_cmd = DataAddress[1];
-	USART_Chassis_Data->chassis_mode = DataAddress[2];
-	USART_Chassis_Data->cmd_leg_length = ((int16_t)((DataAddress[3]<<8)|DataAddress[4]))/100.0;
-	USART_Chassis_Data->vx = ((int16_t)((DataAddress[5]<<8)|DataAddress[6]))/100.0;
-	USART_Chassis_Data->vy = ((int16_t)((DataAddress[7]<<8)|DataAddress[8]))/100.0;
+	USART_Chassis_Data->Chassis_Mode = DataAddress[2];
+	USART_Chassis_Data->Cmd_Leg_Length = ((int16_t)((DataAddress[3]<<8)|DataAddress[4]))/100.0;
+	USART_Chassis_Data->V_x = ((int16_t)((DataAddress[5]<<8)|DataAddress[6]))/100.0;
+	USART_Chassis_Data->V_y = ((int16_t)((DataAddress[7]<<8)|DataAddress[8]))/100.0;
 	USART_Chassis_Data->rotate_speed = ((DataAddress[9]<<8)|DataAddress[10]);
-	USART_Chassis_Data->ctrl_mode = DataAddress[15];
+	USART_Chassis_Data->Control_Mode = DataAddress[15];
     USART_Chassis_Data->roll = ((int16_t)((DataAddress[16]<<8)|DataAddress[17]))/100.0;
 	USART_Chassis_Data->overstep_cmd = DataAddress[18];
 	USART_Chassis_Data->remote_online_flag=DataAddress[19];

@@ -54,7 +54,7 @@ void Contorl_Task(Balance_Chassis_t* Chassis)
     
     if(time_tick%5==0)
     {
-        usart_gimbal_send(1,5,7,5,24.434,787878.9191,2,4,34,2,55.1313,91,&Chassis->usart_gimbal_data);
+        usart_gimbal_send(1,5,7,5,24.434,787878.9191,2,4,34,2,55.1313,91,&Chassis->USART_Gimbal_Data);
     }
 }
 
