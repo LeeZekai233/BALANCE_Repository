@@ -136,14 +136,10 @@ void UART4_IRQHandler(void)
       DMA_ClearFlag(DMA1_Stream2, DMA_FLAG_TCIF2 | DMA_FLAG_HTIF2);
       length = UART4_RX_BUF_LENGTH - DMA_GetCurrDataCounter(DMA1_Stream2);
       DMA_SetCurrDataCounter(DMA1_Stream2,UART4_RX_BUF_LENGTH);
-			//视觉数据处理,数据存在发送给下板的自瞄数据结构体内
-//			Vision_Process_General_Message_New(_UART4_DMA_RX_BUF,length,&My_Auto_Shoot);
-			usart_chassis_receive(_UART4_DMA_RX_BUF,&Chassis.USART_Chassis_Data);
-			
       DMA_Cmd(DMA1_Stream2, ENABLE);
-			if(length==82)
+			if(Verify_CRC8_Check_Sum(_UART4_DMA_RX_BUF,length))
 			{
-//				memcpy(&dat_3, &_UART4_DMA_RX_BUF[6], sizeof(id0x91_t));
+                usart_chassis_receive(_UART4_DMA_RX_BUF,&Chassis.USART_Chassis_Data);
 			}
     }
 }

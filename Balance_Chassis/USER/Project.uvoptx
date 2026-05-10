@@ -120,7 +120,6 @@
         <SetRegEntry>
           <Number>0</Number>
           <Key>DLGUARM</Key>
-          <Name>c</Name>
         </SetRegEntry>
         <SetRegEntry>
           <Number>0</Number>
@@ -294,6 +293,21 @@
           <count>27</count>
           <WinNumber>1</WinNumber>
           <ItemText>\\Project\../TASK/Chassis_Task/Chassis_Task.c\temp_flag1</ItemText>
+        </Ww>
+        <Ww>
+          <count>28</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>\\Project\../TASK/Chassis_Task/Chassis_Task.c\Chassis.USART_Chassis_Data.roll</ItemText>
+        </Ww>
+        <Ww>
+          <count>29</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>USART_Chassis_Data</ItemText>
+        </Ww>
+        <Ww>
+          <count>30</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>Chassis.USART_Chassis_Data,0x0A</ItemText>
         </Ww>
       </WatchWindow1>
       <Tracepoint>

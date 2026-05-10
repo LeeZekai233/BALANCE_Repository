@@ -19,19 +19,19 @@ void CAN_Receive_Task(CanRxMsg* RxMsg,Balance_Chassis_t* Chassis)
         
         //CAN1
         case 0xA1:
-            DaMiao_8009_Information_Receive(RxMsg,&Joint_Motor[0],-0.71786f - 0.33405f);
+            DaMiao_8009_Information_Receive(RxMsg,&Joint_Motor[0],+2.68839049f - 0.33405f);//-0.71786f - 0.33405f);
             DaMiao_8009_To_Generic_Encoder(&Joint_Motor[0],&Chassis->Joint_Motor[0]);//”“Õ»phi1
             break;
         case 0xA2:
-            DaMiao_8009_Information_Receive(RxMsg,&Joint_Motor[1],+2.10815334 + 0.33405f);//+ 0.33405f
+            DaMiao_8009_Information_Receive(RxMsg,&Joint_Motor[1],+0.348554611 + 0.33405f);//+2.10815334 + 0.33405f);//+ 0.33405f
             DaMiao_8009_To_Generic_Encoder(&Joint_Motor[1],&Chassis->Joint_Motor[1]);//◊ÛÕ»phi1
             break;
         case 0xA3:
-            DaMiao_8009_Information_Receive(RxMsg,&Joint_Motor[2],-2.50632334f - 0.75432f);
+            DaMiao_8009_Information_Receive(RxMsg,&Joint_Motor[2],-0.666285276f - 0.75432f);//-2.50632334f - 0.75432f);
             DaMiao_8009_To_Generic_Encoder(&Joint_Motor[2],&Chassis->Joint_Motor[2]);//◊ÛÕ»phi4
             break;
         case 0xA4:
-            DaMiao_8009_Information_Receive(RxMsg,&Joint_Motor[3],2.54055f + 0.75432f);
+            DaMiao_8009_Information_Receive(RxMsg,&Joint_Motor[3], 1.78639603f + 0.75432f);//2.54055f + 0.75432f);
             DaMiao_8009_To_Generic_Encoder(&Joint_Motor[3],&Chassis->Joint_Motor[3]);//”“Õ»phi4
             break;
     }

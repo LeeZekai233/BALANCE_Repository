@@ -12,7 +12,7 @@ void Contorl_Task(Balance_Chassis_t* Chassis)
 //    //控动作判断
     Remote_Switch_Action_Detect(&Remote_DT7_data);
     Key_Mouse_State_Update(&Remote_DT7_data);
-   // Remote_DT7_To_USART_Chassis_Data(&Remote_DT7_data,&Chassis->USART_Chassis_Data);
+  //  Remote_DT7_To_USART_Chassis_Data(&Remote_DT7_data,&Chassis->USART_Chassis_Data);
     
     //驱动轮在线检测
     Motor_Online_Detective(&Chassis->Driving_Motor[0]);
@@ -42,7 +42,7 @@ void Contorl_Task(Balance_Chassis_t* Chassis)
     if(time_tick%2==0)
     {
         Chassis_Task(Chassis);
-         CAN1_Send_Task_1(Chassis->joint_T[0]*0,Chassis->joint_T[3]*0);
+        CAN1_Send_Task_1(Chassis->joint_T[0]*0,Chassis->joint_T[3]*0);
     }
     
     if(time_tick%2==1)
@@ -54,7 +54,7 @@ void Contorl_Task(Balance_Chassis_t* Chassis)
     
     if(time_tick%5==0)
     {
-        usart_gimbal_send(1,5,7,5,24.434,787878.9191,2,4,34,2,55.1313,91,&Chassis->USART_Gimbal_Data);
+        usart_gimbal_send(0,0,0,0,0,0,0,0,0,0,0,0,&Chassis->USART_Gimbal_Data);
     }
 }
 

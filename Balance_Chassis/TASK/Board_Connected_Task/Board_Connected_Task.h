@@ -5,7 +5,7 @@
 
 #define GIMBAL_SEND_DATA_LENGTH  26
 
-typedef struct
+typedef __packed struct
 {
 	u8 if_follow_gim;//是否跟随云台
 	u8 jump_cmd;//跳跃命令
@@ -28,7 +28,6 @@ typedef struct
 	float leg_single_angle_handle_right;
 	u8 fn_2_trigger_flag;
 	u8 lock_shoot_check;
-
 }  USART_Chassis_Data_t;//底盘接收的云台数据
 
 

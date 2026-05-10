@@ -174,7 +174,7 @@ uint8_t Wheel_State_Estimate(Leg_State_t *Leg_State)
 
 void Init_Tp_Calc(float Ref_Leglength,float Harmonize,float Init_Tp,Balance_Chassis_t* Chassis)
 {
-    Chassis->Chassis_Ref.Leglength  = trackRamp_leg(0.0002,Chassis->Chassis_Ref.Leglength,Ref_Leglength); // ÆÚÍûÍÈ³¤
+    Chassis->Chassis_Ref.Leglength  = Ref_Leglength; // ÆÚÍûÍÈ³¤
     // ÍÈ²¿ÊúÖ±Á¦FµÄ¼ÆËã
     Chassis->Left_Leg.Leg_F = PID_Calc(&Chassis->Left_Leg.Leg_Length_PID, Chassis->Left_Leg.l0, Chassis->Chassis_Ref.Leglength);
     //»¹µÃ¼ÓÈëÆøµ¯»ÉÄâºÏ7878
@@ -196,10 +196,10 @@ void Chassis_Param_Init(Balance_Chassis_t* Chassis)
     PID_Init(&Chassis->Init_Tp_Pid,PID_POSITION,0,0,0,500,200);
     
     //×óÍÈÍÈ³¤
-    PID_Init(&Chassis->Left_Leg.Leg_Length_PID,PID_POSITION,1800,0,6000,4000,20000);
+    PID_Init(&Chassis->Left_Leg.Leg_Length_PID,PID_POSITION,2500,0,6000,4000,20000);
     
     //ÓÒÍÈÍÈ³¤
-    PID_Init(&Chassis->Right_Leg.Leg_Length_PID,PID_POSITION,1800,0,6000,20000,20000);
+    PID_Init(&Chassis->Right_Leg.Leg_Length_PID,PID_POSITION,2500,0,6000,20000,20000);
     
     //Ë«ÍÈÐ­µ÷
     PID_Init(&Chassis->Leg_Harmonize_Pid_Inner,PID_POSITION,9.3f,0,1,35,3);
@@ -315,7 +315,7 @@ void Chassis_Mode_Select(Balance_Chassis_t* Chassis)
 void Chassis_Referance_Update(Balance_Chassis_t* Chassis)    
 {     
   //  Chassis->USART_Chassis_Data.Omega = Remote_DT7_data.Remote_clicker.ch2*0.008;
-   Chassis->USART_Chassis_Data.V_y = Remote_DT7_data.Remote_clicker.ch1*0.003;
+  // Chassis->USART_Chassis_Data.V_y = Remote_DT7_data.Remote_clicker.ch1*0.003;
 //    
 //    //Ò£¿ØÊý¾Ý»ñÈ¡
     if(Chassis->Control_Mode != CHASSIS_INIT)
@@ -417,7 +417,7 @@ void Chassis_Relax_Handle(Balance_Chassis_t* Chassis)
     
     Chassis->Left_Leg.Leg_FN = 100;
     Chassis->Right_Leg.Leg_FN = 100;
-    Chassis->Chassis_Ref.Leglength = 0.40f;
+    //Chassis->Chassis_Ref.Leglength = 0.40f;
 }
 
 
@@ -477,31 +477,31 @@ void Chassis_Init_Handle(Balance_Chassis_t* Chassis)
      }
 
      
-     //µ¹¿Û×´Ì¬
-     if(fabs(Chassis->Chassis_GYRO.Roll_Angle) > 95 || fabs(Chassis->Chassis_GYRO.Pitch_Angle)>45)
-     {
-          //µ¹¿Û×´Ì¬1£¬
-          if(Chassis->Chassis_GYRO.Pitch_Angle <= -45 || fabs(Chassis->Chassis_GYRO.Roll_Angle)>95)
-          {
-              Chassis->Init_State = FLIP_STATE_1;
-          }
-          //µ¹¿Û×´Ì¬2£¬°ÚÍÈ·½Ïò²»Í¬
-          else 
-          {
-              Chassis->Init_State = FLIP_STATE_2;
-          }
-     }
-     
-     //²à·­×´Ì¬1
-     else if(Chassis->Chassis_GYRO.Pitch_Angle <-45)
-     {
-         Chassis->Init_State = ROLL_STATE_1;
-     }
-     else if(Chassis->Chassis_GYRO.Pitch_Angle > 45)
-     {
-         Chassis->Init_State = ROLL_STATE_2;
-     }
-     
+//     //µ¹¿Û×´Ì¬
+//     if(fabs(Chassis->Chassis_GYRO.Roll_Angle) > 95 || fabs(Chassis->Chassis_GYRO.Pitch_Angle)>45)
+//     {
+//          //µ¹¿Û×´Ì¬1£¬
+//          if(Chassis->Chassis_GYRO.Pitch_Angle < -45 || fabs(Chassis->Chassis_GYRO.Roll_Angle)>95)
+//          {
+//              Chassis->Init_State = FLIP_STATE_1;
+//          }
+//          //µ¹¿Û×´Ì¬2£¬°ÚÍÈ·½Ïò²»Í¬
+//          else 
+//          {
+//              Chassis->Init_State = FLIP_STATE_2;
+//          }
+//     }
+//     
+//     //²à·­×´Ì¬1
+//     else if(Chassis->Chassis_GYRO.Pitch_Angle <-45)
+//     {
+//         Chassis->Init_State = ROLL_STATE_1;
+//     }
+//     else if(Chassis->Chassis_GYRO.Pitch_Angle > 45)
+//     {
+//         Chassis->Init_State = ROLL_STATE_2;
+//     }
+//     
      
      
      
@@ -515,14 +515,14 @@ void Chassis_Init_Handle(Balance_Chassis_t* Chassis)
                     Chassis->Init_Tp = PID_Calc(&Chassis->Init_Tp_Pid,Chassis->phi0,0.0f);
                     Chassis->Harmonize_Outer = PID_Calc(&Chassis->Leg_Harmonize_Pid_Outer , (Chassis->Right_Leg.phi0 - Chassis->Left_Leg.phi0),0);
                     Chassis->Harmonize_Inner = PID_Calc(&Chassis->Leg_Harmonize_Pid_Inner ,(Chassis->Right_Leg.dphi0 - Chassis->Left_Leg.dphi0),Chassis->Harmonize_Outer);
-                    if(Chassis->balance_loop.L0 < 0.15f)
-                    {
-                        Init_Tp_Calc(0.09f,Chassis->Harmonize_Inner/2,Chassis->Init_Tp,Chassis);
-                    }
-                    else
-                    {
-                        Init_Tp_Calc(0.09f,Chassis->Harmonize_Inner/2,0,Chassis);
-                    }
+                   // if(Chassis->balance_loop.L0 < 0.15f)
+                 //   {
+                        Init_Tp_Calc(0.12f,Chassis->Harmonize_Inner/2,Chassis->Init_Tp,Chassis);
+                  //  }
+                  //  else
+                   // {
+                     //   Init_Tp_Calc(0.12f,Chassis->Harmonize_Inner/2,0,Chassis);
+                   //}
                     Motor_Torque_Set(Chassis,Chassis->Right_Leg.T_Set[0]*JM1_POLARITY, Chassis->Left_Leg.T_Set[0]*JM2_POLARITY, Chassis->Left_Leg.T_Set[1]*JM3_POLARITY, Chassis->Right_Leg.T_Set[1]*JM4_POLARITY, 0, 0);
                     Motor_Out_Limit(Chassis);
                 }
@@ -535,8 +535,9 @@ void Chassis_Init_Handle(Balance_Chassis_t* Chassis)
                 
                 
                 
-                }
-            break;
+         }
+         break;
+                
         case NORMAL_STATE_2 :
         {
             if((phi0_0_2PI_Left >=1.7f&&phi0_0_2PI_Left<=5.4f) || (phi0_0_2PI_Right >= 1.7f&&phi0_0_2PI_Right <=5.4f))
@@ -569,13 +570,56 @@ void Chassis_Init_Handle(Balance_Chassis_t* Chassis)
                 }
          }
         break;
-        case FLIP_STATE_1:
-        {
-            Chassis->Harmonize_Outer = PID_Calc(&Chassis->Leg_Harmonize_Pid_Outer, (Chassis->Right_Leg.phi0 - Chassis->Left_Leg.phi0), 0);
-            Chassis->Harmonize_Inner = PID_Calc(&Chassis->Leg_Harmonize_Pid_Inner, (Chassis->Right_Leg.dphi0 - Chassis->Left_Leg.dphi0),  Chassis->Harmonize_Outer);
-        //    leg_conv(0, (0-Chassis->Harmonize_Inner)/2, )
-        }
-        break;
+         
+//        case FLIP_STATE_1:
+//        {
+//            Chassis->Harmonize_Outer = PID_Calc(&Chassis->Leg_Harmonize_Pid_Outer, (Chassis->Right_Leg.phi0 - Chassis->Left_Leg.phi0), 0);
+//            Chassis->Harmonize_Inner = PID_Calc(&Chassis->Leg_Harmonize_Pid_Inner, (Chassis->Right_Leg.dphi0 - Chassis->Left_Leg.dphi0),  Chassis->Harmonize_Outer);
+//            leg_conv(0, (0 - Chassis->Harmonize_Inner)/2.0f, Chassis->Left_Leg.phi1, Chassis->Left_Leg.phi4, Chassis->Left_Leg.T_Set);
+//            leg_conv(0, (0 + Chassis->Harmonize_Inner)/2.0f, Chassis->Right_Leg.phi1, Chassis->Right_Leg.phi4, Chassis->Right_Leg.T_Set);
+//            
+//            float Init_dphi0_Tp_Left = PID_Calc(&Chassis->Init_dphi0_pid_left, Chassis->Left_Leg.dphi4, 5);
+//            float Init_dphi0_Tp_Right = PID_Calc(&Chassis->Init_dphi0_pid_right, Chassis->Right_Leg.dphi4, 5);
+//            
+//            Chassis->joint_T[0] = JM1_POLARITY*Chassis->Right_Leg.T_Set[0];
+//            Chassis->joint_T[3] = Init_dphi0_Tp_Right + JM4_POLARITY*Chassis->Right_Leg.T_Set[1];
+//            Chassis->driving_T[1] = 0;
+//            
+//            Chassis->joint_T[1] = JM2_POLARITY*Chassis->Left_Leg.T_Set[0];
+//            Chassis->joint_T[2] = Init_dphi0_Tp_Left + JM3_POLARITY*Chassis->Left_Leg.T_Set[1];
+//            Chassis->driving_T[0] = 0;
+//        }
+//        break;
+//        
+//        case FLIP_STATE_2 :
+//        {
+//            Chassis->Harmonize_Outer = PID_Calc(&Chassis->Leg_Harmonize_Pid_Outer, (Chassis->Right_Leg.phi0 - Chassis->Left_Leg.phi0), 0);
+//            Chassis->Harmonize_Inner = PID_Calc(&Chassis->Leg_Harmonize_Pid_Inner, (Chassis->Right_Leg.dphi0 - Chassis->Left_Leg.dphi0),  Chassis->Harmonize_Outer);
+//            leg_conv(0, (0 - Chassis->Harmonize_Inner)/2.0f, Chassis->Left_Leg.phi1, Chassis->Left_Leg.phi4, Chassis->Left_Leg.T_Set);//´ý»ádphi1ÏÞ·ùÏÞËÀ£¬·À·è
+//            leg_conv(0, (0 + Chassis->Harmonize_Inner)/2.0f, Chassis->Right_Leg.phi1, Chassis->Right_Leg.phi4, Chassis->Right_Leg.T_Set);
+//            
+//            float Init_dphi0_Tp_Left = PID_Calc(&Chassis->Init_dphi0_pid_left, Chassis->Left_Leg.dphi4, -5);
+//            float Init_dphi0_Tp_Right = PID_Calc(&Chassis->Init_dphi0_pid_right, Chassis->Right_Leg.dphi4, -5);
+//            
+//            Chassis->joint_T[0] = JM1_POLARITY*Chassis->Right_Leg.T_Set[0];
+//            Chassis->joint_T[3] = Init_dphi0_Tp_Right + JM4_POLARITY*Chassis->Right_Leg.T_Set[1];
+//            Chassis->driving_T[1] = 0;
+//            
+//            Chassis->joint_T[1] = JM2_POLARITY*Chassis->Left_Leg.T_Set[0];
+//            Chassis->joint_T[2] = Init_dphi0_Tp_Left + JM3_POLARITY*Chassis->Left_Leg.T_Set[1];
+//            Chassis->driving_T[0] = 0;
+//        }
+//        break;
+//        
+//        case ROLL_STATE_1:
+//        {
+//            
+//        }
+//        break;
+//        case ROLL_STATE_2:
+//        {
+//            
+//        }
         default :
             break;
             
@@ -595,10 +639,10 @@ void Chassis_Standup_Handle(Balance_Chassis_t* Chassis)
     Chassis->Chassis_Ref.V_x = 0;
     Chassis->Chassis_Ref.V_w = 0;
     Chassis->Chassis_Ref.Y_position = Chassis->balance_loop.x;
-   /* if(fabs(Chassis->balance_loop.state_err[4]) < 8*DEG_TO_RAD)
+    if(fabs(Chassis->balance_loop.state_err[4]) < 8*DEG_TO_RAD)
     {
         Chassis->Control_Mode = (Chassis_Mode_e)Chassis->USART_Chassis_Data.Chassis_Mode;
-    }*/
+    }
 //    Chassis->Control_Mode = (Chassis_Mode_e)Chassis->USART_Chassis_Data.Chassis_Mode;
 }
     
@@ -917,7 +961,7 @@ void Chassis_Test_Handle(Balance_Chassis_t* Chassis)
 //        Chassis->Chassis_Remote_Ref.Leglength = 0.30f;
 //    }
   
-    Chassis->Chassis_Ref.Leglength = trackRamp_leg(0.001,Chassis->Chassis_Ref.Leglength,temp_leglength);
+    Chassis->Chassis_Ref.Leglength = trackRamp_leg(0.008,Chassis->Chassis_Ref.Leglength,temp_leglength);
     
  //   Chassis->Harmonize_Outer = PID_Calc(&Chassis->Leg_Harmonize_Pid_Outer, (Chassis->Right_Leg.phi0 - Chassis->Left_Leg.phi0), 0.0f);
  //   Chassis->Harmonize_Inner = PID_Calc(&Chassis->Leg_Harmonize_Pid_Inner, (Chassis->Right_Leg.dphi0 - Chassis->Left_Leg.dphi0), Chassis->Harmonize_Outer);
@@ -973,12 +1017,12 @@ void Chassis_Control_Loop(Balance_Chassis_t* Chassis)
         break;
         case CHASSIS_INIT :
         {
-           // Chassis_Test_Handle(Chassis);
+          // Chassis_Test_Handle(Chassis);
             Chassis_Init_Handle(Chassis);
         }
         break;
         case CHASSIS_STAND_MODE :
-        {temp_flag_3++;
+        {
             Chassis_Standup_Handle(Chassis);
             Balance_Task(Chassis);
         }
