@@ -17,8 +17,8 @@ void TIM6_Init(void)
 	TIM_ITConfig(TIM6,TIM_IT_Update,ENABLE);
 	//配置优先级
 	NVIC_InitStructure.NVIC_IRQChannel=TIM6_DAC_IRQn;
-	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority=0x00;
-	NVIC_InitStructure.NVIC_IRQChannelSubPriority=0x01;
+	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority=0;
+	NVIC_InitStructure.NVIC_IRQChannelSubPriority=1;
 	NVIC_InitStructure.NVIC_IRQChannelCmd=ENABLE;
 	NVIC_Init(&NVIC_InitStructure);
 	//使能时钟

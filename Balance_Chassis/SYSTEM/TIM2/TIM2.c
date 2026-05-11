@@ -18,8 +18,8 @@ void TIM2_Init(void)
 	TIM_ITConfig(TIM2,TIM_IT_Update,ENABLE);
 	//配置优先级
 	NVIC_InitStructure.NVIC_IRQChannel=TIM2_IRQn;
-	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority=0x00;
-	NVIC_InitStructure.NVIC_IRQChannelSubPriority=0x01;
+	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority=3;
+	NVIC_InitStructure.NVIC_IRQChannelSubPriority=3;
 	NVIC_InitStructure.NVIC_IRQChannelCmd=ENABLE;
 	NVIC_Init(&NVIC_InitStructure);
 	//使能时钟
