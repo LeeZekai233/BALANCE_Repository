@@ -40,7 +40,7 @@ typedef struct
 	uint8_t Wheel_State;
 
 	PID_t Leg_Length_PID;//Õ»≥§PID
-    float spring_FN;
+    float Gasspring_FN;
     float theta;
     
     

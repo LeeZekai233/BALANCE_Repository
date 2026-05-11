@@ -57,8 +57,8 @@ void USART4_Init(u32 bound)
     DMA_Cmd(DMA1_Stream2, ENABLE);
 
     nvic.NVIC_IRQChannel = UART4_IRQn;
-    nvic.NVIC_IRQChannelPreemptionPriority = 3;
-    nvic.NVIC_IRQChannelSubPriority =3;
+    nvic.NVIC_IRQChannelPreemptionPriority = 1;
+    nvic.NVIC_IRQChannelSubPriority = 1;
     nvic.NVIC_IRQChannelCmd = ENABLE;
     NVIC_Init(&nvic);
 
@@ -86,8 +86,8 @@ void USART4_Init(u32 bound)
 
     DMA_Cmd(DMA1_Stream4, DISABLE);                           // 关DMA通道
     nvic.NVIC_IRQChannel = DMA1_Stream4_IRQn;   // 发送DMA通道的中断配置
-    nvic.NVIC_IRQChannelPreemptionPriority = 3;     // 优先级设置
-    nvic.NVIC_IRQChannelSubPriority = 3;
+    nvic.NVIC_IRQChannelPreemptionPriority = 1;     // 优先级设置
+    nvic.NVIC_IRQChannelSubPriority = 1;
     nvic.NVIC_IRQChannelCmd = ENABLE;
     NVIC_Init(&nvic);
     DMA_ITConfig(DMA1_Stream4,DMA_IT_TC,ENABLE);
@@ -97,6 +97,14 @@ void USART4_Init(u32 bound)
 
 }
 
+void Uart4DmaSendDataProc(u16 ndtr)
+{
+    DMA_Cmd(DMA1_Stream4, DISABLE);                      //关闭DMA传输
+    DMA_ClearFlag(DMA1_Stream4, DMA_FLAG_TCIF4 | DMA_FLAG_HTIF4);
+    while (DMA_GetCmdStatus(DMA1_Stream4) != DISABLE){}  //确保DMA可以被设置
+    DMA_SetCurrDataCounter(DMA1_Stream4,ndtr);          //数据传输量
+    DMA_Cmd(DMA1_Stream4, ENABLE);                      //开启DMA传输
+}
 
 
 void UART4_IRQHandler(void)
@@ -115,6 +123,9 @@ void UART4_IRQHandler(void)
       {
           usart_chassis_receive(_UART4_DMA_RX_BUF,&Chassis.USART_Chassis_Data);
       }
+      memset(_UART4_DMA_RX_BUF,0,100);
+      DMA_SetCurrDataCounter(DMA1_Stream2,UART4_RX_BUF_LENGTH);
+      DMA_Cmd(DMA1_Stream2, ENABLE);
     }
 }
 

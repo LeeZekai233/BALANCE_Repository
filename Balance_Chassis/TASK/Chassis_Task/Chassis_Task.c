@@ -137,7 +137,7 @@ void FN_calculate(CH040DATA_t* Chassis_GYRO, Leg_State_t* Leg_State, Lpf1stObj *
     Leg_State->F_fdb = mat_F.pData[0];
     Leg_State->Tp_fdb = mat_F.pData[1];
 
-    float P = (Leg_State->F_fdb - Leg_State->spring_FN)*costheta + (Leg_State->Tp_fdb*sintheta)/Leg_State->l0;
+    float P = (Leg_State->F_fdb - Leg_State->Gasspring_FN)*costheta + (Leg_State->Tp_fdb*sintheta)/Leg_State->l0;
     //支持力的计算
     Leg_State->Leg_FN = WHEEL_MASS * Leg_State->ddzw + P + WHEEL_MASS * 9.81;
     
@@ -784,8 +784,8 @@ void Balance_Task(Balance_Chassis_t* Chassis)
 //    }
  
     //气弹簧解算 
-    Chassis->Left_Leg.spring_FN = Get_Left_GasSpring_FN(Chassis->Left_Leg.l0);
-    Chassis->Right_Leg.spring_FN = Get_Right_GasSpring_FN(Chassis->Right_Leg.l0);
+    Chassis->Left_Leg.Gasspring_FN = Get_Left_GasSpring_FN(Chassis->Left_Leg.l0);
+    Chassis->Right_Leg.Gasspring_FN = Get_Right_GasSpring_FN(Chassis->Right_Leg.l0);
     
     
     //支持力计算
@@ -886,10 +886,10 @@ void Balance_Task(Balance_Chassis_t* Chassis)
     }
     
     //腿部竖直力F的计算
-    Chassis->Left_Leg.Leg_F = PID_Calc(&Chassis->Left_Leg.Leg_Length_PID,Chassis->Left_Leg.l0,Chassis->Chassis_Ref.Leglength) + BODY_MASS/2*9.81f + Chassis->Roll_Balance_F_Left + Chassis->Left_Leg.spring_FN;
-    Chassis->Right_Leg.Leg_F = PID_Calc(&Chassis->Right_Leg.Leg_Length_PID,Chassis->Right_Leg.l0,Chassis->Chassis_Ref.Leglength) + BODY_MASS/2*9.81f + Chassis->Roll_Balance_F_Right + Chassis->Right_Leg.spring_FN;
-   // Chassis->Left_Leg.Leg_F = Chassis->Left_Leg.spring_FN;//PID_Calc(&Chassis->Left_Leg.Leg_Length_PID,Chassis->Left_Leg.l0,Chassis->Chassis_Ref.Leglength) + BODY_MASS/2*9.81f + Chassis->Roll_Balance_F_Left + 
-   // Chassis->Right_Leg.Leg_F = Chassis->Right_Leg.spring_FN;//PID_Calc(&Chassis->Right_Leg.Leg_Length_PID,Chassis->Right_Leg.l0,Chassis->Chassis_Ref.Leglength) + BODY_MASS/2*9.81f + Chassis->Roll_Balance_F_Right + 
+    Chassis->Left_Leg.Leg_F = PID_Calc(&Chassis->Left_Leg.Leg_Length_PID,Chassis->Left_Leg.l0,Chassis->Chassis_Ref.Leglength) + BODY_MASS/2*9.81f + Chassis->Roll_Balance_F_Left + Chassis->Left_Leg.Gasspring_FN;
+    Chassis->Right_Leg.Leg_F = PID_Calc(&Chassis->Right_Leg.Leg_Length_PID,Chassis->Right_Leg.l0,Chassis->Chassis_Ref.Leglength) + BODY_MASS/2*9.81f + Chassis->Roll_Balance_F_Right + Chassis->Right_Leg.Gasspring_FN;
+   // Chassis->Left_Leg.Leg_F = Chassis->Left_Leg.Gasspring_FN;//PID_Calc(&Chassis->Left_Leg.Leg_Length_PID,Chassis->Left_Leg.l0,Chassis->Chassis_Ref.Leglength) + BODY_MASS/2*9.81f + Chassis->Roll_Balance_F_Left + 
+   // Chassis->Right_Leg.Leg_F = Chassis->Right_Leg.Gasspring_FN;//PID_Calc(&Chassis->Right_Leg.Leg_Length_PID,Chassis->Right_Leg.l0,Chassis->Chassis_Ref.Leglength) + BODY_MASS/2*9.81f + Chassis->Roll_Balance_F_Right + 
     //设置左腿关节扭矩
     if(Wheel_State_Estimate(&Chassis->Left_Leg))
    {//leg_conv(Chassis->Left_Leg.Leg_F, 0, 
