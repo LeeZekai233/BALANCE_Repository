@@ -97,39 +97,13 @@ void USART4_Init(u32 bound)
 
 }
 
-void Uart4DmaSendDataProc(u16 ndtr)
-{
-    DMA_Cmd(DMA1_Stream4, DISABLE);                      //关闭DMA传输
-    DMA_ClearFlag(DMA1_Stream4, DMA_FLAG_TCIF4 | DMA_FLAG_HTIF4);
-    while (DMA_GetCmdStatus(DMA1_Stream4) != DISABLE){}  //确保DMA可以被设置
-    DMA_SetCurrDataCounter(DMA1_Stream4,ndtr);          //数据传输量
-    DMA_Cmd(DMA1_Stream4, ENABLE);                      //开启DMA传输
-}
 
-void Uart4SendBytesInfoProc(u8* pSendInfo, u16 nSendCount)//DMA发送函数，pSendInfo为将要发的数据，nSendCount为数据的实际长度
-{
-  u16 i = 0;
-  u8 *pBuf = NULL;
-  //指向发送缓冲区
-  pBuf = UART4_DMA_TX_BUF;
-  for (i=0; i<nSendCount; i++)
-    {
-      *(pBuf+i) = pSendInfo[i];
-    }
-
-  //DMA发送方式
-  Uart4DmaSendDataProc(nSendCount); //开始一次DMA传输！
-}  
 
 void UART4_IRQHandler(void)
 {
 	u16 static length=0;
-  if(USART_GetITStatus(UART4, USART_IT_IDLE) != RESET)    //接收中断
+    if(USART_GetITStatus(UART4, USART_IT_IDLE) != RESET)    //接收中断
     {
-			
-//				Equipment_Counter_Make_Zero(&Peripheral_State.Equipment_Visual_Equipment_Auto_Aim);
-			
-			
       (void)UART4->SR;
       (void)UART4->DR;
       DMA_Cmd(DMA1_Stream2, DISABLE);
@@ -137,10 +111,10 @@ void UART4_IRQHandler(void)
       length = UART4_RX_BUF_LENGTH - DMA_GetCurrDataCounter(DMA1_Stream2);
       DMA_SetCurrDataCounter(DMA1_Stream2,UART4_RX_BUF_LENGTH);
       DMA_Cmd(DMA1_Stream2, ENABLE);
-			if(Verify_CRC8_Check_Sum(_UART4_DMA_RX_BUF,length))
-			{
-                usart_chassis_receive(_UART4_DMA_RX_BUF,&Chassis.USART_Chassis_Data);
-			}
+      if(Verify_CRC8_Check_Sum(_UART4_DMA_RX_BUF,length))
+      {
+  //        usart_chassis_receive(_UART4_DMA_RX_BUF,&Chassis.USART_Chassis_Data);
+      }
     }
 }
 

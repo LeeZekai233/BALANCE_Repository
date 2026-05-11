@@ -665,14 +665,14 @@
               <FilePath>..\TASK\Control_Task\Control_Task.c</FilePath>
             </File>
             <File>
-              <FileName>Board_Connected_Task.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\TASK\Board_Connected_Task\Board_Connected_Task.c</FilePath>
-            </File>
-            <File>
               <FileName>Whell_Observe_Task.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\TASK\Whell_Observe_Task\Whell_Observe_Task.c</FilePath>
+            </File>
+            <File>
+              <FileName>Board_Connected_Task.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\TASK\Board_Connected_Task\Board_Connected_Task.c</FilePath>
             </File>
             <File>
               <FileName>Log_Task.c</FileName>

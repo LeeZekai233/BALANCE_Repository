@@ -40,7 +40,7 @@
 #define WHEEL_MAX_T                       4.35f // 4.3
         
             
-#define BODY_MASS                         8.4f
+#define BODY_MASS                         22.3f
 #define WHEEL_MASS                        1.112f   
 
 
@@ -49,14 +49,14 @@
             
 #define RPM_TO_RAD_PER_SED                0.10472f
 #define DEG_TO_RAD                        0.017453f
-#define NORMAL_Y_ERROEOFFSET              0
+#define NORMAL_Y_ERROEOFFSET              0.13
                         
 typedef enum
 {
   CHASSIS_RELAX          = 0,//µ×ÅÌÊ§ÄÜ
-  CHASSIS_STOP           = 1,//µ×ÅÌÍ£Ö¹
+  MANUAL_FOLLOW_REMOTE   = 1,//µ×ÅÌÊÖ¶¯Ò£¿Ø¸úËæ
   CHASSIS_INIT 			 = 2,//µ×ÅÌ³õÊ¼»¯
-  MANUAL_FOLLOW_REMOTE   = 3,//µ×ÅÌÊÖ¶¯Ò£¿Ø¸úËæ
+  CHASSIS_STOP           = 3,//µ×ÅÌÍ£Ö¹
   CHASSIS_STAND_MODE     = 4,//µ×ÅÌÕ¾Á¢
   AUTO_SEPARATE_GIMBAL   = 5,
   AUTO_FOLLOW_GIMBAL     = 6,

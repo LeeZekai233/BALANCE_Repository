@@ -214,8 +214,8 @@ void M3508_Encoder_To_Generic_Encoder(DJI_Encoder_t* DJI_Encoder,Encoder_t* Enco
     Encoder->Angle_Deg_fdb = (float)(DJI_Encoder->cal_data.raw_value - DJI_Encoder->cal_data.ecd_bias)*M3508_ENCODER_TO_ANGLE*M3508_ENCODER_TO_WHEEL;
     Encoder->Angle_Deg_Total_fdb = DJI_Encoder->ecd_angle*M3508_ENCODER_TO_WHEEL;
     
-    Encoder->Angle_Rad_fdb = Encoder->Angle_Deg_fdb*DEG_TO_RAD*M3508_ENCODER_TO_WHEEL;
-    Encoder->Angle_Rad_Total_fdb = Encoder->Angle_Deg_Total_fdb*DEG_TO_RAD*M3508_ENCODER_TO_WHEEL;
+    Encoder->Angle_Rad_fdb = Encoder->Angle_Deg_fdb*DEG_TO_RAD;
+    Encoder->Angle_Rad_Total_fdb = Encoder->Angle_Deg_Total_fdb*DEG_TO_RAD;
     
     Encoder->Omega_Rad_fdb = DJI_Encoder->rate_rpm*RPM_TO_WHEEL_RAD_PER_SED;
     
