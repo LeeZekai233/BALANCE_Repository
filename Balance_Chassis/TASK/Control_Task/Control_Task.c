@@ -10,9 +10,9 @@ void Contorl_Task(Balance_Chassis_t* Chassis)
     Chassis->Right_Leg.spring_FN = Get_Right_GasSpring_FN(Chassis->Right_Leg.l0);
     
 //    //控动作判断
-    Remote_Switch_Action_Detect(&Remote_DT7_data);
-    Key_Mouse_State_Update(&Remote_DT7_data);
-    Remote_DT7_To_USART_Chassis_Data(&Remote_DT7_data,&Chassis->USART_Chassis_Data);
+   // Remote_Switch_Action_Detect(&Remote_DT7_data);
+   // Key_Mouse_State_Update(&Remote_DT7_data);
+  //  Remote_DT7_To_USART_Chassis_Data(&Remote_DT7_data,&Chassis->USART_Chassis_Data);
     
     //驱动轮在线检测
     Motor_Online_Detective(&Chassis->Driving_Motor[0]);
@@ -42,19 +42,32 @@ void Contorl_Task(Balance_Chassis_t* Chassis)
     if(time_tick%2==0)
     {
         Chassis_Task(Chassis);
-        CAN1_Send_Task_1(Chassis->joint_T[0],Chassis->joint_T[3]);
+      //  CAN1_Send_Task_1(Chassis->joint_T[0],Chassis->joint_T[3]);
     }
     
     if(time_tick%2==1)
     {
-       CAN1_Send_Task_2(Chassis->joint_T[1],Chassis->joint_T[2]);
+     //  CAN1_Send_Task_2(Chassis->joint_T[1],Chassis->joint_T[2]);
     
-       CAN2_Send_Task(Chassis->driving_T[0],Chassis->driving_T[1]);
+      // CAN2_Send_Task(Chassis->driving_T[0],Chassis->driving_T[1]);
     }
     
     if(time_tick%5==0)
     {
-        usart_gimbal_send(0,0,0,0,0,0,0,0,0,0,0,0,&Chassis->USART_Gimbal_Data);
+        usart_gimbal_send
+        (judge_rece_mesg.power_heat_data.shooter_17mm_1_barrel_heat,
+        0,
+        0,
+        judge_rece_mesg.game_robot_state.robot_level,
+        0,
+        judge_rece_mesg.shoot_data.initial_speed,
+        judge_rece_mesg.game_robot_state.power_management_chassis_output,
+        judge_rece_mesg.game_robot_state.current_HP,
+        judge_rece_mesg.game_robot_state.robot_id,
+        0,
+        0,
+        judge_rece_mesg.game_state.game_progress,
+        &Chassis->USART_Gimbal_Data);
     }
 }
 

@@ -677,66 +677,66 @@ void Chassis_Fallow_Gimbal_Handle(Balance_Chassis_t* Chassis)
     }
     
     
-  //  Chassis->Chassis_Ref.Leglength = 0.11f;
+    Chassis->Chassis_Ref.Leglength = 0.11f;
     
-    if(Remote_DT7_data.Remote_clicker.s2 == DOWN)
-    {
-        Chassis->Chassis_Remote_Ref.Leglength = 0.11f;
-    }
-    else if(Remote_DT7_data.Remote_clicker.s2 == MIDDLE)
-    {
-        Chassis->Chassis_Remote_Ref.Leglength = 0.21f;
-    }
-    else if(Remote_DT7_data.Remote_clicker.s2 == UP)
-    {
-        Chassis->Chassis_Remote_Ref.Leglength = 0.35f;
-    }
+//    if(Remote_DT7_data.Remote_clicker.s2 == DOWN)
+//    {
+//        Chassis->Chassis_Remote_Ref.Leglength = 0.11f;
+//    }
+//    else if(Remote_DT7_data.Remote_clicker.s2 == MIDDLE)
+//    {
+//        Chassis->Chassis_Remote_Ref.Leglength = 0.21f;
+//    }
+//    else if(Remote_DT7_data.Remote_clicker.s2 == UP)
+//    {
+//        Chassis->Chassis_Remote_Ref.Leglength = 0.35f;
+//    }
     
     Chassis->Chassis_Ref.Leglength = trackRamp_leg(0.0007,Chassis->Chassis_Ref.Leglength,Chassis->Chassis_Remote_Ref.Leglength);
-//    if(Chassis->USART_Chassis_Data.Cmd_Leg_Length == 0.35f)//高腿长一定转正
-//    {
-//        Chassis->Chassis_Target_Angle = Chassis->Chassis_Ref.Remote_Angle ;
-//        Chassis->Chassis_Target_Speed = Chassis->Chassis_Ref.Remote_Speed ;
-//        Chassis->Chassis_Ref.Roll = 0;
-//    }
-//    else//其他腿长做运动上的优化 做180度转换，相当于一键转头
-//    {
-//        if(fabs(Chassis->Chassis_Ref.Remote_Angle - Chassis->Yaw_Angle__PI_To_PI) < PI/2) //若云台角度与底盘目标速度差值小于PI/2，说明在同一象限内
-//        {
-//            Chassis->Chassis_Target_Angle = Chassis->Chassis_Ref.Remote_Angle ;
-//            Chassis->Chassis_Target_Speed = Chassis->Chassis_Ref.Remote_Speed ;
-//            Chassis->Chassis_Ref.Roll = 0;
-//        }
-//        else if(Chassis->Chassis_Ref.Remote_Angle - Chassis->Yaw_Angle__PI_To_PI > 3*PI/2) //如果云台角度与底盘偏航角差值大于3*PI/2
-//        {
-//            Chassis->Chassis_Target_Angle = Chassis->Chassis_Ref.Remote_Angle - 2*PI;
-//            Chassis->Chassis_Target_Speed = Chassis->Chassis_Ref.Remote_Speed ;
-//            Chassis->Chassis_Ref.Roll = 0;
-//        }
-//        else if(Chassis->Chassis_Ref.Remote_Angle - Chassis->Yaw_Angle__PI_To_PI < -3*PI/2) //如果差值的绝对值小于-3π/2
-//        {
-//            Chassis->Chassis_Target_Angle = Chassis->Chassis_Ref.Remote_Angle + 2*PI;
-//            Chassis->Chassis_Target_Speed = Chassis->Chassis_Ref.Remote_Speed ;
-//            Chassis->Chassis_Ref.Roll = 0;
-//        }
-//        else if(Chassis->Chassis_Ref.Remote_Angle - Chassis->Yaw_Angle__PI_To_PI > 0)//如果差值的绝对值大于0
-//        {
-//            Chassis->Chassis_Target_Angle = Chassis->Chassis_Ref.Remote_Angle - PI;
-//            Chassis->Chassis_Target_Speed = Chassis->Chassis_Ref.Remote_Speed ;
-//            Chassis->Chassis_Ref.Roll = -0;
-//        }
-//        else if(Chassis->Chassis_Ref.Remote_Angle - Chassis->Yaw_Angle__PI_To_PI < 0)
-//        {
-//            Chassis->Chassis_Target_Angle = Chassis->Chassis_Ref.Remote_Angle + PI;
-//            Chassis->Chassis_Target_Speed = Chassis->Chassis_Ref.Remote_Speed ;
-//            Chassis->Chassis_Ref.Roll = -0;
-//        }
-//    }
+    if(Chassis->USART_Chassis_Data.Cmd_Leg_Length == 0.35f)//高腿长一定转正
+    {
+        Chassis->Chassis_Target_Angle = Chassis->Chassis_Ref.Remote_Angle ;
+        Chassis->Chassis_Target_Speed = Chassis->Chassis_Ref.Remote_Speed ;
+        Chassis->Chassis_Ref.Roll = 0;
+    }
+    else//其他腿长做运动上的优化 做180度转换，相当于一键转头
+    {
+        if(fabs(Chassis->Chassis_Ref.Remote_Angle - Chassis->Yaw_Angle__PI_To_PI) < PI/2) //若云台角度与底盘目标速度差值小于PI/2，说明在同一象限内
+        {
+            Chassis->Chassis_Target_Angle = Chassis->Chassis_Ref.Remote_Angle ;
+            Chassis->Chassis_Target_Speed = Chassis->Chassis_Ref.Remote_Speed ;
+            Chassis->Chassis_Ref.Roll = 0;
+        }
+        else if(Chassis->Chassis_Ref.Remote_Angle - Chassis->Yaw_Angle__PI_To_PI > 3*PI/2) //如果云台角度与底盘偏航角差值大于3*PI/2
+        {
+            Chassis->Chassis_Target_Angle = Chassis->Chassis_Ref.Remote_Angle - 2*PI;
+            Chassis->Chassis_Target_Speed = Chassis->Chassis_Ref.Remote_Speed ;
+            Chassis->Chassis_Ref.Roll = 0;
+        }
+        else if(Chassis->Chassis_Ref.Remote_Angle - Chassis->Yaw_Angle__PI_To_PI < -3*PI/2) //如果差值的绝对值小于-3π/2
+        {
+            Chassis->Chassis_Target_Angle = Chassis->Chassis_Ref.Remote_Angle + 2*PI;
+            Chassis->Chassis_Target_Speed = Chassis->Chassis_Ref.Remote_Speed ;
+            Chassis->Chassis_Ref.Roll = 0;
+        }
+        else if(Chassis->Chassis_Ref.Remote_Angle - Chassis->Yaw_Angle__PI_To_PI > 0)//如果差值的绝对值大于0
+        {
+            Chassis->Chassis_Target_Angle = Chassis->Chassis_Ref.Remote_Angle - PI;
+            Chassis->Chassis_Target_Speed = - Chassis->Chassis_Ref.Remote_Speed ;
+            Chassis->Chassis_Ref.Roll = -0;
+        }
+        else if(Chassis->Chassis_Ref.Remote_Angle - Chassis->Yaw_Angle__PI_To_PI < 0)
+        {
+            Chassis->Chassis_Target_Angle = Chassis->Chassis_Ref.Remote_Angle + PI;
+            Chassis->Chassis_Target_Speed = -Chassis->Chassis_Ref.Remote_Speed ;
+            Chassis->Chassis_Ref.Roll = -0;
+        }
+    }
 
-  //  Chassis->Chassis_Ref.V_y = trackRamp(Chassis->Chassis_Ref.V_y,Chassis->Chassis_Target_Speed);
-  Chassis->Chassis_Ref.V_y = trackRamp(Chassis->Chassis_Ref.V_y,Chassis->USART_Chassis_Data.V_y);
-  //  Chassis->Chassis_Ref.V_w = PID_Calc(&Chassis->Pid_Follow_Gimbal,Chassis->Yaw_Angle__PI_To_PI,Chassis->Chassis_Target_Angle);
-  Chassis->Chassis_Ref.V_w = Remote_DT7_data.Remote_clicker.ch2 *0.004;
+    Chassis->Chassis_Ref.V_y = trackRamp(Chassis->Chassis_Ref.V_y,Chassis->Chassis_Target_Speed);
+ // Chassis->Chassis_Ref.V_y = trackRamp(Chassis->Chassis_Ref.V_y,Chassis->USART_Chassis_Data.V_y);
+    Chassis->Chassis_Ref.V_w = -PID_Calc(&Chassis->Pid_Follow_Gimbal,Chassis->Yaw_Angle__PI_To_PI,Chassis->Chassis_Target_Angle);
+ // Chassis->Chassis_Ref.V_w = Remote_DT7_data.Remote_clicker.ch2 *0.004;
 
    
 }

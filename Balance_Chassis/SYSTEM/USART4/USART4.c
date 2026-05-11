@@ -113,7 +113,7 @@ void UART4_IRQHandler(void)
       DMA_Cmd(DMA1_Stream2, ENABLE);
       if(Verify_CRC8_Check_Sum(_UART4_DMA_RX_BUF,length))
       {
-  //        usart_chassis_receive(_UART4_DMA_RX_BUF,&Chassis.USART_Chassis_Data);
+          usart_chassis_receive(_UART4_DMA_RX_BUF,&Chassis.USART_Chassis_Data);
       }
     }
 }
