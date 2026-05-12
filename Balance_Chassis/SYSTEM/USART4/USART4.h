@@ -3,8 +3,8 @@
 
 #include <stm32f4xx.h>
 
-#define UART4_RX_BUF_LENGTH       200
-#define UART4_TX_BUF_LENGTH       200
+#define UART4_RX_BUF_LENGTH       100
+#define UART4_TX_BUF_LENGTH       100
 
 extern uint8_t UART4_DMA_TX_BUF[UART4_TX_BUF_LENGTH];
 

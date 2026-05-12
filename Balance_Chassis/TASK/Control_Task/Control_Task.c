@@ -56,7 +56,7 @@ void Contorl_Task(Balance_Chassis_t* Chassis)
     {
         usart_gimbal_send
         (judge_rece_mesg.power_heat_data.shooter_17mm_1_barrel_heat,
-        0,
+         1147,
         0,
         judge_rece_mesg.game_robot_state.robot_level,
         0,
@@ -64,7 +64,7 @@ void Contorl_Task(Balance_Chassis_t* Chassis)
         judge_rece_mesg.game_robot_state.power_management_chassis_output,
         judge_rece_mesg.game_robot_state.current_HP,
         judge_rece_mesg.game_robot_state.robot_id,
-        0,
+        97,
         0,
         judge_rece_mesg.game_state.game_progress,
         &Chassis->USART_Gimbal_Data);

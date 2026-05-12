@@ -2,11 +2,16 @@
 
 int main( )
 {
+        Control_Task_Init(&Chassis);
     Infantry_Init( );
-    Control_Task_Init(&Chassis);
+   
 	while (1)
 	{
-        
+if (USART_GetFlagStatus(UART4, USART_FLAG_ORE) != RESET)
+{
+    (void) UART4->SR;
+    (void) UART4->DR;
+}
 	}
 }
 

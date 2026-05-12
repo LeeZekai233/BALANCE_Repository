@@ -5,8 +5,7 @@
 uint8_t _UART4_DMA_RX_BUF[UART4_RX_BUF_LENGTH];	
 uint8_t UART4_DMA_TX_BUF[UART4_TX_BUF_LENGTH];
 
-//uint8_t _UART4_DMA_RX_BUF[UART4_RX_BUF_LENGTH];	
-//uint8_t UART4_DMA_TX_BUF[UART4_TX_BUF_LENGTH];
+
 
 void USART4_Init(u32 bound)
 {
@@ -45,12 +44,12 @@ void USART4_Init(u32 bound)
   dma.DMA_PeripheralBaseAddr		= (uint32_t)(&UART4->DR);
   dma.DMA_Memory0BaseAddr   		= (uint32_t)&_UART4_DMA_RX_BUF;
   dma.DMA_DIR 					= DMA_DIR_PeripheralToMemory;
-  dma.DMA_BufferSize			 	= UART4_RX_BUF_LENGTH;//sizeof(USART1_DMA_RX_BUF);
+  dma.DMA_BufferSize				= UART4_RX_BUF_LENGTH;//sizeof(USART1_DMA_RX_BUF);
   dma.DMA_PeripheralInc 			= DMA_PeripheralInc_Disable;
   dma.DMA_MemoryInc 				= DMA_MemoryInc_Enable;
   dma.DMA_PeripheralDataSize 		= DMA_PeripheralDataSize_Byte;
   dma.DMA_MemoryDataSize 			= DMA_MemoryDataSize_Byte;
-  dma.DMA_Mode 					= DMA_Mode_Circular;
+  dma.DMA_Mode 					= DMA_Mode_Normal;
   dma.DMA_Priority 				= DMA_Priority_Medium;
   dma.DMA_FIFOMode 				= DMA_FIFOMode_Disable;
   dma.DMA_FIFOThreshold 			= DMA_FIFOThreshold_1QuarterFull;
@@ -60,8 +59,8 @@ void USART4_Init(u32 bound)
   DMA_Cmd(DMA1_Stream2, ENABLE);
 
   nvic.NVIC_IRQChannel = UART4_IRQn;
-  nvic.NVIC_IRQChannelPreemptionPriority = 3;
-  nvic.NVIC_IRQChannelSubPriority =3;
+  nvic.NVIC_IRQChannelPreemptionPriority = 0;
+  nvic.NVIC_IRQChannelSubPriority =0;
   nvic.NVIC_IRQChannelCmd = ENABLE;
   NVIC_Init(&nvic);
 
@@ -74,12 +73,12 @@ void USART4_Init(u32 bound)
   dma.DMA_PeripheralBaseAddr	= (uint32_t)(&UART4->DR);
   dma.DMA_Memory0BaseAddr   	= (uint32_t)&UART4_DMA_TX_BUF[0];
   dma.DMA_DIR 			   				 = DMA_DIR_MemoryToPeripheral;
-  dma.DMA_BufferSize					= 0;//sizeof(UART4_DMA_TX_BUF);
+  dma.DMA_BufferSize					= sizeof(UART4_DMA_TX_BUF);
   dma.DMA_PeripheralInc 			= DMA_PeripheralInc_Disable;
   dma.DMA_MemoryInc 					= DMA_MemoryInc_Enable;
   dma.DMA_PeripheralDataSize 	= DMA_PeripheralDataSize_Byte;
   dma.DMA_MemoryDataSize 			= DMA_MemoryDataSize_Byte;
-  dma.DMA_Mode 								= DMA_Mode_Circular;
+  dma.DMA_Mode 								= DMA_Mode_Normal;
   dma.DMA_Priority 						= DMA_Priority_Medium;
   dma.DMA_FIFOMode 						= DMA_FIFOMode_Disable;
   dma.DMA_FIFOThreshold 			= DMA_FIFOThreshold_Full;
@@ -87,69 +86,46 @@ void USART4_Init(u32 bound)
   dma.DMA_PeripheralBurst 		= DMA_PeripheralBurst_Single;
   DMA_Init(DMA1_Stream4,&dma);
 
-	DMA_Cmd(DMA1_Stream4, DISABLE);                           // 关DMA通道
-  nvic.NVIC_IRQChannel = DMA1_Stream4_IRQn;   // 发送DMA通道的中断配置
-  nvic.NVIC_IRQChannelPreemptionPriority = 3;     // 优先级设置
-  nvic.NVIC_IRQChannelSubPriority = 3;
-  nvic.NVIC_IRQChannelCmd = ENABLE;
-  NVIC_Init(&nvic);
-  DMA_ITConfig(DMA1_Stream4,DMA_IT_TC,ENABLE);
+//	DMA_Cmd(DMA1_Stream3, DISABLE);                           // 关DMA通道
+//  nvic.NVIC_IRQChannel = DMA1_Stream4_IRQn;   // 发送DMA通道的中断配置
+//  nvic.NVIC_IRQChannelPreemptionPriority = 3;     // 优先级设置
+//  nvic.NVIC_IRQChannelSubPriority = 3;
+//  nvic.NVIC_IRQChannelCmd = ENABLE;
+//  NVIC_Init(&nvic);
+//  DMA_ITConfig(DMA1_Stream4,DMA_IT_TC,ENABLE);
 
   USART_ITConfig(UART4,USART_IT_IDLE,ENABLE);
   USART_Cmd(UART4,ENABLE);
 
 }
 
-void Uart4DmaSendDataProc(u16 ndtr)
-{
-	DMA_Cmd(DMA1_Stream4, DISABLE);                      //关闭DMA传输
-	DMA_ClearFlag(DMA1_Stream4, DMA_FLAG_TCIF4 | DMA_FLAG_HTIF4);
-	while (DMA_GetCmdStatus(DMA1_Stream4) != DISABLE){}  //确保DMA可以被设置
-  DMA_SetCurrDataCounter(DMA1_Stream4,ndtr);          //数据传输量
-  DMA_Cmd(DMA1_Stream4, ENABLE);                      //开启DMA传输
-}
 
-void Uart4SendBytesInfoProc(u8* pSendInfo, u16 nSendCount)
-{
-  u16 i = 0;
-  u8 *pBuf = NULL;
-  //指向发送缓冲区
-  pBuf = UART4_DMA_TX_BUF;
-  for (i=0; i<nSendCount; i++)
-    {
-      *(pBuf+i) = pSendInfo[i];
-    }
-
-  //DMA发送方式
-  Uart4DmaSendDataProc(nSendCount); //开始一次DMA传输！
-}  
-
+  uint8_t length=0;
 void UART4_IRQHandler(void)
 {
-	u16 static length=0;
+
   if(USART_GetITStatus(UART4, USART_IT_IDLE) != RESET)    //接收中断
     {
-			
-				//Equipment_Counter_Make_Zero(&Peripheral_State.Equipment_Visual_Equipment_Auto_Aim);
-			
-			
+		//Usar4_Link_State=1;
+		
       (void)UART4->SR;
       (void)UART4->DR;
       DMA_Cmd(DMA1_Stream2, DISABLE);
       DMA_ClearFlag(DMA1_Stream2, DMA_FLAG_TCIF2 | DMA_FLAG_HTIF2);
       length = UART4_RX_BUF_LENGTH - DMA_GetCurrDataCounter(DMA1_Stream2);
+      //  if(Verify_CRC8_Check_Sum(_UART4_DMA_RX_BUF,length))
+      //  {
+           usart_chassis_receive(_UART4_DMA_RX_BUF,&Chassis.USART_Chassis_Data);
+       // }
+    
       DMA_SetCurrDataCounter(DMA1_Stream2,UART4_RX_BUF_LENGTH);
-			//视觉数据处理,数据存在发送给下板的自瞄数据结构体内
-		//	Vision_Process_General_Message_New(_UART4_DMA_RX_BUF,length,&My_Auto_Shoot);
-			
-			
       DMA_Cmd(DMA1_Stream2, ENABLE);
-			if(length==82)
-			{
-//				memcpy(&dat_3, &_UART4_DMA_RX_BUF[6], sizeof(id0x91_t));
-			}
+        memset(_UART4_DMA_RX_BUF,0,100);
+
     }
 }
+
+
 
 void DMA1_Stream4_IRQHandler(void)
 {
