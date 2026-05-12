@@ -99,7 +99,7 @@ void USART4_Init(u32 bound)
 
 }
 
-
+             
   uint8_t length=0;
 void UART4_IRQHandler(void)
 {
@@ -113,10 +113,10 @@ void UART4_IRQHandler(void)
       DMA_Cmd(DMA1_Stream2, DISABLE);
       DMA_ClearFlag(DMA1_Stream2, DMA_FLAG_TCIF2 | DMA_FLAG_HTIF2);
       length = UART4_RX_BUF_LENGTH - DMA_GetCurrDataCounter(DMA1_Stream2);
-      //  if(Verify_CRC8_Check_Sum(_UART4_DMA_RX_BUF,length))
-      //  {
+        if(Verify_CRC8_Check_Sum(_UART4_DMA_RX_BUF,length))
+        {
            usart_chassis_receive(_UART4_DMA_RX_BUF,&Chassis.USART_Chassis_Data);
-       // }
+        }
     
       DMA_SetCurrDataCounter(DMA1_Stream2,UART4_RX_BUF_LENGTH);
       DMA_Cmd(DMA1_Stream2, ENABLE);

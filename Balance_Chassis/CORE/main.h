@@ -14,6 +14,7 @@
 
 //SYSTEM
 #include "USART1.h"
+#include "USART2.h"
 #include "USART3.h"                                                                  
 #include "USART4.h"
 #include "USART6.h"

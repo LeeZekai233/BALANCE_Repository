@@ -340,7 +340,7 @@
               <MiscControls>--diag_suppress=177,1035</MiscControls>
               <Define>STM32F40_41xxx,USE_STDPERIPH_DRIVER,ARM_MATH_CM4</Define>
               <Undefine></Undefine>
-              <IncludePath>..\FWLIB\inc;..\FWLIB\src;..\USER;..\Judge_System;..\SYSTEM;..\TASK;..\USER;..\Control_Algorithm;..\SYSTEM\CAN2;..\SYSTEM\TIM6;..\SYSTEM\USART1;..\SYSTEM\CAN1;..\SYSTEM\USART3;..\SYSTEM\USART6;..\SYSTEM\BSP;..\TASK\Remote_Task;..\SYSTEM\TIM2;..\TASK\Chassis_Task;..\Control_Algorithm\PID;..\FWLIB;..\SYSTEM\USART4;..\TASK\Leg_Task;..\MOTOR;..\TASK\Control_Task;..\TASK\Board_Connected_Task;..\DSP\Core_Include;..\DSP\PrivateInclude;..\DSP\Include;..\CORE;..\TASK\Whell_Observe_Task;..\Control_Algorithm\Ramp;..\TASK\Log_Task;..\Control_Algorithm\Low_Pass_Filter;..\TASK\Can_Bus_Task;..\Control_Algorithm\High_Pass_Filter;..\MOTOR\DaMiao_8009;..\MOTOR\DJI_Motor</IncludePath>
+              <IncludePath>..\FWLIB\inc;..\FWLIB\src;..\USER;..\Judge_System;..\SYSTEM;..\TASK;..\USER;..\Control_Algorithm;..\SYSTEM\CAN2;..\SYSTEM\TIM6;..\SYSTEM\USART1;..\SYSTEM\CAN1;..\SYSTEM\USART3;..\SYSTEM\USART6;..\SYSTEM\BSP;..\TASK\Remote_Task;..\SYSTEM\TIM2;..\TASK\Chassis_Task;..\Control_Algorithm\PID;..\FWLIB;..\SYSTEM\USART4;..\TASK\Leg_Task;..\MOTOR;..\TASK\Control_Task;..\TASK\Board_Connected_Task;..\DSP\Core_Include;..\DSP\PrivateInclude;..\DSP\Include;..\CORE;..\TASK\Whell_Observe_Task;..\Control_Algorithm\Ramp;..\TASK\Log_Task;..\Control_Algorithm\Low_Pass_Filter;..\TASK\Can_Bus_Task;..\Control_Algorithm\High_Pass_Filter;..\MOTOR\DaMiao_8009;..\MOTOR\DJI_Motor;..\SYSTEM\USART2</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -638,6 +638,16 @@
               <FileName>TIM2.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\SYSTEM\TIM2\TIM2.c</FilePath>
+            </File>
+            <File>
+              <FileName>USART2.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\SYSTEM\USART2\USART2.c</FilePath>
+            </File>
+            <File>
+              <FileName>USART2.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\SYSTEM\USART2\USART2.h</FilePath>
             </File>
           </Files>
         </Group>
