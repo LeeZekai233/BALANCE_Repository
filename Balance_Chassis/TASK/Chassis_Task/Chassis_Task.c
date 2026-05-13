@@ -202,7 +202,7 @@ void Chassis_Param_Init(Balance_Chassis_t* Chassis)
     PID_Init(&Chassis->Right_Leg.Leg_Length_PID,PID_POSITION,2500,0,6000,20000,20000);
     
     //双腿协调
-    PID_Init(&Chassis->Leg_Harmonize_Pid_Inner,PID_POSITION,10.4f,0.3f,0.0f,35,3);
+    PID_Init(&Chassis->Leg_Harmonize_Pid_Inner,PID_POSITION,10.4f,0.5f,0.0f,35,3);
     PID_Init(&Chassis->Leg_Harmonize_Pid_Outer,PID_POSITION,8.5f,0.0f,15,50,3);
 //    
     
@@ -263,9 +263,6 @@ void Chassis_State_Update(Balance_Chassis_t* Chassis)
 
 }
     
-uint8_t temp_flag1;
-uint8_t temp_flag_2;
-uint8_t temp_flag_3;
 void Chassis_Mode_Select(Balance_Chassis_t* Chassis)
 {
     //模式切换判断
@@ -277,10 +274,10 @@ void Chassis_Mode_Select(Balance_Chassis_t* Chassis)
            Chassis->Control_Mode = (Chassis_Mode_e)Chassis->USART_Chassis_Data.Chassis_Mode;
         }
         
-//        if(judge_rece_mesg.game_robot_state.power_management_chassis_output==0||judge_rece_mesg.game_robot_state.current_HP==0)
-//        {Chassis->V_w_Torque*Chassis->vw_limit_rate
-//            Chassis->Control_Mode = CHASSIS_RELAX ;
-//        }
+        if(judge_rece_mesg.game_robot_state.power_management_chassis_output==0||judge_rece_mesg.game_robot_state.current_HP==0)
+        {
+            Chassis->Control_Mode = CHASSIS_RELAX ;
+        }
         
         if(Chassis->Last_Control_Mode == CHASSIS_RELAX && Chassis->Control_Mode != CHASSIS_RELAX)//空闲之后必衔接初始化
         {
@@ -296,8 +293,6 @@ void Chassis_Mode_Select(Balance_Chassis_t* Chassis)
         if((Chassis->balance_loop.L0 > 0.25 && Chassis->Control_Mode != CHASSIS_RELAX && fabs(Chassis->balance_loop.theta)>0.9f) )
         {
             Chassis->Control_Mode = CHASSIS_INIT ;
-            temp_flag1++;
-            
         }
           
 
@@ -521,7 +516,6 @@ void Chassis_Init_Handle(Balance_Chassis_t* Chassis)
                 {
                     
                     Chassis->Control_Mode = CHASSIS_STAND_MODE;
-                    temp_flag_2++;
                     Chassis->Init_State = INIT_FINISH;
                 }
                 else
@@ -531,14 +525,7 @@ void Chassis_Init_Handle(Balance_Chassis_t* Chassis)
                     Chassis->Init_Tp = PID_Calc(&Chassis->Init_Tp_Pid,Chassis->phi0,0.0f);
                     Chassis->Harmonize_Outer = PID_Calc(&Chassis->Leg_Harmonize_Pid_Outer , (Chassis->Right_Leg.phi0 - Chassis->Left_Leg.phi0),0);
                     Chassis->Harmonize_Inner = PID_Calc(&Chassis->Leg_Harmonize_Pid_Inner ,(Chassis->Right_Leg.dphi0 - Chassis->Left_Leg.dphi0),Chassis->Harmonize_Outer);
-                   // if(Chassis->balance_loop.L0 < 0.15f)
-                 //   {
-                        Init_Tp_Calc(0.10f,Chassis->Harmonize_Inner/2,Chassis->Init_Tp,Chassis);
-                  //  }
-                  //  else
-                   // {
-                     //   Init_Tp_Calc(0.12f,Chassis->Harmonize_Inner/2,0,Chassis);
-                   //}
+                    Init_Tp_Calc(0.11f,Chassis->Harmonize_Inner/2,Chassis->Init_Tp,Chassis);
                     Motor_Torque_Set(Chassis,Chassis->Right_Leg.T_Set[0]*JM1_POLARITY, Chassis->Left_Leg.T_Set[0]*JM2_POLARITY, Chassis->Left_Leg.T_Set[1]*JM3_POLARITY, Chassis->Right_Leg.T_Set[1]*JM4_POLARITY, 0, 0);
                     Motor_Out_Limit(Chassis);
                 }
@@ -654,11 +641,10 @@ void Chassis_Standup_Handle(Balance_Chassis_t* Chassis)
     Chassis->Chassis_Ref.V_x = 0;
     Chassis->Chassis_Ref.V_w = 0;
     Chassis->Chassis_Ref.Y_position = Chassis->balance_loop.x;
-    if(fabs(Chassis->balance_loop.state_err[4]) < 8*DEG_TO_RAD)
+    if(fabs(Chassis->balance_loop.state_err[3]) < 8*DEG_TO_RAD)
     {
         Chassis->Control_Mode = (Chassis_Mode_e)Chassis->USART_Chassis_Data.Chassis_Mode;
     }
-//    Chassis->Control_Mode = (Chassis_Mode_e)Chassis->USART_Chassis_Data.Chassis_Mode;
 }
     
 
@@ -710,7 +696,6 @@ void Chassis_Fallow_Gimbal_Handle(Balance_Chassis_t* Chassis)
         Chassis->Low_Leglength_Flag = 1;
     }
     
-    
     if(Chassis->Low_Leglength_Flag == 1)
     {
         Chassis->Chassis_Ref.Leglength = 0.11f;
@@ -722,12 +707,7 @@ void Chassis_Fallow_Gimbal_Handle(Balance_Chassis_t* Chassis)
         Chassis->Low_Leglength_Cnt = 0;
         Chassis->Low_Leglength_Flag = 0;
     }
-    
-  
-    
-    
-    
-    Chassis->Last_Leg_Length = Chassis->Leg_Length;
+     Chassis->Last_Leg_Length = Chassis->Leg_Length;
     
     
     
