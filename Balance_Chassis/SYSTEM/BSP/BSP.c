@@ -8,6 +8,7 @@ void Infantry_Init(void)
     USART6_Init(115200);
     USART4_Init(921600);
     usart2_init(921600);
+    USART5_DMA_R_T_JUDGE_Init();
     CAN1_Init( );
     CAN2_Init( );
     TIM2_Init( );

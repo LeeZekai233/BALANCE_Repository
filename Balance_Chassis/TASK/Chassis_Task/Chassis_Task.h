@@ -40,7 +40,7 @@
 #define WHEEL_MAX_T                       4.35f // 4.3
         
             
-#define BODY_MASS                         22.3f
+#define BODY_MASS                         20.0f
 #define WHEEL_MASS                        1.112f   
 
 
@@ -50,7 +50,8 @@
 #define RPM_TO_RAD_PER_SED                0.10472f
 #define DEG_TO_RAD                        0.017453f
 #define NORMAL_Y_ERROEOFFSET              0.13
-                        
+    
+    
 typedef enum
 {
   CHASSIS_RELAX          = 0,//底盘失能
@@ -126,6 +127,13 @@ typedef enum
 }Init_State_e;
 
 
+typedef enum
+{
+    LOW_LEG_LENGTH = 1,
+    MIDDLE_LEG_LENGTH = 2,
+    HIGH_LEG_LENGTH = 3,
+}Leg_Length_State_e;
+
 
 typedef struct
 {
@@ -152,7 +160,7 @@ typedef struct
 	PID_t Leg_Harmonize_Pid_Outer;
 	PID_t V_w_Pid;
 	
-	PID_t Roll_Pid_Angle;//roll角度pid
+	PID_t Roll_Balance_FN_PID;//roll角度pid
 	PID_t Roll_Leg_F_Pid;
 	PID_t Roll_leg_F_Rotate_Pid;
 	
@@ -242,7 +250,17 @@ typedef struct
     float Chassis_Target_Angle;
     float Chassis_Target_Speed;
     
-    //uint8_t Middle_Leg_Cmd;//
+    Leg_Length_State_e Leg_Length;
+    Leg_Length_State_e Last_Leg_Length;
+    
+    uint8_t  Low_Leglength_Flag;
+    uint16_t Low_Leglength_Cnt;
+    
+    uint8_t Middle_Leglength_Flag;
+    uint16_t Middle_Leglength_Cnt;
+    
+    uint8_t High_Leg_Flag;
+    uint16_t High_Leg_Cnt;
     
 }Balance_Chassis_t;//复制来的，有些没用
 

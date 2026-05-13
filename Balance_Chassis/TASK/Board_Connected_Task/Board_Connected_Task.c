@@ -35,7 +35,7 @@ void usart_gimbal_send(
 					   uint8_t  game_state,USART_Gimbal_Data_t* USART_Gimbal_Data)
 {
     
-    unsigned char tx_buff[GIMBAL_SEND_DATA_LENGTH];//要改78 78
+    unsigned char tx_buff[GIMBAL_SEND_DATA_LENGTH];
 	USART_Gimbal_Data->shooter_id1_17mm_cooling_heat  = shooter_id1_17mm_cooling_heat;//存进结构体
 	USART_Gimbal_Data->shooter_barrel_heat_limit      = shooter_barrel_heat_limit;
 	USART_Gimbal_Data->shooter_barrel_cooling_value   = shooter_barrel_cooling_value;

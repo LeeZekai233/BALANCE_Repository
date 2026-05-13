@@ -72,7 +72,7 @@ void CAN1_RX0_IRQHandler(void)
     {
         CAN_Receive(CAN1, CAN_FIFO0, &rx_message);
         //CAN1数据处理
-        CAN_Receive_Task(&rx_message,&Chassis);
+        CAN1_Receive_Task(&rx_message,&Chassis);
         CAN_ClearITPendingBit(CAN1, CAN_IT_FMP0);
         CAN_ClearFlag(CAN1, CAN_FLAG_FF0);
     }

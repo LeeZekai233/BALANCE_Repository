@@ -3,7 +3,7 @@
 
 
 
-void CAN_Receive_Task(CanRxMsg* RxMsg,Balance_Chassis_t* Chassis)
+void CAN2_Receive_Task(CanRxMsg* RxMsg,Balance_Chassis_t* Chassis)
 {
     switch (RxMsg->StdId)
     {
@@ -17,7 +17,14 @@ void CAN_Receive_Task(CanRxMsg* RxMsg,Balance_Chassis_t* Chassis)
             M3508_Encoder_To_Generic_Encoder(&Driving_M3508[1],&Chassis->Driving_Motor[1]);//”“¬÷
             break;
         
-        //CAN1
+    }
+}
+
+
+void CAN1_Receive_Task(CanRxMsg* RxMsg,Balance_Chassis_t* Chassis)
+{
+    switch (RxMsg->StdId)
+    {
         case 0xA1:
             DaMiao_8009_Information_Receive(RxMsg,&Joint_Motor[0],+2.68839049f - 0.33405f);//-0.71786f - 0.33405f);
             DaMiao_8009_To_Generic_Encoder(&Joint_Motor[0],&Chassis->Joint_Motor[0]);//”“Õ»phi1
@@ -36,7 +43,6 @@ void CAN_Receive_Task(CanRxMsg* RxMsg,Balance_Chassis_t* Chassis)
             break;
     }
 }
-
 
 
 void CAN1_Send_Task_1(float Joint_T_Set1,float Joint_T_Set4)

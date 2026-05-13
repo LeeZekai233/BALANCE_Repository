@@ -108,7 +108,7 @@ void CAN2_RX0_IRQHandler(void)
 	if (CAN_GetITStatus(CAN2,CAN_IT_FMP0)!= RESET) 
 		{
 			CAN_Receive(CAN2, CAN_FIFO0, &rx_message);
-            CAN_Receive_Task(&rx_message,&Chassis);
+            CAN2_Receive_Task(&rx_message,&Chassis);
             CAN_ClearITPendingBit(CAN2, CAN_IT_FMP0);
 			CAN_ClearFlag(CAN2, CAN_FLAG_FF0);
 		}	
