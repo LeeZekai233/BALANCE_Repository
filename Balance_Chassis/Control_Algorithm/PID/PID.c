@@ -20,8 +20,8 @@ void PID_Init(PID_t *pid, PID_Mode_e mode,float kp,float ki,float kd, float max_
     pid->Kd = kd;
     pid->max_out = max_out;
     pid->max_iout = max_iout;
-    pid->Dbuf[0] = pid->Dbuf[1] = pid->Dbuf[2] = 0.0f;
-    pid->error[0] = pid->error[1] = pid->error[2] = pid->Pout = pid->Iout = pid->Dout = pid->out = 0.0f;
+//    pid->Dbuf[0] = pid->Dbuf[1] = pid->Dbuf[2] = 0.0f;
+//    pid->error[0] = pid->error[1] = pid->error[2] = pid->Pout = pid->Iout = pid->Dout = pid->out = 0.0f;
 }
 
 

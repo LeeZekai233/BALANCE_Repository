@@ -40,7 +40,7 @@
 #define WHEEL_MAX_T                       4.35f // 4.3
         
             
-#define BODY_MASS                         20.0f
+#define BODY_MASS                         19.5f
 #define WHEEL_MASS                        1.112f   
 
 
@@ -50,6 +50,8 @@
 #define RPM_TO_RAD_PER_SED                0.10472f
 #define DEG_TO_RAD                        0.017453f
 #define NORMAL_Y_ERROEOFFSET              0.13
+
+#define LOW_LEGLENGTH_CMD                 1
     
     
 typedef enum
@@ -117,6 +119,7 @@ typedef struct
 
 typedef enum
 {
+    INIT_RELAX     = 0,//未初始化
     NORMAL_STATE_1 = 1,//正常状态1
     NORMAL_STATE_2 = 2,//正常状态2
     ROLL_STATE_1   = 3,//侧翻状态1
@@ -173,8 +176,6 @@ typedef struct
 	PID_t Pid_Seperate_Gimbal;
 	
 	PID_t Init_Tp_Pid;
-	PID_t Init_Tp_dphi0_Pid;
-	PID_t Init_Tp_phi0_Pid;
 	
 	PID_t Over_Step_phi0_Left_Pid;
 	PID_t Over_Step_phi0_Right_Pid;
@@ -183,8 +184,11 @@ typedef struct
 	PID_t Init_phi0_pid_right;
 	
 	
-    PID_t Init_dphi0_pid_left;
-	PID_t Init_dphi0_pid_right;
+    PID_t normal_init_dphi0_pid_left;
+	PID_t normal_init_dphi0_pid_right;
+    
+    PID_t flip_init_dphi0_pid_left;
+    PID_t flip_init_dphi0_pid_right;
     
 	u16 Max_power_to_PM01;//好像没用过
 	
@@ -220,7 +224,7 @@ typedef struct
     uint8_t Jump_State;//跳跃状态
     
     USART_Chassis_Data_t USART_Chassis_Data;//串口传来的控制底盘数据
-    USART_Gimbal_Data_t USART_Gimbal_Data;
+    USART_Gimbal_Data_t USART_Gimbal_Data;//反馈给云台的数据，通过串口发送
     
     float dphi0;//左右腿平均dphi0
     float phi0;//左右腿平均phi0
@@ -261,6 +265,8 @@ typedef struct
     
     uint8_t High_Leg_Flag;
     uint16_t High_Leg_Cnt;
+    
+    uint8_t Gimbal_Init_Cmd;
     
 }Balance_Chassis_t;//复制来的，有些没用
 

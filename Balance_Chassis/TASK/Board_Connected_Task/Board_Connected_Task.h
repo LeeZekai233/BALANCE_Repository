@@ -43,7 +43,7 @@ typedef __packed struct
 	uint8_t  power_management_chassis_output;
 	uint16_t current_HP;
     uint8_t  robot_id;
-	uint8_t  allow_gimbal_init;
+	uint8_t  Gimbal_Init_Cmd;
     float remain_heat;
 //	int16_t remain_heat;//剩余热量这里是老代码里Judeg_System里手动计算的，这里先注释掉
 	uint8_t game_state;
@@ -71,7 +71,7 @@ void usart_gimbal_send(
                        uint8_t  power_management_chassis_output,
 					   uint16_t current_HP,
 					   uint8_t  robot_id,
-					   uint8_t  allow_gimbal_init,
+					   uint8_t  Gimbal_Init_Cmd,
                        float  remain_heat,
 					   uint8_t  game_state,USART_Gimbal_Data_t* USART_Gimbal_Data);
 					   

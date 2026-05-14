@@ -600,6 +600,11 @@
               <FilePath>..\SYSTEM\USART1\USART1.c</FilePath>
             </File>
             <File>
+              <FileName>USART2.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\SYSTEM\USART2\USART2.c</FilePath>
+            </File>
+            <File>
               <FileName>USART3.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\SYSTEM\USART3\USART3.c</FilePath>
@@ -638,11 +643,6 @@
               <FileName>TIM2.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\SYSTEM\TIM2\TIM2.c</FilePath>
-            </File>
-            <File>
-              <FileName>USART2.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\SYSTEM\USART2\USART2.c</FilePath>
             </File>
           </Files>
         </Group>

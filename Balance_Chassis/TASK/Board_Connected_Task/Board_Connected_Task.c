@@ -30,7 +30,7 @@ void usart_gimbal_send(
                        uint8_t  power_management_chassis_output,
 					   uint16_t current_HP,
 					   uint8_t  robot_id,
-					   uint8_t  allow_gimbal_init,
+					   uint8_t  Gimbal_Init_Cmd,
                        float remain_heat,
 					   uint8_t  game_state,USART_Gimbal_Data_t* USART_Gimbal_Data)
 {
@@ -45,7 +45,7 @@ void usart_gimbal_send(
 	USART_Gimbal_Data->power_management_chassis_output= power_management_chassis_output;
 	USART_Gimbal_Data->current_HP                     = current_HP;
 	USART_Gimbal_Data->robot_id                       = robot_id;
-	USART_Gimbal_Data->allow_gimbal_init              = allow_gimbal_init;
+	USART_Gimbal_Data->Gimbal_Init_Cmd              = Gimbal_Init_Cmd;
 	USART_Gimbal_Data->remain_heat                    = remain_heat;
 	USART_Gimbal_Data->game_state                     = game_state;
     
@@ -71,6 +71,7 @@ void usart_gimbal_send(
 void usart_chassis_receive(uint8_t *DataAddress,USART_Chassis_Data_t* USART_Chassis_Data)
 {
     memcpy(USART_Chassis_Data,DataAddress,sizeof(*USART_Chassis_Data));
+    gimbal_control_online_heart_cnt = time_tick ;
 }
 
 
