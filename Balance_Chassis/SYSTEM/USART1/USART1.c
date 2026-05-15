@@ -1,5 +1,4 @@
 #include "main.h"
-//void Remote_DT7_To_USART_Chassis_Data(Remote_DT7_t* ,USART_Chassis_Data_t* );//不加这个报警告，原因未知
 
 /*****************************************USART1初始化**************************************************/
 static uint8_t _USART1_DMA_RX_BUF[2][BSP_USART1_DMA_RX_BUF_LEN];

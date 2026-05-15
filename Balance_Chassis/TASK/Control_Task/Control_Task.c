@@ -66,20 +66,6 @@ void Contorl_Task(Balance_Chassis_t* Chassis)
         0,
         judge_rece_mesg.game_state.game_progress,
         &Chassis->USART_Gimbal_Data);
-//        usart_gimbal_send
-//        (76,
-//        87,
-//        97,
-//        74,
-//        0,
-//        judge_rece_mesg.shoot_data.initial_speed,
-//        judge_rece_mesg.game_robot_state.power_management_chassis_output,
-//        570,
-//        judge_rece_mesg.game_robot_state.robot_id,
-//        1,
-//        0,
-//        judge_rece_mesg.game_state.game_progress,
-//        &Chassis->USART_Gimbal_Data);
     }
 }
 

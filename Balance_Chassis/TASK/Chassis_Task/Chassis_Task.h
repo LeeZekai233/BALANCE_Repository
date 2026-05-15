@@ -58,20 +58,20 @@
     
 typedef enum
 {
-  CHASSIS_RELAX          = 0,//底盘失能
-  MANUAL_FOLLOW_REMOTE   = 1,//底盘手动遥控跟随
-  CHASSIS_INIT 			 = 2,//底盘初始化
-  CHASSIS_STOP           = 3,//底盘停止
-  CHASSIS_STAND_MODE     = 4,//底盘站立
-  AUTO_SEPARATE_GIMBAL   = 5,
-  AUTO_FOLLOW_GIMBAL     = 6,
-  CHASSIS_ROTATE         = 7,
-  CHASSIS_REVERSE        = 8,
-  CHASSIS_DOWN_MODE      = 9,
-  CHASSIS_SEPARATE 		 = 10,//底盘独立
-  CHASSIS_AUTO_SUP       = 11,
-  CHASSIS_SINGLE_LEG_HANDLE =12,
-  CHASSIS_TEXT              =13,
+  CHASSIS_RELAX                                    = 0,//底盘失能
+  MANUAL_FOLLOW_REMOTE                             = 1,//底盘手动遥控跟随
+  CHASSIS_INIT 			                           = 2,//底盘初始化
+  CHASSIS_STOP                                     = 3,//底盘停止
+  CHASSIS_STAND_MODE                               = 4,//底盘站立
+  CHASSIS_CLOCKWISE_ROTATE                         = 5,//顺时针小陀螺
+  CHASSIS_ANTI_CLOCKWISE_ROTATE                    = 6,//逆时针小陀螺
+  CHASSIS_CLOCKWISE_ROTATE_VAR_SPEED               = 7,//顺时针变速小陀螺
+  CHASSIS_ANTI_CLOCKWISE_ROTATE_VAR_SPEED          = 8,//逆时针变速小陀螺
+  CHASSIS_DOWN_MODE                                = 9,
+  CHASSIS_SEPARATE 	                           	 = 10,//底盘独立
+  CHASSIS_AUTO_SUP                                 = 11,
+  CHASSIS_SINGLE_LEG_HANDLE                        =12,
+  CHASSIS_TEXT                                     =13,//调试的临时模式
 } Chassis_Mode_e;//底盘模式
 
 
@@ -116,7 +116,6 @@ typedef struct
 	float Pitch;
 	float Leglength;
 }Chassis_Ref_t;
-
 
 
 typedef enum

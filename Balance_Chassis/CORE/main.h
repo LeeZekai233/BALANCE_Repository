@@ -51,6 +51,7 @@
 #include "Ramp.h"
 #include "Low_Pass_Filter.h"
 #include "High_Pass_Filter.h"
+#include "Signal.h"
 
 
 
