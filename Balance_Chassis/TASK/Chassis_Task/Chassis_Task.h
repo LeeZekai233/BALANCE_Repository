@@ -52,6 +52,8 @@
 #define NORMAL_Y_ERROEOFFSET              0.13
 
 #define LOW_LEGLENGTH_CMD                 1
+#define MIDDLE_LEGLENGTH_CMD              2
+#define HIGH_LEGLENGTH_CMD                3
     
     
 typedef enum

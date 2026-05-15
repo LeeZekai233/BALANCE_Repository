@@ -680,14 +680,14 @@
               <FilePath>..\TASK\Board_Connected_Task\Board_Connected_Task.c</FilePath>
             </File>
             <File>
-              <FileName>Log_Task.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\TASK\Log_Task\Log_Task.c</FilePath>
-            </File>
-            <File>
               <FileName>Can_Bus_Task.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\TASK\Can_Bus_Task\Can_Bus_Task.c</FilePath>
+            </File>
+            <File>
+              <FileName>Log_Task.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\TASK\Log_Task\Log_Task.c</FilePath>
             </File>
             <File>
               <FileName>Super_Cap_Task.c</FileName>
@@ -720,14 +720,14 @@
               <FilePath>..\Control_algorithm\Ramp\Ramp.c</FilePath>
             </File>
             <File>
-              <FileName>Low_Pass_Filter.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Control_Algorithm\Low_Pass_Filter\Low_Pass_Filter.c</FilePath>
-            </File>
-            <File>
               <FileName>High_Pass_Filter.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\Control_algorithm\High_Pass_Filter\High_Pass_Filter.c</FilePath>
+            </File>
+            <File>
+              <FileName>Low_Pass_Filter.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Control_Algorithm\Low_Pass_Filter\Low_Pass_Filter.c</FilePath>
             </File>
           </Files>
         </Group>

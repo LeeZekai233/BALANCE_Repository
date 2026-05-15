@@ -8,7 +8,7 @@
 
 extern uint8_t UART4_DMA_TX_BUF[UART4_TX_BUF_LENGTH];
 
-void USART4_Init(u32 bound);
+void UART4_Init(u32 bound);
 void Uart4DmaSendDataProc(u16 ndtr);
 void Uart4SendBytesInfoProc(u8* pSendInfo, u16 nSendCount);
 

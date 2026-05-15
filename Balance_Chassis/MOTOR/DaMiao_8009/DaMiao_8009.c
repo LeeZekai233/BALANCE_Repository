@@ -68,7 +68,7 @@ void DaMiao_8009_Information_Receive(CanRxMsg *msg,DaMiao_8009_t *DaMiao_8009,fl
 		DaMiao_8009->ERR = OVERLOAD;
 	}
     
-	DaMiao_8009->P_fdb = AngleWrap( uint_to_float((msg->Data[1]<<8) | (msg->Data[2]), P_MIN , P_MAX , 16) + offset); //3.14由上位机决定
+	DaMiao_8009->P_fdb = Normalize_Angle_PI( uint_to_float((msg->Data[1]<<8) | (msg->Data[2]), P_MIN , P_MAX , 16) + offset); //3.14由上位机决定
 	DaMiao_8009->V_fdb = uint_to_float((msg->Data[3]<<4) | (msg->Data[4]>>4), -45.0f , 45.0f , 12);//45由上位机得
 	DaMiao_8009->T_fdb = uint_to_float((msg->Data[4]&0x0f)<<8 | (msg->Data[5]), -40.0f , 40.0f , 12);
 	DaMiao_8009->Temperature_MOS = msg->Data[6];
@@ -305,7 +305,7 @@ void DaMiao_8009_Claer_Error_Information(CAN_TypeDef* CANx, int16_t CAN_ID)
 }
 
 
-// 角度归一化到 [-180 , 180]
+// 角度归一化到 [-PI , PI]
 float AngleWrap(float angle)
 {
     if(angle > PI)  

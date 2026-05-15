@@ -41,13 +41,13 @@ void Contorl_Task(Balance_Chassis_t* Chassis)
     if(time_tick%2==0)
     {
         Chassis_Task(Chassis);
-        CAN1_Send_Task_1(Chassis->joint_T[0]*0,Chassis->joint_T[3]*0);
+        CAN1_Send_Task_1(Chassis->joint_T[0],Chassis->joint_T[3]);
     }
     
     if(time_tick%2==1)
     {
-        CAN1_Send_Task_2(Chassis->joint_T[1]*0,Chassis->joint_T[2]*0);
-        CAN2_Send_Task(Chassis->driving_T[0]*0,Chassis->driving_T[1]*0);
+        CAN1_Send_Task_2(Chassis->joint_T[1],Chassis->joint_T[2]);
+        CAN2_Send_Task(Chassis->driving_T[0],Chassis->driving_T[1]);
     }
 
     if(time_tick%5==0)
@@ -62,10 +62,24 @@ void Contorl_Task(Balance_Chassis_t* Chassis)
         judge_rece_mesg.game_robot_state.power_management_chassis_output,
         judge_rece_mesg.game_robot_state.current_HP,
         judge_rece_mesg.game_robot_state.robot_id,
-        1,
+        Chassis->Gimbal_Init_Cmd,
         0,
         judge_rece_mesg.game_state.game_progress,
         &Chassis->USART_Gimbal_Data);
+//        usart_gimbal_send
+//        (76,
+//        87,
+//        97,
+//        74,
+//        0,
+//        judge_rece_mesg.shoot_data.initial_speed,
+//        judge_rece_mesg.game_robot_state.power_management_chassis_output,
+//        570,
+//        judge_rece_mesg.game_robot_state.robot_id,
+//        1,
+//        0,
+//        judge_rece_mesg.game_state.game_progress,
+//        &Chassis->USART_Gimbal_Data);
     }
 }
 
