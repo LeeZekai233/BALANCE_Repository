@@ -8,10 +8,6 @@ volatile can_capacitance_message_t can_capacitance_message;
 
 
 /************************************* CAN м╗пе  ************************************************/
-
-
-
-
 void Can_SuperCap_message_Process(volatile can_capacitance_message_t *v,CanRxMsg * msg)
 {
     switch (msg->StdId)

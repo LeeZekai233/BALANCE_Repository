@@ -23,7 +23,7 @@ typedef __packed struct
 	u8 Rollover_posture_cmd;
 	u8 low_speed_cmd;
 	u8 UI_auto_aim_state;
-	u8 gimbal_data_if_finish_Init;
+	u8 Gimbal_Init_Finish_Flag;//Ô­gimbal_data_if_finish_Init£¬
 	float leg_single_angle_handle_left;
 	float leg_single_angle_handle_right;
 	u8 fn_2_trigger_flag;

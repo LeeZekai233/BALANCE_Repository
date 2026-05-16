@@ -33,10 +33,11 @@ void Contorl_Task(Balance_Chassis_t* Chassis)
         ((LEFT_WHEEL_POLARITY*Chassis->Driving_Motor[0].Omega_Rad_fdb + RIGHT_WHEEL_POLARITY*Chassis->Driving_Motor[1].Omega_Rad_fdb)/2.0f)*WHEEL_R,
         Chassis->Chassis_GYRO.Y_Acc);
     }
-//    Chassis->Left_Acc = Chassis->Left_Acc * 0.60f + difference_left_calc(Chassis->Driving_Motor[0].Omega_Rad_fdb,0.001)*0.40f;
-//    Chassis->Right_Acc = Chassis->Right_Acc * 0.60f + difference_left_calc(Chassis->Driving_Motor[1].Omega_Rad_fdb,0.001)*0.40f;
-//    
-//    
+    
+    Chassis->Left_Acc = Chassis->Left_Acc * 0.60f + difference_left_calc(Chassis->Driving_Motor[0].Omega_Rad_fdb,0.001)*0.40f;
+    Chassis->Right_Acc = Chassis->Right_Acc * 0.60f + difference_left_calc(Chassis->Driving_Motor[1].Omega_Rad_fdb,0.001)*0.40f;
+    
+    
     //╣вел©ьжф
     if(time_tick%2==0)
     {

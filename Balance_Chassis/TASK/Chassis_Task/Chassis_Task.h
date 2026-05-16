@@ -40,7 +40,7 @@
 #define WHEEL_MAX_T                       4.35f // 4.3
         
             
-#define BODY_MASS                         19.5f
+#define BODY_MASS                         22.3f
 #define WHEEL_MASS                        1.112f   
 
 
@@ -251,6 +251,7 @@ typedef struct
     float Roll_Balance_F_Right;
     
     float x_error;
+    float Speed_k;
     
     float Chassis_Target_Angle;
     float Chassis_Target_Speed;

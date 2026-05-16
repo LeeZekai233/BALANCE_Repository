@@ -71,6 +71,7 @@ void CAN1_Send_Task_1(float Joint_T_Set1,float Joint_T_Set4)
 
 
 
+
 void CAN1_Send_Task_2(float Joint_T_Set2, float Joint_T_Set3)
 {
      if(Joint_Motor[2].ERR == DM_DISABLE)

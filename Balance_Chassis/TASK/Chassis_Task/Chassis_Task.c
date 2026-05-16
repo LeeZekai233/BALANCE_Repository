@@ -1,13 +1,23 @@
 #include "main.h"
 
-
 Balance_Chassis_t Chassis;
 
+//调试时的临时变量
 float temp_tp;
 uint8_t leglength_cmd_temp;
 uint8_t control_mode_temp;
 
-//调整角度至-PI~PI，并且舍弃非正常数据
+
+
+/**
+************************************************************************************************************************
+* @Name     : Normalize_Angle_PI
+* @brief    : 归化角度-PI ——PI
+* @param	: float angle
+* @retval   : float
+* @Note     : 调整角度至-PI~PI，并且舍弃非正常数据
+************************************************************************************************************************
+**/
 float Normalize_Angle_PI(float angle)
 {
     // 如果是无穷大或非数字，直接返回 0 或指定值
@@ -33,6 +43,15 @@ float Normalize_Angle_PI(float angle)
 
 
 
+/**
+************************************************************************************************************************
+* @Name     : Motor_Online_Detective
+* @brief    : 电机在线检测
+* @param	: Encoder_t *Encoder
+* @retval   : void
+* @Note     :
+************************************************************************************************************************
+**/
 void Motor_Online_Detective(Encoder_t *Encoder)
 {
     if((time_tick - Encoder->heart_cnt) > 100)
@@ -47,7 +66,15 @@ void Motor_Online_Detective(Encoder_t *Encoder)
 
 
 
-
+/**
+************************************************************************************************************************
+* @Name     : Transform_Angle_0_2PI
+* @brief    : 归化角度到0—2PI
+* @param	: float angle
+* @retval   : float new_angle
+* @Note     :
+************************************************************************************************************************
+**/
 float Transform_Angle_0_2PI(float angle)
 {
     float new_angle=fmod(angle+2*PI,2*PI);
@@ -58,7 +85,15 @@ float Transform_Angle_0_2PI(float angle)
 
 
 
-//力矩限幅
+/**
+************************************************************************************************************************
+* @Name     : Motor_Out_Limit
+* @brief    : 电机输出限幅
+* @param	: Balance_Chassis_t* Chassis
+* @retval   : void
+* @Note     :
+************************************************************************************************************************
+**/
 void Motor_Out_Limit(Balance_Chassis_t* Chassis)
 {
     VAL_LIMIT(Chassis->joint_T[1],-JOINT_MAX_T,JOINT_MAX_T);
@@ -71,7 +106,15 @@ void Motor_Out_Limit(Balance_Chassis_t* Chassis)
 }
 
 
-
+/**
+************************************************************************************************************************
+* @Name     : Motor_Torque_Set
+* @brief    : 电机力矩设定
+* @param	: Balance_Chassis_t* Chassis,float Joint_T_0,float Joint_T_1,float Joint_T_2,float Joint_T_3,float Driving_T_1,float Driving_T_2
+* @retval   : void
+* @Note     :
+************************************************************************************************************************
+**/
 void Motor_Torque_Set(Balance_Chassis_t* Chassis,float Joint_T_0,float Joint_T_1,float Joint_T_2,float Joint_T_3,float Driving_T_1,float Driving_T_2)
 {
     //左
@@ -100,7 +143,15 @@ static float  JacobianT_data[4];
 static float  JacobinT_inv_data[4];
 static float  mat_F_data[2];
 static float  mat_T_data[2];
-
+/**
+************************************************************************************************************************
+* @Name     : FN_calculate
+* @brief    : 支持力解算
+* @param	: CH040DATA_t* Chassis_GYRO, Leg_State_t* Leg_State, Lpf1stObj *ft,float MT1_torque,float MT4_torque
+* @retval   : void
+* @Note     : 计算支持力，带气弹簧
+************************************************************************************************************************
+**/
 void FN_calculate(CH040DATA_t* Chassis_GYRO, Leg_State_t* Leg_State, Lpf1stObj *ft,float MT1_torque,float MT4_torque)
 {
     static float  last_dtheta;
@@ -150,12 +201,11 @@ void FN_calculate(CH040DATA_t* Chassis_GYRO, Leg_State_t* Leg_State, Lpf1stObj *
 ************************************************************************************************************************
 * @Name     : wheel_state_estimate
 * @brief    : 底盘离地检测函数
-* @param		: leg
+* @param	: Leg_State_t *Leg_State
 * @retval   : wheel_state
 * @Note     :
 ************************************************************************************************************************
 **/
-
 uint8_t Wheel_State_Estimate(Leg_State_t *Leg_State)
 {
     if (Leg_State->Leg_FN < 30) // 如果支持力小于20N 离地 轮子状态为0 
@@ -172,7 +222,15 @@ uint8_t Wheel_State_Estimate(Leg_State_t *Leg_State)
 }
 
 
-
+/**
+************************************************************************************************************************
+* @Name     : Init_Tp_Calc
+* @brief    : 初始化扭矩计算
+* @param    : float Ref_Leglength,float Harmonize,float Init_Tp,Balance_Chassis_t* Chassis
+* @retval   : void
+* @Note     : 计算腿长，双腿协调，初始化力矩，再解到电机上
+************************************************************************************************************************
+**/
 void Init_Tp_Calc(float Ref_Leglength,float Harmonize,float Init_Tp,Balance_Chassis_t* Chassis)
 {
     Chassis->Chassis_Ref.Leglength  = Ref_Leglength; // 期望腿长
@@ -188,6 +246,15 @@ void Init_Tp_Calc(float Ref_Leglength,float Harmonize,float Init_Tp,Balance_Chas
 
 
 
+/**
+************************************************************************************************************************
+* @Name     : Chassis_Param_Init
+* @brief    : 底盘参数初始化
+* @param	: Balance_Chassis_t* Chassis
+* @retval   : void
+* @Note     : 
+************************************************************************************************************************
+**/
 void Chassis_Param_Init(Balance_Chassis_t* Chassis)
 {
     memset(Chassis,0,sizeof(*Chassis));//清零底盘结构体
@@ -229,7 +296,15 @@ void Chassis_Param_Init(Balance_Chassis_t* Chassis)
 }
 
 
-
+/**
+************************************************************************************************************************
+* @Name     : Chassis_State_Update
+* @brief    : 底盘状态获取
+* @param	: Balance_Chassis_t* Chassis
+* @retval   : void
+* @Note     : 获取腿长，摆角，机体角度等，用于平衡和判断初始化的姿态
+************************************************************************************************************************
+**/
 void Chassis_State_Update(Balance_Chassis_t* Chassis)
 {
     //底盘各数据获取
@@ -265,33 +340,43 @@ void Chassis_State_Update(Balance_Chassis_t* Chassis)
 
 }
     
+
+/**
+************************************************************************************************************************
+* @Name     : Chassis_Mode_Select
+* @brief    : 底盘模式选择
+* @param	: Balance_Chassis_t* Chassis
+* @retval   : void
+* @Note     : 底盘模式选择，通过遥控和机体姿态来判断模式
+************************************************************************************************************************
+**/
 void Chassis_Mode_Select(Balance_Chassis_t* Chassis)
 {
     //模式切换判断
     if((Chassis->Driving_Motor[0].online_flag == 1) || (Chassis->Driving_Motor[1].online_flag == 1))
     {
 
-       if( (Chassis->Control_Mode != CHASSIS_INIT && Chassis->Control_Mode != CHASSIS_STAND_MODE) || (Chassis->USART_Chassis_Data.Control_Mode == 0) )//正常进行切换
+       if( (Chassis->Control_Mode != CHASSIS_INIT && Chassis->Control_Mode != CHASSIS_STAND_MODE) || (Chassis->USART_Chassis_Data.Chassis_Mode == 0) )//正常进行切换
         {
-           Chassis->Control_Mode = (Chassis_Mode_e)Chassis->USART_Chassis_Data.Control_Mode;
+           Chassis->Control_Mode = (Chassis_Mode_e)Chassis->USART_Chassis_Data.Chassis_Mode;
         }
         
         if(judge_rece_mesg.game_robot_state.power_management_chassis_output==0||judge_rece_mesg.game_robot_state.current_HP==0)
         {
             Chassis->Control_Mode = CHASSIS_RELAX ;
         }
-        
+//        
 //        if(Chassis->Last_Control_Mode == CHASSIS_RELAX && Chassis->Control_Mode != CHASSIS_RELAX)//空闲之后必衔接初始化
 //        {
 //            Chassis->Control_Mode = CHASSIS_INIT ;
 //        }
 //        
-//        if( ( (Chassis->Control_Mode == CHASSIS_ROTATE||Chassis->Control_Mode == MANUAL_FOLLOW_REMOTE) && (fabs(Chassis->Chassis_GYRO.Pitch_Angle)>15) ) )//抬头太多进初始化，之后还要改的
+//        if( ( Chassis->Control_Mode == MANUAL_FOLLOW_REMOTE) && (fabs(Chassis->Chassis_GYRO.Pitch_Angle)>15) ) //抬头太多进初始化，之后还要改的
 //        {
 //            Chassis->Control_Mode = CHASSIS_INIT ;
 
 //        }
-        
+//        
         if(
             ((Chassis->balance_loop.L0 > 0.25 && Chassis->Control_Mode != CHASSIS_RELAX && fabs(Chassis->balance_loop.theta)>0.9f) || //磕台阶
             (Chassis->Control_Mode != CHASSIS_RELAX && Chassis->balance_loop.theta > 0.71f) || //正常初始化
@@ -320,7 +405,15 @@ void Chassis_Mode_Select(Balance_Chassis_t* Chassis)
 
 
 
-
+/**
+************************************************************************************************************************
+* @Name     : Chassis_Referance_Update
+* @brief    : 底盘参考值更新
+* @param	: Balance_Chassis_t* Chassis
+* @retval   : void
+* @Note     : 获取遥控数据，并进行简单的数据处理，包括底盘转角
+************************************************************************************************************************
+**/
 void Chassis_Referance_Update(Balance_Chassis_t* Chassis)    
 {     
 //    
@@ -339,14 +432,14 @@ void Chassis_Referance_Update(Balance_Chassis_t* Chassis)
        else if(Chassis->USART_Chassis_Data.Cmd_Leg_Length == MIDDLE_LEGLENGTH_CMD)
        {
            Chassis->Chassis_Remote_Ref.Leglength = 0.21f;
-           Chassis->Max_Speed = 2.2f;
-           Chassis->Min_Speed = -2.0f;
+           Chassis->Max_Speed = 2.0f;
+           Chassis->Min_Speed = -1.8f;
        }
        else if(Chassis->USART_Chassis_Data.Cmd_Leg_Length == HIGH_LEGLENGTH_CMD)
        {
            Chassis->Chassis_Remote_Ref.Leglength = 0.32f;
-           Chassis->Max_Speed = 1.5f;
-           Chassis->Min_Speed = -1.5f;
+           Chassis->Max_Speed = 1.4f;
+           Chassis->Min_Speed = -1.4f;
        }
     }
     
@@ -413,7 +506,15 @@ void Chassis_Referance_Update(Balance_Chassis_t* Chassis)
 
 
 
-
+/**
+************************************************************************************************************************
+* @Name     : Chassis_Relax_Handle
+* @brief    : 底盘失能
+* @param	: Balance_Chassis_t* Chassis
+* @retval   : void
+* @Note     :
+************************************************************************************************************************
+**/
 void Chassis_Relax_Handle(Balance_Chassis_t* Chassis)
 {   
     //置零关节输出
@@ -454,8 +555,15 @@ void Chassis_Relax_Handle(Balance_Chassis_t* Chassis)
 
 
 
-
-
+/**
+************************************************************************************************************************
+* @Name     : Chassis_Init_Handle
+* @brief    : 初始化收腿
+* @param	: Balance_Chassis_t* Chassis
+* @retval   : void
+* @Note     :
+************************************************************************************************************************
+**/
 void Chassis_Init_Handle(Balance_Chassis_t* Chassis)
 {
     
@@ -514,11 +622,13 @@ void Chassis_Init_Handle(Balance_Chassis_t* Chassis)
      else if(  (fabs(phi0) >= 4*PI/180) && (phi0_0_2PI_Left<1.7f||phi0_0_2PI_Left>5.4f) && (phi0_0_2PI_Right<1.7f||phi0_0_2PI_Right>5.4f) )
      {
           Chassis->Init_State = NORMAL_STATE_1;
+          Chassis->Gimbal_Init_Cmd = 1;
      }
      //正坐状态2 双腿不在后 摆腿到后
      else if((phi0_0_2PI_Left >=1.7f&&phi0_0_2PI_Left<=5.4f) || (phi0_0_2PI_Right >= 1.7f&&phi0_0_2PI_Right <=5.4f) )
      {
          Chassis->Init_State = NORMAL_STATE_2;
+         Chassis->Gimbal_Init_Cmd = 1;
      }
      
      
@@ -535,9 +645,8 @@ void Chassis_Init_Handle(Balance_Chassis_t* Chassis)
                     Chassis->Control_Mode = CHASSIS_STAND_MODE;
                     Chassis->Init_State = INIT_FINISH;
                 }
-                else
+                else//摆腿到后的状态，无需等待云台初始化完成
                 {
-                    Chassis->Gimbal_Init_Cmd = 1;
                     Chassis->Init_Tp = PID_Calc(&Chassis->Init_Tp_Pid,Chassis->phi0,0.0f);
                     Chassis->Harmonize_Outer = PID_Calc(&Chassis->Leg_Harmonize_Pid_Outer , (Chassis->Right_Leg.phi0 - Chassis->Left_Leg.phi0),0);
                     Chassis->Harmonize_Inner = PID_Calc(&Chassis->Leg_Harmonize_Pid_Inner ,(Chassis->Right_Leg.dphi0 - Chassis->Left_Leg.dphi0),Chassis->Harmonize_Outer);
@@ -545,43 +654,48 @@ void Chassis_Init_Handle(Balance_Chassis_t* Chassis)
                     Motor_Torque_Set(Chassis,Chassis->Right_Leg.T_Set[0]*JM1_POLARITY, Chassis->Left_Leg.T_Set[0]*JM2_POLARITY, Chassis->Left_Leg.T_Set[1]*JM3_POLARITY, Chassis->Right_Leg.T_Set[1]*JM4_POLARITY, 0, 0);
                     Motor_Out_Limit(Chassis);
                 }
-                
-                
-                
          }
          break;
                 
         case NORMAL_STATE_2 :
         {
-            Chassis->Gimbal_Init_Cmd = 1;
-            if((phi0_0_2PI_Left >=1.7f&&phi0_0_2PI_Left<=5.4f) || (phi0_0_2PI_Right >= 1.7f&&phi0_0_2PI_Right <=5.4f))
-                {
-                    
-                    if(phi0_0_2PI_Left >1.6f)
+            if(Chassis->USART_Chassis_Data.Gimbal_Init_Finish_Flag == 1)//不是摆腿到后的状态，需要等待云台初始化完成
+            {
+                if((phi0_0_2PI_Left >=1.7f&&phi0_0_2PI_Left<=5.4f) || (phi0_0_2PI_Right >= 1.7f&&phi0_0_2PI_Right <=5.4f))
                     {
-                        float Init_dphi0_Tp = PID_Calc(&Chassis->normal_init_dphi0_pid_left,Chassis->Left_Leg.dphi4,-8);
-                        Chassis->joint_T[1] = Init_dphi0_Tp*JM2_POLARITY;
-                        Chassis->joint_T[2] = 0;
+                        if(phi0_0_2PI_Left >1.6f)
+                        {
+                            float Init_dphi0_Tp = PID_Calc(&Chassis->normal_init_dphi0_pid_left,Chassis->Left_Leg.dphi4,-8);
+                            Chassis->joint_T[1] = Init_dphi0_Tp*JM2_POLARITY;
+                            Chassis->joint_T[2] = 0;
+                        }
+                        else
+                        {
+                             Chassis->joint_T[1] = 0;
+                             Chassis->joint_T[2] = 0;
+                        }
+                        
+                        
+                        if(phi0_0_2PI_Right >1.6f)
+                        {
+                            float Init_dphi0_Tp = PID_Calc(&Chassis->normal_init_dphi0_pid_right,Chassis->Right_Leg.dphi4,-8);
+                            Chassis->joint_T[0] = Init_dphi0_Tp*JM1_POLARITY;
+                            Chassis->joint_T[3] = 0;                    
+                        }
+                        else
+                        {
+                            Chassis->joint_T[0] = 0;
+                            Chassis->joint_T[3] = 0;
+                        }
                     }
-                    else
-                    {
-                         Chassis->joint_T[1] = 0;
-                         Chassis->joint_T[2] = 0;
-                    }
-                    
-                    
-                    if(phi0_0_2PI_Right >1.6f)
-                    {
-                        float Init_dphi0_Tp = PID_Calc(&Chassis->normal_init_dphi0_pid_right,Chassis->Right_Leg.dphi4,-8);
-                        Chassis->joint_T[0] = Init_dphi0_Tp*JM1_POLARITY;
-                        Chassis->joint_T[3] = 0;                    
-                    }
-                    else
-                    {
-                        Chassis->joint_T[0] = 0;
-                        Chassis->joint_T[3] = 0;
-                    }
-                }
+            }
+            else
+            {
+                Chassis->joint_T[0] = 0;
+                Chassis->joint_T[1] = 0;
+                Chassis->joint_T[2] = 0;
+                Chassis->joint_T[3] = 0;                    
+            }
          }
         break;
          
@@ -673,6 +787,15 @@ void Chassis_Init_Handle(Balance_Chassis_t* Chassis)
 
 
 
+/**
+************************************************************************************************************************
+* @Name     : Chassis_Standup_Handle
+* @brief    : 起立模式
+* @param	: Balance_Chassis_t* Chassis
+* @retval   : void
+* @Note     :
+************************************************************************************************************************
+**/
 void Chassis_Standup_Handle(Balance_Chassis_t* Chassis)
 {
     PID_Init(&Chassis->Leg_Harmonize_Pid_Inner, PID_POSITION, 9.3f, 0.0f, 1.0f, 35.0f, 3.0f);
@@ -690,13 +813,23 @@ void Chassis_Standup_Handle(Balance_Chassis_t* Chassis)
     Chassis->Chassis_Ref.Y_position = Chassis->balance_loop.x;
     if(fabs(Chassis->balance_loop.state_err[3]) < 8*DEG_TO_RAD)
     {
-        Chassis->Control_Mode = (Chassis_Mode_e)Chassis->USART_Chassis_Data.Control_Mode;
+        Chassis->Control_Mode = (Chassis_Mode_e)Chassis->USART_Chassis_Data.Chassis_Mode;
     }
 }
     
 
 
 
+
+/**
+************************************************************************************************************************
+* @Name     : Chassis_Fallow_Gimbal_Handle
+* @brief    : 底盘跟随云台
+* @param	: Balance_Chassis_t* Chassis
+* @retval   : void
+* @Note     :
+************************************************************************************************************************
+**/
 void Chassis_Fallow_Gimbal_Handle(Balance_Chassis_t* Chassis)
 {
     //PID初始化
@@ -808,12 +941,22 @@ void Chassis_Fallow_Gimbal_Handle(Balance_Chassis_t* Chassis)
             Chassis->Chassis_Ref.Roll = -0;
         }
     }
-
     Chassis->Chassis_Ref.V_y = trackRamp(Chassis->Chassis_Ref.V_y,Chassis->Chassis_Target_Speed);
     Chassis->Chassis_Ref.V_w = -PID_Calc(&Chassis->Pid_Follow_Gimbal,Chassis->Yaw_Angle__PI_To_PI,Chassis->Chassis_Target_Angle);
-   
 }
 
+
+
+
+/**
+************************************************************************************************************************
+* @Name     : Chassis_Rotate_Handle
+* @brief    : 小陀螺
+* @param	: Balance_Chassis_t* Chassis
+* @retval   : void
+* @Note     :
+************************************************************************************************************************
+**/
 void Chassis_Rotate_Handle(Balance_Chassis_t* Chassis)
 {
     //角度优化
@@ -855,6 +998,20 @@ void Chassis_Rotate_Handle(Balance_Chassis_t* Chassis)
     VAL_LIMIT(Chassis->Chassis_Ref.V_y, -0, 0);
 }
 
+
+
+
+/**
+************************************************************************************************************************
+* @Name     : Balance_Task
+* @brief    : 平衡底盘解算
+* @param	: Balance_Chassis_t* Chassis
+* @retval   : void
+* @Note     :	一定要注意弧度制的转化啊
+                            电机极性要仔细检查
+                            检查好各个传感器的单位与性能
+************************************************************************************************************************
+**/
 void Balance_Task(Balance_Chassis_t* Chassis)
 {
     //balance_loop数据获取
@@ -921,9 +1078,6 @@ void Balance_Task(Balance_Chassis_t* Chassis)
     Chassis->x_error = (Chassis->balance_loop.state_err[2] + Chassis->normal_Y_erroffset);
     
     
-    //
-    //还没添加其他处理
-    //
     Chassis->balance_loop.K_error[0][0] = Chassis->balance_loop.k[0][0] * Chassis->balance_loop.state_err[0];        
     Chassis->balance_loop.K_error[0][1] = Chassis->balance_loop.k[0][1] * Chassis->balance_loop.state_err[1];
     Chassis->balance_loop.K_error[0][2] = Chassis->balance_loop.k[0][2] * Chassis->balance_loop.state_err[2];
@@ -1121,7 +1275,15 @@ void Chassis_Test_Handle(Balance_Chassis_t* Chassis)
 
 
 
-
+/**
+************************************************************************************************************************
+* @Name     : Chassis_Control_Loop
+* @brief    : 底盘控制循环
+* @param	: Balance_Chassis_t* Chassis
+* @retval   : void
+* @Note     : 
+************************************************************************************************************************
+**/
 void Chassis_Control_Loop(Balance_Chassis_t* Chassis)
 {
     switch (Chassis->Control_Mode)
@@ -1187,13 +1349,21 @@ void Chassis_Control_Loop(Balance_Chassis_t* Chassis)
 
 
 
-
+/**
+************************************************************************************************************************
+* @Name     : Chassis_Task
+* @brief    : 底盘控制任务
+* @param	: Balance_Chassis_t* Chassis
+* @retval   : void
+* @Note     : 底盘控制任务，放定时器
+************************************************************************************************************************
+**/
 void Chassis_Task(Balance_Chassis_t* Chassis)
 {
     Chassis_State_Update(Chassis);//底盘状态更新
     Chassis_Mode_Select(Chassis);//底盘模式选择
     Chassis_Referance_Update(Chassis);//底盘参考值更新
-    Chassis_Control_Loop(Chassis);//底盘控制
+    Chassis_Control_Loop(Chassis);//底盘控制循环
 }
 
 
