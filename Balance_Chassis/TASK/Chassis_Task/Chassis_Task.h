@@ -170,25 +170,23 @@ typedef struct
 	
 	PID_t Pid_Follow_Gimbal;
 	
-	
 	PID_t Pid_Yaw_Dist;
 	PID_t pid_chassis_side;
 	
 	PID_t Pid_Seperate_Gimbal;
 	
-	PID_t Init_Tp_Pid;
+	PID_t Init_Tp_Pid;//初始化Init_Tp_PID
 	
 	PID_t Over_Step_phi0_Left_Pid;
 	PID_t Over_Step_phi0_Right_Pid;
 	
-	PID_t Init_phi0_pid_left;
+	PID_t Init_phi0_pid_left;//干涉手操控腿Init_Tp_phi0_PID
 	PID_t Init_phi0_pid_right;
 	
-	
-    PID_t normal_init_dphi0_pid_left;
+    PID_t normal_init_dphi0_pid_left;//正常姿态dphi0_Init_Tp_PID
 	PID_t normal_init_dphi0_pid_right;
     
-    PID_t flip_init_dphi0_pid_left;
+    PID_t flip_init_dphi0_pid_left;//翻车dphi0_Init_Tp_PID
     PID_t flip_init_dphi0_pid_right;
     
 	u16 Max_power_to_PM01;//好像没用过
@@ -291,6 +289,7 @@ void Chassis_State_Update(Balance_Chassis_t* Chassis);
 void Chassis_Relax_Handle(Balance_Chassis_t* Chassis);
 void Chassis_Init_Handle(Balance_Chassis_t* Chassis);
 void Chassis_Fallow_Gimbal_Handle(Balance_Chassis_t* Chassis);
+void Chassis_Single_Leg_Control_Handle(Balance_Chassis_t* Chassis);
 void Leglength_Change(Balance_Chassis_t* Chassis);
 void Balance_Task(Balance_Chassis_t* Chassis);
 void Chassis_Control_Loop(Balance_Chassis_t* Chassis);

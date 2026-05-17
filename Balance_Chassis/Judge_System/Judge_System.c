@@ -2,8 +2,8 @@
 
 uint8_t _UART5_DMA_RX_BUF[BSP_UART5_DMA_RX_BUF_LEN];
 uint8_t  USART5_Tx_Buf[150];
-uint8_t  ddata[120];
-uint8_t  dddata[120];
+//uint8_t  ddata[120];
+//uint8_t  dddata[120];
 
 receive_judge_t  judge_rece_mesg; 
 sentry_cmd_t  sentry_cmd;
@@ -226,14 +226,13 @@ void USART5_DMA_R_T_JUDGE_Init(void)
   DMA_Init(DMA1_Stream0, &DMA_InitStructure);
   DMA_Cmd(DMA1_Stream0, ENABLE);    
 
-	NVIC_InitStructure.NVIC_IRQChannel						=	UART5_IRQn;          //??5????
+  NVIC_InitStructure.NVIC_IRQChannel						=	UART5_IRQn;          //??5????
   NVIC_InitStructure.NVIC_IRQChannelCmd					=	ENABLE;
   NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority	=	1;
   NVIC_InitStructure.NVIC_IRQChannelSubPriority			=	2;
   NVIC_Init(&NVIC_InitStructure);
   USART_ITConfig(UART5, USART_IT_IDLE, ENABLE);
   USART_Cmd(UART5, ENABLE);
-
 
   //??5????DMA
   USART_DMACmd(UART5, USART_DMAReq_Tx, ENABLE);   //??USART?DMA??,DMA1????7???4
@@ -243,9 +242,9 @@ void USART5_DMA_R_T_JUDGE_Init(void)
   while(DMA_GetCmdStatus(DMA1_Stream7) != DISABLE) {}
   DMA_InitStructure.DMA_Channel = DMA_Channel_4;
   DMA_InitStructure.DMA_PeripheralBaseAddr	= (uint32_t)(&UART5->DR);
-  DMA_InitStructure.DMA_Memory0BaseAddr   	= (uint32_t)&USART5_Tx_Buf[0];
+  DMA_InitStructure.DMA_Memory0BaseAddr   	= (uint32_t)&tx_buf[0];
   DMA_InitStructure.DMA_DIR 			    = DMA_DIR_MemoryToPeripheral;
-	DMA_InitStructure.DMA_BufferSize			= sizeof(USART5_Tx_Buf);   //??????????
+	DMA_InitStructure.DMA_BufferSize			= sizeof(tx_buf);   //??????????
   DMA_InitStructure.DMA_PeripheralInc 		= DMA_PeripheralInc_Disable;
   DMA_InitStructure.DMA_MemoryInc 			= DMA_MemoryInc_Enable;
   DMA_InitStructure.DMA_PeripheralDataSize 	= DMA_PeripheralDataSize_Byte;
@@ -272,7 +271,6 @@ void UART5_IRQHandler(void)
 static uint32_t this_time_rx_len = 0;
 if(USART_GetITStatus(UART5, USART_IT_IDLE) != RESET)
 	{
-
 		(void)UART5->SR;
 		(void)UART5->DR;
 		DMA_Cmd(DMA1_Stream0, DISABLE);                          //????5?DMA????
@@ -497,36 +495,36 @@ void data_upload_handle(uint16_t cmd_id, uint8_t *p_data, uint16_t len, uint8_t 
 	}
 }
 
-id_data_t send_to_aerial;
-void Send_bullet_remaining_num(void)
-{
-    switch(judge_rece_mesg.game_robot_state.robot_id)
-	{
-		case 3:
-			send_to_aerial.data_cmd_id=0x0203;//?????????? 0x0202 0x0203 0x0204----0x02FF
-			send_to_aerial.receiver_id = 6;
-		break;
-		case 4:
-			send_to_aerial.data_cmd_id=0x0204;
-			send_to_aerial.receiver_id = 6;
-		break;
+//id_data_t send_to_aerial;
+//void Send_bullet_remaining_num(void)
+//{
+//    switch(judge_rece_mesg.game_robot_state.robot_id)
+//	{
+//		case 3:
+//			send_to_aerial.data_cmd_id=0x0203;//?????????? 0x0202 0x0203 0x0204----0x02FF
+//			send_to_aerial.receiver_id = 6;
+//		break;
+//		case 4:
+//			send_to_aerial.data_cmd_id=0x0204;
+//			send_to_aerial.receiver_id = 6;
+//		break;
 
-		case 103://??
-			send_to_aerial.data_cmd_id=0x0203;
-			send_to_aerial.receiver_id = 106;
-		break;
-		case 104:
-			send_to_aerial.data_cmd_id=0x204;
-			send_to_aerial.receiver_id = 106;
-		break;
-	}
-    send_to_aerial.sender_id = judge_rece_mesg.game_robot_state.robot_id;
-    
-    memcpy((uint8_t *)dddata,(uint8_t *)&send_to_aerial,sizeof(send_to_aerial));
-    dddata[6] = (uint8_t)judge_rece_mesg.Projectile_Allowance.projectile_allowance_17mm;
-    dddata[7] = (uint8_t)(judge_rece_mesg.Projectile_Allowance.projectile_allowance_17mm >> 8);
-    data_upload_handle(ROBOT_INTERACTIVE_DATA_ID,dddata,sizeof(send_to_aerial)+sizeof(judge_rece_mesg.Projectile_Allowance.projectile_allowance_17mm),DN_REG_ID,USART5_Tx_Buf);
+//		case 103://??
+//			send_to_aerial.data_cmd_id=0x0203;
+//			send_to_aerial.receiver_id = 106;
+//		break;
+//		case 104:
+//			send_to_aerial.data_cmd_id=0x204;
+//			send_to_aerial.receiver_id = 106;
+//		break;
+//	}
+//    send_to_aerial.sender_id = judge_rece_mesg.game_robot_state.robot_id;
+//    
+//    memcpy((uint8_t *)dddata,(uint8_t *)&send_to_aerial,sizeof(send_to_aerial));
+//    dddata[6] = (uint8_t)judge_rece_mesg.Projectile_Allowance.projectile_allowance_17mm;
+//    dddata[7] = (uint8_t)(judge_rece_mesg.Projectile_Allowance.projectile_allowance_17mm >> 8);
+//    data_upload_handle(ROBOT_INTERACTIVE_DATA_ID,dddata,sizeof(send_to_aerial)+sizeof(judge_rece_mesg.Projectile_Allowance.projectile_allowance_17mm),DN_REG_ID,USART5_Tx_Buf);
 
-}
+//}
 
 

@@ -141,11 +141,12 @@ void usart_gimbal_send(
                   DMA_FLAG_HTIF4 |
                   DMA_FLAG_TCIF4);
 
-    DMA1_Stream4->M0AR = (uint32_t)&UART4_DMA_TX_BUF[0];
+  //  DMA1_Stream4->M0AR = (uint32_t)&UART4_DMA_TX_BUF[0];
     DMA_SetCurrDataCounter(DMA1_Stream4, GIMBAL_FRAME_LENGTH);
 
     DMA_Cmd(DMA1_Stream4, ENABLE);
 }
+
 
 
 void usart_chassis_receive(uint8_t *DataAddress,USART_Chassis_Data_t* USART_Chassis_Data)
@@ -153,6 +154,8 @@ void usart_chassis_receive(uint8_t *DataAddress,USART_Chassis_Data_t* USART_Chas
     memcpy(USART_Chassis_Data,DataAddress,sizeof(*USART_Chassis_Data));
     gimbal_control_online_heart_cnt = time_tick ;
 }
+
+
 
 
 //白控到虚拟双板通信的转换，用于调试

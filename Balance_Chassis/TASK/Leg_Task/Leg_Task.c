@@ -462,8 +462,7 @@ void VMC_Data_Get(Leg_State_t* Leg_State , float phi4, float dphi4, float phi1, 
 
     leg_pos(phi1,phi4,Leg_State->pos);
     Leg_State->l0 = Leg_State->pos[0];
-    Leg_State->phi0 = Leg_State->pos[1];
-    Leg_State->phi0 = AngleWrap(Leg_State->phi0-1.57f);
+    Leg_State->phi0 = Normalize_Angle_PI(Leg_State->pos[1]-1.57f);
     leg_spd(Leg_State->dphi1, Leg_State->dphi4, Leg_State->phi1, Leg_State->phi4, Leg_State->spd);
     Leg_State->dl0 = Leg_State->spd[0];
     Leg_State->this_dl0 = Leg_State->dl0;

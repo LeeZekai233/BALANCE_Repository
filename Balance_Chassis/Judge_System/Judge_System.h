@@ -521,12 +521,12 @@ typedef struct
 } receive_judge_t;                                                           
           
 
-typedef __packed struct                                                      
-{
-  uint16_t data_cmd_id; /*子内容ID 需为开放的子内容ID*/
-  uint16_t sender_id; /*发送者ID 需与自身ID匹配,ID编号详见附录 */
-  uint16_t receiver_id; /*接收者ID 仅限己方通信 需为规则允许的多机通讯接收者 若接收者为选手端，则仅可发送至发送者对应的选手端 ID编号详见附录*/
-}id_data_t;
+//typedef __packed struct                                                      
+//{
+//  uint16_t data_cmd_id; /*子内容ID 需为开放的子内容ID*/
+//  uint16_t sender_id; /*发送者ID 需与自身ID匹配,ID编号详见附录 */
+//  uint16_t receiver_id; /*接收者ID 仅限己方通信 需为规则允许的多机通讯接收者 若接收者为选手端，则仅可发送至发送者对应的选手端 ID编号详见附录*/
+//}id_data_t;
 
 //0x0308
 typedef __packed struct 
@@ -550,7 +550,7 @@ extern robot_color_e robot_color;
 extern int Robot_Remain_HP;
 extern int Robot_Max_HP;
 extern uint8_t  USART5_Tx_Buf[150];
-extern uint8_t  ddata[120];
+//extern uint8_t  ddata[120];
 
 void USART5_DMA_R_T_JUDGE_Init(void);
 void judgement_data_handle(uint8_t *p_frame,uint16_t	rec_len);
