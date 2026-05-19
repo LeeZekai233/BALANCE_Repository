@@ -98,12 +98,12 @@ void USART6_Init(uint32_t baud_rate)
     // 7. 使能USART6
     USART_Cmd(USART6, ENABLE);
 }
-uint8_t temp_flagaaa;
+
 // USART6中断处理函数
 uint32_t USART6_Data_Length = 0;
 void USART6_IRQHandler(void)
 {
-    temp_flagaaa++;
+
     
     if(USART_GetITStatus(USART6, USART_IT_IDLE) != RESET)
     {

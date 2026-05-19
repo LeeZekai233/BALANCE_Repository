@@ -36,8 +36,8 @@
 #define RIGHT_WHEEL_POLARITY                        1//右轮电机极性
 
             
-#define JOINT_MAX_T                       34          //老代码里的限幅
-#define WHEEL_MAX_T                       4.35f // 4.3
+#define JOINT_MAX_T                       34
+#define WHEEL_MAX_T                       3.8f // 4.3
         
             
 #define BODY_MASS                         22.3f
@@ -288,6 +288,7 @@ void Chassis_Param_Init(Balance_Chassis_t* Chassis);
 void Chassis_State_Update(Balance_Chassis_t* Chassis);
 void Chassis_Relax_Handle(Balance_Chassis_t* Chassis);
 void Chassis_Init_Handle(Balance_Chassis_t* Chassis);
+void Chassis_Stop_Handle(Balance_Chassis_t* Chassis);
 void Chassis_Fallow_Gimbal_Handle(Balance_Chassis_t* Chassis);
 void Chassis_Single_Leg_Control_Handle(Balance_Chassis_t* Chassis);
 void Leglength_Change(Balance_Chassis_t* Chassis);

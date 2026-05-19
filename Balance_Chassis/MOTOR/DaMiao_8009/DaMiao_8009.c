@@ -253,26 +253,26 @@ void DaMiao_8009_Enable(CAN_TypeDef* CANx, int16_t CAN_ID)
 *@Note:     нч
 *@RetVal:   нч
 *******************************/
-void DaMiao_8009_Disable(CAN_TypeDef* CANx, int16_t CAN_ID)
-{		
-	CanTxMsg Motor_DaMiao_Init_CanTxMsg;
-	
-	Motor_DaMiao_Init_CanTxMsg.StdId = CAN_ID;
-	Motor_DaMiao_Init_CanTxMsg.IDE = CAN_Id_Standard;
-	Motor_DaMiao_Init_CanTxMsg.RTR = CAN_RTR_Data;
-	Motor_DaMiao_Init_CanTxMsg.DLC = 0x08;
-	
-	Motor_DaMiao_Init_CanTxMsg.Data[0] = 0xFF;
-	Motor_DaMiao_Init_CanTxMsg.Data[1] = 0xFF;
-	Motor_DaMiao_Init_CanTxMsg.Data[2] = 0xFF;
-	Motor_DaMiao_Init_CanTxMsg.Data[3] = 0xFF;
-	Motor_DaMiao_Init_CanTxMsg.Data[4] = 0xFF;
-	Motor_DaMiao_Init_CanTxMsg.Data[5] = 0xFF;
-	Motor_DaMiao_Init_CanTxMsg.Data[6] = 0xFF;
-	Motor_DaMiao_Init_CanTxMsg.Data[7] = 0xFD;
-	
-	CAN_TransmitStatus(CANx,CAN_Transmit(CANx,&Motor_DaMiao_Init_CanTxMsg));
-}
+//void DaMiao_8009_Disable(CAN_TypeDef* CANx, int16_t CAN_ID)
+//{		
+//	CanTxMsg Motor_DaMiao_Init_CanTxMsg;
+//	
+//	Motor_DaMiao_Init_CanTxMsg.StdId = CAN_ID;
+//	Motor_DaMiao_Init_CanTxMsg.IDE = CAN_Id_Standard;
+//	Motor_DaMiao_Init_CanTxMsg.RTR = CAN_RTR_Data;
+//	Motor_DaMiao_Init_CanTxMsg.DLC = 0x08;
+//	
+//	Motor_DaMiao_Init_CanTxMsg.Data[0] = 0xFF;
+//	Motor_DaMiao_Init_CanTxMsg.Data[1] = 0xFF;
+//	Motor_DaMiao_Init_CanTxMsg.Data[2] = 0xFF;
+//	Motor_DaMiao_Init_CanTxMsg.Data[3] = 0xFF;
+//	Motor_DaMiao_Init_CanTxMsg.Data[4] = 0xFF;
+//	Motor_DaMiao_Init_CanTxMsg.Data[5] = 0xFF;
+//	Motor_DaMiao_Init_CanTxMsg.Data[6] = 0xFF;
+//	Motor_DaMiao_Init_CanTxMsg.Data[7] = 0xFD;
+//	
+//	CAN_TransmitStatus(CANx,CAN_Transmit(CANx,&Motor_DaMiao_Init_CanTxMsg));
+//}
 
 
 
