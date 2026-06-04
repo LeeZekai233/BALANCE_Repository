@@ -130,7 +130,7 @@ void USART3_IRQHandler(void)
       USART3_Data_Length=CH040_RX_BUFF_SIZE - DMA_GetCurrDataCounter(DMA1_Stream1);
       if(USART3_Data_Length==CH040_DATA_FARMER_LENGHT)
       {
-           CH040_Data_Get(&imu_data,&CH040DATA);
+           CH040_Data_Get(&imu_data,&Gimbal.CH040_Data);
       }
       DMA_SetCurrDataCounter(DMA1_Stream1,CH040_RX_BUFF_SIZE);
       USART_DMACmd(USART3,USART_DMAReq_Rx,ENABLE);

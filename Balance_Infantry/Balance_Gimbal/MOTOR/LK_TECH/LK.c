@@ -1100,9 +1100,10 @@ void LK_EncoderProcess (volatile LK_InitTypeDef *LK, CanRxMsg* msg)
 	LK->ecd_value= LK->raw_value + (LK->round_cnt * 65536);
 	
 	//Calculate the angle value and the range is from positive infinity to negative infinity
-	LK->ecd_angle= (float)((LK->raw_value - LK->ecd_bias)*0.0054931641f + (LK->round_cnt * 360.0f)) /10;
-		
-	//Original value of storage speed (store six)
+	//LK->ecd_angle= (float)((LK->raw_value - LK->ecd_bias)*0.0054931641f + (LK->round_cnt * 360.0f)) /10;
+	LK->ecd_angle= (float)((LK->raw_value - LK->ecd_bias)*0.0054931641f + (LK->round_cnt * 360.0f));//不除10试试
+    
+	//Original value of storage speed (store six)//手算这些东西，算出来的数应该和控制频率有关，先不用试试
 	LK->rate_buf[LK->buf_count++]= LK->ecd_raw_rate;	//First use the value of buf_count and then increment it
 	if(LK->buf_count == 6)
 	{
@@ -1203,5 +1204,9 @@ void LK_Parameter_Init (volatile LK_InitTypeDef *v, int ID)
 
 void LK4005_Encoder_To_Generic_Encoder(LK_InitTypeDef* LK,Encoder_t* Encoder)
 {
-    
+    Encoder->Omega_Deg_fdb = LK->RotSpd;
+    Encoder->Angle_Deg_Total_fdb = LK->ecd_angle;
+    Encoder->Angle_Deg_fdb = LK->raw_value*360.0f/65535.0f;
+    Encoder->heart_cnt = time_tick;
+    Encoder->temperature = LK->Temperature_Rotor;
 }

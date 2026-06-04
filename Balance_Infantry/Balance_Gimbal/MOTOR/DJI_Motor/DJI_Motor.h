@@ -72,14 +72,15 @@ typedef struct
     float Angle_Rad_Total_fdb;       //多圈角度反馈   单位rad
     
     float Omega_Rad_fdb;		//电机转速反馈  单位rad/s
+    float Omega_Deg_fdb;        //电机转速反馈  单位deg/s
     
-    uint8_t online_flag;
+    uint8_t online_flag;        //在线标志位
     
     float Torque;             //力矩
     
     uint32_t temperature;    //温度
     
-    uint32_t heart_cnt;//
+    uint32_t heart_cnt;      //心跳检测
 }Encoder_t;//通用编码器
 
 #endif

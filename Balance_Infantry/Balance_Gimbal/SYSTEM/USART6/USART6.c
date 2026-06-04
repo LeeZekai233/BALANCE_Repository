@@ -114,15 +114,9 @@ void USART6_IRQHandler(void)
         DMA_ClearFlag(DMA2_Stream1, DMA_FLAG_TCIF1 | DMA_FLAG_HTIF1);
         // 计算接收到的数据长度
         USART6_Data_Length = BSP_USART6_DMA_RX_BUF_LEN - DMA_GetCurrDataCounter(DMA2_Stream1);
-        
-        
-//        // 处理接收到的数据（这里调用你的数据处理函数）
-//        if(USART6_Data_Length > (HEADER_LEN + CMD_LEN + CRC_LEN))
-//        {
-//            judgement_data_handle(_USART6_DMA_RX_BUF, USART6_Data_Length);
-//        }
-         DMA_SetCurrDataCounter(DMA2_Stream1, BSP_USART6_DMA_RX_BUF_LEN);
-         DMA_Cmd(DMA2_Stream1, ENABLE);
+        VTM_Reomte_Data_Handle(_USART6_DMA_RX_BUF,USART6_Data_Length,&Remote_VTM);
+        DMA_SetCurrDataCounter(DMA2_Stream1, BSP_USART6_DMA_RX_BUF_LEN);
+        DMA_Cmd(DMA2_Stream1, ENABLE);
     }
 }
 
