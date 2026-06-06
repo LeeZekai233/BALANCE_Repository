@@ -101,8 +101,8 @@ typedef __packed struct
 	Clicker_Action_e s2_Action;
     uint8_t ch4_Up;
     uint8_t ch4_Down;
-    Key_Mouse_Action_t ch4_Up_Action;
     Key_Mouse_Action_t ch4_Down_Action;
+    Key_Mouse_Action_t ch4_Up_Action;
     
 }DT7_Clicker_t;//Ò£¿ØÆ÷Ïà¹Ø
 
@@ -171,8 +171,8 @@ typedef __packed struct
 	Key_Mouse_Action_t fn1_Action;
     uint8_t ch4_Up;
     uint8_t ch4_Down;
-    Key_Mouse_Action_t ch4_Up_Action;
     Key_Mouse_Action_t ch4_Down_Action;
+    Key_Mouse_Action_t ch4_Up_Action;
 }VTM_Clicker_t;
 
 

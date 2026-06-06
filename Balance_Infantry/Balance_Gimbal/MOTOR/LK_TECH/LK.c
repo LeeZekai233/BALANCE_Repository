@@ -14,6 +14,7 @@
 #include "main.h"
 
 #define Encoder_16bit_Angle_Conversion_Ratio 3.1415926/180;
+LK_InitTypeDef Poke_MG4005 = {0};
 /*****************************************************************************
 **@Brief:	LK receiving function
 **@Cal:		Internal or external

@@ -64,6 +64,7 @@ void CAN2_Init(void)
 	CAN_ITConfig(CAN2,CAN_IT_FMP0,ENABLE);
 }
 
+
 //uint8_t CAN2_Send_Msg(uint8_t* msg,uint8_t len)
 //{
 //	uint8_t mbox;
@@ -108,8 +109,7 @@ void CAN2_RX0_IRQHandler(void)
 	if (CAN_GetITStatus(CAN2,CAN_IT_FMP0)!= RESET) 
     {
         CAN_Receive(CAN2, CAN_FIFO0, &rx_message);
-//        CAN2_Receive_Task(&rx_message,&Chassis);
-//        Can_SuperCap_message_Process(&can_capacitance_message,&rx_message);
+        CAN2_Receive_Task(&rx_message);
         CAN_ClearITPendingBit(CAN2, CAN_IT_FMP0);
         CAN_ClearFlag(CAN2, CAN_FLAG_FF0);
     }	

@@ -14,7 +14,12 @@ typedef enum
 {
     GIMBAL_RELAX  = 0,           //云台失能
     GIMBAL_INIT = 1,             //云台初始化
-    GIMBAL_FALLWO_GYRO = 2,     //云台跟随陀螺仪
+    GIMBAL_REMOTE = 2,           //遥控
+    GIMBAL_KEY_MOUSE = 3,        //键鼠
+    GIMBAL_AUTO_AIM = 4,         //自瞄
+    GIMBAL_BIG_BUFF = 5,         //大符
+    GIMBAL_SMALL_BUFF = 6,       //小符
+    GIMBAL_SENTRY = 7,           //被致盲哨兵模式
 }Gimbal_Mode_e;
 
 
@@ -38,10 +43,14 @@ typedef struct
     CH040DATA_t     CH040_Data;//陀螺仪数据结构体
     Encoder_t       Yaw_Motor_Encoder;//Yaw电机编码器
     Encoder_t       Pitch_Motor_Encoder;//Pitch电机编码器
-    PID_t          Gimbal_Motor_Speed_PID[2];//云台电机PID，0 Yaw , 1 Pitch 
-    PID_t          Gimbal_Motor_Angle_PID[2];//云台电机PID，0 Yaw , 1 Pitch 
-    int16_t        Gimbal_Motor_Set_Current[2];//云台电机电流给定值，0 Yaw , 1 Pitch
+//    PID_t          Gimbal_Motor_Speed_PID[2];//云台电机PID，0 Yaw , 1 Pitch 
+//    PID_t          Gimbal_Motor_Angle_PID[2];//云台电机PID，0 Yaw , 1 Pitch 
+//    int16_t        Gimbal_Motor_Set_Current[2];//云台电机电流给定值，0 Yaw , 1 Pitch
     
+    PID_t          Pitch_Motor_Speed_PID;
+    PID_t          Pitch_Motor_Angle_PID;
+    PID_t          Yaw_Motor_Angle_PID;
+    int16_t        Pitch_Motor_Set_Current;//6020 pitch转矩电流值         
     uint8_t        Init_Finish_Flag;//初始化完成标志位
 }Gimbal_t;
 
@@ -50,6 +59,13 @@ extern Gimbal_t Gimbal;
 
 
 float Normalize_Angle_PI(float angle);
-
+void Gimbal_Mode_Select(void);
+void Gimbal_Reference_Update(void);
+void Gimbal_Feedback_Update(void);
+void Gimbal_Relax_Handle(void);
+void Gimbal_Init_Handle(void);
+void Gimbal_Remote_Handle(void);
+void Gimbal_Control_Loop(void);
+void Gimbal_Task(void);
 
 #endif

@@ -531,6 +531,7 @@ void Chassis_Relax_Handle(Balance_Chassis_t* Chassis)
     //置零Tp
     Chassis->Balance_Tpgain = 0;
     Chassis->Balance_Tpoutlandgain = 0;
+    Chassis->Gimbal_Init_Cmd = 0;
     
     Chassis->Chassis_Ref.Pitch = 0;
     Chassis->Chassis_Ref.Y_position = Chassis->balance_loop.x;
@@ -600,11 +601,13 @@ void Chassis_Init_Handle(Balance_Chassis_t* Chassis)
           if(Chassis->Chassis_GYRO.Pitch_Angle < -35 ||  (Chassis->Chassis_GYRO.Pitch_Angle == 90 && Last_Pitch_GYRO_Angle <-10))//发现角度有个跳变，尝试打补丁2
           {
               Chassis->Init_State = FLIP_STATE_1;
+              Chassis->Gimbal_Init_Cmd = 0;
           }
           //倒扣状态2，摆腿方向不同
           else if(Chassis->Chassis_GYRO.Pitch_Angle > 35 || (Chassis->Chassis_GYRO.Pitch_Angle == 90 && Last_Pitch_GYRO_Angle > 10))
           {
               Chassis->Init_State = FLIP_STATE_2;
+              Chassis->Gimbal_Init_Cmd = 0;
           }
      }
      
@@ -612,10 +615,12 @@ void Chassis_Init_Handle(Balance_Chassis_t* Chassis)
      else if(Chassis->Chassis_GYRO.Pitch_Angle <-35 || (Chassis->Chassis_GYRO.Pitch_Angle == 90 && Last_Pitch_GYRO_Angle <-10))
      {
          Chassis->Init_State = ROLL_STATE_1;
+         Chassis->Gimbal_Init_Cmd = 0;
      }
      else if(Chassis->Chassis_GYRO.Pitch_Angle > 35 || (Chassis->Chassis_GYRO.Pitch_Angle == 90 && Last_Pitch_GYRO_Angle > 10))
      {
          Chassis->Init_State = ROLL_STATE_2;
+         Chassis->Gimbal_Init_Cmd = 0;
      }
      
      //正坐状态1 双腿在后直接起

@@ -10,6 +10,7 @@ void Infantry_Init(void)
     usart2_init(921600);
     CAN1_Init( );
     CAN2_Init( );
+    Control_Task_Init();
     TIM2_Init( );
     TIM6_Init( );
 }

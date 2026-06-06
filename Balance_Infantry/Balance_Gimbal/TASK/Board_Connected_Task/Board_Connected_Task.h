@@ -15,12 +15,12 @@ typedef __packed struct
 	float V_y;
 	float roll;
 	int16_t rotate_speed;//小陀螺速度
-	uint8_t Control_Mode;//控制模式
+	uint8_t Control_Mode;//控制模式 //暂时不用
 	uint8_t remote_online_flag;
 	uint8_t fric_wheel_run;
 	uint8_t Rollover_posture_cmd;
 	uint8_t low_speed_cmd;
-	uint8_t UI_auto_aim_state;
+	uint8_t UI_auto_aim_state;  //自瞄在不在
 	uint8_t Gimbal_Init_Finish_Flag;//原gimbal_data_if_finish_Init，
 	float leg_single_angle_handle_left;
 	float leg_single_angle_handle_right;
@@ -54,30 +54,7 @@ extern USART_Gimbal_Data_t USART_Gimbal_Data;
 
 
 void USART_Gimbal_Receive(uint8_t *DataAddress,USART_Gimbal_Data_t* USART_Gimbal_Data);
-
-void usart_chassis_send(
-    uint8_t  if_follow_gim,
-    uint8_t  jump_cmd,
-    uint8_t  overstep_cmd,
-    uint8_t  Chassis_Mode,
-    float    Yaw_Encoder_Angle,
-    float    Cmd_Leg_Length,
-    float    V_x,
-    float    V_y,
-    float    roll,
-    int16_t  rotate_speed,
-    uint8_t  Control_Mode,
-    uint8_t  remote_online_flag,
-    uint8_t  fric_wheel_run,
-    uint8_t  Rollover_posture_cmd,
-    uint8_t  low_speed_cmd,
-    uint8_t  UI_auto_aim_state,
-    uint8_t  Gimbal_Init_Finish_Flag,
-    float    leg_single_angle_handle_left,
-    float    leg_single_angle_handle_right,
-    uint8_t  fn_2_trigger_flag,
-    uint8_t  lock_shoot_check,
-    USART_Chassis_Data_t *USART_Chassis_Data);
+void USART_Chassis_Send(const USART_Chassis_Data_t *data);
 
     
     

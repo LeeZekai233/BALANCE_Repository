@@ -87,8 +87,8 @@ typedef struct
 
 
 
-extern DJI_Encoder_t Driving_M3508[2];
-
+extern DJI_Encoder_t Fric_M3508[2];
+extern DJI_Encoder_t Pitch_GM6020;
 
 void GetEncoderBias(volatile DJI_Encoder_t *v, CanRxMsg * msg);
 void EncoderProcess(volatile DJI_Encoder_t *v, CanRxMsg * msg);
@@ -100,4 +100,5 @@ void Set_GM6020_IQ2(CAN_TypeDef *CANx, int16_t motor5_iq, int16_t motor6iq, int1
 void Set_C620andC610_IQ1(CAN_TypeDef *CANx, int16_t motor1_iq, int16_t motor2_iq, int16_t motor3_iq, int16_t motor4_iq);
 void Set_C620andC610_IQ2(CAN_TypeDef *CANx, int16_t motor5_iq, int16_t motor6_iq, int16_t motor7_iq, int16_t motor8_iq);
 void M3508_Encoder_To_Generic_Encoder(DJI_Encoder_t* DJI_Encoder,Encoder_t* Encoder);
+void GM6020_Encoder_To_Generic_Encoder(DJI_Encoder_t* DJI_Encoder,Encoder_t* Encoder);
 #endif

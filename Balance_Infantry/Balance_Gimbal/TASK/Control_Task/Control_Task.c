@@ -17,9 +17,34 @@ void Control_Task(void)
         Key_Mouse_State_Update(&Remote_VTM.key,&Remote_VTM.Remote_mouse);
         VTM_Clicker_State_Update(&Remote_VTM);
     }
+    
+    Chassis_Task();
+    Gimbal_Task();
+    Shooter_Task();
+    
+    if(time_tick%2 == 0)
+    {
+      //  CAN2_Send_Task(Gimbal.Yaw_Speed_Ref,Shooter.Poke_Motor_Set_Current);
+       // CAN1_Send_Task(Gimbal.Pitch_Motor_Set_Current, Shooter.Fric_Motor_Ser_Current[0],Shooter.Fric_Motor_Ser_Current[1]);
+    }
+    
+    if(time_tick%5 == 0)
+    {
+        USART_Chassis_Send(&USART_Chassis_Data);
+    }
 }
 
 
+void Control_Task_Init(void)
+{
+    PID_Init(&Gimbal.Pitch_Motor_Angle_PID,PID_POSITION,0,0,0,0,0);
+    PID_Init(&Gimbal.Pitch_Motor_Speed_PID,PID_POSITION,0,0,0,0,0);
+    PID_Init(&Gimbal.Yaw_Motor_Angle_PID,PID_POSITION,0,0,0,0,0);
+    PID_Init(&Shooter.Poke_Angle_PID,PID_POSITION,0,0,0,0,0);
+    PID_Init(&Shooter.Poke_Speed_PID,PID_POSITION,0,0,0,0,0);
+    PID_Init(&Shooter.Fric_Speed_PID[0],PID_POSITION,0,0,0,0,0);
+    PID_Init(&Shooter.Fric_Speed_PID[1],PID_POSITION,0,0,0,0,0);
+}
 
 
 void Chassis_Mode_Select(void)
@@ -34,13 +59,13 @@ void Chassis_Mode_Select(void)
         else if(Remote_DT7_data.Remote_clicker.s1 == MIDDLE || Remote_DT7_data.Remote_clicker.s1 == UP)
         {
             
-            if(Remote_DT7_data.Remote_clicker.s2 == DOWN)//¸úËæÒ£¿Ø
+            if(Remote_DT7_data.Remote_clicker.s2 == MIDDLE)//¸úËæÒ£¿Ø
             {
                 USART_Chassis_Data.Chassis_Mode = 1;
             }
-            else if(Remote_DT7_data.Remote_clicker.s2 == MIDDLE)//Ð¡ÍÓÂÝ
+            else if(Remote_DT7_data.Remote_clicker.s2 == DOWN)//Ð¡ÍÓÂÝ
             {
-                if(Remote_DT7_data.Remote_clicker.s2_Action == DOWN_TO_MIDDLE)
+                if(Remote_DT7_data.Remote_clicker.s2_Action == MIDDLE_TO_DOWN)
                 {
                     rorate_reserve_cnt ++;
                 }
@@ -91,6 +116,21 @@ void Chassis_Reference_Update(void)
         {
             USART_Chassis_Data.V_y = Remote_DT7_data.Remote_clicker.ch2/660*2.5f;
             USART_Chassis_Data.V_x = Remote_DT7_data.Remote_clicker.ch3/660*2.5f;
+            if(Remote_DT7_data.Remote_clicker.s2 == MIDDLE || Remote_DT7_data.Remote_clicker.s2 == DOWN)
+            {
+                if(Remote_DT7_data.Remote_clicker.ch4 == 0)
+                {
+                    USART_Chassis_Data.Cmd_Leg_Length = 1;
+                }
+                else if(Remote_DT7_data.Remote_clicker.ch4 == 660)
+                {
+                    USART_Chassis_Data.Cmd_Leg_Length = 2;
+                }
+                else if(Remote_DT7_data.Remote_clicker.ch4 == -660)
+                {
+                    USART_Chassis_Data.Cmd_Leg_Length = 3;
+                }
+            }
         }
     }
     else if(Remote_DT7_data.online_flag == 0 && Remote_VTM.online_flag == 1)//ÓÃ»Ò¿Ø
@@ -99,6 +139,18 @@ void Chassis_Reference_Update(void)
         {
             USART_Chassis_Data.V_y = Remote_VTM.Remote_clicker.ch2/660*2.2f;
             USART_Chassis_Data.V_x = Remote_VTM.Remote_clicker.ch3/660*2.2f;
+            if(Remote_VTM.Remote_clicker.ch4 == 0)
+            {
+                USART_Chassis_Data.Cmd_Leg_Length = 1;
+            }
+            else if(Remote_VTM.Remote_clicker.ch4 == 660)
+            {
+                USART_Chassis_Data.Cmd_Leg_Length = 2;
+            }
+            else if(Remote_VTM.Remote_clicker.ch4 == -660)
+            {
+                USART_Chassis_Data.Cmd_Leg_Length = 3;
+            }
         }
         else if(Remote_VTM.Remote_clicker.Switch == CENTER)
         {
@@ -122,3 +174,9 @@ void Chassis_Reference_Update(void)
 }
 
 
+
+void Chassis_Task(void)
+{
+    Chassis_Mode_Select();
+    Chassis_Reference_Update();
+}

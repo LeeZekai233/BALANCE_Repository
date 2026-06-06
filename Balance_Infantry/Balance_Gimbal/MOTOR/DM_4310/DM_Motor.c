@@ -1,6 +1,6 @@
 #include "main.h"
 
-DM_Motor_t Joint_Motor[4];
+DM_Motor_t Yaw_DM4310;
 
 //达妙手册里提供的int和float的转换函数
 float uint_to_float(int x_int, float x_min, float x_max, int bits)

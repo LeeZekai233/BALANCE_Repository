@@ -1,6 +1,7 @@
 #include "main.h"
 
-DJI_Encoder_t Driving_M3508[2];
+DJI_Encoder_t Fric_M3508[2];//×ó0 ÓÒ1
+DJI_Encoder_t Pitch_GM6020;
 /**
   ******************************************************************************
   * @file    DJI_MOTOR.c
@@ -168,10 +169,10 @@ void Set_GM6020_IQ2(CAN_TypeDef *CANx, int16_t motor5_iq, int16_t motor6iq, int1
     CAN_Transmit(CANx,&tx_message);
 }
 
-CanTxMsg tx_message;
+//CanTxMsg tx_message;
 void Set_C620andC610_IQ1(CAN_TypeDef *CANx, int16_t motor1_iq, int16_t motor2_iq, int16_t motor3_iq, int16_t motor4_iq)
 {
-    //CanTxMsg tx_message;
+    CanTxMsg tx_message;
     tx_message.StdId = 0x200;
     tx_message.IDE = CAN_Id_Standard;
     tx_message.RTR = CAN_RTR_Data;
@@ -211,17 +212,33 @@ void Set_C620andC610_IQ2(CAN_TypeDef *CANx, int16_t motor5_iq, int16_t motor6_iq
 
 void M3508_Encoder_To_Generic_Encoder(DJI_Encoder_t* DJI_Encoder,Encoder_t* Encoder)
 {
-    Encoder->Angle_Deg_fdb = (float)(DJI_Encoder->cal_data.raw_value - DJI_Encoder->cal_data.ecd_bias)*M3508_ENCODER_TO_ANGLE*M3508_ENCODER_TO_WHEEL;
-    Encoder->Angle_Deg_Total_fdb = DJI_Encoder->ecd_angle*M3508_ENCODER_TO_WHEEL;
+    Encoder->Angle_Deg_fdb = (float)(DJI_Encoder->cal_data.raw_value - DJI_Encoder->cal_data.ecd_bias)*0.0439453125f;
+    Encoder->Angle_Deg_Total_fdb = DJI_Encoder->ecd_angle;
     
     Encoder->Angle_Rad_fdb = Encoder->Angle_Deg_fdb*DEG_TO_RAD;
     Encoder->Angle_Rad_Total_fdb = Encoder->Angle_Deg_Total_fdb*DEG_TO_RAD;
     
-    Encoder->Omega_Rad_fdb = DJI_Encoder->rate_rpm*RPM_TO_WHEEL_RAD_PER_SED;
+    Encoder->Omega_Rad_fdb = DJI_Encoder->rate_rpm;
     
     Encoder->temperature = DJI_Encoder->temperature;
-    Encoder->Torque = DJI_Encoder->currtent * M3508_CURRETN_TO_TORQUE;
+    Encoder->Torque = DJI_Encoder->currtent*0.3f;
     Encoder->heart_cnt = time_tick;
 }
+
+void GM6020_Encoder_To_Generic_Encoder(DJI_Encoder_t* DJI_Encoder,Encoder_t* Encoder)
+{
+    Encoder->Angle_Deg_fdb = (float)(DJI_Encoder->cal_data.raw_value - DJI_Encoder->cal_data.ecd_bias)*0.0439453125f;
+    Encoder->Angle_Deg_Total_fdb = DJI_Encoder->ecd_angle;
+    
+    Encoder->Angle_Rad_fdb = Encoder->Angle_Deg_fdb*DEG_TO_RAD;
+    Encoder->Angle_Rad_Total_fdb = Encoder->Angle_Deg_Total_fdb*DEG_TO_RAD;
+    
+    Encoder->Omega_Rad_fdb = DJI_Encoder->rate_rpm;
+    
+    Encoder->temperature = DJI_Encoder->temperature;
+    Encoder->Torque = DJI_Encoder->currtent*0.741f;
+    Encoder->heart_cnt = time_tick;
+}
+
 
 
