@@ -194,18 +194,12 @@ void UART4_IRQHandler(void)
 {
     if (USART_GetITStatus(UART4, USART_IT_IDLE) != RESET)
     {
-        volatile uint32_t temp;
-
         /* 清除 IDLE 中断标志：先读 SR，再读 DR */
-        temp = UART4->SR;
-        temp = UART4->DR;
-        (void)temp;
-
+        UART4->SR; 
+        UART4->DR;
         DMA_Cmd(DMA1_Stream2, DISABLE);
         while (DMA_GetCmdStatus(DMA1_Stream2) != DISABLE) {}
-
         length = UART4_RX_BUF_LENGTH - DMA_GetCurrDataCounter(DMA1_Stream2);
-
         DMA_ClearFlag(DMA1_Stream2,
                       DMA_FLAG_FEIF2 |
                       DMA_FLAG_DMEIF2 |
@@ -213,22 +207,10 @@ void UART4_IRQHandler(void)
                       DMA_FLAG_HTIF2 |
                       DMA_FLAG_TCIF2);
 
-        if (length > 0 && length <= UART4_RX_BUF_LENGTH)
+        if (length == 43)
         {
-            if (Verify_CRC8_Check_Sum(_UART4_DMA_RX_BUF, length))
-            {
-                usart_chassis_receive(_UART4_DMA_RX_BUF,
-                                      &Chassis.USART_Chassis_Data);
-            }
+            usart_chassis_receive(_UART4_DMA_RX_BUF,&Chassis.USART_Chassis_Data);
         }
-
-        /*
-         * 保守修复：
-         * 原代码是在 DMA_Cmd(DMA1_Stream2, ENABLE) 之后 memset，
-         * 这会把新一轮 DMA 刚收到的数据清掉。
-         *
-         * 如果你确实需要清空缓冲区，只能放在重新打开 DMA 之前。
-         */
         memset(_UART4_DMA_RX_BUF, 0, UART4_RX_BUF_LENGTH);
         DMA_SetCurrDataCounter(DMA1_Stream2, UART4_RX_BUF_LENGTH);
         DMA_Cmd(DMA1_Stream2, ENABLE);

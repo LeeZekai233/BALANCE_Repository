@@ -114,8 +114,8 @@ void Chassis_Reference_Update(void)
     {
         if(Remote_DT7_data.Remote_clicker.s1 == MIDDLE || Remote_DT7_data.Remote_clicker.s1 == UP)
         {
-            USART_Chassis_Data.V_y = Remote_DT7_data.Remote_clicker.ch2/660*2.5f;
-            USART_Chassis_Data.V_x = Remote_DT7_data.Remote_clicker.ch3/660*2.5f;
+            USART_Chassis_Data.V_y = Remote_DT7_data.Remote_clicker.ch3/660*2.5f;
+            USART_Chassis_Data.V_x = Remote_DT7_data.Remote_clicker.ch2/660*2.5f;
             if(Remote_DT7_data.Remote_clicker.s2 == MIDDLE || Remote_DT7_data.Remote_clicker.s2 == DOWN)
             {
                 if(Remote_DT7_data.Remote_clicker.ch4 == 0)
@@ -137,8 +137,8 @@ void Chassis_Reference_Update(void)
     {
         if(Remote_VTM.Remote_clicker.Switch == LEFT)
         {
-            USART_Chassis_Data.V_y = Remote_VTM.Remote_clicker.ch2/660*2.2f;
-            USART_Chassis_Data.V_x = Remote_VTM.Remote_clicker.ch3/660*2.2f;
+            USART_Chassis_Data.V_y = Remote_VTM.Remote_clicker.ch3/660*2.2f;
+            USART_Chassis_Data.V_x = Remote_VTM.Remote_clicker.ch2/660*2.2f;
             if(Remote_VTM.Remote_clicker.ch4 == 0)
             {
                 USART_Chassis_Data.Cmd_Leg_Length = 1;

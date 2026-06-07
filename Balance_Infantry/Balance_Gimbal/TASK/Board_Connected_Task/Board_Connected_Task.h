@@ -54,7 +54,7 @@ extern USART_Gimbal_Data_t USART_Gimbal_Data;
 
 
 void USART_Gimbal_Receive(uint8_t *DataAddress,USART_Gimbal_Data_t* USART_Gimbal_Data);
-void USART_Chassis_Send(const USART_Chassis_Data_t *data);
+void USART_Chassis_Send(USART_Chassis_Data_t *data);
 
     
     

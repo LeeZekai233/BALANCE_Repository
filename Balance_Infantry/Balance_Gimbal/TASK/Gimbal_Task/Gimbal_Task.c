@@ -125,11 +125,17 @@ void Gimbal_Reference_Update(void)
         switch (Gimbal.Gimbal_Mode)
         {
             case GIMBAL_REMOTE :
-                {
-                    Gimbal.Yaw_Angle_Ref += Remote_DT7_data.Remote_clicker.ch1 * 0.005f;
-                    Gimbal.Pitch_Angle_Ref += Remote_DT7_data.Remote_clicker.ch0 * 0.005f;
-                }
-                break;
+            {
+                Gimbal.Yaw_Angle_Ref += Remote_DT7_data.Remote_clicker.ch1 * 0.005f;
+                Gimbal.Pitch_Angle_Ref += Remote_DT7_data.Remote_clicker.ch0 * 0.005f;
+            }
+            break;
+            case GIMBAL_RELAX ://RELAX模式，使设定值为反馈值
+            {
+                Gimbal.Yaw_Angle_Ref = Gimbal.Yaw_Angle_Fdb;
+                Gimbal.Pitch_Angle_Ref = Gimbal.Pitch_Angle_Fdb ;
+            }
+            break;
             default :
                 break;
        }
@@ -148,6 +154,12 @@ void Gimbal_Reference_Update(void)
             {
                 Gimbal.Yaw_Angle_Ref += Remote_DT7_data.Remote_clicker.ch1 * 0.005f;
                 Gimbal.Pitch_Angle_Ref += Remote_DT7_data.Remote_clicker.ch0 * 0.005f;
+            }
+            break;
+            case GIMBAL_RELAX ://RELAX模式，使设定值为反馈值
+            {
+                Gimbal.Yaw_Angle_Ref = Gimbal.Yaw_Angle_Fdb;
+                Gimbal.Pitch_Angle_Ref = Gimbal.Pitch_Angle_Fdb ;
             }
             break;
             default :
