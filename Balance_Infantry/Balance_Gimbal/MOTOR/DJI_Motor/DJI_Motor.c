@@ -136,7 +136,7 @@ void GM6020EncoderTask(volatile DJI_Encoder_t *v, CanRxMsg * msg,int offset)
 void Set_GM6020_IQ1(CAN_TypeDef *CANx, int16_t motor1_iq, int16_t motor2_iq, int16_t motor3_iq, int16_t motor4_iq)
 {
     CanTxMsg tx_message;
-    tx_message.StdId = 0x1FF;
+    tx_message.StdId = 0x1FE;
     tx_message.IDE = CAN_Id_Standard;
     tx_message.RTR = CAN_RTR_Data;
     tx_message.DLC = 0x08;
@@ -154,7 +154,7 @@ void Set_GM6020_IQ1(CAN_TypeDef *CANx, int16_t motor1_iq, int16_t motor2_iq, int
 void Set_GM6020_IQ2(CAN_TypeDef *CANx, int16_t motor5_iq, int16_t motor6iq, int16_t motor7_iq, int16_t motor8_iq)
 {
     CanTxMsg tx_message;
-    tx_message.StdId = 0x2FF;
+    tx_message.StdId = 0x2FE;
     tx_message.IDE = CAN_Id_Standard;
     tx_message.RTR = CAN_RTR_Data;
     tx_message.DLC = 0x08;

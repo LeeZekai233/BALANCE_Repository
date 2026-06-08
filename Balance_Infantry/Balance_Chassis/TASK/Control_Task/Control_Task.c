@@ -54,35 +54,35 @@ void Contorl_Task(Balance_Chassis_t* Chassis)
 
     if(time_tick%5==0)
     {
-//        usart_gimbal_send
-//        (judge_rece_mesg.power_heat_data.shooter_17mm_barrel_heat,
-//        judge_rece_mesg.game_robot_state.shooter_barrel_heat_limit,
-//        judge_rece_mesg.game_robot_state.shooter_barrel_cooling_value,
-//        judge_rece_mesg.game_robot_state.robot_level,
-//        0,//不用bullet_speed_x_hat
-//        judge_rece_mesg.shoot_data.initial_speed,
-//        judge_rece_mesg.game_robot_state.power_management_chassis_output,
-//        judge_rece_mesg.game_robot_state.current_HP,
-//        judge_rece_mesg.game_robot_state.robot_id,
-//        Chassis->Gimbal_Init_Cmd,
-//        0,//不用remain_main_Heat，让头自己算
-//        judge_rece_mesg.game_state.game_progress,
-//        &Chassis->USART_Gimbal_Data);
-        
         usart_gimbal_send
-        (333,
-        555,
-        6,
-        7,
+        (judge_rece_mesg.power_heat_data.shooter_17mm_barrel_heat,
+        judge_rece_mesg.game_robot_state.shooter_barrel_heat_limit,
+        judge_rece_mesg.game_robot_state.shooter_barrel_cooling_value,
+        judge_rece_mesg.game_robot_state.robot_level,
         0,//不用bullet_speed_x_hat
-        7,
-        5,
-        4,
-        7,
-        3,
+        judge_rece_mesg.shoot_data.initial_speed,
+        judge_rece_mesg.game_robot_state.power_management_chassis_output,
+        judge_rece_mesg.game_robot_state.current_HP,
+        judge_rece_mesg.game_robot_state.robot_id,
+        Chassis->Gimbal_Init_Cmd,
         0,//不用remain_main_Heat，让头自己算
-        7,
+        judge_rece_mesg.game_state.game_progress,
         &Chassis->USART_Gimbal_Data);
+        
+//        usart_gimbal_send
+//        (333,
+//        555,
+//        6,
+//        7,
+//        0,//不用bullet_speed_x_hat
+//        7,
+//        5,
+//        4,
+//        7,
+//        3,
+//        0,//不用remain_main_Heat，让头自己算
+//        7,
+//        &Chassis->USART_Gimbal_Data);
     }
     
     if(time_tick % 100 == 0)

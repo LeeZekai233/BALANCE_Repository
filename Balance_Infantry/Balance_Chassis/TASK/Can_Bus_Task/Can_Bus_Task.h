@@ -4,6 +4,29 @@
 #include "Chassis_Task.h"
 
 
+#define JOINT1_CONTROL_ID 0x01
+#define JOINT2_CONTROL_ID 0x02
+#define JOINT3_CONTROL_ID 0x03
+#define JOINT4_CONTROL_ID 0x04
+
+
+#define JOINT1_FEEDBACK_ID  0xA1
+#define JOINT2_FEEDBACK_ID  0xA2
+#define JOINT3_FEEDBACK_ID  0xA3
+#define JOINT4_FEEDBACK_ID  0xA4
+
+
+#define DRIVING_LEFT_FEEDBACK_ID 0x201
+#define DRIVING_RIGHT_FEEDBACK_ID 0x202
+
+
+#define JOINT1_ENCODER_OFFSET +2.5770793- 0.33405f
+#define JOINT2_ENCODER_OFFSET +2.70037508+ 0.33405f
+#define JOINT3_ENCODER_OFFSET -0.61681366- 0.75432f
+#define JOINT4_ENCODER_OFFSET +1.7635777 + 0.75432f
+
+
+
 void CAN1_Receive_Task(CanRxMsg* RxMsg,Balance_Chassis_t* Chassis);
 void CAN2_Receive_Task(CanRxMsg* RxMsg,Balance_Chassis_t* Chassis);
 void CAN1_Send_Task_1(float Joint_T_Set1,float Joint_T_Set4);

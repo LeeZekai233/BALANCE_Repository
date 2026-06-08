@@ -361,10 +361,10 @@ void Chassis_Mode_Select(Balance_Chassis_t* Chassis)
            Chassis->Control_Mode = (Chassis_Mode_e)Chassis->USART_Chassis_Data.Chassis_Mode;
         }
         
-        if(judge_rece_mesg.game_robot_state.power_management_chassis_output==0||judge_rece_mesg.game_robot_state.current_HP==0)
-        {
-            Chassis->Control_Mode = CHASSIS_RELAX ;
-        }
+//        if(judge_rece_mesg.game_robot_state.power_management_chassis_output==0||judge_rece_mesg.game_robot_state.current_HP==0)
+//        {
+//            Chassis->Control_Mode = CHASSIS_RELAX ;
+//        }
         
         if(Chassis->Last_Control_Mode == CHASSIS_RELAX && Chassis->Control_Mode != CHASSIS_RELAX)//空闲之后必衔接初始化
         {
@@ -422,10 +422,10 @@ void Chassis_Referance_Update(Balance_Chassis_t* Chassis)
         Chassis->Chassis_Remote_Ref.V_y = Chassis->USART_Chassis_Data.V_y ;
         Chassis->Chassis_Remote_Ref.V_x = Chassis->USART_Chassis_Data.V_x ;
         
-       if(fabs(Chassis->Chassis_Remote_Ref.V_x) < 1.5)//vx死区
-       {
-           Chassis->Chassis_Remote_Ref.V_x = 0;
-       }
+//       if(fabs(Chassis->Chassis_Remote_Ref.V_x) < 1.5)//vx死区
+//       {
+//           Chassis->Chassis_Remote_Ref.V_x = 0;
+//       }
     
        if(Chassis->USART_Chassis_Data.Cmd_Leg_Length == LOW_LEGLENGTH_CMD)
        {
@@ -458,7 +458,7 @@ void Chassis_Referance_Update(Balance_Chassis_t* Chassis)
     float Temp_Angle;
     
     
-    Chassis->Yaw_Angle_0_To_2PI = Chassis->USART_Chassis_Data.Yaw_Encoder_Angle;
+    Chassis->Yaw_Angle_0_To_2PI = 2*PI - Chassis->USART_Chassis_Data.Yaw_Encoder_Angle;
     
     
     //云台角度劣弧优化
@@ -663,7 +663,7 @@ void Chassis_Init_Handle(Balance_Chassis_t* Chassis)
                 
         case NORMAL_STATE_2 :
         {
-            if(Chassis->USART_Chassis_Data.Gimbal_Init_Finish_Flag == 1)//不是摆腿到后的状态，需要等待云台初始化完成
+            if(Chassis->USART_Chassis_Data.Gimbal_Init_Finish_Flag == 1)
             {
                 if((phi0_0_2PI_Left >=1.7f&&phi0_0_2PI_Left<=5.4f) || (phi0_0_2PI_Right >= 1.7f&&phi0_0_2PI_Right <=5.4f))
                     {
@@ -816,12 +816,12 @@ void Chassis_Standup_Handle(Balance_Chassis_t* Chassis)
     //右腿腿长
     PID_Init(&Chassis->Right_Leg.Leg_Length_PID,PID_POSITION,2500,0,40000,4000,20000);
     
-    Chassis->Chassis_Ref.Leglength = 0.11f;
+    Chassis->Chassis_Ref.Leglength = 0.12f;
     Chassis->Chassis_Ref.V_y = 0;
     Chassis->Chassis_Ref.V_x = 0;
     Chassis->Chassis_Ref.V_w = 0;
     Chassis->Chassis_Ref.Y_position = Chassis->balance_loop.x;
-    if(fabs(Chassis->balance_loop.state_err[3]) < 8*DEG_TO_RAD)
+    if(fabs(Chassis->balance_loop.state_err[3]) < 3*DEG_TO_RAD)
     {
         Chassis->Control_Mode = (Chassis_Mode_e)Chassis->USART_Chassis_Data.Chassis_Mode;
     }
@@ -843,7 +843,7 @@ void Chassis_Stop_Handle(Balance_Chassis_t* Chassis)
     PID_Init(&Chassis->Right_Leg.Leg_Length_PID, PID_POSITION,2500,0,40000,2000,0);
     PID_Init(&Chassis->Roll_Balance_FN_PID, PID_POSITION,30,0,12,0400,10);
     
-    Chassis->Chassis_Ref.Leglength = trackRamp_leg(0.0007,Chassis->Chassis_Ref.Leglength,Chassis->Chassis_Remote_Ref.Leglength);
+    Chassis->Chassis_Ref.Leglength = trackRamp_leg(0.0008,Chassis->Chassis_Ref.Leglength,Chassis->Chassis_Remote_Ref.Leglength);
     
     Chassis->normal_Y_erroffset -= Chassis->balance_loop.dx * 0.0007 *TIME_STEP ;
     Chassis->Chassis_Ref.V_y = 0;                                                     // 设置底盘的参考速度为零 y轴方向速度
@@ -869,7 +869,7 @@ void Chassis_Fallow_Gimbal_Handle(Balance_Chassis_t* Chassis)
   //  PID_Init(&Chassis->Init_Tp_Pid, PID_POSITION,100,0,0,700,10);
     PID_Init(&Chassis->Left_Leg.Leg_Length_PID, PID_POSITION,2500,0,40000,2000,0);
     PID_Init(&Chassis->Right_Leg.Leg_Length_PID, PID_POSITION,2500,0,40000,2000,0);
-    PID_Init(&Chassis->Pid_Follow_Gimbal,PID_POSITION,7,0,0,8,200);
+    PID_Init(&Chassis->Pid_Follow_Gimbal,PID_POSITION,8,0,0,8,200);
     
     
     
@@ -885,7 +885,7 @@ void Chassis_Fallow_Gimbal_Handle(Balance_Chassis_t* Chassis)
     }
     
     
-     Chassis->Chassis_Ref.Leglength = trackRamp_leg(0.0005,Chassis->Chassis_Ref.Leglength,Chassis->Chassis_Remote_Ref.Leglength);
+     Chassis->Chassis_Ref.Leglength = trackRamp_leg(0.0008,Chassis->Chassis_Ref.Leglength,Chassis->Chassis_Remote_Ref.Leglength);
     
     
     
@@ -912,7 +912,7 @@ void Chassis_Fallow_Gimbal_Handle(Balance_Chassis_t* Chassis)
     
     if(Chassis->Low_Leglength_Flag == 1)
     {
-        Chassis->Chassis_Ref.Leglength = 0.11f;
+        Chassis->Chassis_Ref.Leglength = 0.12f;
         Chassis->Low_Leglength_Cnt++;
     }
     
@@ -927,7 +927,7 @@ void Chassis_Fallow_Gimbal_Handle(Balance_Chassis_t* Chassis)
     
      
     //角度优化
-    if(Chassis->Chassis_Ref.Leglength >= 0.26f)//高腿长一定转正
+    if(Chassis->Chassis_Ref.Leglength >= 0.26f)//高腿长一定转正 相当于一键转头
     {   
         Chassis->Chassis_Target_Angle = Chassis->Chassis_Ref.Remote_Angle ;
         if(fabs(Chassis->Chassis_Ref.Remote_Angle - Chassis->Yaw_Angle__PI_To_PI) < PI/2)
@@ -952,7 +952,7 @@ void Chassis_Fallow_Gimbal_Handle(Balance_Chassis_t* Chassis)
         }
         Chassis->Chassis_Ref.Roll = 0;
     }
-    else//其他腿长做运动上的优化 做180度转换，相当于一键转头
+    else//其他腿长做运动上的优化 做180度转换，
     {
         if(fabs(Chassis->Chassis_Ref.Remote_Angle - Chassis->Yaw_Angle__PI_To_PI) < PI/2) //若云台角度与底盘目标速度差值小于PI/2，说明在同一象限内
         {

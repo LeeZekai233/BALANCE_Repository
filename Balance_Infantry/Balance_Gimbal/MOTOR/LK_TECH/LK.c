@@ -1102,7 +1102,7 @@ void LK_EncoderProcess (volatile LK_InitTypeDef *LK, CanRxMsg* msg)
 	
 	//Calculate the angle value and the range is from positive infinity to negative infinity
 	//LK->ecd_angle= (float)((LK->raw_value - LK->ecd_bias)*0.0054931641f + (LK->round_cnt * 360.0f)) /10;
-	LK->ecd_angle= (float)((LK->raw_value - LK->ecd_bias)*0.0054931641f + (LK->round_cnt * 360.0f));//不除10试试
+	LK->ecd_angle= (float)((LK->raw_value - LK->ecd_bias)*0.0054931641f + (LK->round_cnt * 360.0f))/10;//除10才是真实角度，原因未知
     
 	//Original value of storage speed (store six)//手算这些东西，算出来的数应该和控制频率有关，先不用试试
 	LK->rate_buf[LK->buf_count++]= LK->ecd_raw_rate;	//First use the value of buf_count and then increment it

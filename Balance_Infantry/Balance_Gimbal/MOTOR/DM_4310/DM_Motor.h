@@ -4,10 +4,10 @@
 
 #define P_MAX 3.141593 
 #define P_MIN -3.141593
-#define V_MAX 45.0f
-#define V_MIN -45.0f
-#define T_MAX 40.0f
-#define T_MIN -40.0f
+#define V_MAX 30.0f
+#define V_MIN -30.0f
+#define T_MAX 10.0f
+#define T_MIN -10.0f
 #define KP_MIN 0
 #define KP_MAX 500
 #define KD_MAX 5

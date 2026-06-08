@@ -120,6 +120,7 @@
         <SetRegEntry>
           <Number>0</Number>
           <Key>DLGUARM</Key>
+          <Name>	</Name>
         </SetRegEntry>
         <SetRegEntry>
           <Number>0</Number>
@@ -973,8 +974,8 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\SYSTEM\USART4\USART4.c</PathWithFileName>
-      <FilenameWithoutPath>USART4.c</FilenameWithoutPath>
+      <PathWithFileName>..\SYSTEM\USART6\USART6.c</PathWithFileName>
+      <FilenameWithoutPath>USART6.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>
@@ -985,8 +986,8 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\SYSTEM\USART6\USART6.c</PathWithFileName>
-      <FilenameWithoutPath>USART6.c</FilenameWithoutPath>
+      <PathWithFileName>..\SYSTEM\USART4\USART4.c</PathWithFileName>
+      <FilenameWithoutPath>USART4.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>
@@ -1021,8 +1022,8 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\SYSTEM\BSP\BSP.c</PathWithFileName>
-      <FilenameWithoutPath>BSP.c</FilenameWithoutPath>
+      <PathWithFileName>..\SYSTEM\TIM6\TIM6.c</PathWithFileName>
+      <FilenameWithoutPath>TIM6.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>
@@ -1033,8 +1034,8 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\SYSTEM\TIM6\TIM6.c</PathWithFileName>
-      <FilenameWithoutPath>TIM6.c</FilenameWithoutPath>
+      <PathWithFileName>..\SYSTEM\TIM2\TIM2.c</PathWithFileName>
+      <FilenameWithoutPath>TIM2.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>
@@ -1045,8 +1046,8 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\SYSTEM\TIM2\TIM2.c</PathWithFileName>
-      <FilenameWithoutPath>TIM2.c</FilenameWithoutPath>
+      <PathWithFileName>..\SYSTEM\BSP\BSP.c</PathWithFileName>
+      <FilenameWithoutPath>BSP.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>

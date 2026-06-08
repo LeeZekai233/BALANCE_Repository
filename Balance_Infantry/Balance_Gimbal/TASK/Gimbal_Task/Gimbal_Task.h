@@ -19,7 +19,7 @@ typedef enum
     GIMBAL_AUTO_AIM = 4,         //自瞄
     GIMBAL_BIG_BUFF = 5,         //大符
     GIMBAL_SMALL_BUFF = 6,       //小符
-    GIMBAL_SENTRY = 7,           //被致盲哨兵模式
+    GIMBAL_SENTRY = 7,           //被致盲使用哨兵模式
 }Gimbal_Mode_e;
 
 
@@ -43,14 +43,15 @@ typedef struct
     CH040DATA_t     CH040_Data;//陀螺仪数据结构体
     Encoder_t       Yaw_Motor_Encoder;//Yaw电机编码器
     Encoder_t       Pitch_Motor_Encoder;//Pitch电机编码器
-//    PID_t          Gimbal_Motor_Speed_PID[2];//云台电机PID，0 Yaw , 1 Pitch 
-//    PID_t          Gimbal_Motor_Angle_PID[2];//云台电机PID，0 Yaw , 1 Pitch 
-//    int16_t        Gimbal_Motor_Set_Current[2];//云台电机电流给定值，0 Yaw , 1 Pitch
     
     PID_t          Pitch_Motor_Speed_PID;
     PID_t          Pitch_Motor_Angle_PID;
     PID_t          Yaw_Motor_Angle_PID;
-    int16_t        Pitch_Motor_Set_Current;//6020 pitch转矩电流值         
+    PID_t          Yaw_Motor_Speed_PID;
+    PID_t          Yaw_Motor_Init_Angle_PID;//初始化闭环编码器，正常情况闭陀螺仪，参数不同
+    PID_t          Yaw_Motor_Init_Speed_PID;
+    int16_t        Pitch_Motor_Set_Current;//6020 pitch转矩电流值
+    float          Yaw_Motor_Set_T;//DM4310力矩值
     uint8_t        Init_Finish_Flag;//初始化完成标志位
 }Gimbal_t;
 
