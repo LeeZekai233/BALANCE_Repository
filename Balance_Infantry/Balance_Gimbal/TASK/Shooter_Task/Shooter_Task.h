@@ -18,6 +18,7 @@ typedef enum
 }Shooter_Mode_e;
 
 
+
 typedef enum
 {
     SHOOTER_NORMAL = 0       ,
@@ -26,12 +27,14 @@ typedef enum
 }Shooter_State_e;
 
 
+
 typedef enum
 {
     FSM_RELAX = 0,
     ACTIVATE  = 1,
     HANDLE    = 2,
 }CF_FSM_State_e;//停火有限状态机，改善空程和双发用
+
 
 
 typedef enum
@@ -49,38 +52,55 @@ typedef enum
 
 
 
-typedef enum
-{
-    STOP = 0,//停机
-    DETECT = 1,//检测
-    CONFIRM = 2,//确认发射
-}Heat_Detect_FSM_e;//热量检测状态机
+//typedef enum
+//{
+//    STOP = 0,//停机
+//    DETECT = 1,//检测
+//    CONFIRM = 2,//确认发射
+//}Heat_Detect_FSM_e;//热量检测状态机
+
+
+typedef enum {
+    SHOOT_DENIED,    // 禁止射击
+    SHOOT_ALLOWED    // 允许射击
+} Fire_Permission_e;
 
 
 typedef struct
 {
-    Heat_Detect_FSM_e Heat_Detect_FSM;//热量检测状态机
+//    Heat_Detect_FSM_e Heat_Detect_FSM;//热量检测状态机
+//    
+//    uint16_t Now_Heat;//当前热量
+//    uint16_t Warning_Heat;//热量预警阈值
+//    uint8_t Heat_CD;//冷却热量速度，裁判系统读
+//    uint16_t Remain_Heat;//剩余热量
+////    uint16_t Threshold_Heat;//热量门限阈值
+//    uint16_t Max_Heat;//裁判系统读最大热量
+//    
+//    uint16_t Heat_Detect_CNT;//热量检测计数
+    Fire_Permission_e  Fire_Permission;//射击许可
     
-    uint16_t Now_Heat;//当前热量
-//    uint16_t Warn_Heat;//热量预警阈值
-    uint8_t Heat_CD;//冷却热量速度，裁判系统读
-    uint16_t Residue_Heat;//剩余热量
-    uint16_t Threshold_Heat;//热量门限阈值
-    uint16_t Max_Heat;//裁判系统读最大热量
+    float Shooter_Heat_hat;//离线计算的热量
+    float Remain_Bullets_hat;//离线计算的剩余发弹量
+    float Remain_Bullets_meas;//裁判系统算的剩余发弹量
+    float Shooter_Heat_meas;//裁判系统读的热量
+    float Heat_Cooling_Value;//冷却速率
+    float Heat_Limit;//射击热量上限
+    float Remain_Bullets;//最终选择出来的剩余弹量
     
-    uint16_t Heat_Detect_CNT;//热量检测计数
 }Heat_Restrict_t;
 
 
+
+
 typedef struct
 {
-    
     Shooter_Mode_e Shooter_Mode;//发射机构模式
     Shooter_Mode_e Last_Shooter_Mode;//上一次发射机构模式
     Shooter_State_e Shooter_State;//发射机构状态
     Shooter_State_e Last_Shooter_State;//上一次发射机构状态
 //    CF_FSM_State_e CF_FSM_State;//停火有限状态机 //暂时不会使用
-    Poke_State_e Poke_State;//拨盘模式
+//    Poke_State_e Poke_State;//拨盘模式 没用到
     Fric_State_e Fric_State;//摩擦轮状态
     
     Encoder_t Poke_Motor_Encoder;//拨盘电机编码器    LK4005
@@ -92,6 +112,7 @@ typedef struct
     
     Heat_Restrict_t Heat_Restrict;//热量限制
     
+    float Last_Poke_Angle_Ref;//上一次的拨盘角度参考值
     float Poke_Angle_Ref;//拨盘角度参考值，单位 °
     float Poke_Angle_Fdb;//拨盘角度反馈值，单位 °
     
@@ -111,6 +132,8 @@ typedef struct
     int16_t Poke_Motor_Set_Current;
     int16_t Fric_Motor_Ser_Current[2];
     
+    float Shoot_Frequency;//射频
+    float Poke_Speed;//拨盘速度，拿来算计数
 }Shooter_t;
 /*********************************发射结构体**********************************/
 
@@ -121,7 +144,9 @@ typedef struct
 extern Shooter_t Shooter;
 /*********************************外部声明**********************************/
 
-
+void Shoot_Frequency_Select(void);
+void Heat_Restrict(void);
+void Shooter_Debug(void);
 void Shooter_Mode_Select(void);
 void Shooter_Feedback_Update(void);
 void Shooter_Reference_Update(void);

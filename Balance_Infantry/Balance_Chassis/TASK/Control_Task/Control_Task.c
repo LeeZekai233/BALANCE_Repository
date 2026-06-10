@@ -7,7 +7,6 @@ void Contorl_Task(Balance_Chassis_t* Chassis)
 {
     time_tick++;
     
-    
     //控动作判断
    // Remote_Switch_Action_Detect(&Remote_DT7_data);
    // Key_Mouse_State_Update(&Remote_DT7_data);
@@ -42,13 +41,13 @@ void Contorl_Task(Balance_Chassis_t* Chassis)
     if(time_tick%2==0)
     {
         Chassis_Task(Chassis);
-        CAN1_Send_Task_1(Chassis->joint_T[0]*0,Chassis->joint_T[3]*0);
+        CAN1_Send_Task_1(Chassis->joint_T[0],Chassis->joint_T[3]);
     }
     
     if(time_tick%2==1)
     {
-        CAN1_Send_Task_2(Chassis->joint_T[1]*0,Chassis->joint_T[2]*0);
-        CAN2_Send_Task(Chassis->driving_T[0]*0,Chassis->driving_T[1]*0);
+        CAN1_Send_Task_2(Chassis->joint_T[1],Chassis->joint_T[2]);
+        CAN2_Send_Task(Chassis->driving_T[0],Chassis->driving_T[1]);
        // CAN_POWER_Control(CAN2,&Super_Cap_Send);
     }
 
@@ -68,21 +67,6 @@ void Contorl_Task(Balance_Chassis_t* Chassis)
         0,//不用remain_main_Heat，让头自己算
         judge_rece_mesg.game_state.game_progress,
         &Chassis->USART_Gimbal_Data);
-        
-//        usart_gimbal_send
-//        (333,
-//        555,
-//        6,
-//        7,
-//        0,//不用bullet_speed_x_hat
-//        7,
-//        5,
-//        4,
-//        7,
-//        3,
-//        0,//不用remain_main_Heat，让头自己算
-//        7,
-//        &Chassis->USART_Gimbal_Data);
     }
     
     if(time_tick % 100 == 0)

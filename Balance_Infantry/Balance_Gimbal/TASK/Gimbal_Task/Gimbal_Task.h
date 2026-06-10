@@ -60,6 +60,7 @@ extern Gimbal_t Gimbal;
 
 
 float Normalize_Angle_PI(float angle);
+float Transform_Angle_0_2PI(float angle);
 void Gimbal_Mode_Select(void);
 void Gimbal_Reference_Update(void);
 void Gimbal_Feedback_Update(void);

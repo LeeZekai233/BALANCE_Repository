@@ -129,7 +129,7 @@ void Gimbal_Feedback_Update(void)
         Gimbal.Yaw_Speed_Fdb = Gimbal.Yaw_Motor_Encoder.Omega_Rad_fdb ;
     }
     
-    USART_Chassis_Data.Yaw_Encoder_Angle = Transform_Angle_0_2PI(Gimbal.Yaw_Motor_Encoder.Angle_Rad_fdb) ;//发给底盘
+    USART_Chassis_Data.Yaw_Encoder_Angle = Transform_Angle_0_2PI(Gimbal.Yaw_Motor_Encoder.Angle_Rad_fdb) ;//发给底盘，适配底盘0-2PI的数据
     USART_Chassis_Data.Gimbal_Init_Finish_Flag = Gimbal.Init_Finish_Flag ;
 }
 
@@ -171,8 +171,8 @@ void Gimbal_Reference_Update(void)
             break;
             case GIMBAL_REMOTE :
             {
-                Gimbal.Yaw_Angle_Ref -= Remote_DT7_data.Remote_clicker.ch1 * 0.005f;
-                Gimbal.Pitch_Angle_Ref -= Remote_DT7_data.Remote_clicker.ch0 * 0.005f;
+                Gimbal.Yaw_Angle_Ref -= Remote_DT7_data.Remote_clicker.ch1 * 0.0005f;
+                Gimbal.Pitch_Angle_Ref -= Remote_DT7_data.Remote_clicker.ch0 * 0.0005f;
             }
             break;
             case GIMBAL_RELAX ://RELAX模式，使设定值为反馈值
@@ -186,7 +186,6 @@ void Gimbal_Reference_Update(void)
             default :
             break;
         }
-        
     }
 }
 
@@ -209,13 +208,21 @@ void Gimbal_Init_Handle(void)
 //    {
 //        Gimbal.Yaw_Angle_Ref = -PI;
 //    }
-//    else
-//    {
+    if(Gimbal.Yaw_Angle_Fdb >=PI/2)
+    {
+        Gimbal.Yaw_Angle_Ref = PI;
+    }
+    else if(Gimbal.Yaw_Angle_Fdb <= -PI/2)
+    {
+        Gimbal.Yaw_Angle_Ref = -PI;
+    }
+    else
+    {
         Gimbal.Yaw_Angle_Ref = 0;
-  //  }
+    }
     Gimbal.Pitch_Angle_Ref = 0;
     
-    if(fabs(Gimbal.Yaw_Angle_Ref - Gimbal.Yaw_Angle_Fdb) <= 5*PI/180)
+    if(fabs(Gimbal.Yaw_Angle_Ref - Gimbal.Yaw_Angle_Fdb) <= 2*PI/180)
     {
         Gimbal.Pitch_Angle_Ref = Gimbal.CH040_Data.Pitch_Angle ;
         Gimbal.Yaw_Angle_Ref = Gimbal.CH040_Data.Yaw_Angle ;
@@ -256,7 +263,6 @@ void Gimbal_Control_Loop(void)
             break;
         case GIMBAL_INIT :
             Gimbal_Init_Handle( );
-      //      Gimbal_Remote_Handle();
             break;
         case GIMBAL_REMOTE :
             Gimbal_Remote_Handle( );

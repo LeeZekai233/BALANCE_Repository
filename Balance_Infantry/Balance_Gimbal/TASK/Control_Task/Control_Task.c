@@ -7,12 +7,12 @@ void Control_Task(void)
 {
     time_tick++;
     Remote_Online_Detect(&Remote_DT7_data,&Remote_VTM);
-    if(Remote_DT7_data.online_flag == 1 && Remote_VTM.online_flag == 0)
+    if(Remote_DT7_data.online_flag == 1 && Remote_VTM.online_flag == 0)//使用白控
     {
         Key_Mouse_State_Update(&Remote_DT7_data.key,&Remote_DT7_data.Remote_mouse);
         Remote_Switch_Action_Detect(&Remote_DT7_data);
     }
-    else if(Remote_DT7_data.online_flag == 0 && Remote_VTM.online_flag == 1)
+    else if(Remote_DT7_data.online_flag == 0 && Remote_VTM.online_flag == 1)//使用灰控
     {
         Key_Mouse_State_Update(&Remote_VTM.key,&Remote_VTM.Remote_mouse);
         VTM_Clicker_State_Update(&Remote_VTM);
@@ -24,8 +24,8 @@ void Control_Task(void)
     
     if(time_tick%2 == 0)
     {
-        CAN2_Send_Task(Gimbal.Yaw_Motor_Set_T*0,Shooter.Poke_Motor_Set_Current);
-        CAN1_Send_Task(Gimbal.Pitch_Motor_Set_Current*0, Shooter.Fric_Motor_Ser_Current[0],Shooter.Fric_Motor_Ser_Current[1]);
+        CAN2_Send_Task(Gimbal.Yaw_Motor_Set_T,Shooter.Poke_Motor_Set_Current);
+        CAN1_Send_Task(Gimbal.Pitch_Motor_Set_Current, Shooter.Fric_Motor_Ser_Current[0],Shooter.Fric_Motor_Ser_Current[1]);
     }
     
     if(time_tick%5 == 0)
@@ -61,7 +61,6 @@ void Chassis_Mode_Select(void)
         }
         else if(Remote_DT7_data.Remote_clicker.s1 == MIDDLE || Remote_DT7_data.Remote_clicker.s1 == UP)
         {
-            
             if(Remote_DT7_data.Remote_clicker.s2 == MIDDLE)//跟随遥控
             {
                 USART_Chassis_Data.Chassis_Mode = 1;
@@ -118,18 +117,18 @@ void Chassis_Reference_Update(void)
         if(Remote_DT7_data.Remote_clicker.s1 == MIDDLE || Remote_DT7_data.Remote_clicker.s1 == UP)
         {
             USART_Chassis_Data.V_y = Remote_DT7_data.Remote_clicker.ch3/660.0f*2.5f;
-          //  USART_Chassis_Data.V_x = Remote_DT7_data.Remote_clicker.ch2/660.0f*2.5f;
+          //  USART_Chassis_Data.V_x = Remote_DT7_data.Remote_clicker.ch2/660.0f*2.5f;//用控时不给Vx
             if(Remote_DT7_data.Remote_clicker.s2 == MIDDLE || Remote_DT7_data.Remote_clicker.s2 == DOWN)
             {
                 if(Remote_DT7_data.Remote_clicker.ch4 == 0)
                 {
                     USART_Chassis_Data.Cmd_Leg_Length = 1;
                 }
-                else if(Remote_DT7_data.Remote_clicker.ch4 == 660)
+                else if(Remote_DT7_data.Remote_clicker.ch4 >= 640)
                 {
                     USART_Chassis_Data.Cmd_Leg_Length = 2;
                 }
-                else if(Remote_DT7_data.Remote_clicker.ch4 == -660)
+                else if(Remote_DT7_data.Remote_clicker.ch4 <= -640)
                 {
                     USART_Chassis_Data.Cmd_Leg_Length = 3;
                 }

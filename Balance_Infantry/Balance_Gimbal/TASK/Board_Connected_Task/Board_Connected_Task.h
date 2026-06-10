@@ -32,7 +32,7 @@ typedef __packed struct
 
 typedef __packed struct
 {
-	uint16_t shooter_id1_17mm_cooling_heat;//
+	uint16_t shooter_id1_17mm_cooling_heat;//第1个17mm发射机构的射击热量 
 	uint16_t shooter_barrel_heat_limit;//射击热量上限
 	uint16_t shooter_barrel_cooling_value;  //机器人射击热量每秒冷却值
 	float    bullet_speed_x_hat;

@@ -151,8 +151,8 @@ typedef __packed struct
   uint16_t reserved_; 
   float reserved__; 
   uint16_t buffer_energy; 	//缓冲能量
-  uint16_t shooter_17mm_barrel_heat; 	//17mm枪 射击热量
-  uint16_t shooter_42mm_barrel_heat;	//42mm枪 射击热量
+  uint16_t shooter_17mm_barrel_heat; 	//第一个17mm发射机构的射击热量
+  uint16_t shooter_42mm_barrel_heat;	//43mm发射机构射击热量
 } ext_power_heat_data_t;
 
 //实时功率热量数据

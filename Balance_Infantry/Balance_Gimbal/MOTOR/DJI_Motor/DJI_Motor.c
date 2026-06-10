@@ -26,7 +26,7 @@ void GetEncoderBias(volatile DJI_Encoder_t *v, CanRxMsg * msg)
             v->cal_data.ecd_value = v->cal_data.ecd_bias;
             v->cal_data.last_raw_value = v->cal_data.ecd_bias;
             v->cal_data.temp_count++;
-}
+} 
 int32_t rpm_middle;
 float rpm_filter_k = 1;
 void EncoderProcess(volatile DJI_Encoder_t *v, CanRxMsg * msg)

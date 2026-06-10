@@ -486,7 +486,7 @@ void Remote_Switch_Action_Detect(Remote_DT7_t* Remote_data)
     }
     
     //向上或向下一直拨不回正，视为长按
-    if(Remote_data->Remote_clicker.ch4 == 660) 
+    if(Remote_data->Remote_clicker.ch4 >= 650) 
     {
         Remote_data->Remote_clicker.ch4_Down_Action.Original_Press_Flag = 1;
         Remote_data->Remote_clicker.ch4_Down_Action.Cnt ++;
@@ -497,7 +497,7 @@ void Remote_Switch_Action_Detect(Remote_DT7_t* Remote_data)
         Remote_data->Remote_clicker.ch4_Down_Action.Cnt = 0;
     }
     
-    if(Remote_data->Remote_clicker.ch4 == -660)
+    if(Remote_data->Remote_clicker.ch4 <= -650)
     {
         Remote_data->Remote_clicker.ch4_Up_Action.Original_Press_Flag = 1;
         Remote_data->Remote_clicker.ch4_Up_Action.Cnt ++;

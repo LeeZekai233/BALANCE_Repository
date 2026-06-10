@@ -10,6 +10,9 @@ void Infantry_Init(void)
     USART5_DMA_R_T_JUDGE_Init();
     CAN1_Init( );
     CAN2_Init( );
+    
+    Control_Task_Init(&Chassis);//PID≥ı ºªØ
+    
     TIM2_Init( );
     TIM6_Init( );
 }

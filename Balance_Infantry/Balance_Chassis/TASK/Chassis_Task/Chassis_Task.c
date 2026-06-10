@@ -269,13 +269,9 @@ void Chassis_Param_Init(Balance_Chassis_t* Chassis)
     //右腿腿长
     PID_Init(&Chassis->Right_Leg.Leg_Length_PID,PID_POSITION,2500,0,6000,20000,20000);
     
-    //双腿协调
-   // PID_Init(&Chassis->Leg_Harmonize_Pid_Inner,PID_POSITION,0.6f,0.0f,0.2f,35,3);
-   // PID_Init(&Chassis->Leg_Harmonize_Pid_Outer,PID_POSITION,1.8f,0.0f,3.5f,50,3);
-//    
-    
+    //双腿协调 
     PID_Init(&Chassis->Leg_Harmonize_Pid_Inner,PID_POSITION,9.3,0,0.7f,35,3);
-    PID_Init(&Chassis->Leg_Harmonize_Pid_Outer,PID_POSITION,25,0,1.8f,50,3);
+    PID_Init(&Chassis->Leg_Harmonize_Pid_Outer,PID_POSITION,23,0,2.2f,50,3);
 //    
     //roll平衡
      PID_Init(&Chassis->Roll_Balance_FN_PID,PID_POSITION,35,0,25,100,0);
@@ -867,10 +863,11 @@ void Chassis_Fallow_Gimbal_Handle(Balance_Chassis_t* Chassis)
     PID_Init(&Chassis->Roll_Balance_FN_PID, PID_POSITION,30,0,12,400,10);
    // PID_Init(&Chassis->Roll_leg_F_Rotate_Pid, PID_POSITION,0,0,0,400,10);
   //  PID_Init(&Chassis->Init_Tp_Pid, PID_POSITION,100,0,0,700,10);
-    PID_Init(&Chassis->Left_Leg.Leg_Length_PID, PID_POSITION,2500,0,40000,2000,0);
-    PID_Init(&Chassis->Right_Leg.Leg_Length_PID, PID_POSITION,2500,0,40000,2000,0);
+    PID_Init(&Chassis->Left_Leg.Leg_Length_PID, PID_POSITION,2300,0,40000,2000,0);
+    PID_Init(&Chassis->Right_Leg.Leg_Length_PID, PID_POSITION,2300,0,40000,2000,0);
     PID_Init(&Chassis->Pid_Follow_Gimbal,PID_POSITION,8,0,0,8,200);
-    
+    PID_Init(&Chassis->Leg_Harmonize_Pid_Inner,PID_POSITION,9.3,0,0.7f,35,3);
+    PID_Init(&Chassis->Leg_Harmonize_Pid_Outer,PID_POSITION,23,0,2.2f,50,3);
     
     
     //位移处理
@@ -1344,7 +1341,6 @@ void Chassis_Test_Handle(Balance_Chassis_t* Chassis)
 }
 
 
-
 /**
 ************************************************************************************************************************
 * @Name     : Chassis_Control_Loop
@@ -1391,16 +1387,17 @@ void Chassis_Control_Loop(Balance_Chassis_t* Chassis)
             Balance_Task(Chassis);
         }
         break;
+        //停止模式，打符用
+        case CHASSIS_STOP:
+        {
+            Chassis_Stop_Handle(Chassis);
+            Balance_Task(Chassis);
+        }
+        break;
         //小陀螺
         case CHASSIS_CLOCKWISE_ROTATE :
         {
             Chassis_Rotate_Handle(Chassis);
-            Balance_Task(Chassis);
-        }
-        break;
-        case CHASSIS_STOP:
-        {
-            Chassis_Stop_Handle(Chassis);
             Balance_Task(Chassis);
         }
         break;
@@ -1426,7 +1423,7 @@ void Chassis_Control_Loop(Balance_Chassis_t* Chassis)
         }
         break;
         default:
-            break;
+        break;
     }
 }
 
