@@ -362,15 +362,16 @@ void Shooter_Debug(void)
 }
 
 
+
 void Shooter_Task(void)
 {
-    Shooter_Mode_Select();
-    Heat_Restrict();
-    Shooter_Feedback_Update();
-    Shooter_State_Update();
-    Shoot_Frequency_Select();
-    Shooter_Reference_Update();
-    Shooter_Control_Loop();
+    Shooter_Feedback_Update();//反馈值更新
+    Shooter_State_Update();//状态更新 正常 或 卡弹
+    Heat_Restrict();//热量限制
+    Shoot_Frequency_Select();//弹频选择
+    Shooter_Mode_Select();//模式选择
+    Shooter_Reference_Update();//参考值给定
+    Shooter_Control_Loop();//控制环
 }
 
 

@@ -16,7 +16,7 @@ typedef __packed struct
 	float V_x;
 	float V_y;
 	float roll;
-	int16_t rotate_speed;//小陀螺速度
+	int16_t Jump_Height;//跳跃高度
 	uint8_t Control_Mode;//控制模式
 	uint8_t remote_online_flag;
 	uint8_t fric_wheel_run;

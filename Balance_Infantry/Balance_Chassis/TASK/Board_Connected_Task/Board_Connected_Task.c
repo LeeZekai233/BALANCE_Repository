@@ -104,7 +104,6 @@ void Remote_DT7_To_USART_Chassis_Data(Remote_DT7_t* Remote,USART_Chassis_Data_t*
     if(Remote->Remote_clicker.s1 == DOWN)
     {
         USART_Chassis_Data->Chassis_Mode = 0;
-        
     }
     
     if(Remote->Remote_clicker.s1 == MIDDLE)

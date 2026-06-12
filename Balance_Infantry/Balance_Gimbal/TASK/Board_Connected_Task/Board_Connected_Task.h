@@ -3,18 +3,45 @@
 #include "stm32f4xx.h"                  // Device header
 
 
+
+typedef enum
+{
+  CHASSIS_RELAX                                    = 0,//底盘失能
+  MANUAL_FOLLOW_REMOTE                             = 1,//底盘手动遥控跟随
+  CHASSIS_INIT 			                           = 2,//底盘初始化
+  CHASSIS_STOP                                     = 3,//底盘停止
+  CHASSIS_STAND_MODE                               = 4,//底盘站立
+  CHASSIS_CLOCKWISE_ROTATE                         = 5,//顺时针小陀螺
+  CHASSIS_ANTI_CLOCKWISE_ROTATE                    = 6,//逆时针小陀螺
+  CHASSIS_CLOCKWISE_ROTATE_VAR_SPEED               = 7,//顺时针变速小陀螺
+  CHASSIS_ANTI_CLOCKWISE_ROTATE_VAR_SPEED          = 8,//逆时针变速小陀螺
+  CHASSIS_JUMP_UP                                  = 9,//跳上台阶
+  CHASSIS_JUMP_DOWN                                = 10,//跳下台阶
+  CHASSIS_ANTI_FLY_SLOPE                           = 11,//反飞坡
+  CHASSIS_TEXT                                     = 12,//调试的临时模式
+    
+} Chassis_Mode_e;//底盘模式
+
+typedef enum
+{
+    LOW_LEGLENGTH = 1,
+    MIDDLE_LEGLENGTH = 2,
+    HIGH_LEGLENGTH = 3,
+}Cmd_Leg_Length_e ;
+
+
 typedef __packed struct
 {
 	uint8_t if_follow_gim;//是否跟随云台
 	uint8_t jump_cmd;//跳跃命令
 	uint8_t overstep_cmd;//上台阶命令
-	uint8_t Chassis_Mode;//底盘模式
+	Chassis_Mode_e Chassis_Mode;//底盘模式
 	float Yaw_Encoder_Angle;//yaw轴电机编码器角度
-	float Cmd_Leg_Length;//命令腿长
+	Cmd_Leg_Length_e Cmd_Leg_Length;//命令腿长
 	float V_x;
 	float V_y;
 	float roll;
-	int16_t rotate_speed;//小陀螺速度
+	int16_t Jump_Height;//跳跃高度
 	uint8_t Control_Mode;//控制模式 //暂时不用
 	uint8_t remote_online_flag;
 	uint8_t fric_wheel_run;

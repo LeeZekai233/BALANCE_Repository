@@ -67,11 +67,11 @@ typedef enum
   CHASSIS_ANTI_CLOCKWISE_ROTATE                    = 6,//逆时针小陀螺
   CHASSIS_CLOCKWISE_ROTATE_VAR_SPEED               = 7,//顺时针变速小陀螺
   CHASSIS_ANTI_CLOCKWISE_ROTATE_VAR_SPEED          = 8,//逆时针变速小陀螺
-  CHASSIS_DOWN_MODE                                = 9,
-  CHASSIS_SEPARATE 	                           	 = 10,//底盘独立
-  CHASSIS_AUTO_SUP                                 = 11,
-  CHASSIS_SINGLE_LEG_HANDLE                        =12,
-  CHASSIS_TEXT                                     =13,//调试的临时模式
+  CHASSIS_JUMP_UP                                  = 9,//跳上台阶
+  CHASSIS_JUMP_DOWN                                = 10,//跳下台阶
+  CHASSIS_ANTI_FLY_SLOPE                           = 11,//反飞坡
+  CHASSIS_TEXT                                     = 12,//调试的临时模式
+    
 } Chassis_Mode_e;//底盘模式
 
 
@@ -139,12 +139,28 @@ typedef enum
 }Leg_Length_State_e;
 
 
+typedef enum
+{
+    NO_JUMP = 0,//不跳
+    JUMP_EXTEND = 1,//伸腿
+    JUMP_RETRACT = 2,//收腿
+}Jump_Process_e;
+
+
+typedef enum
+{
+    NO_JUMPING = 0,//不在跳跃中
+    JUMPING = 1,//跳跃中
+}Jump_State_e;
+
+
 typedef struct
 {
 	Chassis_Mode_e Control_Mode;
 	Chassis_Mode_e Last_Control_Mode;
     
-	u8 jump_flag;//这些之后照我的习惯改成枚举
+    Jump_Process_e Jump_Process;//跳跃进程
+    Jump_State_e Jump_State;//跳跃状态
 	u8 overstep_flag;
     Init_State_e Init_State;
 	u8 rotate_flag;
@@ -175,7 +191,7 @@ typedef struct
 	
 	PID_t Pid_Seperate_Gimbal;
 	
-	PID_t Init_Tp_Pid;//初始化Init_Tp_PID
+	PID_t Init_Tp_PID;//初始化Init_Tp_PID
 	
 	PID_t Over_Step_phi0_Left_Pid;
 	PID_t Over_Step_phi0_Right_Pid;
@@ -219,8 +235,6 @@ typedef struct
     
 //    float Roll_Output_Angle;
 //    float Roll_leglengh_inner;//roll平衡
-    
-    uint8_t Jump_State;//跳跃状态
     
     USART_Chassis_Data_t USART_Chassis_Data;//串口传来的控制底盘数据
     USART_Gimbal_Data_t USART_Gimbal_Data;//反馈给云台的数据，通过串口发送
@@ -266,7 +280,8 @@ typedef struct
     uint8_t High_Leg_Flag;
     uint16_t High_Leg_Cnt;
     
-    uint8_t Gimbal_Init_Cmd;
+    uint8_t Gimbal_Init_Cmd;//允许云台初始化
+    float Jump_Feedforward;//跳跃前馈
     
 }Balance_Chassis_t;//复制来的，有些没用
 
@@ -292,6 +307,9 @@ void Chassis_Stop_Handle(Balance_Chassis_t* Chassis);
 void Chassis_Fallow_Gimbal_Handle(Balance_Chassis_t* Chassis);
 void Chassis_Single_Leg_Control_Handle(Balance_Chassis_t* Chassis);
 void Leglength_Change(Balance_Chassis_t* Chassis);
+void Chassis_Jump_Up_Handle(Balance_Chassis_t* Chassis);
+void Chassis_Jump_Down_Handle(Balance_Chassis_t* Chassis);
+void Chassis_AntiFly_Slope_Handle(Balance_Chassis_t* Chassis);
 void Balance_Task(Balance_Chassis_t* Chassis);
 void Chassis_Control_Loop(Balance_Chassis_t* Chassis);
 void Chassis_Task(Balance_Chassis_t* Chassis);
