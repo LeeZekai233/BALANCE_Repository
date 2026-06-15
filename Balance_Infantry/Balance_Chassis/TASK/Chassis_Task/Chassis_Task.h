@@ -283,6 +283,9 @@ typedef struct
     uint8_t Gimbal_Init_Cmd;//允许云台初始化
     float Jump_Feedforward;//跳跃前馈
     
+    uint8_t Jump_Finish_Middle_Leg_Flag;//跳跃完成后伸中腿长 标志位
+    uint16_t Jump_Finish_Middle_Leg_Cnt;//跳跃完成后伸中腿长 计数
+    
 }Balance_Chassis_t;//复制来的，有些没用
 
 

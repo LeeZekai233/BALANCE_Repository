@@ -318,30 +318,19 @@ void VTM_Clicker_State_Update(Remote_VTM_t* Remote_data)
     if(Remote_data->Remote_clicker.ch4 == 0 & Remote_data->Remote_clicker.ch4_Up == 1)
     {
         Remote_data->Remote_clicker.ch4_Up = 0;
-        if(Remote_data->Remote_clicker.ch4_Down_Action.Toggle_Press_Flag == 1) Remote_data->Remote_clicker.ch4_Down_Action.Toggle_Press_Flag = 0;
-        else Remote_data->Remote_clicker.ch4_Down_Action.Toggle_Press_Flag = 1;
+        if(Remote_data->Remote_clicker.ch4_Up_Action.Toggle_Press_Flag == 1) Remote_data->Remote_clicker.ch4_Up_Action.Toggle_Press_Flag = 0;
+        else Remote_data->Remote_clicker.ch4_Up_Action.Toggle_Press_Flag = 1;
     }
     
     if(Remote_data->Remote_clicker.ch4 == 0 & Remote_data->Remote_clicker.ch4_Down == 1)
     {
         Remote_data->Remote_clicker.ch4_Down = 0;
-        if(Remote_data->Remote_clicker.ch4_Up_Action.Toggle_Press_Flag == 1) Remote_data->Remote_clicker.ch4_Up_Action.Toggle_Press_Flag = 0;
-        else Remote_data->Remote_clicker.ch4_Up_Action.Toggle_Press_Flag = 1;
+        if(Remote_data->Remote_clicker.ch4_Down_Action.Toggle_Press_Flag == 1) Remote_data->Remote_clicker.ch4_Down_Action.Toggle_Press_Flag = 0;
+        else Remote_data->Remote_clicker.ch4_Down_Action.Toggle_Press_Flag = 1;
     }
     
     //向上或向下一直拨不回正，视为长按
     if(Remote_data->Remote_clicker.ch4 == 660) 
-    {
-        Remote_data->Remote_clicker.ch4_Down_Action.Short_Press_Flag = 1;
-        Remote_data->Remote_clicker.ch4_Down_Action.Cnt ++;
-    }
-    else
-    {
-        Remote_data->Remote_clicker.ch4_Down_Action.Short_Press_Flag = 0;
-        Remote_data->Remote_clicker.ch4_Down_Action.Cnt = 0;
-    }
-    
-    if(Remote_data->Remote_clicker.ch4 == -660)
     {
         Remote_data->Remote_clicker.ch4_Up_Action.Short_Press_Flag = 1;
         Remote_data->Remote_clicker.ch4_Up_Action.Cnt ++;
@@ -352,11 +341,22 @@ void VTM_Clicker_State_Update(Remote_VTM_t* Remote_data)
         Remote_data->Remote_clicker.ch4_Up_Action.Cnt = 0;
     }
     
+    if(Remote_data->Remote_clicker.ch4 == -660)
+    {
+        Remote_data->Remote_clicker.ch4_Down_Action.Short_Press_Flag = 1;
+        Remote_data->Remote_clicker.ch4_Down_Action.Cnt ++;
+    }
+    else
+    {
+        Remote_data->Remote_clicker.ch4_Down_Action.Short_Press_Flag = 0;
+        Remote_data->Remote_clicker.ch4_Down_Action.Cnt = 0;
+    }
+    
     if(Remote_data->Remote_clicker.ch4_Down_Action.Cnt >= LONG_PRESS_THRESHOLD)
     {
         Remote_data->Remote_clicker.ch4_Down_Action.Cnt = LONG_PRESS_THRESHOLD;//长按时置长按标志位，清零短按，翻转标志位
         Remote_data->Remote_clicker.ch4_Down_Action.Long_Press_Flag = 1;
-        Remote_data->Remote_clicker.ch4_Up = 0;
+        Remote_data->Remote_clicker.ch4_Down = 0;
         Remote_data->Remote_clicker.ch4_Down_Action.Toggle_Press_Flag = 0;
         Remote_data->Remote_clicker.ch4_Down_Action.Short_Press_Flag = 0;
         
@@ -365,7 +365,7 @@ void VTM_Clicker_State_Update(Remote_VTM_t* Remote_data)
     {
         Remote_data->Remote_clicker.ch4_Up_Action.Cnt = LONG_PRESS_THRESHOLD;
         Remote_data->Remote_clicker.ch4_Up_Action.Long_Press_Flag = 1;
-        Remote_data->Remote_clicker.ch4_Down = 0;
+        Remote_data->Remote_clicker.ch4_Up = 0;
         Remote_data->Remote_clicker.ch4_Up_Action.Toggle_Press_Flag = 0;
         Remote_data->Remote_clicker.ch4_Up_Action.Short_Press_Flag = 0;
     }
@@ -471,33 +471,22 @@ void Remote_Switch_Action_Detect(Remote_DT7_t* Remote_data)
     if(Remote_data->Remote_clicker.ch4 == 660) Remote_data->Remote_clicker.ch4_Up = 1 ;
     else if(Remote_data->Remote_clicker.ch4 == -660) Remote_data->Remote_clicker.ch4_Down = 1 ;
     
-    if(Remote_data->Remote_clicker.ch4 == 0 & Remote_data->Remote_clicker.ch4_Up == 1)
+    if(Remote_data->Remote_clicker.ch4 == 0 & Remote_data->Remote_clicker.ch4_Down == 1)
     {
-        Remote_data->Remote_clicker.ch4_Up = 0;
+        Remote_data->Remote_clicker.ch4_Down = 0;
         if(Remote_data->Remote_clicker.ch4_Down_Action.Toggle_Press_Flag == 1) Remote_data->Remote_clicker.ch4_Down_Action.Toggle_Press_Flag = 0;
         else Remote_data->Remote_clicker.ch4_Down_Action.Toggle_Press_Flag = 1;
     }
     
-    if(Remote_data->Remote_clicker.ch4 == 0 & Remote_data->Remote_clicker.ch4_Down == 1)
+    if(Remote_data->Remote_clicker.ch4 == 0 & Remote_data->Remote_clicker.ch4_Up == 1)
     {
-        Remote_data->Remote_clicker.ch4_Down = 0;
+        Remote_data->Remote_clicker.ch4_Up = 0;
         if(Remote_data->Remote_clicker.ch4_Up_Action.Toggle_Press_Flag == 1) Remote_data->Remote_clicker.ch4_Up_Action.Toggle_Press_Flag = 0;
         else Remote_data->Remote_clicker.ch4_Up_Action.Toggle_Press_Flag = 1;
     }
     
     //向上或向下一直拨不回正，视为长按
     if(Remote_data->Remote_clicker.ch4 >= 650) 
-    {
-        Remote_data->Remote_clicker.ch4_Down_Action.Original_Press_Flag = 1;
-        Remote_data->Remote_clicker.ch4_Down_Action.Cnt ++;
-    }
-    else
-    {
-        Remote_data->Remote_clicker.ch4_Down_Action.Original_Press_Flag = 0;
-        Remote_data->Remote_clicker.ch4_Down_Action.Cnt = 0;
-    }
-    
-    if(Remote_data->Remote_clicker.ch4 <= -650)
     {
         Remote_data->Remote_clicker.ch4_Up_Action.Original_Press_Flag = 1;
         Remote_data->Remote_clicker.ch4_Up_Action.Cnt ++;
@@ -506,6 +495,17 @@ void Remote_Switch_Action_Detect(Remote_DT7_t* Remote_data)
     {
         Remote_data->Remote_clicker.ch4_Up_Action.Original_Press_Flag = 0;
         Remote_data->Remote_clicker.ch4_Up_Action.Cnt = 0;
+    }
+    
+    if(Remote_data->Remote_clicker.ch4 <= -650)
+    {
+        Remote_data->Remote_clicker.ch4_Down_Action.Original_Press_Flag = 1;
+        Remote_data->Remote_clicker.ch4_Down_Action.Cnt ++;
+    }
+    else
+    {
+        Remote_data->Remote_clicker.ch4_Down_Action.Original_Press_Flag = 0;
+        Remote_data->Remote_clicker.ch4_Down_Action.Cnt = 0;
     }
     
     
@@ -533,7 +533,7 @@ void Remote_Switch_Action_Detect(Remote_DT7_t* Remote_data)
     {
         Remote_data->Remote_clicker.ch4_Down_Action.Cnt = LONG_PRESS_THRESHOLD;//长按时置长按标志位，清零短按，翻转标志位
         Remote_data->Remote_clicker.ch4_Down_Action.Long_Press_Flag = 1;
-        Remote_data->Remote_clicker.ch4_Up = 0;
+        Remote_data->Remote_clicker.ch4_Down = 0;
         Remote_data->Remote_clicker.ch4_Down_Action.Toggle_Press_Flag = 0;
         Remote_data->Remote_clicker.ch4_Down_Action.Short_Press_Flag = 0;
         
@@ -542,7 +542,7 @@ void Remote_Switch_Action_Detect(Remote_DT7_t* Remote_data)
     {
         Remote_data->Remote_clicker.ch4_Up_Action.Cnt = LONG_PRESS_THRESHOLD;
         Remote_data->Remote_clicker.ch4_Up_Action.Long_Press_Flag = 1;
-        Remote_data->Remote_clicker.ch4_Down = 0;
+        Remote_data->Remote_clicker.ch4_Up = 0;
         Remote_data->Remote_clicker.ch4_Up_Action.Toggle_Press_Flag = 0;
         Remote_data->Remote_clicker.ch4_Up_Action.Short_Press_Flag = 0;
     }

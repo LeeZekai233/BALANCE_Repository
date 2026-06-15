@@ -477,6 +477,11 @@ void Chassis_Referance_Update(Balance_Chassis_t* Chassis)
         Chassis->Chassis_Ref.Remote_Angle = 0;
         Chassis->Chassis_Ref.Remote_Speed = 0;
     }
+    else if(Chassis->Leg_Length == HIGH_LEG_LENGTH )
+    {
+        Chassis->Chassis_Ref.Remote_Angle = 0;
+        Chassis->Chassis_Ref.Remote_Speed = sqrtf(V_x*V_x + V_y*V_y);
+    }
     else
     {
         Chassis->Chassis_Ref.Remote_Speed = sqrtf(V_x*V_x + V_y*V_y);
@@ -817,7 +822,7 @@ void Chassis_Standup_Handle(Balance_Chassis_t* Chassis)
     Chassis->Chassis_Ref.V_x = 0;
     Chassis->Chassis_Ref.V_w = 0;
     Chassis->Chassis_Ref.Y_position = Chassis->balance_loop.x;
-    if(fabs(Chassis->balance_loop.state_err[3]) < 3*DEG_TO_RAD)
+    if(fabs(Chassis->balance_loop.state_err[3]) < 7*DEG_TO_RAD)
     {
         Chassis->Control_Mode = (Chassis_Mode_e)Chassis->USART_Chassis_Data.Chassis_Mode;
     }
@@ -871,7 +876,7 @@ void Chassis_Fallow_Gimbal_Handle(Balance_Chassis_t* Chassis)
     
     
     //位移处理
-    if(fabs(Chassis->balance_loop.dx)>0.5f || Chassis->Chassis_Ref.V_y != 0 || fabs(Chassis->Chassis_Ref.V_w) >= 1.75 || Chassis->Control_Mode ==CHASSIS_STOP)
+    if(fabs(Chassis->balance_loop.dx)>0.8f || Chassis->Chassis_Ref.V_y != 0 || fabs(Chassis->Chassis_Ref.V_w) >= 1.75 || Chassis->Control_Mode ==CHASSIS_STOP)
     {
         Chassis->Chassis_Ref.Y_position = Chassis->balance_loop.x ;
         Chassis->normal_Y_erroffset = NORMAL_Y_ERROEOFFSET ;
@@ -881,12 +886,22 @@ void Chassis_Fallow_Gimbal_Handle(Balance_Chassis_t* Chassis)
         Chassis->normal_Y_erroffset -= Chassis->balance_loop.dx * 0.0005 *TIME_STEP ;
     }
     
+    //跳下台阶后，伸中腿长一段时间，认为头发来的腿长是中腿长，控制遥控腿长
+    if(Chassis->Jump_Finish_Middle_Leg_Flag == 1 && Chassis->Jump_Finish_Middle_Leg_Cnt < 1000)
+    {
+        Chassis->Chassis_Remote_Ref.Leglength = 0.20f;
+        Chassis->Jump_Finish_Middle_Leg_Cnt ++;
+    }
     
-     Chassis->Chassis_Ref.Leglength = trackRamp_leg(0.0008,Chassis->Chassis_Ref.Leglength,Chassis->Chassis_Remote_Ref.Leglength);
+    if(Chassis->Jump_Finish_Middle_Leg_Cnt >= 1000)
+    {
+        Chassis->Chassis_Remote_Ref.Leglength = 0.20f;
+        Chassis->Jump_Finish_Middle_Leg_Cnt ++;
+    }
     
+     Chassis->Chassis_Ref.Leglength = trackRamp_leg(0.0008,Chassis->Chassis_Ref.Leglength,Chassis->Chassis_Remote_Ref.Leglength);//这些都不能调换位置
     
-    
-    //腿长检测
+    //腿长变化检测
     if(Chassis->balance_loop.L0 <= 0.40f && Chassis->balance_loop.L0 >=0.25f)
     {
         Chassis->Leg_Length = HIGH_LEG_LENGTH ;
@@ -901,7 +916,7 @@ void Chassis_Fallow_Gimbal_Handle(Balance_Chassis_t* Chassis)
     }
   
     
-    //中腿长被压下低腿长，保持低腿长一段时间
+    //中腿长被压下低腿长，保持低腿长一段时间，直接控制最终参考腿长
     if(Chassis->Leg_Length == LOW_LEG_LENGTH && Chassis->Last_Leg_Length == MIDDLE_LEG_LENGTH && Chassis->USART_Chassis_Data.Cmd_Leg_Length != LOW_LEGLENGTH_CMD)
     {
         Chassis->Low_Leglength_Flag = 1;
@@ -919,7 +934,6 @@ void Chassis_Fallow_Gimbal_Handle(Balance_Chassis_t* Chassis)
         Chassis->Low_Leglength_Flag = 0;
     }
     
-   
      Chassis->Last_Leg_Length = Chassis->Leg_Length;
     
      
@@ -949,7 +963,7 @@ void Chassis_Fallow_Gimbal_Handle(Balance_Chassis_t* Chassis)
         }
         Chassis->Chassis_Ref.Roll = 0;
     }
-    else//其他腿长做运动上的优化 做180度转换，
+    else//其他腿长做运动上的优化
     {
         if(fabs(Chassis->Chassis_Ref.Remote_Angle - Chassis->Yaw_Angle__PI_To_PI) < PI/2) //若云台角度与底盘目标速度差值小于PI/2，说明在同一象限内
         {
@@ -1411,6 +1425,7 @@ void Chassis_Jump_Down_Handle(Balance_Chassis_t* Chassis)
             if(Air_Cnt>150/2)
             {
                 Air_Cnt = 0;
+                Chassis->Jump_Finish_Middle_Leg_Flag = 1;
                 Chassis->Jump_Process = NO_JUMP;
                 Chassis->Jump_Feedforward = 0;
             }

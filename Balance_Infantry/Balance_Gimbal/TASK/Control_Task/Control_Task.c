@@ -106,7 +106,7 @@ void Chassis_Mode_Select(void)
                 rorate_reserve_cnt ++;
             }
             
-            if(Remote_VTM.key.Key_B_Action.Short_Press_Flag == 1 && USART_Chassis_Data.Chassis_Mode == MANUAL_FOLLOW_REMOTE)//按B切入小陀螺
+            if(Remote_VTM.key.Key_B_Action.Toggle_Press_Flag == 1 && USART_Chassis_Data.Chassis_Mode == MANUAL_FOLLOW_REMOTE)//按B切入小陀螺
             {
                 if(rorate_reserve_cnt%2 == 0)
                 {
@@ -117,12 +117,10 @@ void Chassis_Mode_Select(void)
                     USART_Chassis_Data.Chassis_Mode = CHASSIS_ANTI_CLOCKWISE_ROTATE;
                 }
             }
-            
-            
-      //      if()
-            
-            
-            
+            else if(Remote_VTM.key.Key_B_Action.Toggle_Press_Flag == 0)
+            {
+                USART_Chassis_Data.Chassis_Mode = MANUAL_FOLLOW_REMOTE;
+            }
             
             if(USART_Gimbal_Data.current_HP == 0)//死了一定Relax
             {
@@ -193,17 +191,20 @@ void Chassis_Reference_Update(void)
         {
             USART_Chassis_Data.V_y = Remote_VTM.Remote_clicker.ch1/660*2.2f;
           //  USART_Chassis_Data.V_x = Remote_VTM.Remote_clicker.ch2/660*2.2f;
-            if(Remote_VTM.Remote_clicker.ch4 == 0)
+            if(Remote_VTM.Remote_clicker.fn1_Action.Toggle_Press_Flag == 0)//按f1，拨轮控制打弹，所以不按f1，才能变腿长
             {
-                USART_Chassis_Data.Cmd_Leg_Length = 1;
-            }
-            else if(Remote_VTM.Remote_clicker.ch4 >= 640)
-            {
-                USART_Chassis_Data.Cmd_Leg_Length = 2;
-            }
-            else if(Remote_VTM.Remote_clicker.ch4 <= -640)
-            {
-                USART_Chassis_Data.Cmd_Leg_Length = 3;
+                if(Remote_VTM.Remote_clicker.ch4 == 0)
+                {
+                    USART_Chassis_Data.Cmd_Leg_Length = 1;
+                }
+                else if(Remote_VTM.Remote_clicker.ch4 >= 640)
+                {
+                    USART_Chassis_Data.Cmd_Leg_Length = 2;
+                }
+                else if(Remote_VTM.Remote_clicker.ch4 <= -640)
+                {
+                    USART_Chassis_Data.Cmd_Leg_Length = 3;
+                }
             }
         }
         else if(Remote_VTM.Remote_clicker.Switch == CENTER)
@@ -218,19 +219,20 @@ void Chassis_Reference_Update(void)
                 USART_Chassis_Data.V_y = (Remote_VTM.key.Key_W_Action.Original_Press_Flag - Remote_VTM.key.Key_S_Action.Original_Press_Flag)*2.2f;
                 USART_Chassis_Data.V_x = (Remote_VTM.key.Key_D_Action.Original_Press_Flag - Remote_VTM.key.Key_A_Action.Original_Press_Flag)*2.2f;
             }
+           
+                if(Remote_VTM.key.Key_Z_Action.Long_Press_Flag == 1)//长按Z中腿长
+                {
+                    USART_Chassis_Data.Cmd_Leg_Length = 2;
+                }
+                else if(Remote_VTM.key.Key_CTRL_Action.Long_Press_Flag == 1)//长按CTRL高腿长
+                {
+                    USART_Chassis_Data.Cmd_Leg_Length = 3;
+                }
+                else
+                {
+                    USART_Chassis_Data.Cmd_Leg_Length = 1;
+                }
             
-            if(Remote_VTM.key.Key_Z_Action.Long_Press_Flag == 1)//长按Z中腿长
-            {
-                USART_Chassis_Data.Cmd_Leg_Length = 2;
-            }
-            else if(Remote_VTM.key.Key_CTRL_Action.Long_Press_Flag == 1)//长按CTRL高腿长
-            {
-                USART_Chassis_Data.Cmd_Leg_Length = 3;
-            }
-            else
-            {
-                USART_Chassis_Data.Cmd_Leg_Length = 1;
-            }
         }
     }
     else//灰控白控都不在

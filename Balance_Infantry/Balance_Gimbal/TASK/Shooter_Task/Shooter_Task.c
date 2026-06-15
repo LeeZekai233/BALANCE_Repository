@@ -46,9 +46,9 @@ void Shooter_Mode_Select(void)
     {
         if(Remote_VTM.Remote_clicker.Switch == LEFT)//使用控进行控制
         {
-            if(Remote_VTM.Remote_clicker.Trigger_Action.Toggle_Press_Flag == 1)//按一次Trigger后，拨轮控制打弹
+            if(Remote_VTM.Remote_clicker.fn1_Action.Toggle_Press_Flag == 1)//按一次fn1后，拨轮控制打弹
             {
-                if(Remote_VTM.Remote_clicker.ch4_Down_Action.Toggle_Press_Flag == 1 && /*云台没初始化完不允许打弹*/Gimbal.Gimbal_Mode != GIMBAL_RELAX && Gimbal.Gimbal_Mode != GIMBAL_INIT)
+                if(/*云台没初始化完不允许打弹*/Gimbal.Gimbal_Mode != GIMBAL_RELAX && Gimbal.Gimbal_Mode != GIMBAL_INIT)
                 {
                     if(Remote_VTM.Remote_clicker.ch4_Up_Action.Short_Press_Flag == 1 && Shooter.Fric_State == FRIC_ON && Shooter.Heat_Restrict.Fire_Permission == SHOOT_ALLOWED)
                     {
@@ -67,7 +67,7 @@ void Shooter_Mode_Select(void)
                     }
                 }
             }
-            else//再按一次Trigger,退出后发射机构失能
+            else//再按一次fn1,退出后发射机构失能
             {
                 Shooter.Shooter_Mode = SHOOTER_RELAX;
             }

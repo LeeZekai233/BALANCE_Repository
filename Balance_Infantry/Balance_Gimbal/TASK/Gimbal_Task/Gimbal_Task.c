@@ -143,8 +143,8 @@ void Gimbal_Reference_Update(void)
         {
             case GIMBAL_REMOTE :
             {
-                Gimbal.Yaw_Angle_Ref -= Remote_DT7_data.Remote_clicker.ch2 * 0.001f;
-                Gimbal.Pitch_Angle_Ref += Remote_DT7_data.Remote_clicker.ch3 * 0.001f;
+                Gimbal.Yaw_Angle_Ref -= Remote_DT7_data.Remote_clicker.ch2 * 0.001f ;
+                Gimbal.Pitch_Angle_Ref += Remote_DT7_data.Remote_clicker.ch3 * 0.001f ;
             }
             break;
             case GIMBAL_RELAX ://RELAX模式，使设定值为反馈值
@@ -171,8 +171,8 @@ void Gimbal_Reference_Update(void)
             break;
             case GIMBAL_REMOTE :
             {
-                Gimbal.Yaw_Angle_Ref -= Remote_DT7_data.Remote_clicker.ch1 * 0.0005f;
-                Gimbal.Pitch_Angle_Ref -= Remote_DT7_data.Remote_clicker.ch0 * 0.0005f;
+                Gimbal.Yaw_Angle_Ref -=  Remote_VTM.Remote_clicker.ch2 * 0.001f;
+                Gimbal.Pitch_Angle_Ref -=  Remote_VTM.Remote_clicker.ch3 * 0.001f;
             }
             break;
             case GIMBAL_RELAX ://RELAX模式，使设定值为反馈值
