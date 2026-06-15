@@ -116,7 +116,7 @@ void Shooter_Feedback_Update(void)
     
     Shooter.Heat_Restrict.Heat_Cooling_Value = USART_Gimbal_Data.shooter_barrel_cooling_value ;//热量限制用
     Shooter.Heat_Restrict.Shooter_Heat_meas = USART_Gimbal_Data.shooter_id1_17mm_cooling_heat ;
-    Shooter.Heat_Restrict.Heat_Limit = Shooter.Heat_Restrict.Heat_Limit ;
+    Shooter.Heat_Restrict.Heat_Limit = USART_Gimbal_Data.shooter_barrel_heat_limit ;
 }
 
 
@@ -162,6 +162,8 @@ void Shooter_State_Update(void)
             break;
     }
 }
+
+
 
 
 void Shoot_Frequency_Select(void)
@@ -211,27 +213,27 @@ void Shoot_Frequency_Select(void)
 void Heat_Restrict(void)
 {
     //更新剩余发弹量，在离线计算的热量和裁判系统读的热量选一个更保守的
-    if(Shooter.Heat_Restrict.Remain_Bullets_hat > 0)
+    if(Shooter.Heat_Restrict.Shooter_Heat_hat > 0)
     {
-        Shooter.Heat_Restrict.Remain_Bullets_hat -= Shooter.Heat_Restrict.Heat_Cooling_Value/1000.0f;
+        Shooter.Heat_Restrict.Shooter_Heat_hat -= Shooter.Heat_Restrict.Heat_Cooling_Value/1000.0f;
     }
     Shooter.Heat_Restrict.Remain_Bullets_hat = (Shooter.Heat_Restrict.Heat_Limit - Shooter.Heat_Restrict.Shooter_Heat_hat)/10.0f;
     Shooter.Heat_Restrict.Remain_Bullets_meas = (Shooter.Heat_Restrict.Heat_Limit - Shooter.Heat_Restrict.Shooter_Heat_meas)/10.0f;
-    if(Shooter.Heat_Restrict.Remain_Bullets_hat > Shooter.Heat_Restrict.Remain_Bullets_meas)
+    if(Shooter.Heat_Restrict.Remain_Bullets_hat >= Shooter.Heat_Restrict.Remain_Bullets_meas)
     {
         Shooter.Heat_Restrict.Remain_Bullets = Shooter.Heat_Restrict.Remain_Bullets_meas;
     }
-    else if(Shooter.Heat_Restrict.Remain_Bullets_meas > Shooter.Heat_Restrict.Remain_Bullets_hat)
+    else if(Shooter.Heat_Restrict.Remain_Bullets_meas >= Shooter.Heat_Restrict.Remain_Bullets_hat)
     {
         Shooter.Heat_Restrict.Remain_Bullets = Shooter.Heat_Restrict.Remain_Bullets_hat;
     }
-    
     
     if(Shooter.Heat_Restrict.Remain_Bullets <= 4)
     {
         Shooter.Heat_Restrict.Fire_Permission = SHOOT_DENIED ;
     }
-    else if(Shooter.Heat_Restrict.Remain_Bullets > 4)
+    
+    if(Shooter.Heat_Restrict.Remain_Bullets > 4)
     {
         Shooter.Heat_Restrict.Fire_Permission = SHOOT_ALLOWED ;
     }
@@ -253,9 +255,10 @@ void Shooter_Reference_Update(void)
             {
                 Shooter.Fric_Speed_Ref[0] = LEFT_FIRC_SPEED;
                 Shooter.Fric_Speed_Ref[1] = RIGHT_FRIC_SPEED;
-                if(Shooter.Last_Shooter_Mode == SHOOTER_RELAX)
-                {
-                    Shooter.Poke_Angle_Ref = Shooter.Poke_Angle_Fdb; //上一次是失能模式，则这一次以反馈值为参考值
+                if(Shooter.Last_Shooter_Mode == SHOOTER_RELAX)/*对正角度*/
+                {                                                       
+                    Shooter.Poke_Angle_Ref = Shooter.Poke_Angle_Fdb - ((int32_t)Shooter.Poke_Angle_Fdb%36/*整数部分*/) - 
+                       (Shooter.Poke_Angle_Fdb - (int32_t)Shooter.Poke_Angle_Fdb/*小数部分*/); //上一次是失能模式，对正角度
                 }
                 else if(Shooter.Last_Shooter_Mode == SINGLE_SHOOT || Shooter.Last_Shooter_Mode == BURST_FIRE)
                 {
@@ -272,6 +275,7 @@ void Shooter_Reference_Update(void)
                     Shooter.Poke_Angle_Ref += 36;
                     Shooter.Heat_Restrict.Shooter_Heat_hat += 10;
                 }
+                
             }
             else if(Shooter.Shooter_Mode == BURST_FIRE)
             {
@@ -284,7 +288,7 @@ void Shooter_Reference_Update(void)
                     Shooter.Heat_Restrict.Shooter_Heat_hat += 10;
                 }
                 
-                if(Shooter.Burst_Fire_Cnt == (1.0f/Shooter.Shoot_Frequency/1000.0f))
+                if(Shooter.Burst_Fire_Cnt >= (1000.0f/Shooter.Shoot_Frequency))
                 {
                     Shooter.Poke_Angle_Ref += 36;
                     Shooter.Heat_Restrict.Shooter_Heat_hat += 10;
@@ -299,11 +303,10 @@ void Shooter_Reference_Update(void)
                 Shooter.Poke_Speed_Ref = Shooter.Poke_Speed_Fdb ;
             }
             
-//            
-//            if(Shooter.Last_Shooter_State == SHOOTER_TRAP)
-//            {
-//                Shooter.Poke_Angle_Ref += 5;
-//            }                
+            if(Shooter.Last_Shooter_State == SHOOTER_TRAP)
+            {
+                Shooter.Poke_Angle_Ref += 20;
+            }
             break;
         case SHOOTER_TRAP :
             Shooter.Fric_Speed_Ref[0] = LEFT_FIRC_SPEED;
@@ -316,7 +319,52 @@ void Shooter_Reference_Update(void)
     }
 }
 
+void Shoot_Detect(void)
+{
+    static uint16_t FSM_cnt;
+    switch (Shooter.CF_FSM_State)
+    {
+        case FSM_RELAX :
+            if(Shooter.Last_Shooter_Mode == SHOOTER_RELAX && Shooter.Shooter_Mode == SINGLE_SHOOT)
+            {
+                Shooter.CF_FSM_State = FSM_ACTIVATE ;
+            }
+            break;
+        case FSM_ACTIVATE :
+            FSM_cnt ++;
+            if(FSM_cnt == 1000)//计数到了没检测到弹也转换状态
+            {
+                Shooter.CF_FSM_State = FSM_RELAX;
+                FSM_cnt = 0;
+            }
+            
+            if((fabs(Shooter.Fric_Speed_Fdb[1] - RIGHT_FRIC_SPEED) +  fabs(Shooter.Fric_Speed_Fdb[0] - LEFT_FIRC_SPEED))/2.0f > 1000)
+            {
+                Shooter.CF_FSM_State = FSM_HANDLE ;
+                FSM_cnt = 0;
+            }
+            break;
+        case FSM_HANDLE :
+            Shooter.CF_FSM_State = FSM_RELAX ;
+            break;
+    }
+}
 
+
+void Shooter_Relax_Handle(void)
+{
+    Shooter.Fric_Motor_Ser_Current[0] = 0;
+    Shooter.Fric_Motor_Ser_Current[1] = 0;
+    Shooter.Poke_Motor_Set_Speed = 0;
+}
+
+
+void Shooter_Remote_Handle(void)
+{
+    Shooter.Fric_Motor_Ser_Current[0] = PID_Calc(&Shooter.Fric_Speed_PID[0], Shooter.Fric_Speed_Fdb[0], Shooter.Fric_Speed_Ref[0]);
+    Shooter.Fric_Motor_Ser_Current[1] = PID_Calc(&Shooter.Fric_Speed_PID[1], Shooter.Fric_Speed_Fdb[1], Shooter.Fric_Speed_Ref[1]);
+    Shooter.Poke_Motor_Set_Speed = PID_Calc(&Shooter.Poke_Angle_PID, Shooter.Poke_Angle_Fdb, Shooter.Poke_Angle_Ref);
+}
 
 
 void Shooter_Control_Loop(void)
@@ -324,27 +372,16 @@ void Shooter_Control_Loop(void)
     switch (Shooter.Shooter_Mode)
     {
         case SHOOTER_RELAX :
-            Shooter.Fric_Motor_Ser_Current[0] = 0;
-            Shooter.Fric_Motor_Ser_Current[1] = 0;
-            Shooter.Poke_Motor_Set_Current = 0;
+            Shooter_Relax_Handle( );
             break;
         case BURST_FIRE :
-            Shooter.Fric_Motor_Ser_Current[0] = PID_Calc(&Shooter.Fric_Speed_PID[0], Shooter.Fric_Speed_Fdb[0], Shooter.Fric_Speed_Ref[0]);
-            Shooter.Fric_Motor_Ser_Current[1] = PID_Calc(&Shooter.Fric_Speed_PID[1], Shooter.Fric_Speed_Fdb[1], Shooter.Fric_Speed_Ref[1]);
-            Shooter.Poke_Speed_Ref = PID_Calc(&Shooter.Poke_Angle_PID, Shooter.Poke_Angle_Fdb, Shooter.Poke_Angle_Ref);
-            Shooter.Poke_Motor_Set_Current = PID_Calc(&Shooter.Poke_Speed_PID, Shooter.Poke_Speed_Fdb, Shooter.Poke_Speed_Ref);
+            Shooter_Remote_Handle( );
             break;
         case SINGLE_SHOOT :
-            Shooter.Fric_Motor_Ser_Current[0] = PID_Calc(&Shooter.Fric_Speed_PID[0], Shooter.Fric_Speed_Fdb[0], Shooter.Fric_Speed_Ref[0]);
-            Shooter.Fric_Motor_Ser_Current[1] = PID_Calc(&Shooter.Fric_Speed_PID[1], Shooter.Fric_Speed_Fdb[1], Shooter.Fric_Speed_Ref[1]);
-            Shooter.Poke_Speed_Ref = PID_Calc(&Shooter.Poke_Angle_PID, Shooter.Poke_Angle_Fdb, Shooter.Poke_Angle_Ref);
-            Shooter.Poke_Motor_Set_Current = PID_Calc(&Shooter.Poke_Speed_PID, Shooter.Poke_Speed_Fdb, Shooter.Poke_Speed_Ref);
+            Shooter_Remote_Handle( );
             break;
         case STOP_FIRE :
-            Shooter.Fric_Motor_Ser_Current[0] = PID_Calc(&Shooter.Fric_Speed_PID[0], Shooter.Fric_Speed_Fdb[0], Shooter.Fric_Speed_Ref[0]);
-            Shooter.Fric_Motor_Ser_Current[1] = PID_Calc(&Shooter.Fric_Speed_PID[1], Shooter.Fric_Speed_Fdb[1], Shooter.Fric_Speed_Ref[1]);
-            Shooter.Poke_Speed_Ref = PID_Calc(&Shooter.Poke_Angle_PID, Shooter.Poke_Angle_Fdb, Shooter.Poke_Angle_Ref);
-            Shooter.Poke_Motor_Set_Current = PID_Calc(&Shooter.Poke_Speed_PID, Shooter.Poke_Speed_Fdb, Shooter.Poke_Speed_Ref);
+            Shooter_Remote_Handle( );
             break;
         default :
             break;
@@ -357,8 +394,8 @@ void Shooter_Debug(void)
     Shooter.Poke_Angle_Fdb = Shooter.Poke_Motor_Encoder.Angle_Deg_Total_fdb;
     Shooter.Poke_Speed_Fdb = Shooter.Poke_Motor_Encoder.Omega_Deg_fdb;
     Shooter.Poke_Angle_Ref +=Remote_DT7_data.Remote_clicker.ch0 * 0.001;
-    Shooter.Poke_Speed_Ref = PID_Calc(&Shooter.Poke_Angle_PID ,Shooter.Poke_Angle_Fdb ,Shooter.Poke_Angle_Ref );
-    Shooter.Poke_Motor_Set_Current = PID_Calc(&Shooter.Poke_Speed_PID, Shooter.Poke_Speed_Fdb, Shooter.Poke_Speed_Ref);
+//    Shooter.Poke_Speed_Ref = Remote_DT7_data.Remote_clicker.ch0 * 50.0f;
+    Shooter.Poke_Motor_Set_Speed = PID_Calc(&Shooter.Poke_Speed_PID, Shooter.Poke_Speed_Fdb, Shooter.Poke_Speed_Ref);
 }
 
 

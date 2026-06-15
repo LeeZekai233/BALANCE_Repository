@@ -37,7 +37,7 @@ typedef __packed struct
 	uint8_t overstep_cmd;//上台阶命令
 	Chassis_Mode_e Chassis_Mode;//底盘模式
 	float Yaw_Encoder_Angle;//yaw轴电机编码器角度
-	Cmd_Leg_Length_e Cmd_Leg_Length;//命令腿长
+	float Cmd_Leg_Length;//命令腿长
 	float V_x;
 	float V_y;
 	float roll;

@@ -161,9 +161,9 @@ typedef struct
     
     Jump_Process_e Jump_Process;//跳跃进程
     Jump_State_e Jump_State;//跳跃状态
-	u8 overstep_flag;
+	uint8_t overstep_flag;
     Init_State_e Init_State;
-	u8 rotate_flag;
+	uint8_t rotate_flag;
 	LQR_System balance_loop;
 	Chassis_Ref_t Chassis_Ref;//实际参考值
 	Chassis_Ref_t Chassis_Remote_Ref;//控输入的参考值
@@ -205,7 +205,7 @@ typedef struct
     PID_t flip_init_dphi0_pid_left;//翻车dphi0_Init_Tp_PID
     PID_t flip_init_dphi0_pid_right;
     
-	u16 Max_power_to_PM01;//好像没用过
+	uint16_t Max_power_to_PM01;//好像没用过
 	
 	float Left_theta;
     float Right_theta;

@@ -1206,7 +1206,7 @@ void LK_Parameter_Init (volatile LK_InitTypeDef *v, int ID)
 void LK4005_Encoder_To_Generic_Encoder(LK_InitTypeDef* LK,Encoder_t* Encoder)
 {
     Encoder->Omega_Deg_fdb = LK->RotSpd;
-    Encoder->Angle_Deg_Total_fdb = LK->ecd_angle;
+    Encoder->Angle_Deg_Total_fdb = LK->ecd_angle - 10.0057983f;
     Encoder->Angle_Deg_fdb = LK->raw_value*360.0f/65535.0f;
     Encoder->heart_cnt = time_tick;
     Encoder->temperature = LK->Temperature_Rotor;

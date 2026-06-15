@@ -24,7 +24,7 @@ void Control_Task(void)
     
     if(time_tick%2 == 0)
     {
-        CAN2_Send_Task(Gimbal.Yaw_Motor_Set_T,Shooter.Poke_Motor_Set_Current);
+        CAN2_Send_Task(Gimbal.Yaw_Motor_Set_T,Shooter.Poke_Motor_Set_Speed);
     }
     
     if(time_tick %2 == 1)
@@ -46,10 +46,10 @@ void Control_Task_Init(void)
     PID_Init(&Gimbal.Pitch_Motor_Speed_PID,PID_POSITION,50,0,0,20000,0);
     PID_Init(&Gimbal.Yaw_Motor_Angle_PID,PID_POSITION,20,0,0,10000,0);
     PID_Init(&Gimbal.Yaw_Motor_Speed_PID,PID_POSITION,0.025,0.0003,0,10,1);
-    PID_Init(&Shooter.Poke_Angle_PID,PID_POSITION,50,0,5,20000,0);
+    PID_Init(&Shooter.Poke_Angle_PID,PID_POSITION,140,0,2000,20000,0);
     PID_Init(&Shooter.Poke_Speed_PID,PID_POSITION,0.04,0.0015,0,2048,512);
-    PID_Init(&Shooter.Fric_Speed_PID[0],PID_POSITION,10,0,0,20000,5000);
-    PID_Init(&Shooter.Fric_Speed_PID[1],PID_POSITION,10,0,0,20000,5000);
+    PID_Init(&Shooter.Fric_Speed_PID[0],PID_POSITION,3.5,0,0,15000,5000);
+    PID_Init(&Shooter.Fric_Speed_PID[1],PID_POSITION,3.5,0,0,15000,5000);
     PID_Init(&Gimbal.Yaw_Motor_Init_Speed_PID,PID_POSITION,0.6,0.008,0,10,4);
     PID_Init(&Gimbal.Yaw_Motor_Init_Angle_PID,PID_POSITION,40,0,0,100,0);
 }
@@ -168,21 +168,21 @@ void Chassis_Reference_Update(void)
     {
         if(Remote_DT7_data.Remote_clicker.s1 == MIDDLE || Remote_DT7_data.Remote_clicker.s1 == UP)
         {
-            USART_Chassis_Data.V_y = Remote_DT7_data.Remote_clicker.ch3/660.0f*2.5f;
+            USART_Chassis_Data.V_y = Remote_DT7_data.Remote_clicker.ch1/660.0f*2.5f;
           //  USART_Chassis_Data.V_x = Remote_DT7_data.Remote_clicker.ch2/660.0f*2.5f;//用控时不给Vx
             if(Remote_DT7_data.Remote_clicker.s2 == MIDDLE || Remote_DT7_data.Remote_clicker.s2 == DOWN)
             {
                 if(Remote_DT7_data.Remote_clicker.ch4 == 0)
                 {
-                    USART_Chassis_Data.Cmd_Leg_Length = LOW_LEGLENGTH;
+                    USART_Chassis_Data.Cmd_Leg_Length = 1;
                 }
                 else if(Remote_DT7_data.Remote_clicker.ch4 >= 640)
                 {
-                    USART_Chassis_Data.Cmd_Leg_Length = MIDDLE_LEGLENGTH;
+                    USART_Chassis_Data.Cmd_Leg_Length = 2;
                 }
                 else if(Remote_DT7_data.Remote_clicker.ch4 <= -640)
                 {
-                    USART_Chassis_Data.Cmd_Leg_Length = HIGH_LEGLENGTH;
+                    USART_Chassis_Data.Cmd_Leg_Length = 3;
                 }
             }
         }
@@ -191,19 +191,19 @@ void Chassis_Reference_Update(void)
     {
         if(Remote_VTM.Remote_clicker.Switch == LEFT)
         {
-            USART_Chassis_Data.V_y = Remote_VTM.Remote_clicker.ch3/660*2.2f;
+            USART_Chassis_Data.V_y = Remote_VTM.Remote_clicker.ch1/660*2.2f;
           //  USART_Chassis_Data.V_x = Remote_VTM.Remote_clicker.ch2/660*2.2f;
             if(Remote_VTM.Remote_clicker.ch4 == 0)
             {
-                USART_Chassis_Data.Cmd_Leg_Length = LOW_LEGLENGTH;
+                USART_Chassis_Data.Cmd_Leg_Length = 1;
             }
             else if(Remote_VTM.Remote_clicker.ch4 >= 640)
             {
-                USART_Chassis_Data.Cmd_Leg_Length = MIDDLE_LEGLENGTH;
+                USART_Chassis_Data.Cmd_Leg_Length = 2;
             }
             else if(Remote_VTM.Remote_clicker.ch4 <= -640)
             {
-                USART_Chassis_Data.Cmd_Leg_Length = HIGH_LEGLENGTH;
+                USART_Chassis_Data.Cmd_Leg_Length = 3;
             }
         }
         else if(Remote_VTM.Remote_clicker.Switch == CENTER)
@@ -221,15 +221,15 @@ void Chassis_Reference_Update(void)
             
             if(Remote_VTM.key.Key_Z_Action.Long_Press_Flag == 1)//长按Z中腿长
             {
-                USART_Chassis_Data.Cmd_Leg_Length = MIDDLE_LEGLENGTH;
+                USART_Chassis_Data.Cmd_Leg_Length = 2;
             }
             else if(Remote_VTM.key.Key_CTRL_Action.Long_Press_Flag == 1)//长按CTRL高腿长
             {
-                USART_Chassis_Data.Cmd_Leg_Length = HIGH_LEGLENGTH;
+                USART_Chassis_Data.Cmd_Leg_Length = 3;
             }
             else
             {
-                USART_Chassis_Data.Cmd_Leg_Length = LOW_LEGLENGTH;
+                USART_Chassis_Data.Cmd_Leg_Length = 1;
             }
         }
     }
@@ -237,7 +237,7 @@ void Chassis_Reference_Update(void)
     {
         USART_Chassis_Data.V_y = 0;
         USART_Chassis_Data.V_x = 0;
-        USART_Chassis_Data.Cmd_Leg_Length = LOW_LEGLENGTH;
+        USART_Chassis_Data.Cmd_Leg_Length = 1;
     }
 }
 

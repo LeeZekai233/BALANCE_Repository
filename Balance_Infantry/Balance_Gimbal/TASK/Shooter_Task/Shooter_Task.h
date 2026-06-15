@@ -6,8 +6,8 @@
 #include "DJI_Motor.h"
 #include "LK.h"
 
-#define    LEFT_FIRC_SPEED        2000
-#define    RIGHT_FRIC_SPEED      -2000
+#define    LEFT_FIRC_SPEED        7000
+#define    RIGHT_FRIC_SPEED      -7000
 /*********************************发射结构体**********************************/
 typedef enum
 {
@@ -23,7 +23,6 @@ typedef enum
 {
     SHOOTER_NORMAL = 0       ,
 	SHOOTER_TRAP   =  1      ,//卡弹
-   // SHOOTER_TRAP_HANDLE  = 2   ,//卡弹处理
 }Shooter_State_e;
 
 
@@ -31,8 +30,8 @@ typedef enum
 typedef enum
 {
     FSM_RELAX = 0,
-    ACTIVATE  = 1,
-    HANDLE    = 2,
+    FSM_ACTIVATE  = 1,
+    FSM_HANDLE    = 2,
 }CF_FSM_State_e;//停火有限状态机，改善空程和双发用
 
 
@@ -87,6 +86,7 @@ typedef struct
     float Heat_Cooling_Value;//冷却速率
     float Heat_Limit;//射击热量上限
     float Remain_Bullets;//最终选择出来的剩余弹量
+    float Last_Remain_Bullets_meas;//上一次的裁判系统读的热量，当裁判系统更新时，选用裁判系统的数据
     
 }Heat_Restrict_t;
 
@@ -99,7 +99,7 @@ typedef struct
     Shooter_Mode_e Last_Shooter_Mode;//上一次发射机构模式
     Shooter_State_e Shooter_State;//发射机构状态
     Shooter_State_e Last_Shooter_State;//上一次发射机构状态
-//    CF_FSM_State_e CF_FSM_State;//停火有限状态机 //暂时不会使用
+    CF_FSM_State_e CF_FSM_State;//停火有限状态机 //暂时不会使用
 //    Poke_State_e Poke_State;//拨盘模式 没用到
     Fric_State_e Fric_State;//摩擦轮状态
     
@@ -129,7 +129,7 @@ typedef struct
 //    uint16_t Fric_Fire_CNT;//停火有限状态机用，摩擦轮电流大增加计数  //不使用停火有限状态机
 //    uint16_t FSM_Activate_CNT;//状态机计数，计数达到目标直接转换状态
     
-    int16_t Poke_Motor_Set_Current;
+    float Poke_Motor_Set_Speed;
     int16_t Fric_Motor_Ser_Current[2];
     
     float Shoot_Frequency;//射频
@@ -144,14 +144,19 @@ typedef struct
 extern Shooter_t Shooter;
 /*********************************外部声明**********************************/
 
+
 void Shoot_Frequency_Select(void);
 void Heat_Restrict(void);
 void Shooter_Debug(void);
 void Shooter_Mode_Select(void);
 void Shooter_Feedback_Update(void);
 void Shooter_Reference_Update(void);
+void Shoot_Detect(void);
 void Shooter_State_Update(void);
+void Shooter_Relax_Handle(void);
+void Shooter_Remote_Handle(void);
 void Shooter_Task(void);
+
 
 
 #endif

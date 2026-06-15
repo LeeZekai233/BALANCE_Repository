@@ -12,9 +12,16 @@ void CAN1_Send_Task(int16_t Pitch_Current_Set,int16_t Left_Fric_Current_Set,int1
 
 
 
-void CAN2_Send_Task(float Yaw_Current_Set,int16_t Poke_Current_Set)//Yaw速度单位rad/s,poke速度单位°/s
+void CAN2_Send_Task(float Yaw_Current_Set,float Poke_Speed_Set)//Yaw速度单位rad/s,poke速度单位°/s
 {
-    LK_TorqueLoop_Out(1,Poke_Current_Set,CAN2);
+    if(Shooter.Shooter_Mode == SHOOTER_RELAX)
+    {
+        LK_TorqueLoop_Out(1,0,CAN2);
+    }
+    else
+    {
+        LK_SpdLoop_Out(1,0,(int32_t)(Poke_Speed_Set*100),CAN2);
+    }
     while((CAN2->TSR & (CAN_TSR_TME0 | CAN_TSR_TME1 | CAN_TSR_TME2)) == 0);//等待有发送邮箱空
     
 //    if(Yaw_DM4310.ERR != DM_ENABLE && Gimbal.Gimbal_Mode != GIMBAL_RELAX)//电机id几？还不知道

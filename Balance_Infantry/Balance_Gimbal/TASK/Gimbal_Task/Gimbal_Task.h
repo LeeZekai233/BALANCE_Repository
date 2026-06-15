@@ -9,7 +9,17 @@
 
 #define YAW_ANGLE_OFFSET         0     //要调
 
-
+#define VAL_LIMIT(val, min, max)\
+            if(val<=min)\
+            {\
+                val = min;\
+            }\
+            else if(val>=max)\
+            {\
+                val = max;\
+            }\
+            
+            
 typedef enum
 {
     GIMBAL_RELAX  = 0,           //云台失能

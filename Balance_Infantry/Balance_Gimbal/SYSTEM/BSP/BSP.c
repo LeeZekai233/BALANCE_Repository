@@ -13,7 +13,7 @@ void Infantry_Init(void)
     
     Control_Task_Init();//PID≥ı ºªØ
     
-    TIM2_Init( );
+  //  TIM2_Init( );
     TIM6_Init( );
 }
 
