@@ -188,8 +188,8 @@ void VTM_Reomte_Data_Handle(uint8_t *pData,u16 rec_len,Remote_VTM_t* Remote_VTM)
 				Remote_VTM->Remote_mouse.x = vtm_remote_data.mouse_x;
 				Remote_VTM->Remote_mouse.y = vtm_remote_data.mouse_y;
 				Remote_VTM->Remote_mouse.z = vtm_remote_data.mouse_z;
-				Remote_VTM->Remote_mouse.press_l = vtm_remote_data.mouse_left;
-				Remote_VTM->Remote_mouse.press_r = vtm_remote_data.mouse_right;
+				Remote_VTM->Remote_mouse.Press_L_Action.Original_Press_Flag = vtm_remote_data.mouse_left;
+				Remote_VTM->Remote_mouse.Press_R_Action.Original_Press_Flag = vtm_remote_data.mouse_right;
 		
 				Remote_VTM->key.v = (pData[18]<<8) | pData[17];
 				

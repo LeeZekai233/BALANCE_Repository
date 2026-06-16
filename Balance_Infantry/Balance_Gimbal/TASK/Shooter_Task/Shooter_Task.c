@@ -41,12 +41,11 @@ void Shooter_Mode_Select(void)
             Shooter.Shooter_Mode = SHOOTER_RELAX ;
         }
     }
-    
     else if(Remote_DT7_data.online_flag == 0 && Remote_VTM.online_flag == 1)//使用灰控
     {
         if(Remote_VTM.Remote_clicker.Switch == LEFT)//使用控进行控制
         {
-            if(Remote_VTM.Remote_clicker.fn1_Action.Toggle_Press_Flag == 1)//按一次fn1后，拨轮控制打弹
+            if(Remote_VTM.Remote_clicker.fn1_Action.Toggle_Press_Flag == 1)//按一次fn1后，进入停火模式，拨轮控制打弹
             {
                 if(/*云台没初始化完不允许打弹*/Gimbal.Gimbal_Mode != GIMBAL_RELAX && Gimbal.Gimbal_Mode != GIMBAL_INIT)
                 {
@@ -74,7 +73,7 @@ void Shooter_Mode_Select(void)
         }
         else if(Remote_VTM.Remote_clicker.Switch == CENTER)//使用键鼠控制
         {
-            if(Remote_VTM.key.Key_C_Action.Toggle_Press_Flag == 1)
+            if(Remote_VTM.key.Key_C_Action.Toggle_Press_Flag == 1)//按c进入停火模式
             {
                 if(Remote_VTM.key.Key_V_Action.Toggle_Press_Flag == 1 && Remote_VTM.Remote_mouse.Press_L_Action.Short_Press_Flag == 1 && Shooter.Heat_Restrict.Fire_Permission == SHOOT_ALLOWED)
                 {
@@ -102,6 +101,10 @@ void Shooter_Mode_Select(void)
             Shooter.Shooter_Mode = SHOOTER_RELAX ;
         }
     }
+    else//灰控白控都在或都不在
+    {
+        Shooter.Shooter_Mode = SHOOTER_RELAX ;
+    }
 }
 
 
@@ -117,6 +120,15 @@ void Shooter_Feedback_Update(void)
     Shooter.Heat_Restrict.Heat_Cooling_Value = USART_Gimbal_Data.shooter_barrel_cooling_value ;//热量限制用
     Shooter.Heat_Restrict.Shooter_Heat_meas = USART_Gimbal_Data.shooter_id1_17mm_cooling_heat ;
     Shooter.Heat_Restrict.Heat_Limit = USART_Gimbal_Data.shooter_barrel_heat_limit ;
+}
+
+
+float Shooter_Bullet_Speed_Self_Adaptation(float Bullet_Speed)
+{
+	float static Bullet_Speed_Error;
+	Bullet_Speed_Error=(BULLET_SPEED_TARGET-Bullet_Speed);
+	
+	return Bullet_Speed_Error*BULLET_SPEED_SELF_ADAPTATION_K;
 }
 
 
@@ -319,7 +331,7 @@ void Shooter_Reference_Update(void)
     }
 }
 
-void Shoot_Detect(void)
+void Shoot_Detect(void)//未调用
 {
     static uint16_t FSM_cnt;
     switch (Shooter.CF_FSM_State)

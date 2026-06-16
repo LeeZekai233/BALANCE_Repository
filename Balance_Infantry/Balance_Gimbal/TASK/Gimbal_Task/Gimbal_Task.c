@@ -69,7 +69,6 @@ void Gimbal_Mode_Select(void)
         {
             Gimbal.Remote_Gimbal_Mode =  GIMBAL_REMOTE;
         }
-       
     }
     else if(Remote_DT7_data.online_flag == 0 && Remote_VTM.online_flag == 1)//使用灰控
     {
@@ -165,14 +164,14 @@ void Gimbal_Reference_Update(void)
         {
             case GIMBAL_KEY_MOUSE :
             {
-                Gimbal.Yaw_Angle_Ref += Remote_VTM.Remote_mouse.y * 0.005f;
-                Gimbal.Pitch_Angle_Ref += Remote_VTM.Remote_mouse.x * 0.005f;
+                Gimbal.Yaw_Angle_Ref -= Remote_VTM.Remote_mouse.x * 0.005f;
+                Gimbal.Pitch_Angle_Ref += Remote_VTM.Remote_mouse.y * 0.005f;
             }
             break;
             case GIMBAL_REMOTE :
             {
                 Gimbal.Yaw_Angle_Ref -=  Remote_VTM.Remote_clicker.ch2 * 0.001f;
-                Gimbal.Pitch_Angle_Ref -=  Remote_VTM.Remote_clicker.ch3 * 0.001f;
+                Gimbal.Pitch_Angle_Ref +=  Remote_VTM.Remote_clicker.ch3 * 0.001f;
             }
             break;
             case GIMBAL_RELAX ://RELAX模式，使设定值为反馈值

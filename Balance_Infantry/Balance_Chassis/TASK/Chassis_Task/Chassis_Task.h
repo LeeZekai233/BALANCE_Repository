@@ -186,10 +186,10 @@ typedef struct
 	
 	PID_t Pid_Follow_Gimbal;
 	
-	PID_t Pid_Yaw_Dist;
-	PID_t pid_chassis_side;
+//	PID_t Pid_Yaw_Dist;
+//	PID_t pid_chassis_side;
 	
-	PID_t Pid_Seperate_Gimbal;
+//	PID_t Pid_Seperate_Gimbal;
 	
 	PID_t Init_Tp_PID;//初始化Init_Tp_PID
 	
@@ -205,10 +205,10 @@ typedef struct
     PID_t flip_init_dphi0_pid_left;//翻车dphi0_Init_Tp_PID
     PID_t flip_init_dphi0_pid_right;
     
-	uint16_t Max_power_to_PM01;//好像没用过
+//	uint16_t Max_power_to_PM01;//好像没用过
 	
-	float Left_theta;
-    float Right_theta;
+//	float Left_theta;
+//    float Right_theta;
 
 
 //	double yaw_encoder_ecd_angle;
@@ -217,7 +217,7 @@ typedef struct
 	float normal_Y_erroffset;
 	float remote_ref_vx;
 	
-	float predict_power;
+//	float predict_power;
 	float Max_Speed;
 	float Min_Speed;
 	//tqouce

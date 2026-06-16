@@ -208,7 +208,7 @@ void FN_calculate(CH040DATA_t* Chassis_GYRO, Leg_State_t* Leg_State, Lpf1stObj *
 **/
 uint8_t Wheel_State_Estimate(Leg_State_t *Leg_State)
 {
-    if (Leg_State->Leg_FN < 30) // 如果支持力小于20N 离地 轮子状态为0 
+    if (Leg_State->Leg_FN < 35) // 如果支持力小于 40N 离地 轮子状态为0 
     {
 
         Leg_State->Wheel_State = 0;
@@ -899,7 +899,7 @@ void Chassis_Fallow_Gimbal_Handle(Balance_Chassis_t* Chassis)
         Chassis->Jump_Finish_Middle_Leg_Cnt ++;
     }
     
-     Chassis->Chassis_Ref.Leglength = trackRamp_leg(0.0008,Chassis->Chassis_Ref.Leglength,Chassis->Chassis_Remote_Ref.Leglength);//这些都不能调换位置
+     Chassis->Chassis_Ref.Leglength = trackRamp_leg(0.001,Chassis->Chassis_Ref.Leglength,Chassis->Chassis_Remote_Ref.Leglength);//这些都不能调换位置
     
     //腿长变化检测
     if(Chassis->balance_loop.L0 <= 0.40f && Chassis->balance_loop.L0 >=0.25f)
@@ -1716,7 +1716,7 @@ void Balance_Task(Balance_Chassis_t* Chassis)
     if(Wheel_State_Estimate(&Chassis->Left_Leg) || Chassis->balance_loop.L0 >= 0.25)
     {
         
-         leg_conv(Chassis->Left_Leg.Leg_F, (Chassis->Balance_Tpgain - Chassis->Harmonize_Inner)/2.0f, //7878
+         leg_conv(Chassis->Left_Leg.Leg_F, (Chassis->Balance_Tpgain - Chassis->Harmonize_Inner)/2.0f,
          Chassis->Left_Leg.phi1, Chassis->Left_Leg.phi4, Chassis->Left_Leg.T_Set);
         
          Chassis->joint_T[1] = JM2_POLARITY * Chassis->Left_Leg.T_Set[0];
@@ -1727,7 +1727,7 @@ void Balance_Task(Balance_Chassis_t* Chassis)
     }
     else//离地
     {
-        leg_conv(Chassis->Left_Leg.Leg_F, (Chassis->Balance_Tpoutlandgain - Chassis->Harmonize_Inner)/2.0f, //7878
+        leg_conv(Chassis->Left_Leg.Leg_F, (Chassis->Balance_Tpoutlandgain - Chassis->Harmonize_Inner)/2.0f,
         Chassis->Left_Leg.phi1, Chassis->Left_Leg.phi4, Chassis->Left_Leg.T_Set);
        
         Chassis->joint_T[1] = JM2_POLARITY * Chassis->Left_Leg.T_Set[0];

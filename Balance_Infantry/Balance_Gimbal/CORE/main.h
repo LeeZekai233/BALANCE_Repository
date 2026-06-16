@@ -21,6 +21,7 @@
 #include "CAN1.h"
 #include "CAN2.h"
 #include "BSP.h"
+#include "Delay.h"
 
 
 //TASK
@@ -30,6 +31,7 @@
 #include "Can_Bus_Task.h"
 #include "Gimbal_Task.h"
 #include "Shooter_Task.h"
+#include "Auto_Shoot_Task.h"
 
 
 //Judge_System

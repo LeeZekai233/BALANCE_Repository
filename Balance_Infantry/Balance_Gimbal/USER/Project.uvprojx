@@ -341,7 +341,7 @@
               <MiscControls>--diag_suppress=177,1035</MiscControls>
               <Define>STM32F40_41xxx,USE_STDPERIPH_DRIVER</Define>
               <Undefine></Undefine>
-              <IncludePath>..\CORE;..\FWLIB\inc;..\FWLIB\src;..\USER;..\MOTOR\DJI_Motor;..\MOTOR\DM_4310;..\Judge_System;..\SYSTEM\BSP;..\SYSTEM\CAN1;..\SYSTEM\CAN2;..\SYSTEM\TIM2;..\SYSTEM\TIM6;..\SYSTEM\USART1;..\SYSTEM\USART2;..\SYSTEM\USART3;..\SYSTEM\USART4;..\SYSTEM\USART6;..\Control_Algorithm\High_Pass_Filter;..\Control_Algorithm\Low_Pass_Filter;..\Control_Algorithm\PID;..\Control_Algorithm\Ramp;..\Control_Algorithm\Signal;..\MOTOR\DJI_Motor;..\MOTOR\DM_4310;..\MOTOR\LK_TECH;..\TASK\Board_Connected_Task;..\TASK\Control_Task;..\TASK\Can_Bus_Task;..\TASK\Gimbal_Task;..\TASK\Shooter_Task;..\TASK\Remote_Task;..\Control_Algorithm\Shooter_Kalman_Filter</IncludePath>
+              <IncludePath>..\CORE;..\FWLIB\inc;..\FWLIB\src;..\USER;..\MOTOR\DJI_Motor;..\MOTOR\DM_4310;..\Judge_System;..\SYSTEM\BSP;..\SYSTEM\CAN1;..\SYSTEM\CAN2;..\SYSTEM\TIM2;..\SYSTEM\TIM6;..\SYSTEM\USART1;..\SYSTEM\USART2;..\SYSTEM\USART3;..\SYSTEM\USART4;..\SYSTEM\USART6;..\Control_Algorithm\High_Pass_Filter;..\Control_Algorithm\Low_Pass_Filter;..\Control_Algorithm\PID;..\Control_Algorithm\Ramp;..\Control_Algorithm\Signal;..\MOTOR\DJI_Motor;..\MOTOR\DM_4310;..\MOTOR\LK_TECH;..\TASK\Board_Connected_Task;..\TASK\Control_Task;..\TASK\Can_Bus_Task;..\TASK\Gimbal_Task;..\TASK\Shooter_Task;..\TASK\Remote_Task;..\Control_Algorithm\Shooter_Kalman_Filter;..\SYSTEM\Delay;..\TASK\Auto_Shoot_Task</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -645,6 +645,11 @@
               <FileType>1</FileType>
               <FilePath>..\SYSTEM\USART6\USART6.c</FilePath>
             </File>
+            <File>
+              <FileName>Delay.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\SYSTEM\Delay\Delay.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -679,6 +684,11 @@
               <FileName>Remote_Task.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\TASK\Remote_Task\Remote_Task.c</FilePath>
+            </File>
+            <File>
+              <FileName>Auto_Shoot_Task.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\TASK\Auto_Shoot_Task\Auto_Shoot_Task.c</FilePath>
             </File>
           </Files>
         </Group>

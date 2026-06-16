@@ -8,6 +8,10 @@
 
 #define    LEFT_FIRC_SPEED        7000
 #define    RIGHT_FRIC_SPEED      -7000
+#define BULLET_SPEED_TARGET											23.5
+
+#define BULLET_SPEED_SELF_ADAPTATION_K    			0//250//自适应弹数调整系数//摩擦轮转速调高 系数调小
+
 /*********************************发射结构体**********************************/
 typedef enum
 {
@@ -151,6 +155,7 @@ void Shooter_Debug(void);
 void Shooter_Mode_Select(void);
 void Shooter_Feedback_Update(void);
 void Shooter_Reference_Update(void);
+float Shooter_Bullet_Speed_Self_Adaptation(float Bullet_Speed);
 void Shoot_Detect(void);
 void Shooter_State_Update(void);
 void Shooter_Relax_Handle(void);
