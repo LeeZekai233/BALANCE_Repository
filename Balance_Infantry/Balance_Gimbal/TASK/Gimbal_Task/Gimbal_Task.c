@@ -84,8 +84,13 @@ void Gimbal_Mode_Select(void)
         { 
             Gimbal.Remote_Gimbal_Mode = GIMBAL_REMOTE;
         }
+        
+        if(USART_Gimbal_Data.current_HP == 0)//死了失能发射
+        {
+            Gimbal.Remote_Gimbal_Mode = GIMBAL_RELAX ;
+        }
     }
-    else//其他状态
+    else//白控灰控都在或都不在
     {
         Gimbal.Remote_Gimbal_Mode = GIMBAL_RELAX ;
     }
@@ -117,6 +122,7 @@ void Gimbal_Feedback_Update(void)
     //反馈值更新
     Gimbal.Pitch_Speed_Fdb = Gimbal.CH040_Data.Pitch_Gyro_Omega ;
     Gimbal.Pitch_Angle_Fdb = Gimbal.CH040_Data.Pitch_Angle ;
+    
     if(Gimbal.Gimbal_Mode != GIMBAL_INIT)
     {
         Gimbal.Yaw_Angle_Fdb = Gimbal.CH040_Data.Yaw_Multi_Angle ;
@@ -128,7 +134,27 @@ void Gimbal_Feedback_Update(void)
         Gimbal.Yaw_Speed_Fdb = Gimbal.Yaw_Motor_Encoder.Omega_Rad_fdb ;
     }
     
-    USART_Chassis_Data.Yaw_Encoder_Angle = Transform_Angle_0_2PI(Gimbal.Yaw_Motor_Encoder.Angle_Rad_fdb) ;//发给底盘，适配底盘0-2PI的数据
+//    if(Remote_VTM.key.Key_W_Action.Original_Press_Flag == 0 && Remote_VTM.key.Key_S_Action.Original_Press_Flag == 0)
+//    {
+        
+        if(Remote_VTM.key.Key_D_Action.Original_Press_Flag == 1 && Remote_VTM.key.Key_A_Action.Original_Press_Flag == 0)//侧向对敌
+        {
+            USART_Chassis_Data.Yaw_Encoder_Angle = Transform_Angle_0_2PI(Gimbal.Yaw_Motor_Encoder.Angle_Rad_fdb - 45.0f*DEG_TO_RAD);
+        }
+        else if(Remote_VTM.key.Key_D_Action.Original_Press_Flag == 0 && Remote_VTM.key.Key_A_Action.Original_Press_Flag == 1)
+        {
+            USART_Chassis_Data.Yaw_Encoder_Angle = Transform_Angle_0_2PI(Gimbal.Yaw_Motor_Encoder.Angle_Rad_fdb + 45.0f*DEG_TO_RAD);
+        }
+        else
+        {
+            USART_Chassis_Data.Yaw_Encoder_Angle = Transform_Angle_0_2PI(Gimbal.Yaw_Motor_Encoder.Angle_Rad_fdb);
+        }
+//    }
+//    else
+//    {
+//        USART_Chassis_Data.Yaw_Encoder_Angle = Transform_Angle_0_2PI(Gimbal.Yaw_Motor_Encoder.Angle_Rad_fdb);//发给底盘，适配底盘0-2PI的数据
+//    }
+    
     USART_Chassis_Data.Gimbal_Init_Finish_Flag = Gimbal.Init_Finish_Flag ;
 }
 
@@ -137,7 +163,6 @@ void Gimbal_Reference_Update(void)
 {
     if(Remote_DT7_data.online_flag == 1 && Remote_VTM.online_flag == 0)//使用白控
     {
-        
         switch (Gimbal.Gimbal_Mode)
         {
             case GIMBAL_REMOTE :
@@ -186,7 +211,7 @@ void Gimbal_Reference_Update(void)
             break;
         }
     }
-    VAL_LIMIT(Gimbal.Pitch_Angle_Ref,-24,36);
+    VAL_LIMIT(Gimbal.Pitch_Angle_Ref,-16,36);
 }
 
 
@@ -222,7 +247,7 @@ void Gimbal_Init_Handle(void)
     }
     Gimbal.Pitch_Angle_Ref = 0;
     
-    if(fabs(Gimbal.Yaw_Angle_Ref - Gimbal.Yaw_Angle_Fdb) <= 2*PI/180)
+    if(fabs(Gimbal.Yaw_Angle_Ref - Gimbal.Yaw_Angle_Fdb) <= 5.0f*PI/180.0f && fabs(Gimbal.Pitch_Angle_Ref - Gimbal.Pitch_Angle_Fdb) <= 5.0f)
     {
         Gimbal.Pitch_Angle_Ref = Gimbal.CH040_Data.Pitch_Angle ;
         Gimbal.Yaw_Angle_Ref = Gimbal.CH040_Data.Yaw_Angle ;

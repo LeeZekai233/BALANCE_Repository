@@ -2,7 +2,7 @@
 
 void CAN1_Init(void)
 {
-  GPIO_InitTypeDef GPIO_InitStruecture;
+    GPIO_InitTypeDef GPIO_InitStruecture;
 	CAN_InitTypeDef CAN_InitStruecture;
 	CAN_FilterInitTypeDef  CAN_FilterInitStructure;
 	NVIC_InitTypeDef NVIC_InitStructure;

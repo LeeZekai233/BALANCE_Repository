@@ -159,7 +159,7 @@ void FN_calculate(CH040DATA_t* Chassis_GYRO, Leg_State_t* Leg_State, Lpf1stObj *
     float sintheta = arm_sin_f32(Leg_State->phi0  - Chassis_GYRO->Pitch_Angle*DEG_TO_RAD);
 
     Leg_State->ddtheta = (Leg_State->dtheta - last_dtheta) / ((TIME_STEP * 0.001));//ddzw的计算   差分
-    float ddz = arm_cos_f32(Chassis_GYRO->Z_Acc * Chassis_GYRO->Pitch_Angle*DEG_TO_RAD);//机体加速度 ddz
+    float ddz = Chassis_GYRO->Z_Acc * Chassis_GYRO->Pitch_Angle*DEG_TO_RAD;//机体加速度 ddz
     float ddzw = ddz - Leg_State->ddl0 * costheta + \
                   2 * Leg_State->dl0 * Leg_State->dtheta * sintheta + \
                     Leg_State->l0 * Leg_State->ddtheta * sintheta + \
@@ -208,7 +208,7 @@ void FN_calculate(CH040DATA_t* Chassis_GYRO, Leg_State_t* Leg_State, Lpf1stObj *
 **/
 uint8_t Wheel_State_Estimate(Leg_State_t *Leg_State)
 {
-    if (Leg_State->Leg_FN < 35) // 如果支持力小于 40N 离地 轮子状态为0 
+    if (Leg_State->Leg_FN < 20) // 如果支持力小于 20N 离地 轮子状态为0 
     {
 
         Leg_State->Wheel_State = 0;
@@ -285,7 +285,7 @@ void Chassis_Param_Init(Balance_Chassis_t* Chassis)
     PID_Init(&Chassis->V_w_Pid,PID_POSITION,3.5,0,0,5,5);
     
     //底盘跟随云台pid
-    PID_Init(&Chassis->Pid_Follow_Gimbal,PID_POSITION,8,0,1,3,200);
+    PID_Init(&Chassis->Pid_Follow_Gimbal,PID_POSITION,12,0,1,100,200);
     
     //先写这些，其他的再说
    
@@ -431,8 +431,8 @@ void Chassis_Referance_Update(Balance_Chassis_t* Chassis)
        }
        else if(Chassis->USART_Chassis_Data.Cmd_Leg_Length == MIDDLE_LEGLENGTH_CMD)
        {
-           Chassis->Chassis_Remote_Ref.Leglength = 0.21f;
-           Chassis->Max_Speed = 2.0f;
+           Chassis->Chassis_Remote_Ref.Leglength = 0.19f;
+           Chassis->Max_Speed = 2.5f;
            Chassis->Min_Speed = -1.8f;
            
        }
@@ -570,14 +570,13 @@ void Chassis_Relax_Handle(Balance_Chassis_t* Chassis)
 **/
 void Chassis_Init_Handle(Balance_Chassis_t* Chassis)
 {
-    static float Last_Pitch_GYRO_Angle;
     PID_Init(&Chassis->Init_Tp_PID,PID_POSITION,30,0,0,1000,200);
     PID_Init(&Chassis->Left_Leg.Leg_Length_PID,PID_POSITION,3200,0,4000,4000,4000);
     PID_Init(&Chassis->Right_Leg.Leg_Length_PID,PID_POSITION,3200,0,4000,4000,4000);
     PID_Init(&Chassis->normal_init_dphi0_pid_right,PID_POSITION,3,0.002,0,500,500);
     PID_Init(&Chassis->normal_init_dphi0_pid_left,PID_POSITION,3,0.002,0,500,500);
-    PID_Init(&Chassis->flip_init_dphi0_pid_left,PID_POSITION,6,0.004,0,1000,1500);
-    PID_Init(&Chassis->flip_init_dphi0_pid_right,PID_POSITION,6,0.004,0,1000,1500);
+    PID_Init(&Chassis->flip_init_dphi0_pid_left,PID_POSITION,4,0.004,0,1000,1500);
+    PID_Init(&Chassis->flip_init_dphi0_pid_right,PID_POSITION,4,0.004,0,1000,1500);
     PID_Init(&Chassis->Leg_Harmonize_Pid_Inner,PID_POSITION,9.3,0,0.7f,100,3);
     PID_Init(&Chassis->Leg_Harmonize_Pid_Outer,PID_POSITION,25,0,1.8f,100,3);
     
@@ -596,16 +595,16 @@ void Chassis_Init_Handle(Balance_Chassis_t* Chassis)
  
 //初始化状态决判断  
      //倒扣状态
-     if(fabs(Chassis->Chassis_GYRO.Roll_Angle)>95 && fabs(Chassis->Chassis_GYRO.Pitch_Angle) > 10 )
+     if(fabs(Chassis->Chassis_GYRO.Roll_Angle)>95 && fabs(Chassis->Chassis_GYRO.Pitch_Angle) > 45 )
      {
           //倒扣状态1，
-          if(Chassis->Chassis_GYRO.Pitch_Angle < -35 ||  (Chassis->Chassis_GYRO.Pitch_Angle == 90 && Last_Pitch_GYRO_Angle <-10))//发现角度有个跳变，尝试打补丁2
+          if(Chassis->Chassis_GYRO.Pitch_Angle < -45 /*||  (Chassis->Chassis_GYRO.Pitch_Angle == 90 && Last_Pitch_GYRO_Angle <-10)*/)//发现角度有个跳变，尝试打补丁2
           {
               Chassis->Init_State = FLIP_STATE_1;
               Chassis->Gimbal_Init_Cmd = 0;
           }
           //倒扣状态2，摆腿方向不同
-          else if(Chassis->Chassis_GYRO.Pitch_Angle > 35 || (Chassis->Chassis_GYRO.Pitch_Angle == 90 && Last_Pitch_GYRO_Angle > 10))
+          else/* if(Chassis->Chassis_GYRO.Pitch_Angle > 35 || (Chassis->Chassis_GYRO.Pitch_Angle == 90 && Last_Pitch_GYRO_Angle > 10))*/
           {
               Chassis->Init_State = FLIP_STATE_2;
               Chassis->Gimbal_Init_Cmd = 0;
@@ -613,12 +612,12 @@ void Chassis_Init_Handle(Balance_Chassis_t* Chassis)
      }
      
      //侧翻状态1
-     else if(Chassis->Chassis_GYRO.Pitch_Angle <-35 || (Chassis->Chassis_GYRO.Pitch_Angle == 90 && Last_Pitch_GYRO_Angle <-10))
+     else if(Chassis->Chassis_GYRO.Pitch_Angle <-45 /*|| (Chassis->Chassis_GYRO.Pitch_Angle == 90 && Last_Pitch_GYRO_Angle <-10)*/)
      {
          Chassis->Init_State = ROLL_STATE_1;
          Chassis->Gimbal_Init_Cmd = 0;
      }
-     else if(Chassis->Chassis_GYRO.Pitch_Angle > 35 || (Chassis->Chassis_GYRO.Pitch_Angle == 90 && Last_Pitch_GYRO_Angle > 10))
+     else if(Chassis->Chassis_GYRO.Pitch_Angle > 45 /*|| (Chassis->Chassis_GYRO.Pitch_Angle == 90 && Last_Pitch_GYRO_Angle > 10)*/)
      {
          Chassis->Init_State = ROLL_STATE_2;
          Chassis->Gimbal_Init_Cmd = 0;
@@ -793,7 +792,6 @@ void Chassis_Init_Handle(Balance_Chassis_t* Chassis)
             break;
             
     }
-    Last_Pitch_GYRO_Angle = Chassis->Chassis_GYRO.Pitch_Angle ;
 }
 
 
@@ -822,10 +820,10 @@ void Chassis_Standup_Handle(Balance_Chassis_t* Chassis)
     Chassis->Chassis_Ref.V_x = 0;
     Chassis->Chassis_Ref.V_w = 0;
     Chassis->Chassis_Ref.Y_position = Chassis->balance_loop.x;
-    if(fabs(Chassis->balance_loop.state_err[3]) < 7*DEG_TO_RAD)
-    {
-        Chassis->Control_Mode = (Chassis_Mode_e)Chassis->USART_Chassis_Data.Chassis_Mode;
-    }
+//    if(fabs(Chassis->balance_loop.state_err[3]) < 10*DEG_TO_RAD)
+//    {
+    Chassis->Control_Mode = (Chassis_Mode_e)Chassis->USART_Chassis_Data.Chassis_Mode;
+//    }
 }
  
 
@@ -868,11 +866,15 @@ void Chassis_Fallow_Gimbal_Handle(Balance_Chassis_t* Chassis)
     PID_Init(&Chassis->Roll_Balance_FN_PID, PID_POSITION,30,0,12,400,10);
    // PID_Init(&Chassis->Roll_leg_F_Rotate_Pid, PID_POSITION,0,0,0,400,10);
   //  PID_Init(&Chassis->Init_Tp_PID, PID_POSITION,100,0,0,700,10);
-    PID_Init(&Chassis->Left_Leg.Leg_Length_PID, PID_POSITION,2300,0,40000,2000,0);
-    PID_Init(&Chassis->Right_Leg.Leg_Length_PID, PID_POSITION,2300,0,40000,2000,0);
-    PID_Init(&Chassis->Pid_Follow_Gimbal,PID_POSITION,8,0,0,8,200);
-    PID_Init(&Chassis->Leg_Harmonize_Pid_Inner,PID_POSITION,9.3,0,0.7f,35,3);
-    PID_Init(&Chassis->Leg_Harmonize_Pid_Outer,PID_POSITION,23,0,2.2f,50,3);
+    PID_Init(&Chassis->Left_Leg.Leg_Length_PID, PID_POSITION,2500,0,40000,2000,0);
+    PID_Init(&Chassis->Right_Leg.Leg_Length_PID, PID_POSITION,2500,0,40000,2000,0);
+   
+    PID_Init(&Chassis->Leg_Harmonize_Pid_Inner,PID_POSITION,9.3,0,0.8f,35,3);
+    PID_Init(&Chassis->Leg_Harmonize_Pid_Outer,PID_POSITION,21,0,3.2f,50,3);
+    PID_Init(&Chassis->V_w_Pid,PID_POSITION,3.5,0,2,10,10);
+  
+   
+    PID_Init(&Chassis->Pid_Follow_Gimbal,PID_POSITION,10,0,5,1000,200);
     
     
     //位移处理
@@ -883,7 +885,7 @@ void Chassis_Fallow_Gimbal_Handle(Balance_Chassis_t* Chassis)
     }
     else
     {
-        Chassis->normal_Y_erroffset -= Chassis->balance_loop.dx * 0.0005 *TIME_STEP ;
+        Chassis->normal_Y_erroffset -= Chassis->balance_loop.dx * 0.001 *TIME_STEP ;
     }
     
     //跳下台阶后，伸中腿长一段时间，认为头发来的腿长是中腿长，控制遥控腿长
@@ -898,7 +900,7 @@ void Chassis_Fallow_Gimbal_Handle(Balance_Chassis_t* Chassis)
         Chassis->Chassis_Remote_Ref.Leglength = 0.20f;
         Chassis->Jump_Finish_Middle_Leg_Cnt ++;
     }
-    
+    if(Chassis->Chassis_Remote_Ref.Leglength != 0.32f || (Chassis->Chassis_Remote_Ref.Leglength == 0.32f && fabs(Chassis->Yaw_Angle__PI_To_PI)<= 45*PI/180.0f ))
      Chassis->Chassis_Ref.Leglength = trackRamp_leg(0.001,Chassis->Chassis_Ref.Leglength,Chassis->Chassis_Remote_Ref.Leglength);//这些都不能调换位置
     
     //腿长变化检测
@@ -938,7 +940,7 @@ void Chassis_Fallow_Gimbal_Handle(Balance_Chassis_t* Chassis)
     
      
     //角度优化
-    if(Chassis->Chassis_Ref.Leglength >= 0.26f)//高腿长一定转正 相当于一键转头
+    if(Chassis->Chassis_Remote_Ref.Leglength >= 0.26f)//高腿长一定转正 相当于一键转头
     {   
         Chassis->Chassis_Target_Angle = Chassis->Chassis_Ref.Remote_Angle ;
         if(fabs(Chassis->Chassis_Ref.Remote_Angle - Chassis->Yaw_Angle__PI_To_PI) < PI/2)
@@ -1000,7 +1002,7 @@ void Chassis_Fallow_Gimbal_Handle(Balance_Chassis_t* Chassis)
     Chassis->Chassis_Ref.V_w = -PID_Calc(&Chassis->Pid_Follow_Gimbal,Chassis->Yaw_Angle__PI_To_PI,Chassis->Chassis_Target_Angle);
 }
 
-float temp_distance;
+float temp_distance ;
 /**
 ************************************************************************************************************************
 * @Name     : Chassis_Jump_Up_Handle
@@ -1040,6 +1042,7 @@ void Chassis_Jump_Up_Handle(Balance_Chassis_t* Chassis)
             Chassis->Jump_State = JUMPING;
             Chassis->Chassis_Ref.V_y = Chassis->balance_loop.dx ;
             Chassis->Chassis_Ref.Y_position = Chassis->balance_loop.x ;
+            Chassis->Jump_Finish_Flag = 0;
             if(Chassis->Left_Leg.l0 > 0.30f && Chassis->Right_Leg.l0 > 0.30f)//伸腿后，该进入收腿进程
             {
                 Chassis->Jump_Process = JUMP_RETRACT ;
@@ -1059,6 +1062,7 @@ void Chassis_Jump_Up_Handle(Balance_Chassis_t* Chassis)
             {
                 Chassis->Jump_Process = NO_JUMP;
                 Chassis->Jump_Feedforward = 0;
+                Chassis->Jump_Finish_Flag = 1;
             }
         }
         else//跳前准备
@@ -1069,6 +1073,7 @@ void Chassis_Jump_Up_Handle(Balance_Chassis_t* Chassis)
             PID_Init(&Chassis->Right_Leg.Leg_Length_PID, PID_POSITION, 2500,0,40000,2000,0);
             PID_Init(&Chassis->Init_Tp_PID , PID_POSITION,30,0,0,400,200);
             Chassis->Chassis_Ref.Leglength = 0.1f;
+            Chassis->Jump_Finish_Flag = 0;
         }
     }
     
@@ -1095,6 +1100,7 @@ void Chassis_Jump_Up_Handle(Balance_Chassis_t* Chassis)
             Chassis->Jump_State = JUMPING;
             Chassis->Chassis_Ref.V_y = Chassis->balance_loop.dx ;
             Chassis->Chassis_Ref.Y_position = Chassis->balance_loop.x ;
+            Chassis->Jump_Finish_Flag = 0;
             if(Chassis->Left_Leg.l0 > 0.35f && Chassis->Right_Leg.l0 > 0.35f)//伸腿后，该进入收腿进程
             {
                 Chassis->Jump_Process = JUMP_RETRACT ;
@@ -1118,6 +1124,11 @@ void Chassis_Jump_Up_Handle(Balance_Chassis_t* Chassis)
                     Chassis->Jump_State = NO_JUMPING;
                     Chassis->Jump_Process = NO_JUMP;
                     Chassis->Jump_Feedforward = 0;
+                    Chassis->Jump_Finish_Flag = 1;
+                }
+                else
+                {
+                    Chassis->Jump_Finish_Flag = 0;
                 }
             }
         }
@@ -1129,6 +1140,7 @@ void Chassis_Jump_Up_Handle(Balance_Chassis_t* Chassis)
             PID_Init(&Chassis->Right_Leg.Leg_Length_PID, PID_POSITION, 2500,0,40000,2000,0);
             PID_Init(&Chassis->Init_Tp_PID , PID_POSITION,30,0,0,400,200);
             Chassis->Chassis_Ref.Leglength = 0.1f;
+            Chassis->Jump_Finish_Flag = 0;
         }
     }
     
@@ -1155,6 +1167,7 @@ void Chassis_Jump_Up_Handle(Balance_Chassis_t* Chassis)
             Chassis->Jump_State = JUMPING;
             Chassis->Chassis_Ref.V_y = Chassis->balance_loop.dx ;
             Chassis->Chassis_Ref.Y_position = Chassis->balance_loop.x ;
+            Chassis->Jump_Finish_Flag = 0;
             if(Chassis->Left_Leg.l0 > 0.30f && Chassis->Right_Leg.l0 > 0.30f)//伸腿后，该进入收腿进程
             {
                 Chassis->Jump_Process = JUMP_RETRACT ;
@@ -1174,6 +1187,7 @@ void Chassis_Jump_Up_Handle(Balance_Chassis_t* Chassis)
             {
                 Chassis->Jump_Process = NO_JUMP;
                 Chassis->Jump_Feedforward = 0;
+                Chassis->Jump_Finish_Flag = 0;
             }
         }
         else//跳前准备
@@ -1184,6 +1198,7 @@ void Chassis_Jump_Up_Handle(Balance_Chassis_t* Chassis)
             PID_Init(&Chassis->Right_Leg.Leg_Length_PID, PID_POSITION, 2500,0,40000,2000,0);
             PID_Init(&Chassis->Init_Tp_PID , PID_POSITION,30,0,0,400,200);
             Chassis->Chassis_Ref.Leglength = 0.1f;
+            Chassis->Jump_Finish_Flag = 0;
         }
     }
     
@@ -1287,6 +1302,7 @@ void Chassis_AntiFly_Slope_Handle(Balance_Chassis_t* Chassis)
         Chassis->Jump_State = JUMPING;
         Chassis->Chassis_Ref.V_y = Chassis->balance_loop.dx ;
         Chassis->Chassis_Ref.Y_position = Chassis->balance_loop.x ;
+        Chassis->Jump_Finish_Flag = 0;
         if(Chassis->Left_Leg.l0 > 0.35f && Chassis->Right_Leg.l0 > 0.35f)//伸腿后，该进入收腿进程
         {
             Chassis->Jump_Process = JUMP_RETRACT ;
@@ -1310,6 +1326,7 @@ void Chassis_AntiFly_Slope_Handle(Balance_Chassis_t* Chassis)
                 Air_Cnt = 0;
                 Chassis->Jump_Process = NO_JUMP;
                 Chassis->Jump_Feedforward = 0;
+                Chassis->Jump_Finish_Flag = 1;
             }
         }
     }
@@ -1321,6 +1338,7 @@ void Chassis_AntiFly_Slope_Handle(Balance_Chassis_t* Chassis)
         PID_Init(&Chassis->Right_Leg.Leg_Length_PID, PID_POSITION, 2500,0,40000,2000,0);
         PID_Init(&Chassis->Init_Tp_PID , PID_POSITION,30,0,0,400,200);
         Chassis->Chassis_Ref.Leglength = 0.1f;
+        Chassis->Jump_Finish_Flag = 0;
     }
     
     
@@ -1399,6 +1417,7 @@ void Chassis_Jump_Down_Handle(Balance_Chassis_t* Chassis)
         Chassis->Chassis_Ref.V_y = Chassis->balance_loop.dx ;
         Chassis->Chassis_Ref.Y_position = Chassis->balance_loop.x ;
         Chassis->Jump_Process = JUMP_EXTEND;
+        Chassis->Jump_Finish_Flag = 0;
     }
     else if(Chassis->Jump_Process == JUMP_EXTEND)//伸腿阶段
     {
@@ -1406,6 +1425,7 @@ void Chassis_Jump_Down_Handle(Balance_Chassis_t* Chassis)
         Chassis->Jump_State = JUMPING;
         Chassis->Chassis_Ref.V_y = Chassis->balance_loop.dx ;
         Chassis->Chassis_Ref.Y_position = Chassis->balance_loop.x ;
+        Chassis->Jump_Finish_Flag = 0;
         if(Chassis->Left_Leg.l0 > 0.22f && Chassis->Right_Leg.l0 > 0.22f)//伸腿后，该进入收腿进程
         {
             Chassis->Jump_Process = JUMP_RETRACT ;
@@ -1428,6 +1448,7 @@ void Chassis_Jump_Down_Handle(Balance_Chassis_t* Chassis)
                 Chassis->Jump_Finish_Middle_Leg_Flag = 1;
                 Chassis->Jump_Process = NO_JUMP;
                 Chassis->Jump_Feedforward = 0;
+                Chassis->Jump_Finish_Flag = 1;
             }
         }
     }
@@ -1580,6 +1601,7 @@ void Chassis_Single_Leg_Control_Handle(Balance_Chassis_t* Chassis)
 **/
 void Balance_Task(Balance_Chassis_t* Chassis)
 {
+    static uint8_t follow_gimbal_flag = 0;
     //balance_loop数据获取
  //   if(Chassis->Control_Mode == CHASSIS_ROTATE)//小陀螺补偿phi0
  //   {
@@ -1587,16 +1609,17 @@ void Balance_Task(Balance_Chassis_t* Chassis)
  //   }
  //   else
  //   {
-    Chassis->balance_loop.phi = Chassis->Chassis_GYRO.Pitch_Angle*DEG_TO_RAD;
+    Chassis->balance_loop.phi = Chassis->Chassis_GYRO.Pitch_Angle*PI/180.0f;
   //  }
-    Chassis->balance_loop.dphi = Chassis->Chassis_GYRO.Pitch_Gyro_Omega*DEG_TO_RAD;
+    
+    Chassis->balance_loop.dphi = Chassis->Chassis_GYRO.Pitch_Gyro_Omega*PI/180.0f;
     Chassis->balance_loop.x = ((LEFT_WHEEL_POLARITY * Chassis->Driving_Motor[0].Angle_Rad_Total_fdb + RIGHT_WHEEL_POLARITY * Chassis->Driving_Motor[1].Angle_Rad_Total_fdb)/2.0f) * WHEEL_R ;
     Chassis->balance_loop.dx = Mileage_kalman_filter.velocity;
-    Chassis->balance_loop.theta = ((Chassis->Left_Leg.phi0 + Chassis->Right_Leg.phi0)/2.0f) - Chassis->Chassis_GYRO.Pitch_Angle*DEG_TO_RAD;
-    Chassis->balance_loop.dtheta = (Chassis->Left_Leg.dphi0 + Chassis->Right_Leg.dphi0)/2.0f - Chassis->Chassis_GYRO.Pitch_Gyro_Omega*DEG_TO_RAD;
-    
+    Chassis->balance_loop.theta = ((Chassis->Left_Leg.phi0 + Chassis->Right_Leg.phi0)/2.0f) - Chassis->Chassis_GYRO.Pitch_Angle*PI/180.0f;
+    Chassis->balance_loop.dtheta = (Chassis->Left_Leg.dphi0 + Chassis->Right_Leg.dphi0)/2.0f - Chassis->Chassis_GYRO.Pitch_Gyro_Omega*PI/180.0f;
+
     //机体重力加速度
-    Chassis->balance_loop.ddz = Chassis->Chassis_GYRO.Z_Acc * arm_cos_f32(Chassis->Chassis_GYRO.Pitch_Angle*DEG_TO_RAD);
+    Chassis->balance_loop.ddz = Chassis->Chassis_GYRO.Z_Acc * arm_cos_f32(Chassis->Chassis_GYRO.Pitch_Angle*PI/180.0f);
     //底盘轮子平均线速度变化
     Chassis->balance_loop.wheel_dx = ((LEFT_WHEEL_POLARITY * Chassis->Driving_Motor[0].Omega_Rad_fdb + RIGHT_WHEEL_POLARITY * Chassis->Driving_Motor[1].Omega_Rad_fdb)/2.0f) * WHEEL_R ;
     //底盘轮子平均转速
@@ -1625,13 +1648,30 @@ void Balance_Task(Balance_Chassis_t* Chassis)
         }
     }
     
+    if(Chassis->USART_Chassis_Data.Cmd_Leg_Length == 2)//中腿长，pitch偏置
+    {
+       Chassis->balance_loop.state_err[4] = 3*PI/180.0f - Chassis->balance_loop.phi;
+    }
+    else
+    {
+        Chassis->balance_loop.state_err[4] = 0 - Chassis->balance_loop.phi;
+    }
+    
+    //中腿长离地，phi偏置
+    if(Chassis->USART_Chassis_Data.Cmd_Leg_Length == 2 && Wheel_State_Estimate(&Chassis->Left_Leg) == 0 && Wheel_State_Estimate(&Chassis->Right_Leg) == 0)
+    {
+         Chassis->balance_loop.state_err[0] = -10.0f*PI/180.0f - Chassis->balance_loop.theta;
+    }
+    else
+    {
+        Chassis->balance_loop.state_err[0] = 0 - Chassis->balance_loop.theta;
+    }
     
     //误差计算
-    Chassis->balance_loop.state_err[0] = 0 - Chassis->balance_loop.theta;
+   
     Chassis->balance_loop.state_err[1] = 0 - Chassis->balance_loop.dtheta;
     Chassis->balance_loop.state_err[2] = Chassis->Chassis_Ref.Y_position - Chassis->balance_loop.x ;
     Chassis->balance_loop.state_err[3] = Chassis->Chassis_Ref.V_y - Chassis->balance_loop.dx;
-    Chassis->balance_loop.state_err[4] = 0 - Chassis->balance_loop.phi;//这里参考角度先给0 7878
     Chassis->balance_loop.state_err[5] = 0 - Chassis->balance_loop.dphi;
     
     
@@ -1676,12 +1716,13 @@ void Balance_Task(Balance_Chassis_t* Chassis)
                               Chassis->balance_loop.K_error[1][3] + 
                               Chassis->balance_loop.K_error[1][4] + 
                               Chassis->balance_loop.K_error[1][5] ;
-                              
-     
+          
+//Chassis->Balance_Tpgain = Chassis->Balance_Tpgain;    
+    
     //离地增益计算
     Chassis->Balance_Toutlandgain = 0.0f;
     Chassis->Balance_Tpoutlandgain = Chassis->balance_loop.K_error[1][0] + Chassis->balance_loop.K_error[1][1];
-    
+     Chassis->Balance_Tpoutlandgain = Chassis->Balance_Tpoutlandgain/2.0f;
     
     //双腿协调PID
     Chassis->Harmonize_Outer = PID_Calc(&Chassis->Leg_Harmonize_Pid_Outer, (Chassis->Right_Leg.phi0 - Chassis->Left_Leg.phi0), 0.0f);
@@ -1691,8 +1732,27 @@ void Balance_Task(Balance_Chassis_t* Chassis)
     //转向PID
     Chassis->V_w_Torque = PID_Calc(&Chassis->V_w_Pid, Chassis->Chassis_GYRO.Yaw_Gyro_Omega*DEG_TO_RAD, Chassis->Chassis_Ref.V_w);
     Chassis->vw_limit_rate = 1.0f;
-    VAL_LIMIT(Chassis->V_w_Torque,-3.5,3.5);
+    //打的补丁，希望小陀螺回正快
+    if((Chassis->Last_Control_Mode == CHASSIS_CLOCKWISE_ROTATE || Chassis->Last_Control_Mode == CHASSIS_ANTI_CLOCKWISE_ROTATE) && fabs(Chassis->Yaw_Angle__PI_To_PI-Chassis->Chassis_Target_Angle)>15.0/180.0f*PI )
+    {
+        follow_gimbal_flag = 1;
+    }
+    
+    if( fabs(Chassis->Yaw_Angle__PI_To_PI-Chassis->Chassis_Target_Angle)<15.0/180.0f*PI)
+    {
+       follow_gimbal_flag = 0;
+    }
 
+    if(follow_gimbal_flag == 1)
+    {
+        VAL_LIMIT(Chassis->V_w_Torque,-7,7);
+    }
+    else if(follow_gimbal_flag == 0)
+    {
+        VAL_LIMIT(Chassis->V_w_Torque,-5,5);
+    }
+    
+    
     
     //roll平衡PID
     Chassis->Roll_Balance_F = PID_Calc(&Chassis->Roll_Balance_FN_PID,Chassis->Chassis_GYRO.Roll_Angle, 0);
@@ -1709,8 +1769,8 @@ void Balance_Task(Balance_Chassis_t* Chassis)
     }
     
     //腿部竖直力F的计算
-    Chassis->Left_Leg.Leg_F = PID_Calc(&Chassis->Left_Leg.Leg_Length_PID,Chassis->Left_Leg.l0,Chassis->Chassis_Ref.Leglength) + BODY_MASS/2*9.81f + Chassis->Roll_Balance_F_Left + Chassis->Left_Leg.Gasspring_FN;
-    Chassis->Right_Leg.Leg_F = PID_Calc(&Chassis->Right_Leg.Leg_Length_PID,Chassis->Right_Leg.l0,Chassis->Chassis_Ref.Leglength) + BODY_MASS/2*9.81f + Chassis->Roll_Balance_F_Right + Chassis->Right_Leg.Gasspring_FN;
+    Chassis->Left_Leg.Leg_F = Chassis->Jump_Feedforward+PID_Calc(&Chassis->Left_Leg.Leg_Length_PID,Chassis->Left_Leg.l0,Chassis->Chassis_Ref.Leglength) + BODY_MASS/2*9.81f + Chassis->Roll_Balance_F_Left + Chassis->Left_Leg.Gasspring_FN;
+    Chassis->Right_Leg.Leg_F = Chassis->Jump_Feedforward+PID_Calc(&Chassis->Right_Leg.Leg_Length_PID,Chassis->Right_Leg.l0,Chassis->Chassis_Ref.Leglength) + BODY_MASS/2*9.81f + Chassis->Roll_Balance_F_Right + Chassis->Right_Leg.Gasspring_FN;
     
     //设置左腿关节扭矩
     if(Wheel_State_Estimate(&Chassis->Left_Leg) || Chassis->balance_loop.L0 >= 0.25)

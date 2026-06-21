@@ -138,6 +138,9 @@ typedef struct
     
     float Shoot_Frequency;//射频
     float Poke_Speed;//拨盘速度，拿来算计数
+    
+    uint8_t Shooter_Enable_Flag;//开发射的标志位
+    uint8_t Shooter_Mode_Switch_Flag;//切单发，连发标志位
 }Shooter_t;
 /*********************************发射结构体**********************************/
 

@@ -37,10 +37,10 @@
 
             
 #define JOINT_MAX_T                       34
-#define WHEEL_MAX_T                       3.8f // 4.3
+#define WHEEL_MAX_T                       10.0f//5.27f // 4.3
         
             
-#define BODY_MASS                         22.3f
+#define BODY_MASS                         23.92f
 #define WHEEL_MASS                        1.112f   
 
 
@@ -285,6 +285,9 @@ typedef struct
     
     uint8_t Jump_Finish_Middle_Leg_Flag;//跳跃完成后伸中腿长 标志位
     uint16_t Jump_Finish_Middle_Leg_Cnt;//跳跃完成后伸中腿长 计数
+    uint8_t Jump_Finish_Flag;//跳跃完成标志，用于头对底盘状态改变的决策
+    float Chassis_Ref_Pitch;//底盘参考pitch，偏置
+    float Leg_Ref_theta;//腿参考theta，偏置
     
 }Balance_Chassis_t;//复制来的，有些没用
 

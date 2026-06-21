@@ -236,7 +236,6 @@ void Key_Mouse_Action_Detect(Key_Mouse_Action_t* Key_Mouse_Action)
     if(Key_Mouse_Action->Original_Press_Flag == 1)                  //当按下时，开始计数
     {
         Key_Mouse_Action->Cnt++ ;
-       // Key_Mouse_Action->Short_Press_Flag = 1;//这里短按逻辑有问题，应该达成按下一次只置一次1的效果，这里一直置1，会打出很多发弹
     }
     else
     {
@@ -265,8 +264,6 @@ void Key_Mouse_Action_Detect(Key_Mouse_Action_t* Key_Mouse_Action)
     {
         Key_Mouse_Action->Short_Press_Flag = 0;             //检测不到上升沿时，短按标志清零
     }
-    
-    
 }
 
 

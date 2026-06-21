@@ -660,14 +660,14 @@
               <FilePath>..\TASK\Chassis_Task\Chassis_Task.c</FilePath>
             </File>
             <File>
-              <FileName>Leg_Task.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\TASK\Leg_Task\Leg_Task.c</FilePath>
-            </File>
-            <File>
               <FileName>Whell_Observe_Task.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\TASK\Whell_Observe_Task\Whell_Observe_Task.c</FilePath>
+            </File>
+            <File>
+              <FileName>Leg_Task.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\TASK\Leg_Task\Leg_Task.c</FilePath>
             </File>
             <File>
               <FileName>Board_Connected_Task.c</FileName>

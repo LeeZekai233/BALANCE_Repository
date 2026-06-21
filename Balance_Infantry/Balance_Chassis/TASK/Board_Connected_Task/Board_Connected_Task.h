@@ -15,29 +15,29 @@ typedef __packed struct
 	float Cmd_Leg_Length;//命令腿长
 	float V_x;
 	float V_y;
-	float roll;
+	float roll;//没用
 	int16_t Jump_Height;//跳跃高度
 	uint8_t Control_Mode;//控制模式
 	uint8_t remote_online_flag;
 	uint8_t fric_wheel_run;
 	uint8_t Rollover_posture_cmd;
-	uint8_t low_speed_cmd;
+	uint8_t low_speed_cmd;//没用
 	uint8_t UI_auto_aim_state;
 	uint8_t Gimbal_Init_Finish_Flag;//原gimbal_data_if_finish_Init，
 	float leg_single_angle_handle_left;
 	float leg_single_angle_handle_right;
 	uint8_t fn_2_trigger_flag;
-	uint8_t lock_shoot_check;
+	uint8_t lock_shoot_check;//没用
 }  USART_Chassis_Data_t;//底盘接收的云台数据
 
 
 
 typedef __packed struct
 {
-	uint16_t shooter_id1_17mm_cooling_heat;//
+	uint16_t shooter_id1_17mm_cooling_heat;//第一个17mm发射机构的射击热量
 	uint16_t shooter_barrel_heat_limit;//射击热量上限
 	uint16_t shooter_barrel_cooling_value;  //机器人射击热量每秒冷却值
-	float    bullet_speed_x_hat;
+	float    bullet_speed_x_hat;//没用
 	float    bullet_speed;
 	uint8_t  robot_level;
 	uint8_t  power_management_chassis_output;

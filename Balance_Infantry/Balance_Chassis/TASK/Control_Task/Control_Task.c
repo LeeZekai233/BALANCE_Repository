@@ -51,7 +51,7 @@ void Contorl_Task(Balance_Chassis_t* Chassis)
        // CAN_POWER_Control(CAN2,&Super_Cap_Send);
     }
 
-    if(time_tick%5==0)
+    if(time_tick%2==0)
     {
         usart_gimbal_send
         (judge_rece_mesg.power_heat_data.shooter_17mm_barrel_heat,
@@ -64,7 +64,7 @@ void Contorl_Task(Balance_Chassis_t* Chassis)
         judge_rece_mesg.game_robot_state.current_HP,
         judge_rece_mesg.game_robot_state.robot_id,
         Chassis->Gimbal_Init_Cmd,
-        0,//不用remain_main_Heat，让头自己算
+        Chassis->Jump_Finish_Flag,
         judge_rece_mesg.game_state.game_progress,
         &Chassis->USART_Gimbal_Data);
     }

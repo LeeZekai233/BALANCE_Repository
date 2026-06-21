@@ -12,7 +12,7 @@
 #define M3508_TORQUE_TO_IQ            3060.2f      //设定驱动轮力矩到M3508控制电流值
 #define M3508_CURRETN_TO_TORQUE       0.3f
 
-#define REDUCTION_RATIO_16            
+        
 
 typedef struct 
 {
