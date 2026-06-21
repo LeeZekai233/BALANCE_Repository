@@ -59,7 +59,7 @@ void Chassis_Mode_Select(void)
 {
     static uint16_t rorate_reserve_cnt = 0;//反转小陀螺状态用
     static uint8_t rotate_mode_switch_flag = 0;//切换模式，小陀螺
-    static uint8_t jump_up_mode_flag = 0;//切换模式，跳上台阶
+//    static uint8_t jump_up_mode_flag = 0;//切换模式，跳上台阶
 //    static uint8_t anti_fly_slope_mode_flag = 0;//切换模式，反飞
 //    static uint8_t jump_down_mode_flag = 0;//切换模式，跳下台阶
     
@@ -119,18 +119,18 @@ void Chassis_Mode_Select(void)
                 }
             }
             
-            if(Remote_VTM.key.Key_E_Action.Short_Press_Flag == 1)//短按E跳上台阶
-            {
-                jump_up_mode_flag = 1;
-            }
-            else if(Remote_VTM.key.Key_E_Action.Long_Press_Flag == 1)//长按E取消
-            {
-                jump_up_mode_flag = 0;
-            }
-            else if(Remote_VTM.key.Key_E_Action.Original_Press_Flag == 0 && USART_Gimbal_Data.remain_heat == 1)//跳完清标志位
-            {
-                jump_up_mode_flag = 0;
-            }
+//            if(Remote_VTM.key.Key_E_Action.Short_Press_Flag == 1)//短按E跳上台阶
+//            {
+//                jump_up_mode_flag = 1;
+//            }
+//            else if(Remote_VTM.key.Key_E_Action.Long_Press_Flag == 1)//长按E取消
+//            {
+//                jump_up_mode_flag = 0;
+//            }
+//            else if(Remote_VTM.key.Key_E_Action.Original_Press_Flag == 0 && USART_Gimbal_Data.remain_heat == 1)//跳完清标志位
+//            {
+//                jump_up_mode_flag = 0;
+//            }
 //            
 //            
 //            if(Remote_VTM.key.Key_F_Action.Short_Press_Flag == 1)//短按F反飞坡
@@ -180,10 +180,10 @@ void Chassis_Mode_Select(void)
             {
                 USART_Chassis_Data.Chassis_Mode = CHASSIS_STOP;
             }
-            else if(jump_up_mode_flag == 1)
-            {
-                USART_Chassis_Data.Chassis_Mode = CHASSIS_JUMP_UP ;
-            }
+//            else if(jump_up_mode_flag == 1)
+//            {
+//                USART_Chassis_Data.Chassis_Mode = CHASSIS_JUMP_UP ;
+//            }
 //            else if(jump_down_mode_flag == 1)
 //            {
 //                USART_Chassis_Data.Chassis_Mode = CHASSIS_JUMP_DOWN ;
@@ -299,7 +299,7 @@ void Chassis_Reference_Update(void)
             }
             else
             {
-                USART_Chassis_Data.V_y = (Remote_VTM.key.Key_W_Action.Original_Press_Flag - Remote_VTM.key.Key_S_Action.Original_Press_Flag)*2.5f;//这个到时候改，shift有问题;
+                USART_Chassis_Data.V_y = (Remote_VTM.key.Key_W_Action.Original_Press_Flag - Remote_VTM.key.Key_S_Action.Original_Press_Flag)*2.2f;
                 //if(Remote_VTM.key.Key_W_Action.Original_Press_Flag == 1 || Remote_VTM.key.Key_S_Action.Original_Press_Flag == 1)//操作手要求，单独按A D不给速度
 //                {
 //                    USART_Chassis_Data.V_x = (Remote_VTM.key.Key_D_Action.Original_Press_Flag - Remote_VTM.key.Key_A_Action.Original_Press_Flag)*2.2f;

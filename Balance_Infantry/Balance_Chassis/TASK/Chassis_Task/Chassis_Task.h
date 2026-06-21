@@ -49,7 +49,7 @@
             
 #define RPM_TO_RAD_PER_SED                0.10472f
 #define DEG_TO_RAD                        0.017453f
-#define NORMAL_Y_ERROEOFFSET              0.60f
+#define NORMAL_Y_ERROEOFFSET              1.0   //0.60
 
 #define LOW_LEGLENGTH_CMD                 1
 #define MIDDLE_LEGLENGTH_CMD              2
@@ -214,7 +214,8 @@ typedef struct
 //	double yaw_encoder_ecd_angle;
 	float Yaw_Angle_0_To_2PI;
 	float Yaw_Angle__PI_To_PI;
-	float normal_Y_erroffset;
+	float normal_Y_erroffset_H;//∏ﬂÕ»≥§
+    float normal_Y_erroffset;
 	float remote_ref_vx;
 	
 //	float predict_power;
