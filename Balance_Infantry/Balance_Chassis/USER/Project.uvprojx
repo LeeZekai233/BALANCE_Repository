@@ -340,7 +340,7 @@
               <MiscControls>--diag_suppress=177,1035</MiscControls>
               <Define>STM32F40_41xxx,USE_STDPERIPH_DRIVER,ARM_MATH_CM4</Define>
               <Undefine></Undefine>
-              <IncludePath>..\FWLIB\inc;..\FWLIB\src;..\USER;..\Judge_System;..\SYSTEM;..\TASK;..\USER;..\Control_Algorithm;..\SYSTEM\CAN2;..\SYSTEM\TIM6;..\SYSTEM\USART1;..\SYSTEM\CAN1;..\SYSTEM\USART3;..\SYSTEM\USART6;..\SYSTEM\BSP;..\TASK\Remote_Task;..\SYSTEM\TIM2;..\TASK\Chassis_Task;..\Control_Algorithm\PID;..\FWLIB;..\SYSTEM\USART4;..\TASK\Leg_Task;..\MOTOR;..\TASK\Control_Task;..\TASK\Board_Connected_Task;..\DSP\Core_Include;..\DSP\PrivateInclude;..\DSP\Include;..\CORE;..\TASK\Whell_Observe_Task;..\Control_Algorithm\Ramp;..\TASK\Log_Task;..\Control_Algorithm\Low_Pass_Filter;..\TASK\Can_Bus_Task;..\Control_Algorithm\High_Pass_Filter;..\MOTOR\DaMiao_8009;..\MOTOR\DJI_Motor;..\SYSTEM\USART2;..\TASK\Super_Cap_Task;..\Control_Algorithm\Signal;..\Judge_System</IncludePath>
+              <IncludePath>..\FWLIB\inc;..\FWLIB\src;..\USER;..\Judge_System;..\SYSTEM;..\TASK;..\USER;..\Control_Algorithm;..\SYSTEM\CAN2;..\SYSTEM\TIM6;..\SYSTEM\USART1;..\SYSTEM\CAN1;..\SYSTEM\USART3;..\SYSTEM\USART6;..\SYSTEM\BSP;..\TASK\Remote_Task;..\SYSTEM\TIM2;..\TASK\Chassis_Task;..\Control_Algorithm\PID;..\FWLIB;..\SYSTEM\USART4;..\TASK\Leg_Task;..\MOTOR;..\TASK\Control_Task;..\TASK\Board_Connected_Task;..\DSP\Core_Include;..\DSP\PrivateInclude;..\DSP\Include;..\CORE;..\TASK\Whell_Observe_Task;..\Control_Algorithm\Ramp;..\TASK\Log_Task;..\Control_Algorithm\Low_Pass_Filter;..\TASK\Can_Bus_Task;..\Control_Algorithm\High_Pass_Filter;..\MOTOR\DaMiao_8009;..\MOTOR\DJI_Motor;..\SYSTEM\USART2;..\TASK\Super_Cap_Task;..\Control_Algorithm\Signal;..\Judge_System;..\SENSOR;..\SENSOR\TF02</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -828,6 +828,21 @@
               <FileName>arm_common_tables.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\DSP\Source\CommonTables\arm_common_tables.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>SENSOR</GroupName>
+          <Files>
+            <File>
+              <FileName>TF02.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\SENSOR\TF02\TF02.c</FilePath>
+            </File>
+            <File>
+              <FileName>TF02.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\SENSOR\TF02\TF02.h</FilePath>
             </File>
           </Files>
         </Group>

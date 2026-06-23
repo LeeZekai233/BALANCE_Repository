@@ -59,7 +59,7 @@ void Chassis_Mode_Select(void)
 {
     static uint16_t rorate_reserve_cnt = 0;//反转小陀螺状态用
     static uint8_t rotate_mode_switch_flag = 0;//切换模式，小陀螺
-//    static uint8_t jump_up_mode_flag = 0;//切换模式，跳上台阶
+    static uint8_t jump_up_mode_flag = 0;//切换模式，跳上台阶
 //    static uint8_t anti_fly_slope_mode_flag = 0;//切换模式，反飞
 //    static uint8_t jump_down_mode_flag = 0;//切换模式，跳下台阶
     
@@ -119,18 +119,18 @@ void Chassis_Mode_Select(void)
                 }
             }
             
-//            if(Remote_VTM.key.Key_E_Action.Short_Press_Flag == 1)//短按E跳上台阶
-//            {
-//                jump_up_mode_flag = 1;
-//            }
-//            else if(Remote_VTM.key.Key_E_Action.Long_Press_Flag == 1)//长按E取消
-//            {
-//                jump_up_mode_flag = 0;
-//            }
-//            else if(Remote_VTM.key.Key_E_Action.Original_Press_Flag == 0 && USART_Gimbal_Data.remain_heat == 1)//跳完清标志位
-//            {
-//                jump_up_mode_flag = 0;
-//            }
+            if(Remote_VTM.key.Key_E_Action.Short_Press_Flag == 1)//短按E跳上台阶
+            {
+                jump_up_mode_flag = 1;
+            }
+            else if(Remote_VTM.key.Key_E_Action.Long_Press_Flag == 1)//长按E取消
+            {
+                jump_up_mode_flag = 0;
+            }
+            else if(Remote_VTM.key.Key_E_Action.Original_Press_Flag == 0 && USART_Gimbal_Data.remain_heat == 1)//跳完清标志位
+            {
+                jump_up_mode_flag = 0;
+            }
 //            
 //            
 //            if(Remote_VTM.key.Key_F_Action.Short_Press_Flag == 1)//短按F反飞坡
@@ -180,10 +180,10 @@ void Chassis_Mode_Select(void)
             {
                 USART_Chassis_Data.Chassis_Mode = CHASSIS_STOP;
             }
-//            else if(jump_up_mode_flag == 1)
-//            {
-//                USART_Chassis_Data.Chassis_Mode = CHASSIS_JUMP_UP ;
-//            }
+            else if(jump_up_mode_flag == 1)
+            {
+                USART_Chassis_Data.Chassis_Mode = CHASSIS_JUMP_UP ;
+            }
 //            else if(jump_down_mode_flag == 1)
 //            {
 //                USART_Chassis_Data.Chassis_Mode = CHASSIS_JUMP_DOWN ;
@@ -202,6 +202,9 @@ void Chassis_Mode_Select(void)
                 USART_Chassis_Data.Chassis_Mode = CHASSIS_RELAX;
                 rotate_mode_switch_flag = 0;
             }
+            
+            USART_Chassis_Data.fn_2_trigger_flag = Remote_VTM.Remote_clicker.fn2_Action.Toggle_Press_Flag ;
+            
         }
         else if(Remote_VTM.Remote_clicker.Switch == LEFT)//使用遥控
         {
@@ -226,12 +229,18 @@ void Chassis_Mode_Select(void)
             {
                 USART_Chassis_Data.Chassis_Mode = MANUAL_FOLLOW_REMOTE;
             }
+            USART_Chassis_Data.fn_2_trigger_flag = 0;
+            
+            
+            
         }
     }
     else//如果灰控和白控都在或都不在
     {
         USART_Chassis_Data.Chassis_Mode = CHASSIS_RELAX;
         rotate_mode_switch_flag = 0;
+        USART_Chassis_Data.fn_2_trigger_flag = 0;
+        rorate_reserve_cnt = 0;
     }
 }
 
@@ -310,6 +319,7 @@ void Chassis_Reference_Update(void)
                 //}
             }
            
+            
             if(Remote_VTM.key.Key_Z_Action.Original_Press_Flag  == 1)//长按Z中腿长
             {
                 USART_Chassis_Data.Cmd_Leg_Length = 2;
@@ -323,6 +333,17 @@ void Chassis_Reference_Update(void)
                 USART_Chassis_Data.Cmd_Leg_Length = 1;
             }
             
+            
+            if(Remote_VTM.Remote_clicker.fn2_Action.Toggle_Press_Flag == 1)
+            {
+                USART_Chassis_Data.leg_single_angle_handle_left = Remote_VTM.Remote_clicker.ch3 * 0.0015f;
+                USART_Chassis_Data.leg_single_angle_handle_right = Remote_VTM.Remote_clicker.ch1 * 0.0015f;
+            }
+            else
+            {
+                USART_Chassis_Data.leg_single_angle_handle_left = 0;
+                USART_Chassis_Data.leg_single_angle_handle_right = 0;
+            }
         }
     }
     else//灰控白控都不在
@@ -330,6 +351,8 @@ void Chassis_Reference_Update(void)
         USART_Chassis_Data.V_y = 0;
         USART_Chassis_Data.V_x = 0;
         USART_Chassis_Data.Cmd_Leg_Length = 1;
+        USART_Chassis_Data.leg_single_angle_handle_left = 0;
+        USART_Chassis_Data.leg_single_angle_handle_right = 0;
     }
 }
 

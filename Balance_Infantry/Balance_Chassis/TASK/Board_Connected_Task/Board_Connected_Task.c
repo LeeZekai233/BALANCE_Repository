@@ -19,19 +19,9 @@ uint8_t gimbal_control_online_detective(void)//云台心跳检测
 }
 
 
-#define GIMBAL_PAYLOAD_LENGTH     25
-#define GIMBAL_FRAME_LENGTH       26
-
-#if (GIMBAL_SEND_DATA_LENGTH != GIMBAL_FRAME_LENGTH)
-#error "GIMBAL_SEND_DATA_LENGTH must be 26: 25 bytes payload + 1 byte CRC8"
-#endif
 
 
-static void pack_u16_little_endian(uint8_t *buf, uint16_t data)
-{
-    buf[0] = (uint8_t)(data & 0xFF);
-    buf[1] = (uint8_t)((data >> 8) & 0xFF);
-}
+
 
 
 void usart_gimbal_send(
@@ -62,7 +52,7 @@ void usart_gimbal_send(
     USART_Gimbal_Data->remain_heat                     = remain_heat;
     USART_Gimbal_Data->game_state                      = game_state;
 
-    memcpy(UART4_DMA_TX_BUF, USART_Gimbal_Data, 25);
+    memcpy(UART4_DMA_TX_BUF, USART_Gimbal_Data, GIMBAL_DATA_LENGTH);
 
     /*
      * 如果上一帧还没发完，不要强行 DISABLE。

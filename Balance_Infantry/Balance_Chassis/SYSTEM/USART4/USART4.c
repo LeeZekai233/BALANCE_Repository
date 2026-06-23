@@ -207,7 +207,7 @@ void UART4_IRQHandler(void)
                       DMA_FLAG_HTIF2 |
                       DMA_FLAG_TCIF2);
 
-        if (length == 43)
+        if (length == CHASSIS_RECEIVE_LENGTH)
         {
             usart_chassis_receive(_UART4_DMA_RX_BUF,&Chassis.USART_Chassis_Data);
         }

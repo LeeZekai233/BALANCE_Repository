@@ -9,6 +9,8 @@
 #include "Low_Pass_Filter.h"
 #include "DaMiao_8009.h"
 #include "DJI_Motor.h"
+#include "TF02.h"
+
 
 
 #define VAL_LIMIT(val, min, max)\
@@ -95,7 +97,7 @@ typedef struct
 	float k[2][6];
 	float state_err[6];
 
-	float lqrOutT;
+	float lqrOutT;//未使用
 	float lqrOutTp;
     
     float Current_Fm;//实际向心力
@@ -115,6 +117,9 @@ typedef struct
 	float Roll;
 	float Pitch;
 	float Leglength;
+    
+    float theta;
+    float phi;
 }Chassis_Ref_t;
 
 
@@ -180,7 +185,7 @@ typedef struct
 	PID_t Leg_Harmonize_Pid_Outer;
 	PID_t V_w_Pid;
 	
-	PID_t Roll_Balance_FN_PID;//roll角度pid
+	PID_t Roll_Balance_FN_PID;//roll平衡pid
 	PID_t Roll_Leg_F_Pid;
 	PID_t Roll_leg_F_Rotate_Pid;
 	
@@ -205,6 +210,11 @@ typedef struct
     PID_t flip_init_dphi0_pid_left;//翻车dphi0_Init_Tp_PID
     PID_t flip_init_dphi0_pid_right;
     
+    
+    TF02_t TF02_Right;//右侧距
+    TF02_t TF02_Left;//左测距
+    float Distance_mm;
+    
 //	uint16_t Max_power_to_PM01;//好像没用过
 	
 //	float Left_theta;
@@ -214,8 +224,8 @@ typedef struct
 //	double yaw_encoder_ecd_angle;
 	float Yaw_Angle_0_To_2PI;
 	float Yaw_Angle__PI_To_PI;
-	float normal_Y_erroffset_H;//高腿长
     float normal_Y_erroffset;
+    float normal_Y_erroffset_H;
 	float remote_ref_vx;
 	
 //	float predict_power;
@@ -299,6 +309,7 @@ extern Balance_Chassis_t Chassis;
 
 
 uint8_t Wheel_State_Estimate(Leg_State_t *Leg_State);//根据支持力检测离地
+void FN_calculate(CH040DATA_t* Chassis_GYRO, Leg_State_t* Leg_State, Lpf1stObj *ft,float MT1_torque,float MT4_torque);
 void Motor_Online_Detective(Encoder_t *Encoder);
 float Normalize_Angle_PI(float angle);
 float Transform_Angle_0_2PI(float angle);

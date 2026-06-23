@@ -3,7 +3,12 @@
 #include <stm32f4xx.h>
 #include "Remote_Task.h"
 
-#define GIMBAL_SEND_DATA_LENGTH  26
+
+
+#define GIMBAL_DATA_LENGTH     25
+#define CHASSIS_RECEIVE_LENGTH 43
+
+
 
 typedef __packed struct
 {

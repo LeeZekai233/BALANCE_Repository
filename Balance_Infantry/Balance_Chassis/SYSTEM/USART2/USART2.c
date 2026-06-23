@@ -12,9 +12,9 @@ void usart2_init(uint32_t baud_rate)
     
     RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA, ENABLE); 
     RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_DMA1, ENABLE);
-		RCC_APB1PeriphClockCmd(RCC_APB1Periph_USART2, ENABLE); 
+	RCC_APB1PeriphClockCmd(RCC_APB1Periph_USART2, ENABLE); 
     GPIO_PinAFConfig(GPIOA, GPIO_PinSource2, GPIO_AF_USART2);
-		GPIO_PinAFConfig(GPIOA, GPIO_PinSource3, GPIO_AF_USART2);
+	GPIO_PinAFConfig(GPIOA, GPIO_PinSource3, GPIO_AF_USART2);
 	
     GPIO_StructInit(&gpio);
     gpio.GPIO_Pin = GPIO_Pin_2| GPIO_Pin_3;

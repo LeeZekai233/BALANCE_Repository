@@ -88,26 +88,42 @@ float Last_Yaw_Angle = 0 , Diff = 0;
 int16_t Yaw_Circle_Count=0;
 void CH040_Data_Get(imu_data_t* imu_data , CH040DATA_t* CH040DATA)
 {
-    CH040DATA->Pitch_Angle = imu_data->eul[1];
-    CH040DATA->Roll_Angle = imu_data->eul[0];
-    CH040DATA->Yaw_Angle = imu_data->eul[2];
-    
-    
-    CH040DATA->X_Acc = imu_data->acc[0];
-    CH040DATA->Y_Acc = imu_data->acc[1];
-    CH040DATA->Z_Acc = imu_data->acc[2];
-    
-    
-    CH040DATA->Pitch_Gyro_Omega = imu_data->gyr[0];
-    CH040DATA->Roll_Gyro_Omega = imu_data->gyr[1];
-    CH040DATA->Yaw_Gyro_Omega =  -imu_data->gyr[2];
-    
-    Diff=CH040DATA->Yaw_Angle - Last_Yaw_Angle;
-    if(Diff<-180.0f) Yaw_Circle_Count++;
-    else if(Diff>180.0f) Yaw_Circle_Count--;
-    
-    CH040DATA->Yaw_Multi_Angle = CH040DATA->Yaw_Angle + Yaw_Circle_Count * 360.0f;
-    Last_Yaw_Angle = CH040DATA->Yaw_Angle;
+    if(CH040_Rx_Buffer[6] != 0x91)
+    {
+        return;
+    }
+    else
+    {
+        memcpy(imu_data,&CH040_Rx_Buffer[CH040_FRAMER_HEADER_LENGHT],sizeof(imu_data_t));
+        if (isnan(imu_data->eul[0]) || isinf(imu_data->eul[0]) ||
+        isnan(imu_data->eul[1]) || isinf(imu_data->eul[1]) ||
+        isnan(imu_data->eul[2]) || isinf(imu_data->eul[2]) ||
+        isnan(imu_data->gyr[0]) || isinf(imu_data->gyr[0]) ||
+        isnan(imu_data->gyr[1]) || isinf(imu_data->gyr[1]) ||
+        isnan(imu_data->gyr[2]) || isinf(imu_data->gyr[2]))
+        {
+            return;
+        }
+        CH040DATA->Pitch_Angle = imu_data->eul[1];
+        CH040DATA->Roll_Angle = imu_data->eul[0];
+        CH040DATA->Yaw_Angle = imu_data->eul[2];
+        
+        
+        CH040DATA->X_Acc = imu_data->acc[0];
+        CH040DATA->Y_Acc = imu_data->acc[1];
+        CH040DATA->Z_Acc = imu_data->acc[2];
+        
+        CH040DATA->Pitch_Gyro_Omega = imu_data->gyr[0];
+        CH040DATA->Roll_Gyro_Omega = imu_data->gyr[1];
+        CH040DATA->Yaw_Gyro_Omega =  -imu_data->gyr[2];
+        
+        Diff=CH040DATA->Yaw_Angle - Last_Yaw_Angle;
+        if(Diff<-180.0f) Yaw_Circle_Count++;
+        else if(Diff>180.0f) Yaw_Circle_Count--;
+        
+        CH040DATA->Yaw_Multi_Angle = CH040DATA->Yaw_Angle + Yaw_Circle_Count * 360.0f;
+        Last_Yaw_Angle = CH040DATA->Yaw_Angle;
+    }
 }
     
 
@@ -126,7 +142,7 @@ void USART3_IRQHandler(void)
       USART3_Data_Length=CH040_RX_BUFF_SIZE-DMA_GetCurrDataCounter(DMA1_Stream1);
       if(USART3_Data_Length==CH040_DATA_FARMER_LENGHT)
       {
-         memcpy(&imu_data,&CH040_Rx_Buffer[CH040_FRAMER_HEADER_LENGHT],sizeof(imu_data_t));
+    //     memcpy(&imu_data,&CH040_Rx_Buffer[CH040_FRAMER_HEADER_LENGHT],sizeof(imu_data_t));
          CH040_Data_Get(&imu_data , &Chassis.Chassis_GYRO);
       }
       DMA_SetCurrDataCounter(DMA1_Stream1,CH040_RX_BUFF_SIZE);
