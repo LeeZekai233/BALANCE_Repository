@@ -7,15 +7,12 @@ void Contorl_Task(Balance_Chassis_t* Chassis)
 {
     time_tick++;
     
-    //控动作判断
-   // Remote_Switch_Action_Detect(&Remote_DT7_data);
-   // Key_Mouse_State_Update(&Remote_DT7_data);
-  //  Remote_DT7_To_USART_Chassis_Data(&Remote_DT7_data,&Chassis->USART_Chassis_Data);
-    
     //驱动轮在线检测
     Motor_Online_Detective(&Chassis->Driving_Motor[0]);
     Motor_Online_Detective(&Chassis->Driving_Motor[1]);
     
+    //测距检测
+    TF02_Online_Handle( );
     
     //里程和加速度的更新
     if(fabs(Chassis->Chassis_Ref.V_w) > 0.8f)

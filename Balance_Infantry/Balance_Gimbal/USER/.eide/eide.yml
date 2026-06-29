@@ -1,0 +1,312 @@
+version: "4.1"
+name: Project
+type: ARM
+deviceName: null
+packDir: .pack/Keil/STM32F4xx_DFP.2.14.0
+srcDirs: []
+virtualFolder:
+  name: <virtual_root>
+  files: []
+  folders:
+    - name: USER
+      files:
+        - path: system_stm32f4xx.c
+        - path: stm32f4xx_it.c
+      folders: []
+    - name: CORE
+      files:
+        - path: ../CORE/main.c
+        - path: ../CORE/startup_stm32f40_41xxx.s
+      folders: []
+    - name: FWLIB
+      files:
+        - path: ../FWLIB/src/misc.c
+        - path: ../FWLIB/src/stm32f4xx_adc.c
+        - path: ../FWLIB/src/stm32f4xx_can.c
+        - path: ../FWLIB/src/stm32f4xx_crc.c
+        - path: ../FWLIB/src/stm32f4xx_cryp.c
+        - path: ../FWLIB/src/stm32f4xx_cryp_aes.c
+        - path: ../FWLIB/src/stm32f4xx_cryp_des.c
+        - path: ../FWLIB/src/stm32f4xx_cryp_tdes.c
+        - path: ../FWLIB/src/stm32f4xx_dac.c
+        - path: ../FWLIB/src/stm32f4xx_dbgmcu.c
+        - path: ../FWLIB/src/stm32f4xx_dcmi.c
+        - path: ../FWLIB/src/stm32f4xx_dma.c
+        - path: ../FWLIB/src/stm32f4xx_dma2d.c
+        - path: ../FWLIB/src/stm32f4xx_exti.c
+        - path: ../FWLIB/src/stm32f4xx_flash.c
+        - path: ../FWLIB/src/stm32f4xx_flash_ramfunc.c
+        - path: ../FWLIB/src/stm32f4xx_fsmc.c
+        - path: ../FWLIB/src/stm32f4xx_gpio.c
+        - path: ../FWLIB/src/stm32f4xx_hash.c
+        - path: ../FWLIB/src/stm32f4xx_hash_md5.c
+        - path: ../FWLIB/src/stm32f4xx_hash_sha1.c
+        - path: ../FWLIB/src/stm32f4xx_i2c.c
+        - path: ../FWLIB/src/stm32f4xx_iwdg.c
+        - path: ../FWLIB/src/stm32f4xx_ltdc.c
+        - path: ../FWLIB/src/stm32f4xx_pwr.c
+        - path: ../FWLIB/src/stm32f4xx_rcc.c
+        - path: ../FWLIB/src/stm32f4xx_rng.c
+        - path: ../FWLIB/src/stm32f4xx_rtc.c
+        - path: ../FWLIB/src/stm32f4xx_sai.c
+        - path: ../FWLIB/src/stm32f4xx_sdio.c
+        - path: ../FWLIB/src/stm32f4xx_spi.c
+        - path: ../FWLIB/src/stm32f4xx_syscfg.c
+        - path: ../FWLIB/src/stm32f4xx_tim.c
+        - path: ../FWLIB/src/stm32f4xx_usart.c
+        - path: ../FWLIB/src/stm32f4xx_wwdg.c
+      folders: []
+    - name: SYSTEM
+      files:
+        - path: ../SYSTEM/BSP/BSP.c
+        - path: ../SYSTEM/CAN1/CAN1.c
+        - path: ../SYSTEM/CAN2/CAN2.c
+        - path: ../SYSTEM/TIM2/TIM2.c
+        - path: ../SYSTEM/TIM6/TIM6.c
+        - path: ../SYSTEM/USART1/USART1.c
+        - path: ../SYSTEM/USART2/USART2.c
+        - path: ../SYSTEM/USART3/USART3.c
+        - path: ../SYSTEM/USART4/USART4.c
+        - path: ../SYSTEM/USART6/USART6.c
+        - path: ../SYSTEM/Delay/Delay.c
+      folders: []
+    - name: TASK
+      files:
+        - path: ../TASK/Control_Task/Control_Task.c
+        - path: ../TASK/Shooter_Task/Shooter_Task.c
+        - path: ../TASK/Can_Bus_Task/Can_Bus_Task.c
+        - path: ../TASK/Gimbal_Task/Gimbal_Task.c
+        - path: ../TASK/Board_Connected_Task/Board_Connected_Task.c
+        - path: ../TASK/Remote_Task/Remote_Task.c
+        - path: ../TASK/Auto_Shoot_Task/Auto_Shoot_Task.c
+      folders: []
+    - name: Judge_System
+      files:
+        - path: ../Judge_System/Judge_System.c
+      folders: []
+    - name: Control_algorithm
+      files:
+        - path: ../Control_Algorithm/High_Pass_Filter/High_Pass_Filter.c
+        - path: ../Control_Algorithm/Low_Pass_Filter/Low_Pass_Filter.c
+        - path: ../Control_Algorithm/PID/PID.c
+        - path: ../Control_Algorithm/Ramp/Ramp.c
+        - path: ../Control_Algorithm/Signal/Signal.c
+        - path: ../Control_algorithm/Shooter_Kalman_Filter/Shooter_Kalman_Filter.c
+      folders: []
+    - name: ReadMe
+      files:
+        - path: ../ReadMe/ReadMe.txt
+      folders: []
+    - name: MOTOR
+      files:
+        - path: ../MOTOR/DJI_Motor/DJI_Motor.c
+        - path: ../MOTOR/LK_TECH/LK.c
+        - path: ../MOTOR/DM_4310/DM_Motor.c
+      folders: []
+dependenceList: []
+outDir: build
+miscInfo:
+  uid: 2baf0306c113f8bcd416aa6c202fa17e
+targets:
+  Project:
+    cppPreprocessAttrs:
+      defineList:
+        - STM32F40_41xxx
+        - USE_STDPERIPH_DRIVER
+      incList:
+        - ../CORE
+        - ../FWLIB/inc
+        - ../FWLIB/src
+        - .
+        - ../MOTOR/DJI_Motor
+        - ../MOTOR/DM_4310
+        - ../Judge_System
+        - ../SYSTEM/BSP
+        - ../SYSTEM/CAN1
+        - ../SYSTEM/CAN2
+        - ../SYSTEM/TIM2
+        - ../SYSTEM/TIM6
+        - ../SYSTEM/USART1
+        - ../SYSTEM/USART2
+        - ../SYSTEM/USART3
+        - ../SYSTEM/USART4
+        - ../SYSTEM/USART6
+        - ../Control_Algorithm/High_Pass_Filter
+        - ../Control_Algorithm/Low_Pass_Filter
+        - ../Control_Algorithm/PID
+        - ../Control_Algorithm/Ramp
+        - ../Control_Algorithm/Signal
+        - ../MOTOR/LK_TECH
+        - ../TASK/Board_Connected_Task
+        - ../TASK/Control_Task
+        - ../TASK/Can_Bus_Task
+        - ../TASK/Gimbal_Task
+        - ../TASK/Shooter_Task
+        - ../TASK/Remote_Task
+        - ../Control_Algorithm/Shooter_Kalman_Filter
+        - ../SYSTEM/Delay
+        - ../TASK/Auto_Shoot_Task
+        - .cmsis/include
+        - RTE/_Project
+      libList: []
+    excludeList: []
+    settings:
+      debugger: cortex-debug
+    toolchain: AC5
+    toolchainConfigMap:
+      AC5:
+        archExtensions: ""
+        cpuType: Cortex-M4
+        floatingPointHardware: single
+        options:
+          version: 4
+          afterBuildTasks: []
+          asm-compiler:
+            defines: []
+          beforeBuildTasks: []
+          c/cpp-compiler:
+            CXX_FLAGS: --diag_suppress=177,1035
+            C_FLAGS: --diag_suppress=177,1035
+            c99-mode: true
+            one-elf-section-per-function: true
+            optimization: level-0
+            warnings: all-warnings
+          global:
+            output-debug-info: enable
+            use-microLIB: false
+          linker:
+            $outputTaskExcludes:
+              - .bin
+            output-format: elf
+            ro-base: "0x08000000"
+            rw-base: "0x20000000"
+            xo-base: ""
+        scatterFilePath: ""
+        storageLayout:
+          RAM:
+            - id: 1
+              isChecked: false
+              mem:
+                size: "0x0"
+                startAddr: "0x0"
+              noInit: false
+              tag: RAM
+            - id: 2
+              isChecked: false
+              mem:
+                size: "0x0"
+                startAddr: "0x0"
+              noInit: false
+              tag: RAM
+            - id: 3
+              isChecked: false
+              mem:
+                size: "0x0"
+                startAddr: "0x0"
+              noInit: false
+              tag: RAM
+            - id: 1
+              isChecked: true
+              mem:
+                size: "0x20000"
+                startAddr: "0x20000000"
+              noInit: false
+              tag: IRAM
+            - id: 2
+              isChecked: true
+              mem:
+                size: "0x10000"
+                startAddr: "0x10000000"
+              noInit: false
+              tag: IRAM
+          ROM:
+            - id: 1
+              isChecked: false
+              isStartup: false
+              mem:
+                size: "0x0"
+                startAddr: "0x0"
+              tag: ROM
+            - id: 2
+              isChecked: false
+              isStartup: false
+              mem:
+                size: "0x0"
+                startAddr: "0x0"
+              tag: ROM
+            - id: 3
+              isChecked: false
+              isStartup: false
+              mem:
+                size: "0x0"
+                startAddr: "0x0"
+              tag: ROM
+            - id: 1
+              isChecked: true
+              isStartup: true
+              mem:
+                size: "0x100000"
+                startAddr: "0x8000000"
+              tag: IROM
+            - id: 2
+              isChecked: false
+              isStartup: false
+              mem:
+                size: "0x0"
+                startAddr: "0x0"
+              tag: IROM
+        useCustomScatterFile: false
+      AC6:
+        archExtensions: ""
+        cpuType: Cortex-M4
+        floatingPointHardware: single
+        options:
+          version: 3
+          afterBuildTasks: []
+          asm-compiler:
+            $use: asm-auto
+            misc-controls: ""
+          beforeBuildTasks: []
+          c/cpp-compiler:
+            language-c: c99
+            language-cpp: c++11
+            link-time-optimization: false
+            optimization: level-0
+          global:
+            output-debug-info: enable
+            use-microLIB: false
+          linker:
+            $outputTaskExcludes:
+              - .bin
+            misc-controls: --diag_suppress=L6329
+            output-format: elf
+        scatterFilePath: <YOUR_SCATTER_FILE>.sct
+        storageLayout:
+          RAM:
+            - id: 1
+              isChecked: true
+              mem:
+                size: "0x5000"
+                startAddr: "0x20000000"
+              noInit: false
+              tag: IRAM
+          ROM:
+            - id: 1
+              isChecked: true
+              isStartup: true
+              mem:
+                size: "0x10000"
+                startAddr: "0x08000000"
+              tag: IROM
+        useCustomScatterFile: false
+    uploadConfigMap:
+      JLink:
+        baseAddr: ""
+        bin: ""
+        cpuInfo:
+          cpuName: STM32F405RG
+          vendor: ST
+        otherCmds: ""
+        proType: 1
+        speed: 8000
+    uploader: JLink

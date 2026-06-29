@@ -933,8 +933,8 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\TASK\Shooter_Task\Shooter_Task.c</PathWithFileName>
-      <FilenameWithoutPath>Shooter_Task.c</FilenameWithoutPath>
+      <PathWithFileName>..\TASK\Control_Task\Control_Task.c</PathWithFileName>
+      <FilenameWithoutPath>Control_Task.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>
@@ -945,8 +945,8 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\TASK\Can_Bus_Task\Can_Bus_Task.c</PathWithFileName>
-      <FilenameWithoutPath>Can_Bus_Task.c</FilenameWithoutPath>
+      <PathWithFileName>..\TASK\Shooter_Task\Shooter_Task.c</PathWithFileName>
+      <FilenameWithoutPath>Shooter_Task.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>
@@ -957,8 +957,8 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\TASK\Control_Task\Control_Task.c</PathWithFileName>
-      <FilenameWithoutPath>Control_Task.c</FilenameWithoutPath>
+      <PathWithFileName>..\TASK\Can_Bus_Task\Can_Bus_Task.c</PathWithFileName>
+      <FilenameWithoutPath>Can_Bus_Task.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>

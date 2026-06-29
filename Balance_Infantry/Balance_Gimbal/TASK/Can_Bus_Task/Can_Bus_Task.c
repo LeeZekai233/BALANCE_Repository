@@ -24,19 +24,7 @@ void CAN2_Send_Task(float Yaw_Current_Set,float Poke_Speed_Set)//Yaw速度单位rad/
     }
     while((CAN2->TSR & (CAN_TSR_TME0 | CAN_TSR_TME1 | CAN_TSR_TME2)) == 0);//等待有发送邮箱空
     
-//    if(Yaw_DM4310.ERR != DM_ENABLE && Gimbal.Gimbal_Mode != GIMBAL_RELAX)//电机id几？还不知道
-//    {
-//        DM_Motor_Enable(CAN2,0x201);
-//    }
-//    else if(Yaw_DM4310.ERR == DM_ENABLE && Gimbal.Gimbal_Mode != GIMBAL_RELAX)
-//    {
-//        DM_Motor_Speed_Send(CAN2,0x201,Yaw_Speed_Set);
-//    }
-//    else if(Gimbal.Gimbal_Mode == GIMBAL_RELAX)
-//    {
-//        DM_Motor_Disable(CAN2,0x201);
-//    }
-    
+
     if(Yaw_DM4310.ERR == DM_DISABLE)
     {
         DM_Motor_Enable(CAN2,0x01);

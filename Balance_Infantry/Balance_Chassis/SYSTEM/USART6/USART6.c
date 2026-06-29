@@ -103,8 +103,6 @@ void USART6_Init(uint32_t baud_rate)
 uint32_t USART6_Data_Length = 0;
 void USART6_IRQHandler(void)
 {
-
-    
     if(USART_GetITStatus(USART6, USART_IT_IDLE) != RESET)
     {
        (void)USART6->SR;
@@ -115,14 +113,17 @@ void USART6_IRQHandler(void)
         // 计算接收到的数据长度
         USART6_Data_Length = BSP_USART6_DMA_RX_BUF_LEN - DMA_GetCurrDataCounter(DMA2_Stream1);
         
-        
-//        // 处理接收到的数据（这里调用你的数据处理函数）
-//        if(USART6_Data_Length > (HEADER_LEN + CMD_LEN + CRC_LEN))
-//        {
-//            judgement_data_handle(_USART6_DMA_RX_BUF, USART6_Data_Length);
-//        }
-         DMA_SetCurrDataCounter(DMA2_Stream1, BSP_USART6_DMA_RX_BUF_LEN);
-         DMA_Cmd(DMA2_Stream1, ENABLE);
+        if(_USART6_DMA_RX_BUF[0] == 0XBE)
+        {
+            Chassis.TF02_Middle.Heart_cnt = time_tick;
+            Chassis.TF02_Middle.Distance_mm = (uint16_t)(_USART6_DMA_RX_BUF[2] << 8 || _USART6_DMA_RX_BUF[1]);
+        }
+        else
+        {
+            Chassis.TF02_Middle.Distance_mm = 0;
+        }
+        DMA_SetCurrDataCounter(DMA2_Stream1, BSP_USART6_DMA_RX_BUF_LEN);
+        DMA_Cmd(DMA2_Stream1, ENABLE);
     }
 }
 

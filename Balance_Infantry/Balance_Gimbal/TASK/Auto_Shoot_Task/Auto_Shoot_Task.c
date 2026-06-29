@@ -23,7 +23,6 @@ void Vision_Process_General_Message_New(unsigned char* address, unsigned int len
 	if(!AUTO_CRC)				//crc校验
 		return;
 	
-	
 	memcpy(&New_Auto_Aim,&address[0],sizeof(New_Auto_Aim_t));
 	
 	/**************************↓自瞄模式下的位置识别↓***************************/

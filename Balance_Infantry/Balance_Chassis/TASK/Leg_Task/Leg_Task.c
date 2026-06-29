@@ -314,7 +314,7 @@ void lqr_k(float L0, float K[12])//根据腿长得出LQR增益K
 
     if(Chassis.Leg_Length == HIGH_LEG_LENGTH)
     {
-        if(Chassis.Chassis_Ref.V_y == 0 && fabs(Chassis.balance_loop.dx) < 0.3f )
+        if(Chassis.Chassis_Ref.V_y == 0 && fabs(Chassis.balance_loop.dx) < 0.3f && fabs(Chassis.Chassis_Ref.V_w) <= 0.5f)
         {
             K[0] = ((L0 * 22.676968490462631 - t2 * 317.843410448173) +
                   t3 * 378.260666165621) -
@@ -473,7 +473,7 @@ void lqr_k(float L0, float K[12])//根据腿长得出LQR增益K
         }
         else
         {
-            if(Chassis.Chassis_Ref.V_y == 0 && fabs(Chassis.balance_loop.dx) <= 0.45f)
+            if(Chassis.Chassis_Ref.V_y == 0 && fabs(Chassis.balance_loop.dx) <= 0.45f && fabs(Chassis.Chassis_Ref.V_w) <= 0.5f )
             {  
                 K[0] = ((L0 * 13.291070452429761 - t2 * 244.908169498452) +
                       t3 * 268.04302547217128) -

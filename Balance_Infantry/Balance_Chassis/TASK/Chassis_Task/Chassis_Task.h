@@ -38,7 +38,7 @@
 #define RIGHT_WHEEL_POLARITY                        1//右轮电机极性
 
             
-#define JOINT_MAX_T                       34
+#define JOINT_MAX_T                       40.0f
 #define WHEEL_MAX_T                       10.0f//5.27f // 4.3
         
             
@@ -211,9 +211,7 @@ typedef struct
     PID_t flip_init_dphi0_pid_right;
     
     
-    TF02_t TF02_Right;//右侧距
-    TF02_t TF02_Left;//左测距
-    float Distance_mm;
+    TF02_t TF02_Middle;//中间的测距
     
 //	uint16_t Max_power_to_PM01;//好像没用过
 	
