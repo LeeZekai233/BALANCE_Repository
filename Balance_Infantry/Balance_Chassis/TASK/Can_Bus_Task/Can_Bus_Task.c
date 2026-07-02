@@ -56,7 +56,7 @@ void CAN1_Send_Task_1(float Joint_T_Set1,float Joint_T_Set4)
     }
     else
     {
-        DaMiao_8009_Claer_Error_Information(CAN1,JOINT1_CONTROL_ID);
+        DaMiao_8009_Clear_Error_Information(CAN1,JOINT1_CONTROL_ID);
     }
     while((CAN1->TSR & (CAN_TSR_TME0 | CAN_TSR_TME1 | CAN_TSR_TME2)) == 0);//µÈ´ýÓÐ·¢ËÍÓÊÏä¿Õ
     
@@ -71,7 +71,7 @@ void CAN1_Send_Task_1(float Joint_T_Set1,float Joint_T_Set4)
     }
     else
     {
-        DaMiao_8009_Claer_Error_Information(CAN1,JOINT4_CONTROL_ID);
+        DaMiao_8009_Clear_Error_Information(CAN1,JOINT4_CONTROL_ID);
     }
     while((CAN1->TSR & (CAN_TSR_TME0 | CAN_TSR_TME1 | CAN_TSR_TME2)) == 0);//µÈ´ýÓÐ·¢ËÍÓÊÏä¿Õ
 }
@@ -91,7 +91,7 @@ void CAN1_Send_Task_2(float Joint_T_Set2, float Joint_T_Set3)
     }
     else
     {
-        DaMiao_8009_Claer_Error_Information(CAN1,JOINT3_CONTROL_ID);
+        DaMiao_8009_Clear_Error_Information(CAN1,JOINT3_CONTROL_ID);
     }
     while((CAN1->TSR & (CAN_TSR_TME0 | CAN_TSR_TME1 | CAN_TSR_TME2)) == 0);//µÈ´ýÓÐ·¢ËÍÓÊÏä¿Õ
     
@@ -105,7 +105,7 @@ void CAN1_Send_Task_2(float Joint_T_Set2, float Joint_T_Set3)
     }
     else
     {
-        DaMiao_8009_Claer_Error_Information(CAN1,JOINT2_CONTROL_ID);
+        DaMiao_8009_Clear_Error_Information(CAN1,JOINT2_CONTROL_ID);
     }
     while((CAN1->TSR & (CAN_TSR_TME0 | CAN_TSR_TME1 | CAN_TSR_TME2)) == 0);//µÈ´ýÓÐ·¢ËÍÓÊÏä¿Õ
         

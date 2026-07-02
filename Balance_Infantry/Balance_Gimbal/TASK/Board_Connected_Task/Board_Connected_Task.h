@@ -18,8 +18,8 @@ typedef enum
   CHASSIS_JUMP_UP                                  = 9,//跳上台阶
   CHASSIS_JUMP_DOWN                                = 10,//跳下台阶
   CHASSIS_ANTI_FLY_SLOPE                           = 11,//反飞坡
-  CHASSIS_TEXT                                     = 12,//调试的临时模式
-    
+  CHASSIS_SIT_DOWN                                     = 12,//调试的临时模式
+  
 } Chassis_Mode_e;//底盘模式
 
 typedef enum

@@ -98,7 +98,7 @@ void DaMiao_8009_Position0_offset(CAN_TypeDef* CANx, int16_t CAN_ID);
 void DaMiao_8009_Enable(CAN_TypeDef* CANx, int16_t CAN_ID);
 void DaMiao_8009_Disable(CAN_TypeDef* CANx, int16_t CAN_ID);
 void DaMiao_8009_Information_Receive(CanRxMsg *msg,DaMiao_8009_t *DaMiao_8009,float offset);		//信息接收
-void DaMiao_8009_Claer_Error_Information(CAN_TypeDef* CANx, int16_t CAN_ID);
+void DaMiao_8009_Clear_Error_Information(CAN_TypeDef* CANx, int16_t CAN_ID);
 void DaMiao_8009_Position_Information_Send_Test(void);
 void DaMiao_8009_To_Generic_Encoder(DaMiao_8009_t* DaMiao_8009,Encoder_t* Encoder);
 float AngleWrap(float angle);

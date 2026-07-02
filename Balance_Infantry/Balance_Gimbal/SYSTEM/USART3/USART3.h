@@ -74,6 +74,9 @@ typedef struct
 	float X_Acc;
 	float Y_Acc;
 	float Z_Acc;
+    
+    uint32_t heart_cnt;
+    uint8_t Online_Flag;
 }CH040DATA_t;                  //CH040数据结构体
 /***************************结构体定义*****************************/
 

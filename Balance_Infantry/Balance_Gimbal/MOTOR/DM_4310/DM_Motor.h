@@ -100,7 +100,7 @@ void DM_Motor_Position0_offset(CAN_TypeDef* CANx, int16_t CAN_ID);
 void DM_Motor_Enable(CAN_TypeDef* CANx, int16_t CAN_ID);
 void DM_Motor_Disable(CAN_TypeDef* CANx, int16_t CAN_ID);
 void DM_Motor_Information_Receive(CanRxMsg *msg,DM_Motor_t *DM_Motor,float offset);		//信息接收
-void DM_Motor_Claer_Error_Information(CAN_TypeDef* CANx, int16_t CAN_ID);
+void DM_Motor_Clear_Error_Information(CAN_TypeDef* CANx, int16_t CAN_ID);
 void DM_Motor_Position_Information_Send_Test(void);
 void DM_Motor_To_Generic_Encoder(DM_Motor_t* DM_Motor,Encoder_t* Encoder);
 /***************************************************************/

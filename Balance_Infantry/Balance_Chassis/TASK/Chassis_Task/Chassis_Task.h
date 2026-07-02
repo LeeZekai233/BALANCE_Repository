@@ -72,7 +72,7 @@ typedef enum
   CHASSIS_JUMP_UP                                  = 9,//跳上台阶
   CHASSIS_JUMP_DOWN                                = 10,//跳下台阶
   CHASSIS_ANTI_FLY_SLOPE                           = 11,//反飞坡
-  CHASSIS_TEXT                                     = 12,//调试的临时模式
+  CHASSIS_SIT_DOWN                                 = 12,//调试的临时模式
     
 } Chassis_Mode_e;//底盘模式
 
@@ -306,6 +306,7 @@ void Chassis_State_Update(Balance_Chassis_t* Chassis);
 void Chassis_Relax_Handle(Balance_Chassis_t* Chassis);
 void Chassis_Init_Handle(Balance_Chassis_t* Chassis);
 void Chassis_Stop_Handle(Balance_Chassis_t* Chassis);
+void Chassis_Sit_Down_Handle(Balance_Chassis_t* Chassis);
 void Chassis_Fallow_Gimbal_Handle(Balance_Chassis_t* Chassis);
 void Chassis_Single_Leg_Control_Handle(Balance_Chassis_t* Chassis);
 void Leglength_Change(Balance_Chassis_t* Chassis);

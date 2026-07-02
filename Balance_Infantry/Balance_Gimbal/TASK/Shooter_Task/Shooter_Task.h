@@ -6,8 +6,8 @@
 #include "DJI_Motor.h"
 #include "LK.h"
 
-#define    LEFT_FIRC_SPEED        6300
-#define    RIGHT_FRIC_SPEED      -6300
+#define    LEFT_FIRC_SPEED        6000
+#define    RIGHT_FRIC_SPEED      -6000
 #define BULLET_SPEED_TARGET											23.5
 
 #define BULLET_SPEED_SELF_ADAPTATION_K    			0//250//自适应弹数调整系数//摩擦轮转速调高 系数调小

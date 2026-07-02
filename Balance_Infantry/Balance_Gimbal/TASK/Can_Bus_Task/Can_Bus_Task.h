@@ -7,6 +7,9 @@
 #define PITCH_FEEDBACK_ID 0x205
 #define POKE_FEEDBACK_ID 0x141
 #define YAW_FEEDBACK_ID 0xA1
+#define YAW_CONTROL_ID 0x01
+
+#define YAW_MOTOR_OFFSET 1.11555672
 
 void CAN1_Send_Task(int16_t Pitch_Current_Set,int16_t Left_Fric_Current_Set,int16_t Right_Fric_Current_Set);
 void CAN2_Send_Task(float Yaw_Torque_Set,float Poke_Speed_Set);

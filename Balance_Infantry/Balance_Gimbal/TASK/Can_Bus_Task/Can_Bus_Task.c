@@ -20,24 +20,23 @@ void CAN2_Send_Task(float Yaw_Torque_Set,float Poke_Speed_Set)//Yaw速度单位rad/s
     }
     else
     {
-        LK_SpdLoop_Out(1,0,(int32_t)(Poke_Speed_Set*100),CAN2);
+        LK_SpdLoop_Out(1,0,(int32_t)(Poke_Speed_Set*100),CAN2);//乘100与分辨率有关
     }
     while((CAN2->TSR & (CAN_TSR_TME0 | CAN_TSR_TME1 | CAN_TSR_TME2)) == 0);//等待有发送邮箱空
     
 
     if(Yaw_DM4310.ERR == DM_DISABLE)
     {
-        DM_Motor_Enable(CAN2,0x01);
+        DM_Motor_Enable(CAN2,YAW_CONTROL_ID);
     }
     else if(Yaw_DM4310.ERR == DM_ENABLE)
     {
-        DM_Motor_Information_Send(CAN2,0x01,0,0,Yaw_Torque_Set,0,0);
+        DM_Motor_Information_Send(CAN2,YAW_CONTROL_ID,0,0,Yaw_Torque_Set,0,0);
     }
     else
     {
-        DM_Motor_Claer_Error_Information(CAN2,0x01);
+        DM_Motor_Clear_Error_Information(CAN2,YAW_CONTROL_ID);
     }
-    
     while((CAN2->TSR & (CAN_TSR_TME0 | CAN_TSR_TME1 | CAN_TSR_TME2)) == 0);//等待有发送邮箱空
 }
 
@@ -71,7 +70,7 @@ void CAN2_Receive_Task(CanRxMsg* RxMsg)
     switch (RxMsg->StdId)
     {
         case YAW_FEEDBACK_ID :
-            DM_Motor_Information_Receive(RxMsg,&Yaw_DM4310,1.11555672);
+            DM_Motor_Information_Receive(RxMsg,&Yaw_DM4310,YAW_MOTOR_OFFSET);
             DM_Motor_To_Generic_Encoder(&Yaw_DM4310,&Gimbal.Yaw_Motor_Encoder);
             break;
         case POKE_FEEDBACK_ID:

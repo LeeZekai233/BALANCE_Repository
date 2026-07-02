@@ -2,7 +2,15 @@
 
 uint32_t time_tick;
 
-
+/**
+************************************************************************************************************************
+* @Name     : Control_Task
+* @brief    : 控制任务
+* @param	: void
+* @retval   : void
+* @Note     : 
+************************************************************************************************************************
+**/
 void Control_Task(void)
 {
     time_tick++;
@@ -17,6 +25,7 @@ void Control_Task(void)
         Key_Mouse_State_Update(&Remote_VTM.key,&Remote_VTM.Remote_mouse);
         VTM_Clicker_State_Update(&Remote_VTM);
     }
+    
     
     Chassis_Task( );
     Gimbal_Task( );
@@ -39,7 +48,15 @@ void Control_Task(void)
 }
 
 
-
+/**
+************************************************************************************************************************
+* @Name     : Control_Task_Init
+* @brief    : PID参数初始化
+* @param	: void
+* @retval   : void
+* @Note     : 
+************************************************************************************************************************
+**/
 void Control_Task_Init(void)
 {
     PID_Init(&Gimbal.Pitch_Motor_Angle_PID,PID_POSITION,40,0,0,10000,0);
@@ -55,6 +72,16 @@ void Control_Task_Init(void)
 }
 
 
+
+/**
+************************************************************************************************************************
+* @Name     : Chassis_Mode_Select
+* @brief    : 底盘模式更新
+* @param	: void
+* @retval   : void
+* @Note     : 白控灰控都有，白控功能最不全，灰控遥控功能少一点，键鼠最全
+************************************************************************************************************************
+**/
 void Chassis_Mode_Select(void)
 {
     static uint16_t rorate_reserve_cnt = 0;//反转小陀螺状态用
@@ -206,6 +233,10 @@ void Chassis_Mode_Select(void)
             {
                 USART_Chassis_Data.Chassis_Mode = CHASSIS_ANTI_FLY_SLOPE ;
             }
+            else if(Shooter.Shooter_Mode != SHOOTER_RELAX)
+            {
+                USART_Chassis_Data.Chassis_Mode = CHASSIS_SIT_DOWN;
+            }
             else
             {
                 USART_Chassis_Data.Chassis_Mode = MANUAL_FOLLOW_REMOTE;
@@ -278,6 +309,10 @@ void Chassis_Mode_Select(void)
             {
                 USART_Chassis_Data.Chassis_Mode = CHASSIS_ANTI_FLY_SLOPE ;
             }
+            else if(Shooter.Shooter_Mode != SHOOTER_RELAX)
+            {
+                USART_Chassis_Data.Chassis_Mode = CHASSIS_SIT_DOWN;
+            }
             else
             {
                 USART_Chassis_Data.Chassis_Mode = MANUAL_FOLLOW_REMOTE;
@@ -298,7 +333,15 @@ void Chassis_Mode_Select(void)
 }
 
 
-
+/**
+************************************************************************************************************************
+* @Name     : Chassis_Reference_Update
+* @brief    : 底盘参考值更新
+* @param	: void
+* @retval   : void
+* @Note     : 白控灰控都有，白控功能最不全，灰控遥控功能少一点，键鼠最全
+************************************************************************************************************************
+**/
 void Chassis_Reference_Update(void)
 {
     if(Remote_DT7_data.online_flag == 1 && Remote_VTM.online_flag == 0)//用白控
@@ -395,7 +438,15 @@ void Chassis_Reference_Update(void)
 }
 
 
-
+/**
+************************************************************************************************************************
+* @Name     : Chassis_Task
+* @brief    : 底盘任务
+* @param	: void
+* @retval   : void
+* @Note     : 底盘模式选择与底盘参考值更新
+************************************************************************************************************************
+**/
 void Chassis_Task(void)
 {
     Chassis_Mode_Select();

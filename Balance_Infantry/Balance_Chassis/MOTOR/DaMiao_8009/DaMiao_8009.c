@@ -283,7 +283,7 @@ void DaMiao_8009_Enable(CAN_TypeDef* CANx, int16_t CAN_ID)
 *@Note:     нч
 *@RetVal:   нч
 *******************************/
-void DaMiao_8009_Claer_Error_Information(CAN_TypeDef* CANx, int16_t CAN_ID)
+void DaMiao_8009_Clear_Error_Information(CAN_TypeDef* CANx, int16_t CAN_ID)
 {		
 	CanTxMsg Motor_DaMiao_Init_CanTxMsg;
 	

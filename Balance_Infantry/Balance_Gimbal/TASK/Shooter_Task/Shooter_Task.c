@@ -1,8 +1,17 @@
 #include "main.h"
 
-Shooter_t Shooter;
+Shooter_t Shooter={0};
 
 
+/**
+************************************************************************************************************************
+* @Name     : Shooter_Mode_Select
+* @brief    : 发射模式选择
+* @param	: void
+* @retval   : void
+* @Note     : 
+************************************************************************************************************************
+**/
 void Shooter_Mode_Select(void)
 {
     Shooter.Last_Shooter_Mode = Shooter.Shooter_Mode ;
@@ -46,7 +55,17 @@ void Shooter_Mode_Select(void)
     {
         if(Remote_VTM.Remote_clicker.Switch == LEFT)//使用控进行控制
         {
-            if(Remote_VTM.Remote_clicker.fn1_Action.Toggle_Press_Flag == 1)//按一次fn1后，进入停火模式，拨轮控制打弹
+            if(Remote_VTM.Remote_clicker.fn1_Action.Short_Press_Flag == 1)
+            {
+                Shooter.Shooter_Enable_Flag = 1;
+            }
+            
+            if(Remote_VTM.Remote_clicker.fn1_Action.Long_Press_Flag == 1)
+            {
+                Shooter.Shooter_Enable_Flag = 0;
+            }
+            
+            if(Shooter.Shooter_Enable_Flag == 1)
             {
                 if(/*云台没初始化完不允许打弹*/Gimbal.Gimbal_Mode != GIMBAL_RELAX && Gimbal.Gimbal_Mode != GIMBAL_INIT)
                 {
@@ -142,31 +161,41 @@ void Shooter_Mode_Select(void)
 }
 
 
-
-
+/**
+************************************************************************************************************************
+* @Name     : Shooter_Feedback_Update
+* @brief    : 发射反馈值更新
+* @param	: void
+* @retval   : void
+* @Note     : 
+************************************************************************************************************************
+**/
+float temp_speed;
 void Shooter_Feedback_Update(void)
 {
     Shooter.Fric_Speed_Fdb[0] = Fric_M3508[0].rate_rpm ;
     Shooter.Fric_Speed_Fdb[1] = Fric_M3508[1].rate_rpm ;
     Shooter.Poke_Angle_Fdb = Shooter.Poke_Motor_Encoder.Angle_Deg_Total_fdb;
     Shooter.Poke_Speed_Fdb = Shooter.Poke_Motor_Encoder.Omega_Deg_fdb ;
+    temp_speed =  -Shooter.Fric_Speed_Fdb[1];
     
     Shooter.Heat_Restrict.Heat_Cooling_Value = USART_Gimbal_Data.shooter_barrel_cooling_value ;//热量限制用
     Shooter.Heat_Restrict.Shooter_Heat_meas = USART_Gimbal_Data.shooter_id1_17mm_cooling_heat ;
     Shooter.Heat_Restrict.Heat_Limit = USART_Gimbal_Data.shooter_barrel_heat_limit ;
     
-   if(fabs(Shooter.Poke_Speed_Fdb) >= 5)
-   {
-       Shooter.Poke_State = POKE_ON;
-   }
-   else
-   {
-       Shooter.Poke_State = POKE_OFF;
-   }
+   
 }
 
 
-
+/**
+************************************************************************************************************************
+* @Name     : Shooter_Bullet_Speed_Self_Adaptation
+* @brief    : 自适应弹速
+* @param	: void
+* @retval   : void
+* @Note     : 根据反馈的弹速灵活调整摩擦轮转速，暂时未调用
+************************************************************************************************************************
+**/
 float Shooter_Bullet_Speed_Self_Adaptation(float Bullet_Speed)
 {
 	float static Bullet_Speed_Error;
@@ -177,6 +206,15 @@ float Shooter_Bullet_Speed_Self_Adaptation(float Bullet_Speed)
 
 
 
+/**
+************************************************************************************************************************
+* @Name     : Shooter_State_Update
+* @brief    : 发射状态更新
+* @param	: void
+* @retval   : void
+* @Note     : 检测正常和卡弹，摩擦轮和拨盘的开启与关闭
+************************************************************************************************************************
+**/
 void Shooter_State_Update(void)
 {
     Shooter.Last_Shooter_State = Shooter.Shooter_State;
@@ -189,11 +227,19 @@ void Shooter_State_Update(void)
         Shooter.Fric_State = FRIC_OFF ;
     }
     
-    
+   if(fabs(Shooter.Poke_Speed_Fdb) >= 5)
+   {
+       Shooter.Poke_State = POKE_ON;
+   }
+   else
+   {
+       Shooter.Poke_State = POKE_OFF;
+   }
+   
     switch (Shooter.Shooter_State)
     {
         case SHOOTER_NORMAL :
-            if(fabs(Shooter.Poke_Angle_Ref - Shooter.Poke_Angle_Fdb) > 5.0f)//步兵一颗弹36度
+            if(fabs(Shooter.Poke_Angle_Ref - Shooter.Poke_Angle_Fdb) > 30.0f)//步兵一颗弹36度
             {
                 Shooter.Poke_Trap_CNT ++;
             }
@@ -221,7 +267,15 @@ void Shooter_State_Update(void)
 
 
 
-
+/**
+************************************************************************************************************************
+* @Name     : Shoot_Frequency_Select
+* @brief    : 弹频选择
+* @param	: void
+* @retval   : void
+* @Note     : 弹频选择
+************************************************************************************************************************
+**/
 void Shoot_Frequency_Select(void)
 {
     if(Gimbal.Gimbal_Mode == GIMBAL_AUTO_AIM || Gimbal.Gimbal_Mode == GIMBAL_SENTRY)
@@ -265,7 +319,15 @@ void Shoot_Frequency_Select(void)
 
 
 
-
+/**
+************************************************************************************************************************
+* @Name     : Heat_Restrict
+* @brief    : 热量限制
+* @param	: void
+* @retval   : void
+* @Note     : 
+************************************************************************************************************************
+**/
 void Heat_Restrict(void)
 {
     //更新剩余发弹量，在离线计算的热量和裁判系统读的热量选一个更保守的
@@ -299,7 +361,15 @@ void Heat_Restrict(void)
 
 
 
-
+/**
+************************************************************************************************************************
+* @Name     : Shooter_Reference_Update
+* @brief    : 发射机构参考值更新
+* @param	: void
+* @retval   : void
+* @Note     : 
+************************************************************************************************************************
+**/
 void Shooter_Reference_Update(void)
 {
     Shooter.Last_Poke_Angle_Ref = Shooter.Poke_Angle_Ref ;
@@ -373,7 +443,16 @@ void Shooter_Reference_Update(void)
     }
 }
 
-void Shoot_Detect(void)//未调用
+/**
+************************************************************************************************************************
+* @Name     : Shoot_Detect
+* @brief    : 射击检测
+* @param	: void
+* @retval   : void
+* @Note     : 使用停火有限状态机检测打弹，打出弹后停止射击，未启用
+************************************************************************************************************************
+**/
+void Shoot_Detect(void)
 {
     static uint16_t FSM_cnt;
     switch (Shooter.CF_FSM_State)
@@ -405,14 +484,34 @@ void Shoot_Detect(void)//未调用
 }
 
 
+/**
+************************************************************************************************************************
+* @Name     : Shooter_Relax_Handle
+* @brief    : 发射失能处理
+* @param	: void
+* @retval   : void
+* @Note     : 
+************************************************************************************************************************
+**/
 void Shooter_Relax_Handle(void)
 {
     Shooter.Fric_Motor_Ser_Current[0] = 0;
     Shooter.Fric_Motor_Ser_Current[1] = 0;
     Shooter.Poke_Motor_Set_Speed = 0;
+    Shooter.Shooter_Enable_Flag = 0;
 }
 
 
+
+/**
+************************************************************************************************************************
+* @Name     : Shooter_Remote_Handle
+* @brief    : 发射控制处理
+* @param	: void
+* @retval   : void
+* @Note     : 
+************************************************************************************************************************
+**/
 void Shooter_Remote_Handle(void)
 {
     Shooter.Fric_Motor_Ser_Current[0] = PID_Calc(&Shooter.Fric_Speed_PID[0], Shooter.Fric_Speed_Fdb[0], Shooter.Fric_Speed_Ref[0]);
@@ -420,7 +519,15 @@ void Shooter_Remote_Handle(void)
     Shooter.Poke_Motor_Set_Speed = PID_Calc(&Shooter.Poke_Angle_PID, Shooter.Poke_Angle_Fdb, Shooter.Poke_Angle_Ref);
 }
 
-
+/**
+************************************************************************************************************************
+* @Name     : Shooter_Control_Loop
+* @brief    : 发射控制循环
+* @param	: void
+* @retval   : void
+* @Note     : 
+************************************************************************************************************************
+**/
 void Shooter_Control_Loop(void)
 {
     switch (Shooter.Shooter_Mode)
@@ -442,7 +549,15 @@ void Shooter_Control_Loop(void)
     }
 }
 
-
+/**
+************************************************************************************************************************
+* @Name     : Shooter_Debug
+* @brief    : 射击调试
+* @param	: void
+* @retval   : void
+* @Note     : 最初调拨盘PID时候用，未启用
+************************************************************************************************************************
+**/
 void Shooter_Debug(void)
 { 
     Shooter.Poke_Angle_Fdb = Shooter.Poke_Motor_Encoder.Angle_Deg_Total_fdb;
@@ -453,7 +568,15 @@ void Shooter_Debug(void)
 }
 
 
-
+/**
+************************************************************************************************************************
+* @Name     : Shooter_Task
+* @brief    : 发射任务
+* @param	: void
+* @retval   : void
+* @Note     : 
+************************************************************************************************************************
+**/
 void Shooter_Task(void)
 {
     Shooter_Feedback_Update();//反馈值更新

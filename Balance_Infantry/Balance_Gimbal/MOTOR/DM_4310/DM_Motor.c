@@ -283,7 +283,7 @@ void DM_Motor_Disable(CAN_TypeDef* CANx, int16_t CAN_ID)
 *@Note:     нч
 *@RetVal:   нч
 *******************************/
-void DM_Motor_Claer_Error_Information(CAN_TypeDef* CANx, int16_t CAN_ID)
+void DM_Motor_Clear_Error_Information(CAN_TypeDef* CANx, int16_t CAN_ID)
 {		
 	CanTxMsg Motor_DaMiao_Init_CanTxMsg;
 	
