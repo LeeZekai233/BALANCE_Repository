@@ -104,14 +104,17 @@ void CH040_Data_Get(imu_data_t* imu_data , CH040DATA_t* CH040DATA)
         {
             return;
         }
-        CH040DATA->Pitch_Angle = imu_data->eul[1];
+        CH040DATA->Pitch_Angle = imu_data->eul[1] - 0.363385022f;
         CH040DATA->Roll_Angle = imu_data->eul[0];
         CH040DATA->Yaw_Angle = imu_data->eul[2];
         
         
-        CH040DATA->X_Acc = imu_data->acc[0];
-        CH040DATA->Y_Acc = imu_data->acc[1];
-        CH040DATA->Z_Acc = imu_data->acc[2];
+   //     CH040DATA->X_Acc = (imu_data->acc[0] + sinf(imu_data->eul[1] * PI / 180.0f)*cosf(imu_data->eul[0] * PI / 180.0f)) * 9.81f;  // 东向
+    //    CH040DATA->Y_Acc = (imu_data->acc[1] - sinf(imu_data->eul[0] * PI / 180.0f)) * 9.81f;  // 北向
+   //     CH040DATA->Z_Acc = (imu_data->acc[2] + cosf(imu_data->eul[0] * PI / 180.0f) * cosf(imu_data->eul[1] * PI / 180.0f)) * 9.81f;  // 天向
+        CH040DATA->X_Acc = (imu_data->acc[2] - cosf(imu_data->eul[0] * PI / 180.0) * cosf(imu_data->eul[1] * PI / 180.0)) * 9.81f;
+    CH040DATA->Y_Acc = (imu_data->acc[1] - sinf(imu_data->eul[1] * PI / 180.0)) * 9.81f;
+    CH040DATA->Z_Acc = (imu_data->acc[0] + sinf(imu_data->eul[0] * PI / 180.0) * cosf(imu_data->eul[1] * PI / 180.0)) * 9.81f;
         
         CH040DATA->Pitch_Gyro_Omega = imu_data->gyr[0];
         CH040DATA->Roll_Gyro_Omega = imu_data->gyr[1];
@@ -125,7 +128,6 @@ void CH040_Data_Get(imu_data_t* imu_data , CH040DATA_t* CH040DATA)
         Last_Yaw_Angle = CH040DATA->Yaw_Angle;
     }
 }
-    
 
 
 

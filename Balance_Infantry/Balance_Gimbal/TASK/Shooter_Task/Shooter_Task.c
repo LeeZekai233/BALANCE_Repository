@@ -154,7 +154,17 @@ void Shooter_Feedback_Update(void)
     Shooter.Heat_Restrict.Heat_Cooling_Value = USART_Gimbal_Data.shooter_barrel_cooling_value ;//热量限制用
     Shooter.Heat_Restrict.Shooter_Heat_meas = USART_Gimbal_Data.shooter_id1_17mm_cooling_heat ;
     Shooter.Heat_Restrict.Heat_Limit = USART_Gimbal_Data.shooter_barrel_heat_limit ;
+    
+   if(fabs(Shooter.Poke_Speed_Fdb) >= 5)
+   {
+       Shooter.Poke_State = POKE_ON;
+   }
+   else
+   {
+       Shooter.Poke_State = POKE_OFF;
+   }
 }
+
 
 
 float Shooter_Bullet_Speed_Self_Adaptation(float Bullet_Speed)

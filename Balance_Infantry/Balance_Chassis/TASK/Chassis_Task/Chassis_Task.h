@@ -42,7 +42,7 @@
 #define WHEEL_MAX_T                       10.0f//5.27f // 4.3
         
             
-#define BODY_MASS                         23.92f
+#define BODY_MASS                         20.0f
 #define WHEEL_MASS                        1.112f   
 
 
@@ -115,11 +115,10 @@ typedef struct
 	float Remote_Angle;
 	float Remote_Speed;
 	float Roll;
-	float Pitch;
 	float Leglength;
     
+    float Pitch;
     float theta;
-    float phi;
 }Chassis_Ref_t;
 
 
@@ -142,6 +141,7 @@ typedef enum
     MIDDLE_LEG_LENGTH = 2,
     HIGH_LEG_LENGTH = 3,
 }Leg_Length_State_e;
+
 
 
 typedef enum
@@ -179,22 +179,17 @@ typedef struct
 	
 	Leg_State_t Left_Leg;       //左腿状态
 	Leg_State_t Right_Leg;      //右腿状态
-   // Leg_State_t Double_Leg;
 	
 	PID_t Leg_Harmonize_Pid_Inner;
 	PID_t Leg_Harmonize_Pid_Outer;
 	PID_t V_w_Pid;
 	
-	PID_t Roll_Balance_FN_PID;//roll平衡pid
+	PID_t Roll_Balance_Outer_PID;//roll平衡外环pid
+    PID_t Roll_Balance_Inner_PID;//roll平衡内环pid
 	PID_t Roll_Leg_F_Pid;
 	PID_t Roll_leg_F_Rotate_Pid;
 	
 	PID_t Pid_Follow_Gimbal;
-	
-//	PID_t Pid_Yaw_Dist;
-//	PID_t pid_chassis_side;
-	
-//	PID_t Pid_Seperate_Gimbal;
 	
 	PID_t Init_Tp_PID;//初始化Init_Tp_PID
 	
@@ -210,26 +205,19 @@ typedef struct
     PID_t flip_init_dphi0_pid_left;//翻车dphi0_Init_Tp_PID
     PID_t flip_init_dphi0_pid_right;
     
-    
     TF02_t TF02_Middle;//中间的测距
     
-//	uint16_t Max_power_to_PM01;//好像没用过
-	
-//	float Left_theta;
-//    float Right_theta;
 
-
-//	double yaw_encoder_ecd_angle;
 	float Yaw_Angle_0_To_2PI;
 	float Yaw_Angle__PI_To_PI;
     float normal_Y_erroffset;
     float normal_Y_erroffset_H;
 	float remote_ref_vx;
 	
-//	float predict_power;
+
 	float Max_Speed;
 	float Min_Speed;
-	//tqouce
+
 	float joint_T[4];// 左轮0 右轮1
 	float driving_T[2];// 右前1 左前2 左后3 右后4
     
@@ -242,8 +230,6 @@ typedef struct
     float Balance_Toutlandgain;
     float Balance_Tpoutlandgain;
     
-//    float Roll_Output_Angle;
-//    float Roll_leglengh_inner;//roll平衡
     
     USART_Chassis_Data_t USART_Chassis_Data;//串口传来的控制底盘数据
     USART_Gimbal_Data_t USART_Gimbal_Data;//反馈给云台的数据，通过串口发送
@@ -263,7 +249,8 @@ typedef struct
     Lpf1stObj L_DDZW_LPF;//计算左腿支持力用 低通滤波
     Lpf1stObj R_DDZW_LPF;//计算右腿支持力用 低通滤波
     
-    float Roll_Balance_F;//roll平衡力
+    float Roll_Balance_Outer;
+    float Roll_Balance_Inner;//roll平衡力
     
     float Left_Acc;
     float Right_Acc;
@@ -295,8 +282,6 @@ typedef struct
     uint8_t Jump_Finish_Middle_Leg_Flag;//跳跃完成后伸中腿长 标志位
     uint16_t Jump_Finish_Middle_Leg_Cnt;//跳跃完成后伸中腿长 计数
     uint8_t Jump_Finish_Flag;//跳跃完成标志，用于头对底盘状态改变的决策
-    float Chassis_Ref_Pitch;//底盘参考pitch，偏置
-    float Leg_Ref_theta;//腿参考theta，偏置
     
 }Balance_Chassis_t;//复制来的，有些没用
 
@@ -315,6 +300,7 @@ void Motor_Out_Limit(Balance_Chassis_t* Chassis);
 void Motor_Torque_Set(Balance_Chassis_t* Chassis,float Joint_T_0,float Joint_T_1,float Joint_T_2,float Joint_T_3,float Driving_T_1,float Driving_T_2);
 void Init_Tp_Calc(float Ref_Leglength,float Harmonize,float Init_Tp,Balance_Chassis_t* Chassis);
 void Chassis_Referance_Update(Balance_Chassis_t* Chassis);
+void Chassis_Rotate_Handle(Balance_Chassis_t* Chassis);
 void Chassis_Param_Init(Balance_Chassis_t* Chassis);
 void Chassis_State_Update(Balance_Chassis_t* Chassis);
 void Chassis_Relax_Handle(Balance_Chassis_t* Chassis);

@@ -54,6 +54,10 @@ void CAN1_Send_Task_1(float Joint_T_Set1,float Joint_T_Set4)
     {
         DaMiao_8009_Information_Send(CAN1,JOINT1_CONTROL_ID,0,0,Joint_T_Set1,0,0);
     }
+    else
+    {
+        DaMiao_8009_Claer_Error_Information(CAN1,JOINT1_CONTROL_ID);
+    }
     while((CAN1->TSR & (CAN_TSR_TME0 | CAN_TSR_TME1 | CAN_TSR_TME2)) == 0);//µÈ´ýÓÐ·¢ËÍÓÊÏä¿Õ
     
     
@@ -64,6 +68,10 @@ void CAN1_Send_Task_1(float Joint_T_Set1,float Joint_T_Set4)
     else if(Joint_Motor[3].ERR == DM_ENABLE)
     {
         DaMiao_8009_Information_Send(CAN1,JOINT4_CONTROL_ID,0,0,Joint_T_Set4,0,0);
+    }
+    else
+    {
+        DaMiao_8009_Claer_Error_Information(CAN1,JOINT4_CONTROL_ID);
     }
     while((CAN1->TSR & (CAN_TSR_TME0 | CAN_TSR_TME1 | CAN_TSR_TME2)) == 0);//µÈ´ýÓÐ·¢ËÍÓÊÏä¿Õ
 }
@@ -81,6 +89,10 @@ void CAN1_Send_Task_2(float Joint_T_Set2, float Joint_T_Set3)
     {
           DaMiao_8009_Information_Send(CAN1,JOINT3_CONTROL_ID,0,0,Joint_T_Set3,0,0);
     }
+    else
+    {
+        DaMiao_8009_Claer_Error_Information(CAN1,JOINT3_CONTROL_ID);
+    }
     while((CAN1->TSR & (CAN_TSR_TME0 | CAN_TSR_TME1 | CAN_TSR_TME2)) == 0);//µÈ´ýÓÐ·¢ËÍÓÊÏä¿Õ
     
     if(Joint_Motor[1].ERR == DM_DISABLE)
@@ -90,6 +102,10 @@ void CAN1_Send_Task_2(float Joint_T_Set2, float Joint_T_Set3)
     else if(Joint_Motor[1].ERR == DM_ENABLE)
     {
           DaMiao_8009_Information_Send(CAN1,JOINT2_CONTROL_ID,0,0,Joint_T_Set2,0,0);
+    }
+    else
+    {
+        DaMiao_8009_Claer_Error_Information(CAN1,JOINT2_CONTROL_ID);
     }
     while((CAN1->TSR & (CAN_TSR_TME0 | CAN_TSR_TME1 | CAN_TSR_TME2)) == 0);//µÈ´ýÓÐ·¢ËÍÓÊÏä¿Õ
         

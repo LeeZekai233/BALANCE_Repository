@@ -283,12 +283,17 @@
         <Ww>
           <count>24</count>
           <WinNumber>1</WinNumber>
-          <ItemText>Chassis</ItemText>
+          <ItemText>_USART6_DMA_RX_BUF[BSP_USART6_DMA_RX_BUF_LEN]</ItemText>
         </Ww>
         <Ww>
           <count>25</count>
           <WinNumber>1</WinNumber>
-          <ItemText>flag1</ItemText>
+          <ItemText>Chassis</ItemText>
+        </Ww>
+        <Ww>
+          <count>26</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>Joint_Motor</ItemText>
         </Ww>
       </WatchWindow1>
       <Tracepoint>
@@ -976,8 +981,8 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\TASK\Control_Task\Control_Task.c</PathWithFileName>
-      <FilenameWithoutPath>Control_Task.c</FilenameWithoutPath>
+      <PathWithFileName>..\TASK\Chassis_Task\Chassis_Task.c</PathWithFileName>
+      <FilenameWithoutPath>Chassis_Task.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>
@@ -988,8 +993,8 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\TASK\Chassis_Task\Chassis_Task.c</PathWithFileName>
-      <FilenameWithoutPath>Chassis_Task.c</FilenameWithoutPath>
+      <PathWithFileName>..\TASK\Board_Connected_Task\Board_Connected_Task.c</PathWithFileName>
+      <FilenameWithoutPath>Board_Connected_Task.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>
@@ -1024,8 +1029,8 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\TASK\Board_Connected_Task\Board_Connected_Task.c</PathWithFileName>
-      <FilenameWithoutPath>Board_Connected_Task.c</FilenameWithoutPath>
+      <PathWithFileName>..\TASK\Control_Task\Control_Task.c</PathWithFileName>
+      <FilenameWithoutPath>Control_Task.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>
@@ -1201,7 +1206,7 @@
 
   <Group>
     <GroupName>MOTOR</GroupName>
-    <tvExp>0</tvExp>
+    <tvExp>1</tvExp>
     <tvExpOptDlg>0</tvExpOptDlg>
     <cbSel>0</cbSel>
     <RteFlg>0</RteFlg>

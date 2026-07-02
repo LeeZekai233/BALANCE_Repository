@@ -12,7 +12,7 @@ void CAN1_Send_Task(int16_t Pitch_Current_Set,int16_t Left_Fric_Current_Set,int1
 
 
 
-void CAN2_Send_Task(float Yaw_Current_Set,float Poke_Speed_Set)//Yaw速度单位rad/s,poke速度单位°/s
+void CAN2_Send_Task(float Yaw_Torque_Set,float Poke_Speed_Set)//Yaw速度单位rad/s,poke速度单位°/s
 {
     if(Shooter.Shooter_Mode == SHOOTER_RELAX)
     {
@@ -31,7 +31,11 @@ void CAN2_Send_Task(float Yaw_Current_Set,float Poke_Speed_Set)//Yaw速度单位rad/
     }
     else if(Yaw_DM4310.ERR == DM_ENABLE)
     {
-        DM_Motor_Information_Send(CAN2,0x01,0,0,Yaw_Current_Set,0,0);
+        DM_Motor_Information_Send(CAN2,0x01,0,0,Yaw_Torque_Set,0,0);
+    }
+    else
+    {
+        DM_Motor_Claer_Error_Information(CAN2,0x01);
     }
     
     while((CAN2->TSR & (CAN_TSR_TME0 | CAN_TSR_TME1 | CAN_TSR_TME2)) == 0);//等待有发送邮箱空

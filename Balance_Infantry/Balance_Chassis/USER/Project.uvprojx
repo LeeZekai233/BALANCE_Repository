@@ -650,14 +650,14 @@
           <GroupName>TASK</GroupName>
           <Files>
             <File>
-              <FileName>Control_Task.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\TASK\Control_Task\Control_Task.c</FilePath>
-            </File>
-            <File>
               <FileName>Chassis_Task.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\TASK\Chassis_Task\Chassis_Task.c</FilePath>
+            </File>
+            <File>
+              <FileName>Board_Connected_Task.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\TASK\Board_Connected_Task\Board_Connected_Task.c</FilePath>
             </File>
             <File>
               <FileName>Whell_Observe_Task.c</FileName>
@@ -670,9 +670,9 @@
               <FilePath>..\TASK\Leg_Task\Leg_Task.c</FilePath>
             </File>
             <File>
-              <FileName>Board_Connected_Task.c</FileName>
+              <FileName>Control_Task.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\TASK\Board_Connected_Task\Board_Connected_Task.c</FilePath>
+              <FilePath>..\TASK\Control_Task\Control_Task.c</FilePath>
             </File>
             <File>
               <FileName>Super_Cap_Task.c</FileName>

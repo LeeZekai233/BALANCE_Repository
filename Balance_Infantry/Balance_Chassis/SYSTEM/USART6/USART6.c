@@ -116,7 +116,7 @@ void USART6_IRQHandler(void)
         if(_USART6_DMA_RX_BUF[0] == 0XBE)
         {
             Chassis.TF02_Middle.Heart_cnt = time_tick;
-            Chassis.TF02_Middle.Distance_mm = (uint16_t)(_USART6_DMA_RX_BUF[2] << 8 || _USART6_DMA_RX_BUF[1]);
+            Chassis.TF02_Middle.Distance_mm = (uint16_t)(_USART6_DMA_RX_BUF[2] << 8) | _USART6_DMA_RX_BUF[1];
         }
         else
         {
