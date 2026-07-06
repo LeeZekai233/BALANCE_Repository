@@ -18,7 +18,7 @@ typedef enum
   CHASSIS_JUMP_UP                                  = 9,//跳上台阶
   CHASSIS_JUMP_DOWN                                = 10,//跳下台阶
   CHASSIS_ANTI_FLY_SLOPE                           = 11,//反飞坡
-  CHASSIS_SIT_DOWN                                     = 12,//调试的临时模式
+  CHASSIS_SIT_DOWN                                 = 12,//调试的临时模式
   
 } Chassis_Mode_e;//底盘模式
 
@@ -69,7 +69,7 @@ typedef __packed struct
 	uint16_t current_HP;
     uint8_t  robot_id;
 	uint8_t  Gimbal_Init_Cmd;
-    float remain_heat;
+    float Jump_Finish_Flag;
 //	int16_t remain_heat;//剩余热量这里是老代码里Judeg_System里手动计算的，这里先注释掉
 	uint8_t game_state;
 	

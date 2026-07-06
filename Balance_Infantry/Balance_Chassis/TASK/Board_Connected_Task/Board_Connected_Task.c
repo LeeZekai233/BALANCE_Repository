@@ -35,7 +35,7 @@ void usart_gimbal_send(
                        uint16_t current_HP,
                        uint8_t  robot_id,
                        uint8_t  Gimbal_Init_Cmd,
-                       float    remain_heat,//这里用这个传Jump_Finish_Flag
+                       float    Jump_Finish_Flag,//这里用这个传Jump_Finish_Flag
                        uint8_t  game_state,
                        USART_Gimbal_Data_t* USART_Gimbal_Data)
 {
@@ -49,7 +49,7 @@ void usart_gimbal_send(
     USART_Gimbal_Data->current_HP                      = current_HP;
     USART_Gimbal_Data->robot_id                        = robot_id;
     USART_Gimbal_Data->Gimbal_Init_Cmd                 = Gimbal_Init_Cmd;
-    USART_Gimbal_Data->remain_heat                     = remain_heat;
+    USART_Gimbal_Data->Jump_Finish_Flag                = Jump_Finish_Flag;
     USART_Gimbal_Data->game_state                      = game_state;
 
     memcpy(UART4_DMA_TX_BUF, USART_Gimbal_Data, GIMBAL_DATA_LENGTH);

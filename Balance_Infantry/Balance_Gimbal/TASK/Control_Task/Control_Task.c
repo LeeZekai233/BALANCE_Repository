@@ -62,7 +62,7 @@ void Control_Task_Init(void)
     PID_Init(&Gimbal.Pitch_Motor_Angle_PID,PID_POSITION,40,0,0,10000,0);
     PID_Init(&Gimbal.Pitch_Motor_Speed_PID,PID_POSITION,100,0.5,0,20000,0);
     PID_Init(&Gimbal.Yaw_Motor_Angle_PID,PID_POSITION,20,0,0,10000,0);
-    PID_Init(&Gimbal.Yaw_Motor_Speed_PID,PID_POSITION,0.025,0.0003,0,10,1);
+    PID_Init(&Gimbal.Yaw_Motor_Speed_PID,PID_POSITION,0.015,0.0003,0,10,1);
     PID_Init(&Shooter.Poke_Angle_PID,PID_POSITION,140,0,2000,20000,0);
     PID_Init(&Shooter.Poke_Speed_PID,PID_POSITION,0.04,0.0015,0,2048,512);
     PID_Init(&Shooter.Fric_Speed_PID[0],PID_POSITION,3.5,0,0,15000,5000);
@@ -130,6 +130,8 @@ void Chassis_Mode_Select(void)
         {
             USART_Chassis_Data.Chassis_Mode = CHASSIS_RELAX;
             rotate_mode_switch_flag = 0;
+            jump_up_mode_flag = 0;
+            anti_fly_slope_mode_flag = 0;
         }
         else if(Remote_VTM.Remote_clicker.Switch == CENTER)//使用键鼠
         {
@@ -154,7 +156,7 @@ void Chassis_Mode_Select(void)
             {
                 jump_up_mode_flag = 0;
             }
-            else if(Remote_VTM.key.Key_E_Action.Original_Press_Flag == 0 && USART_Gimbal_Data.remain_heat == 1)//跳完清标志位
+            else if(Remote_VTM.key.Key_E_Action.Original_Press_Flag == 0 && USART_Gimbal_Data.Jump_Finish_Flag == 1)//跳完清标志位
             {
                 jump_up_mode_flag = 0;
             }
@@ -168,9 +170,16 @@ void Chassis_Mode_Select(void)
             {
                 anti_fly_slope_mode_flag = 0;
             }
-            else if(Remote_VTM.key.Key_F_Action.Original_Press_Flag == 0 && USART_Gimbal_Data.remain_heat == 1)
+            else if(Remote_VTM.key.Key_F_Action.Original_Press_Flag == 0 && USART_Gimbal_Data.Jump_Finish_Flag == 1)
             {
                 anti_fly_slope_mode_flag = 0;
+            }
+            
+            if(fabs(Remote_VTM.Remote_mouse.z) != 0)
+            {
+                anti_fly_slope_mode_flag = 0;
+                jump_up_mode_flag = 0;
+                rotate_mode_switch_flag = 0;
             }
             
 //            if(Remote_VTM.key.Key_F_Action.Short_Press_Flag == 1)//双击G跳下台阶
@@ -217,10 +226,6 @@ void Chassis_Mode_Select(void)
                     }
                 }
             }
-            else if(rotate_mode_switch_flag == 0 && Shooter.Shooter_Mode_Switch_Flag == 1 && Shooter.Shooter_Enable_Flag == 1)//按V底盘停止，适配单发打符
-            {
-                USART_Chassis_Data.Chassis_Mode = CHASSIS_STOP;
-            }
             else if(jump_up_mode_flag == 1)
             {
                 USART_Chassis_Data.Chassis_Mode = CHASSIS_JUMP_UP ;
@@ -233,10 +238,6 @@ void Chassis_Mode_Select(void)
             {
                 USART_Chassis_Data.Chassis_Mode = CHASSIS_ANTI_FLY_SLOPE ;
             }
-            else if(Shooter.Shooter_Mode != SHOOTER_RELAX)
-            {
-                USART_Chassis_Data.Chassis_Mode = CHASSIS_SIT_DOWN;
-            }
             else
             {
                 USART_Chassis_Data.Chassis_Mode = MANUAL_FOLLOW_REMOTE;
@@ -246,10 +247,10 @@ void Chassis_Mode_Select(void)
             {
                 USART_Chassis_Data.Chassis_Mode = CHASSIS_RELAX;
                 rotate_mode_switch_flag = 0;
+                jump_up_mode_flag = 0;
+                anti_fly_slope_mode_flag = 0;
             }
-            
             USART_Chassis_Data.fn_2_trigger_flag = Remote_VTM.Remote_clicker.fn2_Action.Toggle_Press_Flag ;
-            
         }
         else if(Remote_VTM.Remote_clicker.Switch == LEFT)//使用遥控
         {
@@ -266,21 +267,21 @@ void Chassis_Mode_Select(void)
                 }
             }
             
-            if(Remote_VTM.Remote_clicker.Pause_Action.Short_Press_Flag  == 1)//短按E跳上台阶
+            if(Remote_VTM.Remote_clicker.Pause_Action.Short_Press_Flag  == 1)
             {
                 jump_up_mode_flag = 1;
             }
-            else if(Remote_VTM.Remote_clicker.Pause_Action.Long_Press_Flag == 1)//长按E取消
+            else if(Remote_VTM.Remote_clicker.Pause_Action.Long_Press_Flag == 1)//长按Pause取消
             {
                 jump_up_mode_flag = 0;
             }
-            else if(Remote_VTM.Remote_clicker.Pause_Action.Short_Press_Flag == 0 && USART_Gimbal_Data.remain_heat == 1)//跳完清标志位
+            else if(Remote_VTM.Remote_clicker.Pause_Action.Short_Press_Flag == 0 && USART_Gimbal_Data.Jump_Finish_Flag == 1)//跳完清标志位
             {
                 jump_up_mode_flag = 0;
             }
             
             
-            if(rotate_mode_switch_flag == 1)
+            if(rotate_mode_switch_flag == 1)//小陀螺
             {
                 if(rorate_reserve_cnt%2 == 0)
                 {
@@ -305,22 +306,23 @@ void Chassis_Mode_Select(void)
                     }
                 }
             }
-            else if(jump_up_mode_flag == 1)
+            else if(jump_up_mode_flag == 1)//跳上台阶
+            {
+                USART_Chassis_Data.Chassis_Mode = CHASSIS_JUMP_UP ;
+            }
+            else if(anti_fly_slope_mode_flag == 1)
             {
                 USART_Chassis_Data.Chassis_Mode = CHASSIS_ANTI_FLY_SLOPE ;
             }
-            else if(Shooter.Shooter_Mode != SHOOTER_RELAX)
-            {
-                USART_Chassis_Data.Chassis_Mode = CHASSIS_SIT_DOWN;
-            }
+//            else if(Shooter.Shooter_Mode != SHOOTER_RELAX)
+//            {
+//                USART_Chassis_Data.Chassis_Mode = CHASSIS_SIT_DOWN;
+//            }
             else
             {
                 USART_Chassis_Data.Chassis_Mode = MANUAL_FOLLOW_REMOTE;
             }
-            
             USART_Chassis_Data.fn_2_trigger_flag = 0;
-            
-            
         }
     }
     else//如果灰控和白控都在或都不在
@@ -329,6 +331,8 @@ void Chassis_Mode_Select(void)
         rotate_mode_switch_flag = 0;
         USART_Chassis_Data.fn_2_trigger_flag = 0;
         rorate_reserve_cnt = 0;
+        jump_up_mode_flag = 0;
+        anti_fly_slope_mode_flag = 0;
     }
 }
 
@@ -370,8 +374,8 @@ void Chassis_Reference_Update(void)
     {
         if(Remote_VTM.Remote_clicker.Switch == LEFT)//遥控
         {
-            USART_Chassis_Data.V_y = Remote_VTM.Remote_clicker.ch1/660.0f*2.2f;
-            if(Remote_VTM.Remote_clicker.fn1_Action.Toggle_Press_Flag == 0)//按f1，拨轮控制打弹，所以不按f1，才能变腿长
+            USART_Chassis_Data.V_y = Remote_VTM.Remote_clicker.ch1/660.0f*2.5f;
+            if(Shooter.Shooter_Mode == SHOOTER_RELAX)//用控时拨轮同时控制打弹和变腿长，所以不打弹时可变腿长
             {
                 if(Remote_VTM.Remote_clicker.ch4 == 0)
                 {

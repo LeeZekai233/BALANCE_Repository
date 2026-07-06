@@ -805,8 +805,8 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\SYSTEM\CAN1\CAN1.c</PathWithFileName>
-      <FilenameWithoutPath>CAN1.c</FilenameWithoutPath>
+      <PathWithFileName>..\SYSTEM\CAN2\CAN2.c</PathWithFileName>
+      <FilenameWithoutPath>CAN2.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>
@@ -817,8 +817,8 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\SYSTEM\CAN2\CAN2.c</PathWithFileName>
-      <FilenameWithoutPath>CAN2.c</FilenameWithoutPath>
+      <PathWithFileName>..\SYSTEM\TIM2\TIM2.c</PathWithFileName>
+      <FilenameWithoutPath>TIM2.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>
@@ -829,8 +829,8 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\SYSTEM\TIM2\TIM2.c</PathWithFileName>
-      <FilenameWithoutPath>TIM2.c</FilenameWithoutPath>
+      <PathWithFileName>..\SYSTEM\CAN1\CAN1.c</PathWithFileName>
+      <FilenameWithoutPath>CAN1.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>

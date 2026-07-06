@@ -166,9 +166,7 @@ typedef struct
     
     Jump_Process_e Jump_Process;//跳跃进程
     Jump_State_e Jump_State;//跳跃状态
-	uint8_t overstep_flag;
     Init_State_e Init_State;
-	uint8_t rotate_flag;
 	LQR_System balance_loop;
 	Chassis_Ref_t Chassis_Ref;//实际参考值
 	Chassis_Ref_t Chassis_Remote_Ref;//控输入的参考值
@@ -186,7 +184,7 @@ typedef struct
 	
 	PID_t Roll_Balance_Outer_PID;//roll平衡外环pid
     PID_t Roll_Balance_Inner_PID;//roll平衡内环pid
-	PID_t Roll_Leg_F_Pid;
+//	PID_t Roll_Leg_F_Pid;
 	PID_t Roll_leg_F_Rotate_Pid;
 	
 	PID_t Pid_Follow_Gimbal;
@@ -205,9 +203,8 @@ typedef struct
     PID_t flip_init_dphi0_pid_left;//翻车dphi0_Init_Tp_PID
     PID_t flip_init_dphi0_pid_right;
     
-    TF02_t TF02_Middle;//中间的测距
+    TF02_t TF02;//测距 北醒TF02
     
-
 	float Yaw_Angle_0_To_2PI;
 	float Yaw_Angle__PI_To_PI;
     float normal_Y_erroffset;
@@ -272,9 +269,6 @@ typedef struct
     
     uint8_t Middle_Leglength_Flag;
     uint16_t Middle_Leglength_Cnt;
-    
-    uint8_t High_Leg_Flag;
-    uint16_t High_Leg_Cnt;
     
     uint8_t Gimbal_Init_Cmd;//允许云台初始化
     float Jump_Feedforward;//跳跃前馈

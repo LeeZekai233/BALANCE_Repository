@@ -49,8 +49,7 @@ typedef __packed struct
 	uint16_t current_HP;
     uint8_t  robot_id;
 	uint8_t  Gimbal_Init_Cmd;
-    float remain_heat;
-//	int16_t remain_heat;//剩余热量这里是老代码里Judeg_System里手动计算的，这里先注释掉
+    float Jump_Finish_Flag;
 	uint8_t game_state;
 	
 } USART_Gimbal_Data_t;//发送给云台的数据

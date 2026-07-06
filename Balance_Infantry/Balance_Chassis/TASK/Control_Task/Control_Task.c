@@ -12,7 +12,7 @@ void Contorl_Task(Balance_Chassis_t* Chassis)
     Motor_Online_Detective(&Chassis->Driving_Motor[1]);
     
     //测距检测
-    TF02_Online_Handle( );
+    TF02_Online_Handle(&Chassis->TF02);
     
     //里程和加速度的更新
     if(fabs(Chassis->Chassis_Ref.V_w) > 0.8f)
@@ -45,7 +45,7 @@ void Contorl_Task(Balance_Chassis_t* Chassis)
     {
         CAN1_Send_Task_2(Chassis->joint_T[1],Chassis->joint_T[2]);
         CAN2_Send_Task(Chassis->driving_T[0],Chassis->driving_T[1]);
-       // CAN_POWER_Control(CAN2,&Super_Cap_Send);
+        CAN_POWER_Control(CAN2,&Super_Cap_Send);
     }
 
     if(time_tick%2==0)

@@ -151,26 +151,20 @@ void Gimbal_Feedback_Update(void)
         Gimbal.Yaw_Speed_Fdb = Gimbal.Yaw_Motor_Encoder.Omega_Rad_fdb ;
     }
     
-//    if(Remote_VTM.key.Key_W_Action.Original_Press_Flag == 0 && Remote_VTM.key.Key_S_Action.Original_Press_Flag == 0)
-//    {
-        
-        if(Remote_VTM.key.Key_D_Action.Original_Press_Flag == 1 && Remote_VTM.key.Key_A_Action.Original_Press_Flag == 0)//侧向对敌
-        {
-            USART_Chassis_Data.Yaw_Encoder_Angle = Transform_Angle_0_2PI(Gimbal.Yaw_Motor_Encoder.Angle_Rad_fdb - 45.0f*DEG_TO_RAD);
-        }
-        else if(Remote_VTM.key.Key_D_Action.Original_Press_Flag == 0 && Remote_VTM.key.Key_A_Action.Original_Press_Flag == 1)
-        {
-            USART_Chassis_Data.Yaw_Encoder_Angle = Transform_Angle_0_2PI(Gimbal.Yaw_Motor_Encoder.Angle_Rad_fdb + 45.0f*DEG_TO_RAD);
-        }
-        else
-        {
-            USART_Chassis_Data.Yaw_Encoder_Angle = Transform_Angle_0_2PI(Gimbal.Yaw_Motor_Encoder.Angle_Rad_fdb);
-        }
-//    }
-//    else
-//    {
-//        USART_Chassis_Data.Yaw_Encoder_Angle = Transform_Angle_0_2PI(Gimbal.Yaw_Motor_Encoder.Angle_Rad_fdb);//发给底盘，适配底盘0-2PI的数据
-//    }
+    
+    if(Remote_VTM.key.Key_D_Action.Original_Press_Flag == 1 && Remote_VTM.key.Key_A_Action.Original_Press_Flag == 0)//侧向对敌
+    {
+        USART_Chassis_Data.Yaw_Encoder_Angle = Transform_Angle_0_2PI(Gimbal.Yaw_Motor_Encoder.Angle_Rad_fdb - 45.0f*DEG_TO_RAD);
+    }
+    else if(Remote_VTM.key.Key_D_Action.Original_Press_Flag == 0 && Remote_VTM.key.Key_A_Action.Original_Press_Flag == 1)
+    {
+        USART_Chassis_Data.Yaw_Encoder_Angle = Transform_Angle_0_2PI(Gimbal.Yaw_Motor_Encoder.Angle_Rad_fdb + 45.0f*DEG_TO_RAD);
+    }
+    else
+    {
+        USART_Chassis_Data.Yaw_Encoder_Angle = Transform_Angle_0_2PI(Gimbal.Yaw_Motor_Encoder.Angle_Rad_fdb);
+    }
+
     
     USART_Chassis_Data.Gimbal_Init_Finish_Flag = Gimbal.Init_Finish_Flag ;
 }

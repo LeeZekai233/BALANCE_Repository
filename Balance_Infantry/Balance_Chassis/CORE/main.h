@@ -23,6 +23,7 @@
 #include "CAN1.h"
 #include "CAN2.h"
 #include "BSP.h"
+#include "Delay.h"
 
 
 //TASK
@@ -55,6 +56,7 @@
 #include "Signal.h"
 
 #include "TF02.h"
+#include "vl53l4cx.h"
 
 
 #endif

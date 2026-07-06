@@ -112,16 +112,7 @@ void USART6_IRQHandler(void)
         DMA_ClearFlag(DMA2_Stream1, DMA_FLAG_TCIF1 | DMA_FLAG_HTIF1);
         // 计算接收到的数据长度
         USART6_Data_Length = BSP_USART6_DMA_RX_BUF_LEN - DMA_GetCurrDataCounter(DMA2_Stream1);
-        
-        if(_USART6_DMA_RX_BUF[0] == 0XBE)
-        {
-            Chassis.TF02_Middle.Heart_cnt = time_tick;
-            Chassis.TF02_Middle.Distance_mm = (uint16_t)(_USART6_DMA_RX_BUF[2] << 8) | _USART6_DMA_RX_BUF[1];
-        }
-        else
-        {
-            Chassis.TF02_Middle.Distance_mm = 0;
-        }
+        TF02_Data_Handle(_USART6_DMA_RX_BUF,&Chassis.TF02);
         DMA_SetCurrDataCounter(DMA2_Stream1, BSP_USART6_DMA_RX_BUF_LEN);
         DMA_Cmd(DMA2_Stream1, ENABLE);
     }

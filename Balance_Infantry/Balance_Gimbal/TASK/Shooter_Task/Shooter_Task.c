@@ -1,6 +1,6 @@
 #include "main.h"
 
-Shooter_t Shooter={0};
+Shooter_t Shooter;
 
 
 /**

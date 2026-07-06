@@ -601,11 +601,6 @@
               <FilePath>..\SYSTEM\BSP\BSP.c</FilePath>
             </File>
             <File>
-              <FileName>CAN1.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\SYSTEM\CAN1\CAN1.c</FilePath>
-            </File>
-            <File>
               <FileName>CAN2.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\SYSTEM\CAN2\CAN2.c</FilePath>
@@ -614,6 +609,11 @@
               <FileName>TIM2.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\SYSTEM\TIM2\TIM2.c</FilePath>
+            </File>
+            <File>
+              <FileName>CAN1.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\SYSTEM\CAN1\CAN1.c</FilePath>
             </File>
             <File>
               <FileName>TIM6.c</FileName>

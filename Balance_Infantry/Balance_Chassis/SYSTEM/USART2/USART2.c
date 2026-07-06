@@ -111,10 +111,10 @@ void USART2_IRQHandler(void)
 		DMA_Cmd(DMA1_Stream5,DISABLE);  
 		USART_DMACmd(USART2, USART_DMAReq_Rx, DISABLE);
         uint8_t length = USART2_RX_BUF_LENGTH - DMA_GetCurrDataCounter(DMA1_Stream5);
-		//USART2_Data_Receive_Process_0
-		if(Verify_CRC8_Check_Sum(_USART2_DMA_RX_BUF,length))
+		
+        if(length==CH040_DATA_FARMER_LENGHT)
         {
-		   usart_chassis_receive(_USART2_DMA_RX_BUF,&Chassis.USART_Chassis_Data);
+           CH040_Data_Get(&imu_data , &Chassis.Chassis_GYRO);
         }
         DMA_SetCurrDataCounter(DMA1_Stream5,USART2_RX_BUF_LENGTH);
 		USART_DMACmd(USART2, USART_DMAReq_Rx, ENABLE);

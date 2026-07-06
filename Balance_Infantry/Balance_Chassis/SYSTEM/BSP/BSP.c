@@ -3,10 +3,10 @@
 void Infantry_Init(void)
 {
     NVIC_PriorityGroupConfig(NVIC_PriorityGroup_2);
-    USART1_Init(100000);
-    usart2_init(115200);
+    USART1_Init(921600);
+//    usart2_init(921600);
     USART3_Init(921600);
-    USART6_Init(115200);
+    USART6_Init(921600);
     UART4_Init(921600);
     USART5_DMA_R_T_JUDGE_Init();
     CAN1_Init( );
