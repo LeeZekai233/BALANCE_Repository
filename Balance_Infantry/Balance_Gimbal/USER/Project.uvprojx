@@ -661,14 +661,14 @@
               <FilePath>..\TASK\Control_Task\Control_Task.c</FilePath>
             </File>
             <File>
-              <FileName>Shooter_Task.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\TASK\Shooter_Task\Shooter_Task.c</FilePath>
-            </File>
-            <File>
               <FileName>Can_Bus_Task.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\TASK\Can_Bus_Task\Can_Bus_Task.c</FilePath>
+            </File>
+            <File>
+              <FileName>Shooter_Task.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\TASK\Shooter_Task\Shooter_Task.c</FilePath>
             </File>
             <File>
               <FileName>Gimbal_Task.c</FileName>

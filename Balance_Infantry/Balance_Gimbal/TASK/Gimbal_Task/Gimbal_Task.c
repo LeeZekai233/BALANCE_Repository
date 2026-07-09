@@ -63,6 +63,9 @@ float Transform_Angle_0_2PI(float angle)
 **/
 void Gimbal_Mode_Select(void)
 {
+    static uint8_t auto_aim_mode_flag;
+    static uint8_t big_buff_mode_flag;
+    static uint8_t small_buff_mode_flag;
     Gimbal.Last_Remote_Gimbal_Mode = Gimbal.Remote_Gimbal_Mode;
     if(Remote_DT7_data.online_flag == 1 && Remote_VTM.online_flag == 0)//使用白控
     {
@@ -81,22 +84,89 @@ void Gimbal_Mode_Select(void)
     }
     else if(Remote_DT7_data.online_flag == 0 && Remote_VTM.online_flag == 1)//使用灰控
     {
-        if(Remote_VTM.Remote_clicker.Switch == RIGHT)
+        if(Remote_VTM.Remote_clicker.Switch == RIGHT)//关控
         {
             Gimbal.Remote_Gimbal_Mode = GIMBAL_RELAX ;
+            auto_aim_mode_flag = 0;
+            big_buff_mode_flag = 0;
+            small_buff_mode_flag = 0;
         }
-        else if(Remote_VTM.Remote_clicker.Switch == CENTER)
-        {
-            Gimbal.Remote_Gimbal_Mode = GIMBAL_KEY_MOUSE  ;
-        }
-        else if(Remote_VTM.Remote_clicker.Switch == LEFT)
+        else if(Remote_VTM.Remote_clicker.Switch == CENTER)//键鼠
         { 
-            Gimbal.Remote_Gimbal_Mode = GIMBAL_REMOTE;
+            if(Remote_VTM.Remote_mouse.Press_R_Action.Original_Press_Flag == 1)//按右键且自瞄锁到
+            {
+                auto_aim_mode_flag = 1;
+            }
+            else
+            {
+                auto_aim_mode_flag = 0;
+            }
+            
+            if(Remote_VTM.key.Key_X_Action.Short_Press_Flag == 1)//按X进小符模式
+            {
+                small_buff_mode_flag = 1;
+            }
+            
+            if(Remote_VTM.key.Key_V_Action.Short_Press_Flag == 1)//按V进大符模式
+            {
+                big_buff_mode_flag = 1;
+            }
+            
+            if(fabs(Remote_VTM.Remote_mouse.z) > 0)//滚轮取消打符
+            {
+                small_buff_mode_flag = 0;
+                big_buff_mode_flag = 0;
+            }
+            
+            if(auto_aim_mode_flag == 1 && My_Auto_Shoot.Auto_Aim.Flag_Get_Target == 1)
+            {
+                Gimbal.Remote_Gimbal_Mode = GIMBAL_AUTO_AIM ;
+            }
+            else if(small_buff_mode_flag == 1)
+            {
+                Gimbal.Remote_Gimbal_Mode = GIMBAL_SMALL_BUFF ;
+            }
+            else if(big_buff_mode_flag == 1)
+            {
+                Gimbal.Remote_Gimbal_Mode = GIMBAL_BIG_BUFF ;
+            }
+            else
+            {
+                 Gimbal.Remote_Gimbal_Mode = GIMBAL_KEY_MOUSE ;
+            }
+            
+           
+        }
+        else if(Remote_VTM.Remote_clicker.Switch == LEFT)//遥控
+        { 
+            if(Remote_VTM.Remote_clicker.fn2_Action.Short_Press_Flag == 1)//按fn2且自瞄锁到
+            {
+                auto_aim_mode_flag = 1;
+            }
+            
+            if(Remote_VTM.Remote_clicker.fn2_Action.Long_Press_Flag == 1)
+            {
+                 auto_aim_mode_flag = 0;
+            }
+            
+            
+            if(auto_aim_mode_flag == 1 && My_Auto_Shoot.Auto_Aim.Flag_Get_Target == 1)
+            {
+                Gimbal.Remote_Gimbal_Mode = GIMBAL_AUTO_AIM ;
+            }
+            else
+            {
+                Gimbal.Remote_Gimbal_Mode = GIMBAL_REMOTE;
+            }
+            
         }
         
-        if(USART_Gimbal_Data.current_HP == 0)//死了失能发射
+        if(USART_Gimbal_Data.current_HP == 0)//死了失能
         {
             Gimbal.Remote_Gimbal_Mode = GIMBAL_RELAX ;
+            auto_aim_mode_flag = 0 ;
+            small_buff_mode_flag = 0;
+            big_buff_mode_flag = 0;
         }
     }
     else//白控灰控都在或都不在
@@ -201,7 +271,7 @@ void Gimbal_Reference_Update(void)
             }
             break;
             default :
-                break;
+            break;
        }
     }
     else if(Remote_DT7_data.online_flag == 0 && Remote_VTM.online_flag == 1)//使用灰控
@@ -218,6 +288,37 @@ void Gimbal_Reference_Update(void)
             {
                 Gimbal.Yaw_Angle_Ref -=  Remote_VTM.Remote_clicker.ch2 * 0.001f;
                 Gimbal.Pitch_Angle_Ref +=  Remote_VTM.Remote_clicker.ch3 * 0.001f;
+            }
+            break;
+            case GIMBAL_AUTO_AIM :
+            {
+                if(My_Auto_Shoot.Auto_Aim.Flag_Get_Target == 1)
+                {
+                    Gimbal.Yaw_Angle_Ref = My_Auto_Shoot.Auto_Aim.Yaw_Angle ;
+                    Gimbal.Pitch_Angle_Ref = My_Auto_Shoot.Auto_Aim.Pitch_Angle ;
+                }
+                else
+                {
+                    Gimbal.Yaw_Angle_Ref -= Remote_VTM.Remote_mouse.x * 0.005f;
+                    Gimbal.Pitch_Angle_Ref += Remote_VTM.Remote_mouse.y * 0.005f;
+                }
+            }
+            break;
+            case GIMBAL_SMALL_BUFF:
+            case GIMBAL_AUTO_SMALL_BUFF :
+            case GIMBAL_BIG_BUFF :
+            case GIMBAL_AUTO_BIG_BUFF :
+            {
+                if(My_Auto_Shoot.Buff.Flag_Get_Target == 1 && Remote_VTM.Remote_mouse.Press_R_Action.Original_Press_Flag == 1)
+                {
+                    Gimbal.Yaw_Angle_Ref = My_Auto_Shoot.Buff.Yaw_Angle ;
+                    Gimbal.Pitch_Angle_Ref = My_Auto_Shoot.Buff.Pitch_Angle ;
+                }
+                else
+                {
+                    Gimbal.Yaw_Angle_Ref -= Remote_VTM.Remote_mouse.x * 0.005f;
+                    Gimbal.Pitch_Angle_Ref += Remote_VTM.Remote_mouse.y * 0.005f;
+                }
             }
             break;
             case GIMBAL_RELAX ://RELAX模式，使设定值为反馈值

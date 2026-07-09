@@ -71,16 +71,6 @@ typedef enum {
 
 typedef struct
 {
-//    Heat_Detect_FSM_e Heat_Detect_FSM;//热量检测状态机
-//    
-//    uint16_t Now_Heat;//当前热量
-//    uint16_t Warning_Heat;//热量预警阈值
-//    uint8_t Heat_CD;//冷却热量速度，裁判系统读
-//    uint16_t Remain_Heat;//剩余热量
-////    uint16_t Threshold_Heat;//热量门限阈值
-//    uint16_t Max_Heat;//裁判系统读最大热量
-//    
-//    uint16_t Heat_Detect_CNT;//热量检测计数
     Fire_Permission_e  Fire_Permission;//射击许可
     
     float Shooter_Heat_hat;//离线计算的热量
@@ -129,6 +119,8 @@ typedef struct
     uint16_t Poke_Trap_CNT;//拨盘卡弹计数，拨盘电流过大增加计数
     uint16_t Poke_Trap_Handle_CNT;//拨盘卡弹处理计数，时间到之后回归到正常模式
     uint16_t Burst_Fire_Cnt;//把连发当成单发连点器用，可能可以降低延迟
+    
+    float Bullet_Speed;//弹速
     
 //    uint16_t Fric_Fire_CNT;//停火有限状态机用，摩擦轮电流大增加计数  //不使用停火有限状态机
 //    uint16_t FSM_Activate_CNT;//状态机计数，计数达到目标直接转换状态

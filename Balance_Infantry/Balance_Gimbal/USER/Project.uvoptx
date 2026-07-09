@@ -135,7 +135,7 @@
         <SetRegEntry>
           <Number>0</Number>
           <Key>DLGTARM</Key>
-          <Name>(1010=-1,-1,-1,-1,0)(1007=105,137,292,412,0)(1008=-1,-1,-1,-1,0)(1009=-1,-1,-1,-1,0)(1012=-1,-1,-1,-1,0)</Name>
+          <Name>(1010=841,345,1291,902,0)(1007=105,137,292,412,0)(1008=90,121,466,357,0)(1009=120,153,378,741,0)(1012=135,169,612,484,0)</Name>
         </SetRegEntry>
         <SetRegEntry>
           <Number>0</Number>
@@ -945,8 +945,8 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\TASK\Shooter_Task\Shooter_Task.c</PathWithFileName>
-      <FilenameWithoutPath>Shooter_Task.c</FilenameWithoutPath>
+      <PathWithFileName>..\TASK\Can_Bus_Task\Can_Bus_Task.c</PathWithFileName>
+      <FilenameWithoutPath>Can_Bus_Task.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>
@@ -957,8 +957,8 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\TASK\Can_Bus_Task\Can_Bus_Task.c</PathWithFileName>
-      <FilenameWithoutPath>Can_Bus_Task.c</FilenameWithoutPath>
+      <PathWithFileName>..\TASK\Shooter_Task\Shooter_Task.c</PathWithFileName>
+      <FilenameWithoutPath>Shooter_Task.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>

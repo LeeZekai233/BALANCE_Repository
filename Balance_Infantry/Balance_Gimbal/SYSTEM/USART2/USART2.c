@@ -104,17 +104,15 @@ void usart2_init(uint32_t baud_rate)
 
 void USART2_IRQHandler(void)
 {
-    if(USART_GetITStatus(USART2, USART_IT_IDLE)!= RESET)//
+    if(USART_GetITStatus(USART2, USART_IT_IDLE)!= RESET)
 	{
 		USART_ReceiveData(USART2); //一定要读一次，不然可能会丢第一个字节，原因未知
 		USART_ClearITPendingBit(USART2,USART_IT_IDLE);//清除中断标志位
 		DMA_Cmd(DMA1_Stream5,DISABLE);  
 		USART_DMACmd(USART2, USART_DMAReq_Rx, DISABLE);
         uint8_t length = USART2_RX_BUF_LENGTH - DMA_GetCurrDataCounter(DMA1_Stream5);
-		if(Verify_CRC8_Check_Sum(_USART2_DMA_RX_BUF,length))
-        {
-//		   usart_chassis_receive(_USART2_DMA_RX_BUF,&Chassis.USART_Chassis_Data);
-        }
+	//	Vision_Process_General_Message_New(_USART2_DMA_RX_BUF,length,&My_Auto_Shoot);
+        VTM_Reomte_Data_Handle(_USART2_DMA_RX_BUF,length,&Remote_VTM);
         DMA_SetCurrDataCounter(DMA1_Stream5,USART2_RX_BUF_LENGTH);
 		USART_DMACmd(USART2, USART_DMAReq_Rx, ENABLE);
 		DMA_Cmd(DMA1_Stream5,ENABLE);//重新置位后，地址指针变成0

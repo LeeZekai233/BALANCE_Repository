@@ -19,6 +19,8 @@ typedef struct
 	
 	uint8_t Flag_Get_Target;//目标锁定标志位，1：锁定目标，0：未识别到目标
 	uint16_t Lost_Cnt;//目标丢失计数器
+    
+    
 	
 }Auto_Aim_t;
 
@@ -53,6 +55,8 @@ typedef struct
 {
 	Auto_Aim_t Auto_Aim;
 	Buff_t Buff;
+    uint32_t heart_cnt;
+    uint8_t Online_Flag;
 }Auto_Shoot_t;
 /*接收*/
 
@@ -89,8 +93,10 @@ extern Auto_Shoot_t Othter_Auto_Shoot;
 extern New_Auto_Aim_t New_Auto_Aim;
 extern New_Auto_Aim_Send_t New_Auto_Aim_Send;
 
+
 void Vision_Process_General_Message_New(unsigned char* address, unsigned int length, Auto_Shoot_t *Auto_Shoot);
 void send_protocol_New(float Yaw, float Pitch, float Roll,float Speed,uint8_t ID, uint8_t* data);
+void Auto_Shoot_Online_Detect(Auto_Shoot_t* Auto_Shoot);
 
 
 #endif

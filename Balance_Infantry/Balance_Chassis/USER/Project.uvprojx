@@ -655,6 +655,11 @@
           <GroupName>TASK</GroupName>
           <Files>
             <File>
+              <FileName>Control_Task.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\TASK\Control_Task\Control_Task.c</FilePath>
+            </File>
+            <File>
               <FileName>Chassis_Task.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\TASK\Chassis_Task\Chassis_Task.c</FilePath>
@@ -673,11 +678,6 @@
               <FileName>Leg_Task.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\TASK\Leg_Task\Leg_Task.c</FilePath>
-            </File>
-            <File>
-              <FileName>Control_Task.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\TASK\Control_Task\Control_Task.c</FilePath>
             </File>
             <File>
               <FileName>Super_Cap_Task.c</FileName>

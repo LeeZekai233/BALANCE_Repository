@@ -15,6 +15,7 @@ void Control_Task(void)
 {
     time_tick++;
     Remote_Online_Detect(&Remote_DT7_data,&Remote_VTM);
+  //  Auto_Shoot_Online_Detect(&My_Auto_Shoot);
     if(Remote_DT7_data.online_flag == 1 && Remote_VTM.online_flag == 0)//使用白控
     {
         Key_Mouse_State_Update(&Remote_DT7_data.key,&Remote_DT7_data.Remote_mouse);
@@ -41,10 +42,27 @@ void Control_Task(void)
         CAN1_Send_Task(Gimbal.Pitch_Motor_Set_Current, Shooter.Fric_Motor_Ser_Current[0],Shooter.Fric_Motor_Ser_Current[1]);
     }
     
-    if(time_tick%2 == 1)
+    if(time_tick %2 == 1)
     {
         USART_Chassis_Send(&USART_Chassis_Data);
     }
+        
+        
+//        send_protocol_New(Gimbal.Yaw_Angle_Fdb,Gimbal.Pitch_Angle_Fdb,
+//        Gimbal.CH040_Data.Roll_Angle,Shooter.Bullet_Speed,USART_Gimbal_Data.bullet_speed,USART2_DMA_TX_BUF);
+    
+    
+//    if(time_tick%1000 == 5)
+//    {
+//        if(My_Auto_Shoot.Online_Flag == 0)//掉线视觉全部清零
+//        {
+//            My_Auto_Shoot.Auto_Aim.Flag_Get_Target = 0;
+//			My_Auto_Shoot.Auto_Aim.Yaw_Angle = 0;
+//			My_Auto_Shoot.Auto_Aim.Pitch_Angle = 0;
+//			My_Auto_Shoot.Auto_Aim.Enable_Shoot=0;
+//        }
+//    }
+    
 }
 
 
@@ -61,14 +79,24 @@ void Control_Task_Init(void)
 {
     PID_Init(&Gimbal.Pitch_Motor_Angle_PID,PID_POSITION,40,0,0,10000,0);
     PID_Init(&Gimbal.Pitch_Motor_Speed_PID,PID_POSITION,100,0.5,0,20000,0);
-    PID_Init(&Gimbal.Yaw_Motor_Angle_PID,PID_POSITION,20,0,0,10000,0);
-    PID_Init(&Gimbal.Yaw_Motor_Speed_PID,PID_POSITION,0.015,0.0003,0,10,1);
+    
+    PID_Init(&Gimbal.Yaw_Motor_Angle_PID,PID_POSITION,22,0,0,10000,0);
+    PID_Init(&Gimbal.Yaw_Motor_Speed_PID,PID_POSITION,0.02,0.0005,0,10,5);
+    
     PID_Init(&Shooter.Poke_Angle_PID,PID_POSITION,140,0,2000,20000,0);
     PID_Init(&Shooter.Poke_Speed_PID,PID_POSITION,0.04,0.0015,0,2048,512);
-    PID_Init(&Shooter.Fric_Speed_PID[0],PID_POSITION,3.5,0,0,15000,5000);
-    PID_Init(&Shooter.Fric_Speed_PID[1],PID_POSITION,3.5,0,0,15000,5000);
+    
+    PID_Init(&Shooter.Fric_Speed_PID[0],PID_POSITION,3.8,0,0,15000,5000);
+    PID_Init(&Shooter.Fric_Speed_PID[1],PID_POSITION,3.8,0,0,15000,5000);
+    
     PID_Init(&Gimbal.Yaw_Motor_Init_Speed_PID,PID_POSITION,0.5,0.007,0,10,4);
     PID_Init(&Gimbal.Yaw_Motor_Init_Angle_PID,PID_POSITION,40,0,0,100,0);
+    
+    PID_Init(&Gimbal.Auto_Shoot_Pitch_Angle_PID,PID_POSITION,0,0,0,0,0);
+    PID_Init(&Gimbal.Auto_Shoot_Pitch_Speed_PID,PID_POSITION,0,0,0,0,0);
+    
+    PID_Init(&Gimbal.Auto_Shoot_Yaw_Angle_PID,PID_POSITION,0,0,0,0,0);
+    PID_Init(&Gimbal.Auto_Shoot_Yaw_Speed_PID,PID_POSITION,0,0,0,0,0);
 }
 
 
@@ -88,7 +116,7 @@ void Chassis_Mode_Select(void)
     static uint8_t rotate_mode_switch_flag = 0;//切换模式，小陀螺
     static uint8_t jump_up_mode_flag = 0;//切换模式，跳上台阶
     static uint8_t anti_fly_slope_mode_flag = 0;//切换模式，反飞
-//    static uint8_t jump_down_mode_flag = 0;//切换模式，跳下台阶
+    static uint8_t jump_down_mode_flag = 0;//切换模式，跳下台阶
     
     if(Remote_DT7_data.online_flag == 1 && Remote_VTM.online_flag == 0)//使用白控，这里理解为白控时不用键鼠
     {
@@ -179,6 +207,7 @@ void Chassis_Mode_Select(void)
             {
                 anti_fly_slope_mode_flag = 0;
                 jump_up_mode_flag = 0;
+                jump_down_mode_flag = 0;
                 rotate_mode_switch_flag = 0;
             }
             
@@ -230,10 +259,10 @@ void Chassis_Mode_Select(void)
             {
                 USART_Chassis_Data.Chassis_Mode = CHASSIS_JUMP_UP ;
             }
-//            else if(jump_down_mode_flag == 1)
-//            {
-//                USART_Chassis_Data.Chassis_Mode = CHASSIS_JUMP_DOWN ;
-//            }
+            else if(jump_down_mode_flag == 1)
+            {
+                USART_Chassis_Data.Chassis_Mode = CHASSIS_JUMP_DOWN ;
+            }
             else if(anti_fly_slope_mode_flag == 1)
             {
                 USART_Chassis_Data.Chassis_Mode = CHASSIS_ANTI_FLY_SLOPE ;
@@ -248,6 +277,7 @@ void Chassis_Mode_Select(void)
                 USART_Chassis_Data.Chassis_Mode = CHASSIS_RELAX;
                 rotate_mode_switch_flag = 0;
                 jump_up_mode_flag = 0;
+                jump_down_mode_flag = 0;
                 anti_fly_slope_mode_flag = 0;
             }
             USART_Chassis_Data.fn_2_trigger_flag = Remote_VTM.Remote_clicker.fn2_Action.Toggle_Press_Flag ;
@@ -313,6 +343,10 @@ void Chassis_Mode_Select(void)
             else if(anti_fly_slope_mode_flag == 1)
             {
                 USART_Chassis_Data.Chassis_Mode = CHASSIS_ANTI_FLY_SLOPE ;
+            }
+            else if(jump_down_mode_flag == 1)
+            {
+                USART_Chassis_Data.Chassis_Mode = CHASSIS_JUMP_DOWN ;
             }
 //            else if(Shooter.Shooter_Mode != SHOOTER_RELAX)
 //            {

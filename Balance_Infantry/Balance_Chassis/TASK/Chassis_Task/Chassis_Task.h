@@ -276,6 +276,7 @@ typedef struct
     uint8_t Jump_Finish_Middle_Leg_Flag;//跳跃完成后伸中腿长 标志位
     uint16_t Jump_Finish_Middle_Leg_Cnt;//跳跃完成后伸中腿长 计数
     uint8_t Jump_Finish_Flag;//跳跃完成标志，用于头对底盘状态改变的决策
+    uint16_t Jump_Finish_Cnt;
     
 }Balance_Chassis_t;//复制来的，有些没用
 
@@ -296,6 +297,7 @@ void Init_Tp_Calc(float Ref_Leglength,float Harmonize,float Init_Tp,Balance_Chas
 void Chassis_Referance_Update(Balance_Chassis_t* Chassis);
 void Chassis_Rotate_Handle(Balance_Chassis_t* Chassis);
 void Chassis_Param_Init(Balance_Chassis_t* Chassis);
+void Chassis_Mode_Select(Balance_Chassis_t* Chassis);
 void Chassis_State_Update(Balance_Chassis_t* Chassis);
 void Chassis_Relax_Handle(Balance_Chassis_t* Chassis);
 void Chassis_Init_Handle(Balance_Chassis_t* Chassis);
@@ -313,3 +315,4 @@ void Chassis_Task(Balance_Chassis_t* Chassis);
 
 
 #endif
+
