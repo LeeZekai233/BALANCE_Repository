@@ -184,8 +184,9 @@ typedef struct
 	
 	PID_t Roll_Balance_Outer_PID;//roll平衡外环pid
     PID_t Roll_Balance_Inner_PID;//roll平衡内环pid
+    PID_t Leg_Length_PID;
 //	PID_t Roll_Leg_F_Pid;
-	PID_t Roll_leg_F_Rotate_Pid;
+//	PID_t Roll_leg_F_Rotate_Pid;
 	
 	PID_t Pid_Follow_Gimbal;
 	
@@ -254,6 +255,7 @@ typedef struct
     
     float Roll_Balance_F_Left;
     float Roll_Balance_F_Right;
+    float Leg_Length_F;
     
     float x_error;
     float Speed_k;

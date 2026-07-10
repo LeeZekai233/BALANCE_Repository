@@ -80,8 +80,8 @@ void Control_Task_Init(void)
     PID_Init(&Gimbal.Pitch_Motor_Angle_PID,PID_POSITION,40,0,0,10000,0);
     PID_Init(&Gimbal.Pitch_Motor_Speed_PID,PID_POSITION,100,0.5,0,20000,0);
     
-    PID_Init(&Gimbal.Yaw_Motor_Angle_PID,PID_POSITION,22,0,0,10000,0);
-    PID_Init(&Gimbal.Yaw_Motor_Speed_PID,PID_POSITION,0.02,0.0005,0,10,5);
+    PID_Init(&Gimbal.Yaw_Motor_Angle_PID,PID_POSITION,20,0,0,10000,0);
+    PID_Init(&Gimbal.Yaw_Motor_Speed_PID,PID_POSITION,0.015,0.0003,0,10,5);
     
     PID_Init(&Shooter.Poke_Angle_PID,PID_POSITION,140,0,2000,20000,0);
     PID_Init(&Shooter.Poke_Speed_PID,PID_POSITION,0.04,0.0015,0,2048,512);
