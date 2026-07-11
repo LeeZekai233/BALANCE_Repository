@@ -15,7 +15,7 @@ void Control_Task(void)
 {
     time_tick++;
     Remote_Online_Detect(&Remote_DT7_data,&Remote_VTM);
-  //  Auto_Shoot_Online_Detect(&My_Auto_Shoot);
+    Auto_Shoot_Online_Detect(&My_Auto_Shoot);
     if(Remote_DT7_data.online_flag == 1 && Remote_VTM.online_flag == 0)//使用白控
     {
         Key_Mouse_State_Update(&Remote_DT7_data.key,&Remote_DT7_data.Remote_mouse);
@@ -27,16 +27,17 @@ void Control_Task(void)
         VTM_Clicker_State_Update(&Remote_VTM);
     }
     
-    
+ 
     Chassis_Task( );
     Gimbal_Task( );
     Shooter_Task( );
+  
     
     if(time_tick%2 == 0)
     {
         CAN2_Send_Task(Gimbal.Yaw_Motor_Set_T,Shooter.Poke_Motor_Set_Speed);
     }
-    
+
     if(time_tick %2 == 1)
     {
         CAN1_Send_Task(Gimbal.Pitch_Motor_Set_Current, Shooter.Fric_Motor_Ser_Current[0],Shooter.Fric_Motor_Ser_Current[1]);
@@ -45,23 +46,25 @@ void Control_Task(void)
     if(time_tick %2 == 1)
     {
         USART_Chassis_Send(&USART_Chassis_Data);
+   
+        send_protocol_New(Gimbal.Yaw_Angle_Fdb,Gimbal.Pitch_Angle_Fdb,
+        Gimbal.CH040_Data.Roll_Angle,Shooter.Shooter_Speed_Kalman.X_hat,USART_Gimbal_Data.robot_id,USART2_DMA_TX_BUF);
+        
     }
         
-        
-//        send_protocol_New(Gimbal.Yaw_Angle_Fdb,Gimbal.Pitch_Angle_Fdb,
-//        Gimbal.CH040_Data.Roll_Angle,Shooter.Bullet_Speed,USART_Gimbal_Data.bullet_speed,USART2_DMA_TX_BUF);
+  
+
     
-    
-//    if(time_tick%1000 == 5)
-//    {
-//        if(My_Auto_Shoot.Online_Flag == 0)//掉线视觉全部清零
-//        {
-//            My_Auto_Shoot.Auto_Aim.Flag_Get_Target = 0;
-//			My_Auto_Shoot.Auto_Aim.Yaw_Angle = 0;
-//			My_Auto_Shoot.Auto_Aim.Pitch_Angle = 0;
-//			My_Auto_Shoot.Auto_Aim.Enable_Shoot=0;
-//        }
-//    }
+    if(time_tick%1000 == 5)
+    {
+        if(My_Auto_Shoot.Online_Flag == 0)//掉线视觉全部清零
+        {
+            My_Auto_Shoot.Auto_Aim.Flag_Get_Target = 0;
+			My_Auto_Shoot.Auto_Aim.Yaw_Angle = 0;
+			My_Auto_Shoot.Auto_Aim.Pitch_Angle = 0;
+			My_Auto_Shoot.Auto_Aim.Enable_Shoot=0;
+        }
+    }
     
 }
 

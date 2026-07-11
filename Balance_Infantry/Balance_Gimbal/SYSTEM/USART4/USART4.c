@@ -94,8 +94,8 @@ void UART4_Init(uint32_t bound)
     /******************** UART4 中断：IDLE 接收空闲中断 ********************/
 
     nvic.NVIC_IRQChannel = UART4_IRQn;
-    nvic.NVIC_IRQChannelPreemptionPriority = 0;
-    nvic.NVIC_IRQChannelSubPriority = 0;
+    nvic.NVIC_IRQChannelPreemptionPriority = 4;
+    nvic.NVIC_IRQChannelSubPriority = 4;
     nvic.NVIC_IRQChannelCmd = ENABLE;
     NVIC_Init(&nvic);
 
@@ -213,6 +213,7 @@ void UART4_IRQHandler(void)
             USART_Gimbal_Receive(_UART4_DMA_RX_BUF,&USART_Gimbal_Data);
         }
         memset(_UART4_DMA_RX_BUF, 0, UART4_RX_BUF_LENGTH);
+        DMA_ClearITPendingBit(DMA1_Stream2, DMA_IT_TCIF2);
         DMA_SetCurrDataCounter(DMA1_Stream2, UART4_RX_BUF_LENGTH);
         DMA_Cmd(DMA1_Stream2, ENABLE);
     }

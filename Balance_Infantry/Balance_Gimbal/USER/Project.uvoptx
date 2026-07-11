@@ -235,6 +235,51 @@
           <WinNumber>1</WinNumber>
           <ItemText>USART_Chassis_Data</ItemText>
         </Ww>
+        <Ww>
+          <count>16</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>My_Auto_Shoot</ItemText>
+        </Ww>
+        <Ww>
+          <count>17</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>time_tick</ItemText>
+        </Ww>
+        <Ww>
+          <count>18</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>USART2_DMA_TX_BUF[USART2_TX_BUF_LENGTH]</ItemText>
+        </Ww>
+        <Ww>
+          <count>19</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>USART2_DMA_TX_BUF[USART2_TX_BUF_LENGTH]</ItemText>
+        </Ww>
+        <Ww>
+          <count>20</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>USART2_DMA_TX_BUF</ItemText>
+        </Ww>
+        <Ww>
+          <count>21</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>New_Auto_Aim_Medium</ItemText>
+        </Ww>
+        <Ww>
+          <count>22</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>New_Auto_Aim_Medium</ItemText>
+        </Ww>
+        <Ww>
+          <count>23</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>New_Auto_Aim_Medium</ItemText>
+        </Ww>
+        <Ww>
+          <count>24</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>New_Auto_Aim_Medium</ItemText>
+        </Ww>
       </WatchWindow1>
       <Tracepoint>
         <THDelay>0</THDelay>
@@ -278,6 +323,16 @@
       <pszMrulep></pszMrulep>
       <pSingCmdsp></pSingCmdsp>
       <pMultCmdsp></pMultCmdsp>
+      <SystemViewers>
+        <Entry>
+          <Name>System Viewer\UART5</Name>
+          <WinId>35905</WinId>
+        </Entry>
+        <Entry>
+          <Name>System Viewer\USART2</Name>
+          <WinId>35904</WinId>
+        </Entry>
+      </SystemViewers>
       <DebugDescription>
         <Enable>1</Enable>
         <EnableFlashSeq>1</EnableFlashSeq>
@@ -817,8 +872,8 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\SYSTEM\TIM2\TIM2.c</PathWithFileName>
-      <FilenameWithoutPath>TIM2.c</FilenameWithoutPath>
+      <PathWithFileName>..\SYSTEM\CAN1\CAN1.c</PathWithFileName>
+      <FilenameWithoutPath>CAN1.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>
@@ -829,8 +884,8 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\SYSTEM\CAN1\CAN1.c</PathWithFileName>
-      <FilenameWithoutPath>CAN1.c</FilenameWithoutPath>
+      <PathWithFileName>..\SYSTEM\TIM2\TIM2.c</PathWithFileName>
+      <FilenameWithoutPath>TIM2.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>
@@ -853,8 +908,8 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\SYSTEM\USART1\USART1.c</PathWithFileName>
-      <FilenameWithoutPath>USART1.c</FilenameWithoutPath>
+      <PathWithFileName>..\SYSTEM\USART2\USART2.c</PathWithFileName>
+      <FilenameWithoutPath>USART2.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>
@@ -865,8 +920,8 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\SYSTEM\USART2\USART2.c</PathWithFileName>
-      <FilenameWithoutPath>USART2.c</FilenameWithoutPath>
+      <PathWithFileName>..\SYSTEM\USART1\USART1.c</PathWithFileName>
+      <FilenameWithoutPath>USART1.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>
@@ -933,8 +988,8 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\TASK\Control_Task\Control_Task.c</PathWithFileName>
-      <FilenameWithoutPath>Control_Task.c</FilenameWithoutPath>
+      <PathWithFileName>..\TASK\Shooter_Task\Shooter_Task.c</PathWithFileName>
+      <FilenameWithoutPath>Shooter_Task.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>
@@ -945,8 +1000,8 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\TASK\Can_Bus_Task\Can_Bus_Task.c</PathWithFileName>
-      <FilenameWithoutPath>Can_Bus_Task.c</FilenameWithoutPath>
+      <PathWithFileName>..\TASK\Control_Task\Control_Task.c</PathWithFileName>
+      <FilenameWithoutPath>Control_Task.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>
@@ -957,8 +1012,8 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\TASK\Shooter_Task\Shooter_Task.c</PathWithFileName>
-      <FilenameWithoutPath>Shooter_Task.c</FilenameWithoutPath>
+      <PathWithFileName>..\TASK\Can_Bus_Task\Can_Bus_Task.c</PathWithFileName>
+      <FilenameWithoutPath>Can_Bus_Task.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>

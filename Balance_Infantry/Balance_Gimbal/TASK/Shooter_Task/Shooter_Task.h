@@ -5,6 +5,7 @@
 #include "PID.h"
 #include "DJI_Motor.h"
 #include "LK.h"
+#include "Shooter_Kalman_Filter.h"
 
 #define    LEFT_FIRC_SPEED        6000
 #define    RIGHT_FRIC_SPEED      -6000
@@ -131,6 +132,7 @@ typedef struct
     float Shoot_Frequency;//射频
     float Poke_Speed;//拨盘速度，拿来算计数
     
+    First_Order_Kalman_Filter_t Shooter_Speed_Kalman;
     uint8_t Shooter_Enable_Flag;//开发射的标志位
     uint8_t Shooter_Mode_Switch_Flag;//切单发，连发标志位
 }Shooter_t;
@@ -156,7 +158,7 @@ void Shooter_State_Update(void);
 void Shooter_Relax_Handle(void);
 void Shooter_Remote_Handle(void);
 void Shooter_Task(void);
-
+void Bullet_Speed_Cala(float Bullet_Speed,Shooter_t *Shooter);
 
 
 #endif

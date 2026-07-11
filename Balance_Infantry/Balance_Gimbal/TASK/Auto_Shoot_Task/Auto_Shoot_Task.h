@@ -83,7 +83,7 @@ typedef __packed struct
 	uint8_t Current_Color;
 	uint8_t Mode;
 	uint8_t Game_State;
-	uint8_t Poke_State;
+	uint8_t Poke_State;//ÊÇ·ñ¿ª»ð
 	float Shoot_Frequency;
 }New_Auto_Aim_Send_t;	
 

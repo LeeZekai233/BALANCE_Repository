@@ -33,7 +33,7 @@ void usart2_init(uint32_t baud_rate)
     usart.USART_HardwareFlowControl = USART_HardwareFlowControl_None;
     USART_Init(USART2, &usart);
     
-    USART_DMACmd(USART2, USART_DMAReq_Rx, ENABLE);
+
     
     DMA_DeInit(DMA1_Stream5);
     DMA_StructInit(&dma);
@@ -46,7 +46,7 @@ void usart2_init(uint32_t baud_rate)
     dma.DMA_MemoryInc = DMA_MemoryInc_Enable;
     dma.DMA_PeripheralDataSize = DMA_PeripheralDataSize_Byte;
     dma.DMA_MemoryDataSize = DMA_MemoryDataSize_Byte;
-    dma.DMA_Mode = DMA_Mode_Circular;
+    dma.DMA_Mode = DMA_Mode_Normal;
     dma.DMA_Priority = DMA_Priority_Medium;
     dma.DMA_FIFOMode = DMA_FIFOMode_Disable;
     dma.DMA_FIFOThreshold = DMA_FIFOThreshold_1QuarterFull;
@@ -54,17 +54,17 @@ void usart2_init(uint32_t baud_rate)
     dma.DMA_PeripheralBurst = DMA_PeripheralBurst_Single;
     DMA_Init(DMA1_Stream5, &dma);
     
-    DMA_Cmd(DMA1_Stream5, ENABLE);
+    
     
 		nvic.NVIC_IRQChannel = USART2_IRQn;                          
-		nvic.NVIC_IRQChannelPreemptionPriority = 1;   //pre-emption priority 
-		nvic.NVIC_IRQChannelSubPriority = 1;		    //subpriority 
+		nvic.NVIC_IRQChannelPreemptionPriority = 3;   //pre-emption priority 
+		nvic.NVIC_IRQChannelSubPriority = 3;		    //subpriority 
 		nvic.NVIC_IRQChannelCmd = ENABLE;			
 		NVIC_Init(&nvic);	
 		
 		
 		
-  USART_DMACmd(USART2, USART_DMAReq_Tx, ENABLE);
+
 
   DMA_Cmd(DMA1_Stream6, DISABLE);                           // 关DMA通道
   DMA_DeInit(DMA1_Stream6);
@@ -73,7 +73,7 @@ void usart2_init(uint32_t baud_rate)
   dma.DMA_PeripheralBaseAddr	= (uint32_t)(&USART2->DR);
   dma.DMA_Memory0BaseAddr   	= (uint32_t)&USART2_DMA_TX_BUF[0];
   dma.DMA_DIR 			   				 = DMA_DIR_MemoryToPeripheral;
-  dma.DMA_BufferSize					= 0;//sizeof(USART1_DMA_TX_BUF);
+  dma.DMA_BufferSize					= sizeof(USART2_DMA_TX_BUF);
   dma.DMA_PeripheralInc 			= DMA_PeripheralInc_Disable;
   dma.DMA_MemoryInc 					= DMA_MemoryInc_Enable;
   dma.DMA_PeripheralDataSize 	= DMA_PeripheralDataSize_Byte;
@@ -88,15 +88,18 @@ void usart2_init(uint32_t baud_rate)
 
 //	DMA_Cmd(DMA1_Stream6, ENABLE);                           // 关DMA通道
   nvic.NVIC_IRQChannel = DMA1_Stream6_IRQn;   // 发送DMA通道的中断配置
-  nvic.NVIC_IRQChannelPreemptionPriority = 1;     // 优先级设置
-  nvic.NVIC_IRQChannelSubPriority = 1;
+  nvic.NVIC_IRQChannelPreemptionPriority = 0;     // 优先级设置
+  nvic.NVIC_IRQChannelSubPriority = 0;
   nvic.NVIC_IRQChannelCmd = ENABLE;
   NVIC_Init(&nvic);
   DMA_ITConfig(DMA1_Stream6,DMA_IT_TC,ENABLE);
-
-
+  
+  USART_DMACmd(USART2, USART_DMAReq_Tx, ENABLE);
 		USART_ITConfig(USART2, USART_IT_IDLE, ENABLE);        //usart rx idle interrupt  enabled
 		USART_Cmd(USART2, ENABLE);
+        USART_ClearFlag(USART2, USART_FLAG_ORE | USART_FLAG_NE | USART_FLAG_FE); 
+  USART_DMACmd(USART2, USART_DMAReq_Rx, ENABLE);
+  DMA_Cmd(DMA1_Stream5, ENABLE);
 
 }
 
@@ -111,12 +114,24 @@ void USART2_IRQHandler(void)
 		DMA_Cmd(DMA1_Stream5,DISABLE);  
 		USART_DMACmd(USART2, USART_DMAReq_Rx, DISABLE);
         uint8_t length = USART2_RX_BUF_LENGTH - DMA_GetCurrDataCounter(DMA1_Stream5);
-	//	Vision_Process_General_Message_New(_USART2_DMA_RX_BUF,length,&My_Auto_Shoot);
-        VTM_Reomte_Data_Handle(_USART2_DMA_RX_BUF,length,&Remote_VTM);
+		Vision_Process_General_Message_New(_USART2_DMA_RX_BUF,length,&My_Auto_Shoot);
+        DMA_ClearITPendingBit(DMA1_Stream5, DMA_IT_TCIF5);
         DMA_SetCurrDataCounter(DMA1_Stream5,USART2_RX_BUF_LENGTH);
 		USART_DMACmd(USART2, USART_DMAReq_Rx, ENABLE);
 		DMA_Cmd(DMA1_Stream5,ENABLE);//重新置位后，地址指针变成0
 	}
+}
+
+
+void DMA1_Stream6_IRQHandler(void)
+{
+    // 检查是否是传输完成中断
+    if (DMA_GetITStatus(DMA1_Stream6, DMA_IT_TCIF6) != RESET)
+    {
+        // 1. 清除中断标志位
+        DMA_ClearITPendingBit(DMA1_Stream6, DMA_IT_TCIF6);
+
+    }
 }
 
 

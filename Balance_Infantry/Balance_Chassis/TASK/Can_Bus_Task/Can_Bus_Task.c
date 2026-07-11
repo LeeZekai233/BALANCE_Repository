@@ -1,8 +1,8 @@
 #include "main.h"
 
 
-
-
+uint32_t cnt_can_rx=0;
+float temp;
 void CAN2_Receive_Task(CanRxMsg* RxMsg,Balance_Chassis_t* Chassis)
 {
     switch (RxMsg->StdId)
@@ -15,6 +15,10 @@ void CAN2_Receive_Task(CanRxMsg* RxMsg,Balance_Chassis_t* Chassis)
         case DRIVING_RIGHT_FEEDBACK_ID :
             M3508orM2006EncoderTask(&Driving_M3508[1],RxMsg);
             M3508_Encoder_To_Generic_Encoder(&Driving_M3508[1],&Chassis->Driving_Motor[1]);//ÓÒÂÖ
+            break;
+        case 0X52:
+            temp = RxMsg->Data[0]<<8| RxMsg->Data[1];
+        cnt_can_rx++;
             break;
     }
 }

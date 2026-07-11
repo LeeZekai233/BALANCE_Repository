@@ -8,14 +8,14 @@ New_Auto_Aim_t New_Auto_Aim;
 
 New_Auto_Aim_Send_t New_Auto_Aim_Send;
 
-
+New_Auto_Aim_t New_Auto_Aim_Medium;
 /**********************************************auto_shoot_handle*****************************************/
 u16 AUTO_CRC;
 
 void Vision_Process_General_Message_New(unsigned char* address, unsigned int length, Auto_Shoot_t *Auto_Shoot)
 {
     Auto_Shoot->heart_cnt = time_tick ;
-	New_Auto_Aim_t New_Auto_Aim_Medium;
+	
 	memcpy(&New_Auto_Aim_Medium,&address[0],sizeof(New_Auto_Aim_t));
 	
 	if(New_Auto_Aim_Medium.Header!=0xbe)
@@ -198,20 +198,15 @@ void send_protocol_New(float Yaw, float Pitch, float Roll,float Speed,u8 ID, u8*
 	data[52]=0xed;
     
     
-    //´®2·¢ËÍ
     DMA_Cmd(DMA1_Stream6, DISABLE);
     while (DMA_GetCmdStatus(DMA1_Stream6) != DISABLE) {}
 
-    DMA_ClearFlag(DMA1_Stream6,
-                  DMA_FLAG_FEIF6 |
-                  DMA_FLAG_DMEIF6 |
-                  DMA_FLAG_TEIF6 |
-                  DMA_FLAG_HTIF6 |
-                  DMA_FLAG_TCIF6);
+    DMA1->LIFCR = DMA_FLAG_FEIF6 | DMA_FLAG_DMEIF6 | DMA_FLAG_TEIF6 | DMA_FLAG_HTIF6 | DMA_FLAG_TCIF6;
 
-    DMA_SetCurrDataCounter(DMA1_Stream6, sizeof(New_Auto_Aim_Send)+3);
+    DMA_SetCurrDataCounter(DMA1_Stream6, sizeof(New_Auto_Aim_Send) + 3);
     DMA_Cmd(DMA1_Stream6, ENABLE);
-    
+
+
 }
 
 

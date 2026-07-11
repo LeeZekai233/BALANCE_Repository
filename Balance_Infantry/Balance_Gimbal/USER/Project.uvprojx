@@ -34,8 +34,8 @@
           <SLE66CMisc></SLE66CMisc>
           <SLE66AMisc></SLE66AMisc>
           <SLE66LinkerMisc></SLE66LinkerMisc>
-          <SFDFile>$$Device:STM32F405RG$SVD\STM32F40x.svd</SFDFile>
-          <bCustSvd>0</bCustSvd>
+          <SFDFile>D:\keil5\ARM\Cortex_DFP\1.1.0\SVD\STM32F40x.SFR</SFDFile>
+          <bCustSvd>1</bCustSvd>
           <UseEnv>0</UseEnv>
           <BinPath></BinPath>
           <IncludePath></IncludePath>
@@ -606,14 +606,14 @@
               <FilePath>..\SYSTEM\CAN2\CAN2.c</FilePath>
             </File>
             <File>
-              <FileName>TIM2.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\SYSTEM\TIM2\TIM2.c</FilePath>
-            </File>
-            <File>
               <FileName>CAN1.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\SYSTEM\CAN1\CAN1.c</FilePath>
+            </File>
+            <File>
+              <FileName>TIM2.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\SYSTEM\TIM2\TIM2.c</FilePath>
             </File>
             <File>
               <FileName>TIM6.c</FileName>
@@ -621,14 +621,14 @@
               <FilePath>..\SYSTEM\TIM6\TIM6.c</FilePath>
             </File>
             <File>
-              <FileName>USART1.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\SYSTEM\USART1\USART1.c</FilePath>
-            </File>
-            <File>
               <FileName>USART2.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\SYSTEM\USART2\USART2.c</FilePath>
+            </File>
+            <File>
+              <FileName>USART1.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\SYSTEM\USART1\USART1.c</FilePath>
             </File>
             <File>
               <FileName>USART3.c</FileName>
@@ -656,6 +656,11 @@
           <GroupName>TASK</GroupName>
           <Files>
             <File>
+              <FileName>Shooter_Task.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\TASK\Shooter_Task\Shooter_Task.c</FilePath>
+            </File>
+            <File>
               <FileName>Control_Task.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\TASK\Control_Task\Control_Task.c</FilePath>
@@ -664,11 +669,6 @@
               <FileName>Can_Bus_Task.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\TASK\Can_Bus_Task\Can_Bus_Task.c</FilePath>
-            </File>
-            <File>
-              <FileName>Shooter_Task.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\TASK\Shooter_Task\Shooter_Task.c</FilePath>
             </File>
             <File>
               <FileName>Gimbal_Task.c</FileName>

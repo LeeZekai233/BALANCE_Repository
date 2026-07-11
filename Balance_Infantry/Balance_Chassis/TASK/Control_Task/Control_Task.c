@@ -38,14 +38,14 @@ void Contorl_Task(Balance_Chassis_t* Chassis)
     if(time_tick%2==0)
     {
         Chassis_Task(Chassis);
-        CAN1_Send_Task_1(Chassis->joint_T[0],Chassis->joint_T[3]);
+        CAN1_Send_Task_1(Chassis->joint_T[0]*0,Chassis->joint_T[3]*0);
     }
     
     if(time_tick%2==1)
     {
-        CAN1_Send_Task_2(Chassis->joint_T[1],Chassis->joint_T[2]);
-        CAN2_Send_Task(Chassis->driving_T[0],Chassis->driving_T[1]);
-//        CAN_POWER_Control(CAN2,&Super_Cap_Send);
+        CAN1_Send_Task_2(Chassis->joint_T[1]*0,Chassis->joint_T[2]*0);
+        CAN2_Send_Task(Chassis->driving_T[0]*0,Chassis->driving_T[1]*0);
+        CAN_POWER_Control(CAN2,&Super_Cap_Send);
     }
 
     if(time_tick%2==0)

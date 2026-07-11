@@ -33,6 +33,6 @@ void CAN1_Send_Task_1(float Joint_T_Set1,float Joint_T_Set4);
 void CAN1_Send_Task_2(float Joint_T_Set2, float Joint_T_Set3);
 void CAN2_Send_Task(float Driving_T_Set1, float Driving_T_Set2);
 
-
+extern float temp;
 
 #endif

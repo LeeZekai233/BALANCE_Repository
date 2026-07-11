@@ -34,8 +34,8 @@ void USART3_Init(uint32_t baud_rate)
  
  
 	NVIC_InitStructure.NVIC_IRQChannel = USART3_IRQn;
-	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority=0;
-	NVIC_InitStructure.NVIC_IRQChannelSubPriority =3;
+	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority=2;
+	NVIC_InitStructure.NVIC_IRQChannelSubPriority =2;
 	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
 
 	NVIC_Init(&NVIC_InitStructure);
@@ -143,6 +143,7 @@ void USART3_IRQHandler(void)
       {
            CH040_Data_Get(&imu_data,&Gimbal.CH040_Data);
       }
+      DMA_ClearITPendingBit(DMA1_Stream1, DMA_IT_TCIF1);
       DMA_SetCurrDataCounter(DMA1_Stream1,CH040_RX_BUFF_SIZE);
       USART_DMACmd(USART3,USART_DMAReq_Rx,ENABLE);
       DMA_Cmd(DMA1_Stream1,ENABLE);

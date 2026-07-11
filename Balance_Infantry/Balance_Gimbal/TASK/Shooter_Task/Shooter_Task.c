@@ -137,7 +137,7 @@ void Shooter_Mode_Select(void)
                     Shooter.Poke_State = POKE_ON;
                 }
                 else if( ( (Shooter.Shooter_Mode_Switch_Flag == 0 && Remote_VTM.Remote_mouse.Press_L_Action.Original_Press_Flag == 1)//手动射击
-                    ||   (Gimbal.Gimbal_Mode == GIMBAL_AUTO_AIM && My_Auto_Shoot.Auto_Aim.Enable_Shoot == 1 && Remote_VTM.Remote_mouse.Press_L_Action.Short_Press_Flag == 1) )//自瞄
+                    /*  (Gimbal.Gimbal_Mode == GIMBAL_AUTO_AIM && My_Auto_Shoot.Auto_Aim.Enable_Shoot == 1 && Remote_VTM.Remote_mouse.Press_L_Action.Short_Press_Flag == 1)*/ )//自瞄
                     && Shooter.Heat_Restrict.Fire_Permission == SHOOT_ALLOWED)
                 {
                     Shooter.Shooter_Mode = BURST_FIRE;
@@ -200,11 +200,20 @@ void Shooter_Feedback_Update(void)
     Shooter.Poke_Speed_Fdb = Shooter.Poke_Motor_Encoder.Omega_Deg_fdb ;
     temp_speed =  -Shooter.Fric_Speed_Fdb[1];
     
+    Bullet_Speed_Cala(USART_Gimbal_Data.bullet_speed,&Shooter);
     Shooter.Heat_Restrict.Heat_Cooling_Value = USART_Gimbal_Data.shooter_barrel_cooling_value ;//热量限制用
     Shooter.Heat_Restrict.Shooter_Heat_meas = USART_Gimbal_Data.shooter_id1_17mm_cooling_heat ;
     Shooter.Heat_Restrict.Heat_Limit = USART_Gimbal_Data.shooter_barrel_heat_limit ;
     
    
+}
+
+void Bullet_Speed_Cala(float Bullet_Speed,Shooter_t *Shooter)
+{
+    if(Bullet_Speed<10)
+        Bullet_Speed = 23 ;
+    Shooter->Bullet_Speed = Bullet_Speed;
+    First_Order_Kalman_Filter_Cal(&Shooter->Shooter_Speed_Kalman,Bullet_Speed);
 }
 
 

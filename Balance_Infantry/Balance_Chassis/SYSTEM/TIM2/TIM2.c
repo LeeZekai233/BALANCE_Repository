@@ -31,17 +31,7 @@ void TIM2_IRQHandler(void)
 {
 	if(TIM_GetITStatus(TIM2,TIM_IT_Update))
 	{
-//        if(DaMiao_8009.ERR != DM_ENABLE)
-//        {
-//        DaMiao_8009_Enable(CAN1,0x201);
-//        }
 
-//        if(DaMiao_8009.ERR == DM_ENABLE)
-//        {
-////            DaMiao_8009_Speed_Send(CAN1,&DaMiao_8009,0x201);
-//    //        DaMiao_8009_Position_Send(CAN1,&DaMiao_8009,0x101);
-//        }
-        
 
 		TIM_ClearITPendingBit(TIM2,TIM_IT_Update);//清除中断标志位
 	}

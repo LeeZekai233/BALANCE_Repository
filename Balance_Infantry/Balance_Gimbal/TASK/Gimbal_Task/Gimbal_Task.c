@@ -297,11 +297,11 @@ void Gimbal_Reference_Update(void)
                     Gimbal.Yaw_Angle_Ref = My_Auto_Shoot.Auto_Aim.Yaw_Angle ;
                     Gimbal.Pitch_Angle_Ref = My_Auto_Shoot.Auto_Aim.Pitch_Angle ;
                 }
-                else
-                {
-                    Gimbal.Yaw_Angle_Ref -= Remote_VTM.Remote_mouse.x * 0.005f;
-                    Gimbal.Pitch_Angle_Ref += Remote_VTM.Remote_mouse.y * 0.005f;
-                }
+//                else
+//                {
+//                    Gimbal.Yaw_Angle_Ref -= Remote_VTM.Remote_mouse.x * 0.005f;
+//                    Gimbal.Pitch_Angle_Ref += Remote_VTM.Remote_mouse.y * 0.005f;
+//                }
             }
             break;
             case GIMBAL_SMALL_BUFF:
@@ -447,6 +447,9 @@ void Gimbal_Control_Loop(void)
             Gimbal_Remote_Handle( );
             break;
         case GIMBAL_KEY_MOUSE :
+            Gimbal_Remote_Handle( );
+        break;
+        case GIMBAL_AUTO_AIM:
             Gimbal_Remote_Handle( );
             break;
         default :

@@ -10,7 +10,7 @@
 #include "DaMiao_8009.h"
 #include "DJI_Motor.h"
 #include "TF02.h"
-
+#include "vl53l4cx.h"
 
 
 #define VAL_LIMIT(val, min, max)\
@@ -205,6 +205,7 @@ typedef struct
     PID_t flip_init_dphi0_pid_right;
     
     TF02_t TF02;//²â¾à ±±ÐÑTF02
+    vl53l4cx_t vl53l4cx[3];
     
 	float Yaw_Angle_0_To_2PI;
 	float Yaw_Angle__PI_To_PI;
