@@ -2,7 +2,6 @@
 
 
 uint32_t cnt_can_rx=0;
-float temp;
 void CAN2_Receive_Task(CanRxMsg* RxMsg,Balance_Chassis_t* Chassis)
 {
     switch (RxMsg->StdId)

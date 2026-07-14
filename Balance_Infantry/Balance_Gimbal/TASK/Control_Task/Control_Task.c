@@ -36,6 +36,7 @@ void Control_Task(void)
     if(time_tick%2 == 0)
     {
         CAN2_Send_Task(Gimbal.Yaw_Motor_Set_T,Shooter.Poke_Motor_Set_Speed);
+        USART_Chassis_Send(&USART_Chassis_Data);
     }
 
     if(time_tick %2 == 1)
@@ -44,9 +45,7 @@ void Control_Task(void)
     }
     
     if(time_tick %2 == 1)
-    {
-        USART_Chassis_Send(&USART_Chassis_Data);
-   
+    {   
         send_protocol_New(Gimbal.Yaw_Angle_Fdb,Gimbal.Pitch_Angle_Fdb,
         Gimbal.CH040_Data.Roll_Angle,Shooter.Shooter_Speed_Kalman.X_hat,USART_Gimbal_Data.robot_id,USART2_DMA_TX_BUF);
         
@@ -81,10 +80,13 @@ void Control_Task(void)
 void Control_Task_Init(void)
 {
     PID_Init(&Gimbal.Pitch_Motor_Angle_PID,PID_POSITION,40,0,0,10000,0);
-    PID_Init(&Gimbal.Pitch_Motor_Speed_PID,PID_POSITION,100,0.5,0,20000,0);
+    PID_Init(&Gimbal.Pitch_Motor_Speed_PID,PID_POSITION,100,0.5,0,20000,10000);
     
-    PID_Init(&Gimbal.Yaw_Motor_Angle_PID,PID_POSITION,20,0,0,10000,0);
+    PID_Init(&Gimbal.Yaw_Motor_Angle_PID,PID_POSITION,15,0,0,10000,0);//15 0 0 100000 0
     PID_Init(&Gimbal.Yaw_Motor_Speed_PID,PID_POSITION,0.015,0.0003,0,10,5);
+    
+//    PID_Init(&Gimbal.Yaw_Motor_Init_Speed_PID,PID_POSITION,0.5,0.007,0,10,4);8,0.02,0,100,50
+ //   PID_Init(&Gimbal.Yaw_Motor_Angle_PID,PID_POSITION,0.05,0,0,10,4);
     
     PID_Init(&Shooter.Poke_Angle_PID,PID_POSITION,140,0,2000,20000,0);
     PID_Init(&Shooter.Poke_Speed_PID,PID_POSITION,0.04,0.0015,0,2048,512);
@@ -95,11 +97,15 @@ void Control_Task_Init(void)
     PID_Init(&Gimbal.Yaw_Motor_Init_Speed_PID,PID_POSITION,0.5,0.007,0,10,4);
     PID_Init(&Gimbal.Yaw_Motor_Init_Angle_PID,PID_POSITION,40,0,0,100,0);
     
-    PID_Init(&Gimbal.Auto_Shoot_Pitch_Angle_PID,PID_POSITION,0,0,0,0,0);
-    PID_Init(&Gimbal.Auto_Shoot_Pitch_Speed_PID,PID_POSITION,0,0,0,0,0);
+//    PID_Init(&Gimbal.Yaw_Motor_Init_Speed_PID,PID_POSITION,0.5,0.007,0,10,4);
+//    PID_Init(&Gimbal.Yaw_Motor_Init_Angle_PID,PID_POSITION,10,0.02,0,100,50);
     
-    PID_Init(&Gimbal.Auto_Shoot_Yaw_Angle_PID,PID_POSITION,0,0,0,0,0);
-    PID_Init(&Gimbal.Auto_Shoot_Yaw_Speed_PID,PID_POSITION,0,0,0,0,0);
+    
+    PID_Init(&Gimbal.Auto_Shoot_Pitch_Angle_PID,PID_POSITION,40,0,0,10000,0);
+    PID_Init(&Gimbal.Auto_Shoot_Pitch_Speed_PID,PID_POSITION,100,0.5,0,20000,10000);
+    
+    PID_Init(&Gimbal.Auto_Shoot_Yaw_Angle_PID,PID_POSITION,25,0,0,10000,0);
+    PID_Init(&Gimbal.Auto_Shoot_Yaw_Speed_PID,PID_POSITION,0.015,0.0003,0,10,5);
 }
 
 

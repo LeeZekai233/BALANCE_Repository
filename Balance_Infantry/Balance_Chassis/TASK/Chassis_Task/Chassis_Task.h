@@ -185,8 +185,6 @@ typedef struct
 	PID_t Roll_Balance_Outer_PID;//roll平衡外环pid
     PID_t Roll_Balance_Inner_PID;//roll平衡内环pid
     PID_t Leg_Length_PID;
-//	PID_t Roll_Leg_F_Pid;
-//	PID_t Roll_leg_F_Rotate_Pid;
 	
 	PID_t Pid_Follow_Gimbal;
 	
@@ -267,6 +265,9 @@ typedef struct
     Leg_Length_State_e Leg_Length;
     Leg_Length_State_e Last_Leg_Length;
     
+    uint16_t roll_leg_cnt;
+    uint8_t roll_leg_flag;
+    
     uint8_t  Low_Leglength_Flag;
     uint16_t Low_Leglength_Cnt;
     
@@ -281,7 +282,12 @@ typedef struct
     uint8_t Jump_Finish_Flag;//跳跃完成标志，用于头对底盘状态改变的决策
     uint16_t Jump_Finish_Cnt;
     
-}Balance_Chassis_t;//复制来的，有些没用
+    float Slope_Angle;//坡面角度
+    
+    float Slope_Leglength_Cnt;
+    float Slope_Leglength_Flag;
+    
+}Balance_Chassis_t;
 
 
 
@@ -296,6 +302,7 @@ float Normalize_Angle_PI(float angle);
 float Transform_Angle_0_2PI(float angle);
 void Motor_Out_Limit(Balance_Chassis_t* Chassis);
 void Motor_Torque_Set(Balance_Chassis_t* Chassis,float Joint_T_0,float Joint_T_1,float Joint_T_2,float Joint_T_3,float Driving_T_1,float Driving_T_2);
+float Slope_Angle_Cala(float Left_Leglength,float Right_Leglength,float GYRO_Roll_Angle);
 void Init_Tp_Calc(float Ref_Leglength,float Harmonize,float Init_Tp,Balance_Chassis_t* Chassis);
 void Chassis_Referance_Update(Balance_Chassis_t* Chassis);
 void Chassis_Rotate_Handle(Balance_Chassis_t* Chassis);

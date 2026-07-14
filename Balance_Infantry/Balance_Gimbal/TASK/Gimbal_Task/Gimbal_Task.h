@@ -84,6 +84,7 @@ void Gimbal_Feedback_Update(void);
 void Gimbal_Relax_Handle(void);
 void Gimbal_Init_Handle(void);
 void Gimbal_Remote_Handle(void);
+void Gimbal_Auto_Aim_Handle(void);
 void Gimbal_Control_Loop(void);
 void Gimbal_Task(void);
 

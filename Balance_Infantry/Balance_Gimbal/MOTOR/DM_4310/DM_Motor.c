@@ -88,7 +88,7 @@ void DM_Motor_Information_Receive(CanRxMsg *msg,DM_Motor_t *DM_Motor,float offse
 	DM_Motor->Angle_Deg_fdb_last = DM_Motor->Angle_Deg_fdb;
 }
 
-
+//起码力矩能用
 /********************************
 *@Brief： DM_Motor MIT模式下的控制帧发送
 *@Cal：   内部或外部
@@ -123,6 +123,8 @@ void DM_Motor_Information_Send(CAN_TypeDef* CANx,uint16_t CAN_ID,float P_des,flo
 	CAN_TransmitStatus(CANx,CAN_Transmit(CANx,&Motor_DM_Motor_CanTxMsg));
 	
 }
+
+//没改不知道对不对
 /********************************
 *@Brief： DM_Motor 位置模式下的控制帧发送
 *@Cal：   内部或外部
@@ -158,6 +160,8 @@ void DM_Motor_Position_Send(CAN_TypeDef* CANx,int16_t CAN_ID,float P_des,float V
 	
 }
 
+
+//没改不知道对不对
 /********************************
 *@Brief： DM_Motor 速度模式下的控制帧发送
 *@Cal：   内部或外部
@@ -188,6 +192,8 @@ void DM_Motor_Speed_Send(CAN_TypeDef* CANx,int16_t CAN_ID,float V_des)
 	
 }
 
+
+
 /********************************
 *@Brief：   达妙电机 	保存位置零点
 *@Cal：     内部和外部
@@ -217,6 +223,7 @@ void DM_Motor_Position0_offset(CAN_TypeDef* CANx, int16_t CAN_ID)
 }
 
 
+
 /********************************
 *@Brief：   达妙电机 	使能
 *@Cal：     内部和外部
@@ -244,6 +251,7 @@ void DM_Motor_Enable(CAN_TypeDef* CANx, int16_t CAN_ID)
 	
 	CAN_TransmitStatus(CANx,CAN_Transmit(CANx,&Motor_DaMiao_Init_CanTxMsg));
 }
+
 
 
 /********************************
@@ -305,6 +313,8 @@ void DM_Motor_Clear_Error_Information(CAN_TypeDef* CANx, int16_t CAN_ID)
 }
 
 
+
+
 // 角度归一化到 [-PI , PI]
 float AngleWrap(float angle)
 {
@@ -318,6 +328,7 @@ float AngleWrap(float angle)
     }
     return angle;
 }
+
 
 
 void DM_Motor_To_Generic_Encoder(DM_Motor_t* DM_Motor,Encoder_t* Encoder)

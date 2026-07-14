@@ -297,11 +297,11 @@ void Gimbal_Reference_Update(void)
                     Gimbal.Yaw_Angle_Ref = My_Auto_Shoot.Auto_Aim.Yaw_Angle ;
                     Gimbal.Pitch_Angle_Ref = My_Auto_Shoot.Auto_Aim.Pitch_Angle ;
                 }
-//                else
-//                {
-//                    Gimbal.Yaw_Angle_Ref -= Remote_VTM.Remote_mouse.x * 0.005f;
-//                    Gimbal.Pitch_Angle_Ref += Remote_VTM.Remote_mouse.y * 0.005f;
-//                }
+                else
+                {
+                    Gimbal.Yaw_Angle_Ref -= Remote_VTM.Remote_mouse.x * 0.005f;
+                    Gimbal.Pitch_Angle_Ref += Remote_VTM.Remote_mouse.y * 0.005f;
+                }
             }
             break;
             case GIMBAL_SMALL_BUFF:
@@ -394,7 +394,7 @@ void Gimbal_Init_Handle(void)
     
     Gimbal.Pitch_Speed_Ref = PID_Calc(&Gimbal.Pitch_Motor_Angle_PID ,Gimbal.Pitch_Angle_Fdb ,Gimbal.Pitch_Angle_Ref );
     Gimbal.Pitch_Motor_Set_Current = PID_Calc(&Gimbal.Pitch_Motor_Speed_PID, Gimbal.Pitch_Speed_Fdb, Gimbal.Pitch_Speed_Ref);
-    Gimbal.Yaw_Speed_Ref = PID_Calc(&Gimbal.Yaw_Motor_Init_Angle_PID, Gimbal.Yaw_Angle_Fdb , Gimbal.Yaw_Angle_Ref );
+     Gimbal.Yaw_Speed_Ref = PID_Calc(&Gimbal.Yaw_Motor_Init_Angle_PID, Gimbal.Yaw_Angle_Fdb , Gimbal.Yaw_Angle_Ref );
     Gimbal.Yaw_Motor_Set_T = PID_Calc(&Gimbal.Yaw_Motor_Init_Speed_PID, Gimbal.Yaw_Speed_Fdb, Gimbal.Yaw_Speed_Ref );
 }
 
@@ -423,6 +423,32 @@ void Gimbal_Remote_Handle(void)
 }
 
 
+/**
+************************************************************************************************************************
+* @Name     : Gimbal_Auto_Aim_Handle
+* @brief    : 云台自瞄处理
+* @param	: void
+* @retval   : void
+* @Note     : 
+************************************************************************************************************************
+**/
+void Gimbal_Auto_Aim_Handle(void)
+{
+    Gimbal.Pitch_Speed_Ref = PID_Calc(&Gimbal.Auto_Shoot_Pitch_Angle_PID ,Gimbal.Pitch_Angle_Fdb ,Gimbal.Pitch_Angle_Ref );
+    Gimbal.Pitch_Motor_Set_Current = PID_Calc(&Gimbal.Auto_Shoot_Pitch_Speed_PID, Gimbal.Pitch_Speed_Fdb, Gimbal.Pitch_Speed_Ref);
+    
+    Gimbal.Yaw_Speed_Ref = PID_Calc(&Gimbal.Auto_Shoot_Yaw_Angle_PID, Gimbal.Yaw_Angle_Fdb , Gimbal.Yaw_Angle_Ref );
+    Gimbal.Yaw_Motor_Set_T = PID_Calc(&Gimbal.Auto_Shoot_Yaw_Speed_PID, Gimbal.Yaw_Speed_Fdb , Gimbal.Yaw_Speed_Ref);
+}
+
+
+void Gimbal_Test(void)
+{
+    Gimbal.Yaw_Angle_Fdb = Gimbal.CH040_Data.Yaw_Multi_Angle;
+    Gimbal.Yaw_Angle_Ref += Remote_VTM.Remote_clicker.ch2 *0.001;
+    
+    Gimbal.Yaw_Motor_Set_T = PID_Calc(&Gimbal.Yaw_Motor_Angle_PID,Gimbal.Yaw_Angle_Fdb,Gimbal.Yaw_Angle_Ref);
+}
 
 /**
 ************************************************************************************************************************
@@ -450,7 +476,7 @@ void Gimbal_Control_Loop(void)
             Gimbal_Remote_Handle( );
         break;
         case GIMBAL_AUTO_AIM:
-            Gimbal_Remote_Handle( );
+            Gimbal_Auto_Aim_Handle( );
             break;
         default :
             break;

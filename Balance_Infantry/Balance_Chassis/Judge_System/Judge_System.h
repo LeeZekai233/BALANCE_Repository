@@ -139,6 +139,7 @@ typedef __packed struct
   uint16_t shooter_barrel_cooling_value; //机器人射击热量每秒冷却值
   uint16_t shooter_barrel_heat_limit; //机器人射击热量上限
   uint16_t chassis_power_limit;  //机器人底盘功率上限
+  float bullet_speed_limit; //机器人射击初速度上限 
   uint8_t power_management_gimbal_output 	: 1; 
   uint8_t power_management_chassis_output : 1;  
   uint8_t power_management_shooter_output : 1; 
