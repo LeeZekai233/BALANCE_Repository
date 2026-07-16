@@ -32,27 +32,23 @@ typedef enum
 
 typedef __packed struct
 {
-	uint8_t if_follow_gim;//是否跟随云台
-	uint8_t jump_cmd;//跳跃命令
-	uint8_t overstep_cmd;//上台阶命令
 	Chassis_Mode_e Chassis_Mode;//底盘模式
 	float Yaw_Encoder_Angle;//yaw轴电机编码器角度
 	float Cmd_Leg_Length;//命令腿长
-	float V_x;
 	float V_y;
-	float roll;
+    float V_x;
+    
 	int16_t Jump_Height;//跳跃高度
-	uint8_t Control_Mode;//控制模式 //暂时不用
+    
 	uint8_t remote_online_flag;
 	uint8_t fric_wheel_run;
-	uint8_t Rollover_posture_cmd;
-	uint8_t low_speed_cmd;
+    
 	uint8_t UI_auto_aim_state;  //自瞄在不在
-	uint8_t Gimbal_Init_Finish_Flag;//原gimbal_data_if_finish_Init，
+	uint8_t Gimbal_Init_Finish_Flag;
 	float leg_single_angle_handle_left;
 	float leg_single_angle_handle_right;
 	uint8_t fn_2_trigger_flag;
-	uint8_t lock_shoot_check;
+    
 }  USART_Chassis_Data_t;//云台发送的底盘数据
 
 

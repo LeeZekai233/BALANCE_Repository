@@ -184,8 +184,11 @@ typedef struct
 	
 	PID_t Roll_Balance_Outer_PID;//roll平衡外环pid
     PID_t Roll_Balance_Inner_PID;//roll平衡内环pid
+    
+    PID_t Roll_Balance_PID;//Roll单环PID
     PID_t Leg_Length_PID;
 	
+    
 	PID_t Pid_Follow_Gimbal;
 	
 	PID_t Init_Tp_PID;//初始化Init_Tp_PID
@@ -284,8 +287,14 @@ typedef struct
     
     float Slope_Angle;//坡面角度
     
-    float Slope_Leglength_Cnt;
-    float Slope_Leglength_Flag;
+    uint16_t Slope_Leglength_Cnt;
+    uint8_t Slope_Leglength_Flag;
+    
+    float Roll_Balance_Leglength;
+    float Roll_Balance_Leglength_Left;
+    float Roll_Balance_Leglength_Right;
+    
+    float Roll_Balance_F;
     
 }Balance_Chassis_t;
 
@@ -302,7 +311,7 @@ float Normalize_Angle_PI(float angle);
 float Transform_Angle_0_2PI(float angle);
 void Motor_Out_Limit(Balance_Chassis_t* Chassis);
 void Motor_Torque_Set(Balance_Chassis_t* Chassis,float Joint_T_0,float Joint_T_1,float Joint_T_2,float Joint_T_3,float Driving_T_1,float Driving_T_2);
-float Slope_Angle_Cala(float Left_Leglength,float Right_Leglength,float GYRO_Roll_Angle);
+float Slope_Angle_Calc(float Left_Leglength,float Right_Leglength,float GYRO_Roll_Angle);
 void Init_Tp_Calc(float Ref_Leglength,float Harmonize,float Init_Tp,Balance_Chassis_t* Chassis);
 void Chassis_Referance_Update(Balance_Chassis_t* Chassis);
 void Chassis_Rotate_Handle(Balance_Chassis_t* Chassis);

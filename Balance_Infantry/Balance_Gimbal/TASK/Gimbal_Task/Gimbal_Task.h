@@ -60,12 +60,19 @@ typedef struct
     PID_t          Pitch_Motor_Angle_PID;
     PID_t          Yaw_Motor_Angle_PID;
     PID_t          Yaw_Motor_Speed_PID;
-    PID_t          Auto_Shoot_Pitch_Speed_PID;//自瞄PID
-    PID_t          Auto_Shoot_Pitch_Angle_PID;
-    PID_t          Auto_Shoot_Yaw_Angle_PID;
-    PID_t          Auto_Shoot_Yaw_Speed_PID;
+    
+    PID_t          Auto_Aim_Pitch_Speed_PID;//自瞄PID
+    PID_t          Auto_Aim_Pitch_Angle_PID;
+    PID_t          Auto_Aim_Yaw_Angle_PID;
+    PID_t          Auto_Aim_Yaw_Speed_PID;
+    
     PID_t          Yaw_Motor_Init_Angle_PID;//初始化闭环编码器，正常情况闭陀螺仪，参数不同
     PID_t          Yaw_Motor_Init_Speed_PID;
+    
+    PID_t          Auto_Buff_Pitch_Speed_PID;//打符PID
+    PID_t          Auto_Buff_Pitch_Angle_PID;
+    PID_t          Auto_Buff_Yaw_Angle_PID;
+    PID_t          Auto_Buff_Yaw_Speed_PID;
     
     int16_t        Pitch_Motor_Set_Current;//6020 pitch转矩电流值
     float          Yaw_Motor_Set_T;//DM4310力矩值
@@ -85,7 +92,9 @@ void Gimbal_Relax_Handle(void);
 void Gimbal_Init_Handle(void);
 void Gimbal_Remote_Handle(void);
 void Gimbal_Auto_Aim_Handle(void);
+void Gimbal_Auto_Buff_Handle(void);
 void Gimbal_Control_Loop(void);
 void Gimbal_Task(void);
 
 #endif
+

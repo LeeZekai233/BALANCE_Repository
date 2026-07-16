@@ -11,7 +11,7 @@ typedef struct
     uint8_t Online_flag;//在线标志位
 }vl53l4cx_t;
 
-
+extern vl53l4cx_t vl53l4cx;
 
 uint8_t vl53l4cx_Online_Handle(vl53l4cx_t* vl53l4cx,uint32_t time_tick);
 uint16_t vl53l4cx_Data_Get(CanRxMsg* RxMsg,vl53l4cx_t* vl53l4cx,uint32_t time_tick);

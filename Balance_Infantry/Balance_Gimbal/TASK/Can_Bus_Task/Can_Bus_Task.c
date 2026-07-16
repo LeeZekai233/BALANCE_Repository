@@ -38,29 +38,7 @@ void CAN2_Send_Task(float Yaw_Torque_Set,float Poke_Speed_Set)//Yaw速度单位rad/s
         DM_Motor_Clear_Error_Information(CAN2,YAW_CONTROL_ID);
     }
     while((CAN2->TSR & (CAN_TSR_TME0 | CAN_TSR_TME1 | CAN_TSR_TME2)) == 0);//等待有发送邮箱空
-//    
-//    if(Gimbal.Gimbal_Mode == GIMBAL_RELAX)
-//    {
-//        DM_Motor_Disable(CAN2,YAW_CONTROL_ID);
-//    }
-//    else
-//    {
-//        if(Yaw_DM4310.ERR == DM_DISABLE)
-//        {
-//            DM_Motor_Enable(CAN2,YAW_CONTROL_ID);
-//        }
-//        else if(Yaw_DM4310.ERR == DM_ENABLE)
-//        {
-//            DM_Motor_Speed_Send(CAN2,YAW_CONTROL_ID+0x200,Yaw_Torque_Set);
-//        }
-//        else
-//        {
-//            DM_Motor_Clear_Error_Information(CAN2,YAW_CONTROL_ID);
-//        }
-//    }
-//    while((CAN2->TSR & (CAN_TSR_TME0 | CAN_TSR_TME1 | CAN_TSR_TME2)) == 0);//等待有发送邮箱空
-//    
-    
+
 }
 
 

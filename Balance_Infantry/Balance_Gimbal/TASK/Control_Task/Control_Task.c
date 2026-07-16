@@ -32,18 +32,14 @@ void Control_Task(void)
     Gimbal_Task( );
     Shooter_Task( );
   
+    CAN2_Send_Task(Gimbal.Yaw_Motor_Set_T,Shooter.Poke_Motor_Set_Speed);
+    CAN1_Send_Task(Gimbal.Pitch_Motor_Set_Current, Shooter.Fric_Motor_Ser_Current[0],Shooter.Fric_Motor_Ser_Current[1]);
     
     if(time_tick%2 == 0)
     {
-        CAN2_Send_Task(Gimbal.Yaw_Motor_Set_T,Shooter.Poke_Motor_Set_Speed);
         USART_Chassis_Send(&USART_Chassis_Data);
     }
 
-    if(time_tick %2 == 1)
-    {
-        CAN1_Send_Task(Gimbal.Pitch_Motor_Set_Current, Shooter.Fric_Motor_Ser_Current[0],Shooter.Fric_Motor_Ser_Current[1]);
-    }
-    
     if(time_tick %2 == 1)
     {   
         send_protocol_New(Gimbal.Yaw_Angle_Fdb,Gimbal.Pitch_Angle_Fdb,
@@ -58,10 +54,11 @@ void Control_Task(void)
     {
         if(My_Auto_Shoot.Online_Flag == 0)//掉线视觉全部清零
         {
-            My_Auto_Shoot.Auto_Aim.Flag_Get_Target = 0;
-			My_Auto_Shoot.Auto_Aim.Yaw_Angle = 0;
-			My_Auto_Shoot.Auto_Aim.Pitch_Angle = 0;
-			My_Auto_Shoot.Auto_Aim.Enable_Shoot=0;
+            My_Auto_Shoot.Auto_Aim.Flag_Get_Target = 0 ;
+			My_Auto_Shoot.Auto_Aim.Yaw_Angle = 0 ;
+			My_Auto_Shoot.Auto_Aim.Pitch_Angle = 0 ;
+			My_Auto_Shoot.Auto_Aim.Enable_Shoot=0 ;
+            My_Auto_Shoot.Auto_Aim.Link_State = 0;
         }
     }
     
@@ -82,14 +79,13 @@ void Control_Task_Init(void)
     PID_Init(&Gimbal.Pitch_Motor_Angle_PID,PID_POSITION,40,0,0,10000,0);
     PID_Init(&Gimbal.Pitch_Motor_Speed_PID,PID_POSITION,100,0.5,0,20000,10000);
     
-    PID_Init(&Gimbal.Yaw_Motor_Angle_PID,PID_POSITION,15,0,0,10000,0);//15 0 0 100000 0
+    PID_Init(&Gimbal.Yaw_Motor_Angle_PID,PID_POSITION,15,0,0,10000,0);
     PID_Init(&Gimbal.Yaw_Motor_Speed_PID,PID_POSITION,0.015,0.0003,0,10,5);
     
-//    PID_Init(&Gimbal.Yaw_Motor_Init_Speed_PID,PID_POSITION,0.5,0.007,0,10,4);8,0.02,0,100,50
- //   PID_Init(&Gimbal.Yaw_Motor_Angle_PID,PID_POSITION,0.05,0,0,10,4);
     
     PID_Init(&Shooter.Poke_Angle_PID,PID_POSITION,140,0,2000,20000,0);
     PID_Init(&Shooter.Poke_Speed_PID,PID_POSITION,0.04,0.0015,0,2048,512);
+    
     
     PID_Init(&Shooter.Fric_Speed_PID[0],PID_POSITION,3.8,0,0,15000,5000);
     PID_Init(&Shooter.Fric_Speed_PID[1],PID_POSITION,3.8,0,0,15000,5000);
@@ -97,15 +93,19 @@ void Control_Task_Init(void)
     PID_Init(&Gimbal.Yaw_Motor_Init_Speed_PID,PID_POSITION,0.5,0.007,0,10,4);
     PID_Init(&Gimbal.Yaw_Motor_Init_Angle_PID,PID_POSITION,40,0,0,100,0);
     
-//    PID_Init(&Gimbal.Yaw_Motor_Init_Speed_PID,PID_POSITION,0.5,0.007,0,10,4);
-//    PID_Init(&Gimbal.Yaw_Motor_Init_Angle_PID,PID_POSITION,10,0.02,0,100,50);
+    
+    PID_Init(&Gimbal.Auto_Aim_Pitch_Angle_PID,PID_POSITION,40,0,0,10000,0);
+    PID_Init(&Gimbal.Auto_Aim_Pitch_Speed_PID,PID_POSITION,100,0.5,0,20000,10000);
+    
+    PID_Init(&Gimbal.Auto_Aim_Pitch_Angle_PID,PID_POSITION,25,0,0,10000,0);
+    PID_Init(&Gimbal.Auto_Aim_Yaw_Speed_PID,PID_POSITION,0.015,0.0003,0,10,5);
     
     
-    PID_Init(&Gimbal.Auto_Shoot_Pitch_Angle_PID,PID_POSITION,40,0,0,10000,0);
-    PID_Init(&Gimbal.Auto_Shoot_Pitch_Speed_PID,PID_POSITION,100,0.5,0,20000,10000);
+    PID_Init(&Gimbal.Auto_Buff_Pitch_Angle_PID,PID_POSITION,40,0,0,10000,0);
+    PID_Init(&Gimbal.Auto_Buff_Pitch_Speed_PID,PID_POSITION,100,0.5,0,20000,10000);
     
-    PID_Init(&Gimbal.Auto_Shoot_Yaw_Angle_PID,PID_POSITION,25,0,0,10000,0);
-    PID_Init(&Gimbal.Auto_Shoot_Yaw_Speed_PID,PID_POSITION,0.015,0.0003,0,10,5);
+    PID_Init(&Gimbal.Auto_Buff_Pitch_Angle_PID,PID_POSITION,15,0,0,10000,0);
+    PID_Init(&Gimbal.Auto_Buff_Yaw_Speed_PID,PID_POSITION,0.015,0.0003,0,10,5);
 }
 
 

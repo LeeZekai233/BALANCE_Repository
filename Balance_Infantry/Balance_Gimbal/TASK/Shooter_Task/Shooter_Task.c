@@ -137,7 +137,7 @@ void Shooter_Mode_Select(void)
                     Shooter.Poke_State = POKE_ON;
                 }
                 else if( ( (Shooter.Shooter_Mode_Switch_Flag == 0 && Remote_VTM.Remote_mouse.Press_L_Action.Original_Press_Flag == 1)//手动射击
-                    /*  (Gimbal.Gimbal_Mode == GIMBAL_AUTO_AIM && My_Auto_Shoot.Auto_Aim.Enable_Shoot == 1 && Remote_VTM.Remote_mouse.Press_L_Action.Short_Press_Flag == 1)*/ )//自瞄
+                    || (Gimbal.Gimbal_Mode == GIMBAL_AUTO_AIM && My_Auto_Shoot.Auto_Aim.Enable_Shoot == 1 && Remote_VTM.Remote_mouse.Press_L_Action.Short_Press_Flag == 1) )//自瞄
                     && Shooter.Heat_Restrict.Fire_Permission == SHOOT_ALLOWED)
                 {
                     Shooter.Shooter_Mode = BURST_FIRE;
