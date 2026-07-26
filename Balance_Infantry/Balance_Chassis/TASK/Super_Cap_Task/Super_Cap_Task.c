@@ -58,10 +58,10 @@ void CAN_POWER_Control(CAN_TypeDef *CANx,SuperCap_Send_t *SC)
     {
           SC->Stop_Control_Flag=1;
     }
-     else 
-     {
-          SC->Stop_Control_Flag=0;
-     }
+    else 
+    {
+         SC->Stop_Control_Flag=0;
+    }
     SC->chassis_power_buffer=judge_rece_mesg.power_heat_data.buffer_energy;
     SC->chassis_power_limit =judge_rece_mesg.game_robot_state.chassis_power_limit;
     memcpy(&Capacitance_Message_Buf,(uint8_t *)SC,sizeof(SuperCap_Send_t));

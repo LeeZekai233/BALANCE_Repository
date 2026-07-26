@@ -9,6 +9,22 @@
 #define CHASSIS_RECEIVE_LENGTH 32
 
 
+typedef enum
+{
+    GIMBAL_RELAX  = 0,           //云台失能
+    GIMBAL_INIT = 1,             //云台初始化
+    GIMBAL_REMOTE = 2,           //遥控
+    GIMBAL_KEY_MOUSE = 3,        //键鼠
+    GIMBAL_AUTO_AIM = 4,         //自瞄
+    GIMBAL_BIG_BUFF = 5,         //大符
+    GIMBAL_AUTO_BIG_BUFF = 6,    //自动大符
+    GIMBAL_SMALL_BUFF = 7,       //小符
+    GIMBAL_AUTO_SMALL_BUFF = 8,  //自动小符
+    GIMBAL_SENTRY = 9,           //被致盲使用哨兵模式
+}Gimbal_Mode_e;
+
+
+
 
 typedef __packed struct
 {
@@ -21,7 +37,7 @@ typedef __packed struct
 
 	int16_t Jump_Height;//跳跃高度
 
-	uint8_t remote_online_flag;
+	Gimbal_Mode_e Gimbal_Mode;
 	uint8_t fric_wheel_run;
 
 	uint8_t UI_auto_aim_state;

@@ -1,7 +1,7 @@
 #ifndef __BOARD_CONNECTED_TASK_H
 #define __BOARD_CONNECTED_TASK_H
 #include "stm32f4xx.h"                  // Device header
-
+#include "Gimbal_Task.h"
 
 
 typedef enum
@@ -13,13 +13,13 @@ typedef enum
   CHASSIS_STAND_MODE                               = 4,//底盘站立
   CHASSIS_CLOCKWISE_ROTATE                         = 5,//顺时针小陀螺
   CHASSIS_ANTI_CLOCKWISE_ROTATE                    = 6,//逆时针小陀螺
-  CHASSIS_CLOCKWISE_ROTATE_VAR_SPEED               = 7,//顺时针变速小陀螺
-  CHASSIS_ANTI_CLOCKWISE_ROTATE_VAR_SPEED          = 8,//逆时针变速小陀螺
+  CHASSIS_CLOCKWISE_ROTATE_ACC_SPEED               = 7,//顺时针变速小陀螺
+  CHASSIS_ANTI_CLOCKWISE_ROTATE_ACC_SPEED          = 8,//逆时针变速小陀螺
   CHASSIS_JUMP_UP                                  = 9,//跳上台阶
   CHASSIS_JUMP_DOWN                                = 10,//跳下台阶
   CHASSIS_ANTI_FLY_SLOPE                           = 11,//反飞坡
-  CHASSIS_SIT_DOWN                                 = 12,//调试的临时模式
-  
+  CHASSIS_SIT_DOWN                                 = 12,//坐
+  CHASSIS_JUMP_DOWN_350                            = 13,//跳下350
 } Chassis_Mode_e;//底盘模式
 
 typedef enum
@@ -40,7 +40,7 @@ typedef __packed struct
     
 	int16_t Jump_Height;//跳跃高度
     
-	uint8_t remote_online_flag;
+	Gimbal_Mode_e Gimbal_Mode;
 	uint8_t fric_wheel_run;
     
 	uint8_t UI_auto_aim_state;  //自瞄在不在

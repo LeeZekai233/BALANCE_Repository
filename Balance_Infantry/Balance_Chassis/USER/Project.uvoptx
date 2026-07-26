@@ -313,12 +313,42 @@
         <Ww>
           <count>30</count>
           <WinNumber>1</WinNumber>
-          <ItemText>Chassis</ItemText>
+          <ItemText>Chassis,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>31</count>
           <WinNumber>1</WinNumber>
           <ItemText>Joint_Motor</ItemText>
+        </Ww>
+        <Ww>
+          <count>32</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>Super_Cap_Send,0x0A</ItemText>
+        </Ww>
+        <Ww>
+          <count>33</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>can_capacitance_message</ItemText>
+        </Ww>
+        <Ww>
+          <count>34</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>can_capacitance_message</ItemText>
+        </Ww>
+        <Ww>
+          <count>35</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>flag</ItemText>
+        </Ww>
+        <Ww>
+          <count>36</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>judge_rece_mesg</ItemText>
+        </Ww>
+        <Ww>
+          <count>37</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>judge_rece_mesg</ItemText>
         </Ww>
       </WatchWindow1>
       <Tracepoint>
@@ -902,8 +932,8 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\SYSTEM\USART3\USART3.c</PathWithFileName>
-      <FilenameWithoutPath>USART3.c</FilenameWithoutPath>
+      <PathWithFileName>..\SYSTEM\USART6\USART6.c</PathWithFileName>
+      <FilenameWithoutPath>USART6.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>
@@ -914,8 +944,8 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\SYSTEM\USART6\USART6.c</PathWithFileName>
-      <FilenameWithoutPath>USART6.c</FilenameWithoutPath>
+      <PathWithFileName>..\SYSTEM\USART3\USART3.c</PathWithFileName>
+      <FilenameWithoutPath>USART3.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>

@@ -7,8 +7,8 @@
 #include "LK.h"
 #include "Shooter_Kalman_Filter.h"
 
-#define    LEFT_FIRC_SPEED        6000
-#define    RIGHT_FRIC_SPEED      -6000
+#define    LEFT_FIRC_SPEED        6200
+#define    RIGHT_FRIC_SPEED      -6200
 #define BULLET_SPEED_TARGET											23.5
 
 #define BULLET_SPEED_SELF_ADAPTATION_K    			0//250//自适应弹数调整系数//摩擦轮转速调高 系数调小
@@ -96,6 +96,7 @@ typedef struct
     Shooter_State_e Last_Shooter_State;//上一次发射机构状态
     CF_FSM_State_e CF_FSM_State;//停火有限状态机 //暂时不会使用
     Poke_State_e Poke_State;//拨盘状态 发给视觉看的
+    Poke_State_e Last_Poke_State;//上一次的拨盘状态
     Fric_State_e Fric_State;//摩擦轮状态
     
     Encoder_t Poke_Motor_Encoder;//拨盘电机编码器    LK4005
@@ -135,6 +136,9 @@ typedef struct
     First_Order_Kalman_Filter_t Shooter_Speed_Kalman;
     uint8_t Shooter_Enable_Flag;//开发射的标志位
     uint8_t Shooter_Mode_Switch_Flag;//切单发，连发标志位
+    uint8_t Auto_Buff_Shoot_Flag;
+    uint16_t Auto_Buff_Delay;
+    uint8_t Last_Auto_Buff_Shoot_Flag;
 }Shooter_t;
 /*********************************发射结构体**********************************/
 

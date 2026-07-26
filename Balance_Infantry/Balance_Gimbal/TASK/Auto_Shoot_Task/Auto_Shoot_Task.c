@@ -109,7 +109,7 @@ void Vision_Process_General_Message_New(unsigned char* address, unsigned int len
 		
 		if(Buff_X_Yaw_Angle_Medium==New_Auto_Aim.Yaw_Angle&&Buff_Y_Pitch_Angle_Medium==New_Auto_Aim.Pitch_Angle)
 		{
-			if(!(Buff_X_Yaw_Angle_Medium==0&&Buff_Y_Pitch_Angle_Medium==0)&&(Gimbal.Gimbal_Mode==GIMBAL_BIG_BUFF||Gimbal.Gimbal_Mode==GIMBAL_SMALL_BUFF/*||Gimbal.Gimbal_Mode==GIMBAL_AUTO_BIG_BUFF||Gimbal.Gimbal_Mode==GIMBAL_AUTO_SMALL_BUFF*/))
+			if(!(Buff_X_Yaw_Angle_Medium==0&&Buff_Y_Pitch_Angle_Medium==0)&&(Gimbal.Gimbal_Mode==GIMBAL_BIG_BUFF||Gimbal.Gimbal_Mode==GIMBAL_SMALL_BUFF||Gimbal.Gimbal_Mode==GIMBAL_AUTO_BIG_BUFF||Gimbal.Gimbal_Mode==GIMBAL_AUTO_SMALL_BUFF))
 			{
 				Auto_Shoot->Buff.Lost_Cnt=0;
 				
@@ -120,6 +120,7 @@ void Vision_Process_General_Message_New(unsigned char* address, unsigned int len
 				Auto_Shoot->Buff.Pitch_Angle = New_Auto_Aim.Pitch_Angle;
 				My_Auto_Shoot.Buff.Last_Shoot_flag = My_Auto_Shoot.Buff.Shoot_flag;
 				My_Auto_Shoot.Buff.Shoot_flag = New_Auto_Aim.Enable_Shoot;
+                My_Auto_Shoot.Buff.Buff_Shoot_Delay = New_Auto_Aim.Buff_Shoot_Delay ;
 
 
 				

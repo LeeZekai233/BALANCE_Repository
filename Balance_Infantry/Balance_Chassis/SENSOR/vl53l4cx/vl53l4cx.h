@@ -6,14 +6,14 @@
 
 typedef struct
 {
-	uint16_t Distance;//距离
+	uint16_t Distance_mm;//距离
     uint32_t Heart_cnt;//
     uint8_t Online_flag;//在线标志位
 }vl53l4cx_t;
 
-extern vl53l4cx_t vl53l4cx;
 
-uint8_t vl53l4cx_Online_Handle(vl53l4cx_t* vl53l4cx,uint32_t time_tick);
+uint16_t Get_Max_Distance(uint16_t Left_Distance,uint16_t Right_Distance);
+uint8_t vl53l4cx_Online_flag_Get(vl53l4cx_t* vl53l4cx,uint32_t time_tick);
 uint16_t vl53l4cx_Data_Get(CanRxMsg* RxMsg,vl53l4cx_t* vl53l4cx,uint32_t time_tick);
 
 #endif

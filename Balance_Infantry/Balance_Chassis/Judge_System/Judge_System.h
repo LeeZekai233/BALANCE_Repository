@@ -15,7 +15,8 @@
 #define HEADER_LEN                      sizeof(frame_header_t)
 #define CMD_LEN                         2    //cmdid bytes
 #define CRC_LEN                         2    //crc16 bytes
-	
+ 	
+
 typedef enum
 {
 	GAME_STATE_ID                      =0x0001,//比赛状态数据:0x0001。发送频率:1Hz 

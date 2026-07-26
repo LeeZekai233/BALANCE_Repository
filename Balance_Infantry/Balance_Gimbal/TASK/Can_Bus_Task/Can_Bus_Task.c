@@ -64,7 +64,7 @@ void CAN1_Receive_Task(CanRxMsg* RxMsg)
 }
 
 
-
+int cnt;
 
 void CAN2_Receive_Task(CanRxMsg* RxMsg)
 {
@@ -75,7 +75,8 @@ void CAN2_Receive_Task(CanRxMsg* RxMsg)
             DM_Motor_To_Generic_Encoder(&Yaw_DM4310,&Gimbal.Yaw_Motor_Encoder);
             break;
         case POKE_FEEDBACK_ID:
-            LK_EncoderProcess(&Poke_MG4005,RxMsg);
+            cnt++;
+            LK_Information_Receive(cnt,RxMsg,1,&Poke_MG4005);
             LK4005_Encoder_To_Generic_Encoder(&Poke_MG4005,&Shooter.Poke_Motor_Encoder);
             break;
     }

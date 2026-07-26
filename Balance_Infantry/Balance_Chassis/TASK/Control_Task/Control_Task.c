@@ -11,8 +11,14 @@ void Contorl_Task(Balance_Chassis_t* Chassis)
     Motor_Online_Detective(&Chassis->Driving_Motor[0]);
     Motor_Online_Detective(&Chassis->Driving_Motor[1]);
     
+    
     //测距检测
     TF02_Online_Handle(&Chassis->TF02);
+    vl53l4cx_Online_flag_Get(&Chassis->vl53l4cx_Left,time_tick);
+    vl53l4cx_Online_flag_Get(&Chassis->vl53l4cx_Middle,time_tick);
+    vl53l4cx_Online_flag_Get(&Chassis->vl53l4cx_Right,time_tick);
+    Chassis->Distance_mm = Get_Max_Distance(Chassis->vl53l4cx_Left.Distance_mm,Chassis->vl53l4cx_Right.Distance_mm);
+    
     
     //里程和加速度的更新
     if(fabs(Chassis->Chassis_Ref.V_w) > 0.8f)
@@ -38,16 +44,19 @@ void Contorl_Task(Balance_Chassis_t* Chassis)
     if(time_tick%2==0)
     {
         Chassis_Task(Chassis);
-        CAN1_Send_Task_1(Chassis->joint_T[0],Chassis->joint_T[3]);
+        CAN2_Send_Task_1(Chassis->joint_T[0],Chassis->joint_T[3]);
     }
     
     if(time_tick%2==1)
     {
-        CAN1_Send_Task_2(Chassis->joint_T[1],Chassis->joint_T[2]);
-        CAN2_Send_Task(Chassis->driving_T[0],Chassis->driving_T[1]);
-        CAN_POWER_Control(CAN2,&Super_Cap_Send);
+        CAN2_Send_Task_2(Chassis->joint_T[1],Chassis->joint_T[2]);
+        CAN1_Send_Task(Chassis->driving_T[0],Chassis->driving_T[1]);
     }
 
+    if(time_tick%10 == 0)
+    {
+        CAN_POWER_Control(CAN1,&Super_Cap_Send);
+    }
     if(time_tick%2==0)
     {
         usart_gimbal_send
@@ -68,7 +77,7 @@ void Contorl_Task(Balance_Chassis_t* Chassis)
     
     if(time_tick % 100 == 0)
     {
-     //   Client_Send_Handle();
+        Client_Send_Handle();
     }
 }
 

@@ -35,7 +35,7 @@ void usart_gimbal_send(
                        uint16_t current_HP,
                        uint8_t  robot_id,
                        uint8_t  Gimbal_Init_Cmd,
-                       float    Jump_Finish_Flag,//这里用这个传Jump_Finish_Flag
+                       float    Jump_Finish_Flag,
                        uint8_t  game_state,
                        USART_Gimbal_Data_t* USART_Gimbal_Data)
 {

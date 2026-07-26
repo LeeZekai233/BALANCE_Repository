@@ -115,6 +115,7 @@ void USART2_IRQHandler(void)
 		USART_DMACmd(USART2, USART_DMAReq_Rx, DISABLE);
         uint8_t length = USART2_RX_BUF_LENGTH - DMA_GetCurrDataCounter(DMA1_Stream5);
 		Vision_Process_General_Message_New(_USART2_DMA_RX_BUF,length,&My_Auto_Shoot);
+            
         DMA_ClearITPendingBit(DMA1_Stream5, DMA_IT_TCIF5);
         DMA_SetCurrDataCounter(DMA1_Stream5,USART2_RX_BUF_LENGTH);
 		USART_DMACmd(USART2, USART_DMAReq_Rx, ENABLE);

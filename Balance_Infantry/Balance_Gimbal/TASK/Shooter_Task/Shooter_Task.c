@@ -15,6 +15,8 @@ Shooter_t Shooter;
 void Shooter_Mode_Select(void)
 {
     Shooter.Last_Shooter_Mode = Shooter.Shooter_Mode ;
+    Shooter.Last_Poke_State = Shooter.Poke_State;
+    Shooter.Last_Auto_Buff_Shoot_Flag = Shooter.Auto_Buff_Shoot_Flag ;
     if(Remote_DT7_data.online_flag == 1 && Remote_VTM.online_flag == 0)//使用白控
     {
         if(Remote_DT7_data.Remote_clicker.s1 == MIDDLE || Remote_DT7_data.Remote_clicker.s1 == UP)
@@ -69,13 +71,19 @@ void Shooter_Mode_Select(void)
             {
                 if(Gimbal.Gimbal_Mode != GIMBAL_RELAX && Gimbal.Gimbal_Mode != GIMBAL_INIT)//云台没初始化完不允许打弹
                 {
-                    if(Remote_VTM.Remote_clicker.ch4_Up_Action.Short_Press_Flag == 1 && Shooter.Fric_State == FRIC_ON && Shooter.Heat_Restrict.Fire_Permission == SHOOT_ALLOWED)
+                    if( ( (Remote_VTM.Remote_clicker.ch4_Up_Action.Short_Press_Flag == 1 && Shooter.Fric_State == FRIC_ON && Gimbal.Gimbal_Mode != GIMBAL_AUTO_AIM) 
+                        || (Remote_VTM.Remote_clicker.ch4_Up_Action.Short_Press_Flag == 1 && Shooter.Fric_State == FRIC_ON && Gimbal.Gimbal_Mode == GIMBAL_AUTO_AIM && My_Auto_Shoot.Auto_Aim.Enable_Shoot == 1 ) )
+                     && Shooter.Heat_Restrict.Fire_Permission == SHOOT_ALLOWED)
                     {
                         Shooter.Shooter_Mode = SINGLE_SHOOT;
+                        Shooter.Poke_State = POKE_ON;
                     }
-                    else if(Remote_VTM.Remote_clicker.ch4_Up_Action.Long_Press_Flag == 1 && Shooter.Fric_State == FRIC_ON && Shooter.Heat_Restrict.Fire_Permission == SHOOT_ALLOWED)
+                    else if( ( (Remote_VTM.Remote_clicker.ch4_Up_Action.Long_Press_Flag == 1 && Shooter.Fric_State == FRIC_ON && Gimbal.Gimbal_Mode != GIMBAL_AUTO_AIM) 
+                        || (Remote_VTM.Remote_clicker.ch4_Up_Action.Long_Press_Flag == 1 && Shooter.Fric_State == FRIC_ON && Gimbal.Gimbal_Mode == GIMBAL_AUTO_AIM && My_Auto_Shoot.Auto_Aim.Enable_Shoot == 1 ) )
+                     && Shooter.Heat_Restrict.Fire_Permission == SHOOT_ALLOWED)
                     {
                         Shooter.Shooter_Mode = BURST_FIRE;
+                        Shooter.Poke_State = POKE_ON;
                         Shooter.Burst_Fire_Cnt ++;
                     }
                     else
@@ -83,6 +91,7 @@ void Shooter_Mode_Select(void)
                         if((fabs(Shooter.Poke_Angle_Ref - Shooter.Poke_Angle_Fdb) < 10 && Shooter.Last_Shooter_Mode != SHOOTER_RELAX) || Shooter.Last_Shooter_Mode == SHOOTER_RELAX) //单发或连发，拨盘转到位置， 或者上一次是失能， 切入停火模式
                         {
                             Shooter.Shooter_Mode = STOP_FIRE ;
+                            Shooter.Poke_State = POKE_OFF;
                         }
                     }
                 }
@@ -90,6 +99,7 @@ void Shooter_Mode_Select(void)
             else//再按一次fn1,退出后发射机构失能
             {
                 Shooter.Shooter_Mode = SHOOTER_RELAX;
+                Shooter.Poke_State = POKE_OFF;
             }
         }
         else if(Remote_VTM.Remote_clicker.Switch == CENTER)//使用键鼠控制
@@ -119,18 +129,34 @@ void Shooter_Mode_Select(void)
             }
             
             
-//            if(Gimbal.Gimbal_Mode == GIMBAL_AUTO_BIG_BUFF || Gimbal.Gimbal_Mode == GIMBAL_AUTO_SMALL_BUFF)//自动大小符，打弹控制
-//            {
-//                
-//            }
-//            
+            if(Gimbal.Gimbal_Mode == GIMBAL_AUTO_BIG_BUFF || Gimbal.Gimbal_Mode == GIMBAL_AUTO_SMALL_BUFF)//自动大小符，打弹控制
+            {
+                if( Shooter.Shooter_Mode == SINGLE_SHOOT)//打出弹后开始计数
+                {
+                    Shooter.Auto_Buff_Delay = My_Auto_Shoot.Buff.Buff_Shoot_Delay*1000;
+                    Shooter.Auto_Buff_Shoot_Flag = 0;
+                }
+                
+                
+                
+                if(Shooter.Auto_Buff_Delay != 0)
+                {
+                    Shooter.Auto_Buff_Delay --;
+                    Shooter.Auto_Buff_Shoot_Flag = 0;
+                }
+                else if(Shooter.Auto_Buff_Delay == 0)
+                {
+                    Shooter.Auto_Buff_Shoot_Flag = 1;
+                    
+                }
+            }
+            
             
             if(Shooter.Shooter_Enable_Flag == 1)//按C进入停火模式
             {
                 if( ((Shooter.Shooter_Mode_Switch_Flag == 1 && Remote_VTM.Remote_mouse.Press_L_Action.Short_Press_Flag == 1)//手动射击
-                    || ( (Gimbal.Gimbal_Mode == GIMBAL_BIG_BUFF || Gimbal.Gimbal_Mode == GIMBAL_SMALL_BUFF) && My_Auto_Shoot.Buff.Enable_Shoot == 1 && Remote_VTM.Remote_mouse.Press_L_Action.Short_Press_Flag == 1) //打符， 普通模式
-                    || ( (Gimbal.Gimbal_Mode == GIMBAL_AUTO_BIG_BUFF || Gimbal.Gimbal_Mode == GIMBAL_AUTO_SMALL_BUFF) && 
-                       (My_Auto_Shoot.Buff.Shoot_flag != My_Auto_Shoot.Buff.Last_Shoot_flag || Remote_VTM.Remote_mouse.Press_L_Action.Short_Press_Flag == 1) ) )//打符，自动模式
+                    || ( (Gimbal.Gimbal_Mode == GIMBAL_BIG_BUFF || Gimbal.Gimbal_Mode == GIMBAL_SMALL_BUFF) && My_Auto_Shoot.Buff.Enable_Shoot == 1 && Remote_VTM.Remote_clicker.fn2_Action.Short_Press_Flag == 1) //打符， 普通模式
+                    || ( (Gimbal.Gimbal_Mode == GIMBAL_AUTO_BIG_BUFF || Gimbal.Gimbal_Mode == GIMBAL_AUTO_SMALL_BUFF) && (My_Auto_Shoot.Buff.Enable_Shoot == 1 && Shooter.Auto_Buff_Shoot_Flag == 1 ) ) )//打符，自动模式
                     && Shooter.Heat_Restrict.Fire_Permission == SHOOT_ALLOWED)
                 {
                     Shooter.Shooter_Mode = SINGLE_SHOOT;
@@ -248,7 +274,7 @@ float Shooter_Bullet_Speed_Self_Adaptation(float Bullet_Speed)
 void Shooter_State_Update(void)
 {
     Shooter.Last_Shooter_State = Shooter.Shooter_State;
-    if((fabs(Shooter.Fric_Speed_Fdb[0]) + fabs(Shooter.Fric_Speed_Fdb[1])) /2 >= 1800)
+    if((fabs(Shooter.Fric_Speed_Fdb[0]) + fabs(Shooter.Fric_Speed_Fdb[1])) /2 >= 5000)
     {
         Shooter.Fric_State = FRIC_ON ;
     }
@@ -257,19 +283,10 @@ void Shooter_State_Update(void)
         Shooter.Fric_State = FRIC_OFF ;
     }
     
-//   if(fabs(Shooter.Poke_Speed_Fdb) >= 5)
-//   {
-//       Shooter.Poke_State = POKE_ON;
-//   }
-//   else
-//   {
-//       Shooter.Poke_State = POKE_OFF;
-//   }
-//   
     switch (Shooter.Shooter_State)
     {
         case SHOOTER_NORMAL :
-            if(fabs(Shooter.Poke_Angle_Ref - Shooter.Poke_Angle_Fdb) > 30.0f)//步兵一颗弹36度
+            if(fabs(Shooter.Poke_Angle_Ref - Shooter.Poke_Angle_Fdb) > 5.0f)//步兵一颗弹36度
             {
                 Shooter.Poke_Trap_CNT ++;
             }
@@ -278,7 +295,7 @@ void Shooter_State_Update(void)
                 Shooter.Poke_Trap_CNT = 0;
             }
             
-            if(Shooter.Poke_Trap_CNT == 2000)
+            if(Shooter.Poke_Trap_CNT == 4000)
             {
                 Shooter.Shooter_State = SHOOTER_TRAP ;
                 Shooter.Poke_Trap_CNT = 0;
@@ -286,7 +303,7 @@ void Shooter_State_Update(void)
             break;
         case SHOOTER_TRAP :
             Shooter.Poke_Trap_Handle_CNT ++;
-            if(Shooter.Poke_Trap_Handle_CNT == 2000)
+            if(Shooter.Poke_Trap_Handle_CNT == 500)
             {
                 Shooter.Shooter_State = SHOOTER_NORMAL ;
                 Shooter.Poke_Trap_Handle_CNT = 0;
@@ -376,12 +393,12 @@ void Heat_Restrict(void)
         Shooter.Heat_Restrict.Remain_Bullets = Shooter.Heat_Restrict.Remain_Bullets_hat;
     }
     
-    if(Shooter.Heat_Restrict.Remain_Bullets <= 4)
+    if(Shooter.Heat_Restrict.Remain_Bullets <= 2)
     {
         Shooter.Heat_Restrict.Fire_Permission = SHOOT_DENIED ;
     }
     
-    if(Shooter.Heat_Restrict.Remain_Bullets > 4)
+    if(Shooter.Heat_Restrict.Remain_Bullets > 2)
     {
         Shooter.Heat_Restrict.Fire_Permission = SHOOT_ALLOWED ;
     }
@@ -413,7 +430,7 @@ void Shooter_Reference_Update(void)
                 Shooter.Fric_Speed_Ref[1] = RIGHT_FRIC_SPEED;
                 if(Shooter.Last_Shooter_Mode == SHOOTER_RELAX)/*对正角度*/
                 {                                                       
-                    Shooter.Poke_Angle_Ref = Shooter.Poke_Angle_Fdb - ((int32_t)Shooter.Poke_Angle_Fdb%36/*整数部分*/) - 
+                    Shooter.Poke_Angle_Ref =  5+Shooter.Poke_Angle_Fdb - ((int32_t)Shooter.Poke_Angle_Fdb%36/*整数部分*/) - 
                        (Shooter.Poke_Angle_Fdb - (int32_t)Shooter.Poke_Angle_Fdb/*小数部分*/); //上一次是失能模式，对正角度
                 }
                 else if(Shooter.Last_Shooter_Mode == SINGLE_SHOOT || Shooter.Last_Shooter_Mode == BURST_FIRE)
@@ -459,7 +476,7 @@ void Shooter_Reference_Update(void)
             
             if(Shooter.Last_Shooter_State == SHOOTER_TRAP)
             {
-                Shooter.Poke_Angle_Ref += 20;
+                Shooter.Poke_Angle_Ref += 3;
             }
             break;
         case SHOOTER_TRAP :
@@ -467,7 +484,7 @@ void Shooter_Reference_Update(void)
             Shooter.Fric_Speed_Ref[1] = RIGHT_FRIC_SPEED;
             if(Shooter.Last_Shooter_State != SHOOTER_TRAP)//卡弹处理
             {
-                Shooter.Poke_Angle_Ref = Shooter.Poke_Angle_Fdb - 20;
+                Shooter.Poke_Angle_Ref = Shooter.Poke_Angle_Fdb - 3;
             }
             break;
     }
@@ -577,6 +594,8 @@ void Shooter_Control_Loop(void)
         default :
             break;
     }
+    
+    
 }
 
 /**

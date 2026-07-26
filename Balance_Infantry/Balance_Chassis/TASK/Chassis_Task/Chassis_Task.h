@@ -67,12 +67,13 @@ typedef enum
   CHASSIS_STAND_MODE                               = 4,//底盘站立
   CHASSIS_CLOCKWISE_ROTATE                         = 5,//顺时针小陀螺
   CHASSIS_ANTI_CLOCKWISE_ROTATE                    = 6,//逆时针小陀螺
-  CHASSIS_CLOCKWISE_ROTATE_VAR_SPEED               = 7,//顺时针变速小陀螺
-  CHASSIS_ANTI_CLOCKWISE_ROTATE_VAR_SPEED          = 8,//逆时针变速小陀螺
+  CHASSIS_CLOCKWISE_ROTATE_ACC_SPEED               = 7,//顺时针加速小陀螺
+  CHASSIS_ANTI_CLOCKWISE_ROTATE_ACC_SPEED          = 8,//逆时针加速小陀螺
   CHASSIS_JUMP_UP                                  = 9,//跳上台阶
   CHASSIS_JUMP_DOWN                                = 10,//跳下台阶
   CHASSIS_ANTI_FLY_SLOPE                           = 11,//反飞坡
-  CHASSIS_SIT_DOWN                                 = 12,//调试的临时模式
+  CHASSIS_SIT_DOWN                                 = 12,//坐
+  CHASSIS_JUMP_DOWN_350                            = 13,//跳下350
     
 } Chassis_Mode_e;//底盘模式
 
@@ -206,7 +207,10 @@ typedef struct
     PID_t flip_init_dphi0_pid_right;
     
     TF02_t TF02;//测距 北醒TF02
-    vl53l4cx_t vl53l4cx[3];
+    
+    vl53l4cx_t vl53l4cx_Middle;//测距，中
+    vl53l4cx_t vl53l4cx_Left;//测距，左
+    vl53l4cx_t vl53l4cx_Right;//测距，右
     
 	float Yaw_Angle_0_To_2PI;
 	float Yaw_Angle__PI_To_PI;
@@ -214,7 +218,6 @@ typedef struct
     float normal_Y_erroffset_H;
 	float remote_ref_vx;
 	
-
 	float Max_Speed;
 	float Min_Speed;
 
@@ -280,8 +283,17 @@ typedef struct
     uint8_t Gimbal_Init_Cmd;//允许云台初始化
     float Jump_Feedforward;//跳跃前馈
     
-    uint8_t Jump_Finish_Middle_Leg_Flag;//跳跃完成后伸中腿长 标志位
-    uint16_t Jump_Finish_Middle_Leg_Cnt;//跳跃完成后伸中腿长 计数
+    uint8_t Antislpoe_Finish_Middle_Leg_Flag;//反飞坡完成后伸腿长 标志位
+    uint16_t Antislpoe_Finish_Middle_Leg_Cnt;//反飞坡完成后伸腿长 计数
+    
+    uint8_t Jumpdown_Finish_Middle_Leg_Flag;//跳下2级完成后伸腿长 标志位
+    uint16_t Jumpdown_Finish_Middle_Leg_Cnt;//跳下2级完成后伸腿长 计数
+    
+    uint8_t Jump350_Finish_Middle_Leg_Flag;//跳下350标志位
+    uint16_t Jump350_Finish_Middle_Leg_Cnt;//跳下350计数
+    
+    uint8_t Middle_Leg_Finish_Flag;//伸中腿长完成标志
+    
     uint8_t Jump_Finish_Flag;//跳跃完成标志，用于头对底盘状态改变的决策
     uint16_t Jump_Finish_Cnt;
     
@@ -295,6 +307,8 @@ typedef struct
     float Roll_Balance_Leglength_Right;
     
     float Roll_Balance_F;
+    
+    uint16_t Distance_mm;
     
 }Balance_Chassis_t;
 
@@ -328,6 +342,7 @@ void Leglength_Change(Balance_Chassis_t* Chassis);
 void Chassis_Jump_Up_Handle(Balance_Chassis_t* Chassis);
 void Chassis_Jump_Down_Handle(Balance_Chassis_t* Chassis);
 void Chassis_AntiFly_Slope_Handle(Balance_Chassis_t* Chassis);
+void Chassis_Jump_Down_350_Handle(Balance_Chassis_t* Chassis);
 void Balance_Task(Balance_Chassis_t* Chassis);
 void Chassis_Control_Loop(Balance_Chassis_t* Chassis);
 void Chassis_Task(Balance_Chassis_t* Chassis);

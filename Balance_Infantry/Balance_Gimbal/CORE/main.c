@@ -5,7 +5,7 @@ int main()
     Infantry_Init( );
 	while (1)
 	{
-	
+        
 	}
 
 }

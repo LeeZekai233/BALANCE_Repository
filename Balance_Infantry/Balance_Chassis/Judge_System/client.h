@@ -2,6 +2,8 @@
 #define  __CLIENT_H
 #include <stm32f4xx.h>
 
+
+
 #define ADD 1
 #define MODIFY 2
 //颜色
@@ -20,7 +22,7 @@
 #define L3       270/2
 #define L4       150/2
 #define L5       150/2
-/*线*/
+
 #define LINE(op,n1,n2,n3,x1,x2,y1,y2,w,l,c) { \
 				.figure_tpye=0, \
 				.operate_tpye=op, \
@@ -35,7 +37,7 @@
 				.layer=l, \
 	            .color=c, \
 } \
-/*长方形*/
+
 #define RECTANGLE(op,n1,n2,n3,x1,x2,y1,y2,w,l,c) { \
 				.operate_tpye=op, \
 				.figure_name[0]=n1, \
@@ -50,7 +52,7 @@
 	            .color=c, \
 				.figure_tpye=1, \
 } \
-/*圆形*/
+
 #define CIRCLE(op,n1,n2,n3,x1,y1,r,w,l,c) { \
 				.operate_tpye=op, \
 				.figure_name[0]=n1, \
@@ -64,7 +66,7 @@
 	            .color=c, \
 				.figure_tpye=2, \
 } \
-/*椭圆*/
+
 #define ELLIPSE(op,n1,n2,n3,x1,y1,rx,ry,w,l,c) { \
 				.operate_tpye=op, \
 				.figure_name[0]=n1, \
@@ -79,7 +81,7 @@
 	            .color=c, \
 				.figure_tpye=3, \
 } \
-/*弧线*/
+
 #define ARC(op,n1,n2,n3,x1,y1,rx,ry,a1,a2,w,l,c) { \
 				.operate_tpye=op, \
 				.figure_name[0]=n1, \
@@ -96,7 +98,7 @@
 	            .color=c, \
 				.figure_tpye=4, \
 } \
-/*浮点数*/
+
 #define FLOAT_NUM(op,n1,n2,n3,x1,y1,_float,size,w,l,c) { \
 				.operate_tpye=op, \
 				.figure_name[0]=n1, \
@@ -113,7 +115,7 @@
 	      .color=c, \
 				.figure_tpye=5, \
 } \
-/*整数*/
+
 #define INT_NUM(op,n1,n2,n3,x1,y1,_int32,size,w,l,c) { \
 				.operate_tpye=op, \
 				.figure_name[0]=n1, \
@@ -130,7 +132,7 @@
 	            .color=c, \
 				.figure_tpye=6, \
 } \
-/*字符*/
+
 #define CHARACTER(op,n1,n2,n3,x1,y1,size,len,w,l,c) { \
 				.operate_tpye=op, \
 				.figure_name[0]=n1, \
@@ -190,9 +192,10 @@ typedef __packed struct /*总计3个uint8 3个uint32*/
 #define UI_DEFAULT { \
 				.ADD_Char=&ADD_Character, \
 				.ADD_7Graph=&ADD_7_Graph, \
-				.MODIFY_7Graph_0=&MODIFY_7_Graph_DIY0, \
-				.MODIFY_7Graph_1=&MODIFY_7_Graph_DIY1, \
-	            .MODIFY_7Graph_2=&MODIFY_7_Graph_DIY2 \
+				.MODIFY_7Graph_0=&MODIFY_7_Graph_DIY, \
+				.MODIFY_7Graph_1=MODIFY_7_Graph_DIY1, \
+	            .MODIFY_7Graph_2=MODIFY_7_Graph_DIY2, \
+	      .MODIFY_Char=&MODIFY_Character \
 } \
 
 /*子内容ID：0x0102*/
@@ -240,7 +243,7 @@ typedef struct _UI
     void (*MODIFY_7Graph_0) (interaction_figure_4_t _7,interaction_figure_t _0,interaction_figure_t _1,interaction_figure_t _2,interaction_figure_t _3,interaction_figure_t _4,interaction_figure_t _5,interaction_figure_t _6);
     void (*MODIFY_7Graph_1) (interaction_figure_4_t _7,interaction_figure_t _0,interaction_figure_t _1,interaction_figure_t _2,interaction_figure_t _3,interaction_figure_t _4,interaction_figure_t _5,interaction_figure_t _6);
     void (*MODIFY_7Graph_2) (interaction_figure_4_t _7,interaction_figure_t _0,interaction_figure_t _1,interaction_figure_t _2,interaction_figure_t _3,interaction_figure_t _4,interaction_figure_t _5,interaction_figure_t _6);
-
+    void (*MODIFY_Char) (client_custom_character_t _0,interaction_figure_t __0,uint8_t *data0,uint8_t size0);
 } UI_t;
 
 typedef struct
@@ -254,12 +257,13 @@ extern uint8_t  tx_buf[150];
 void Client_Send_Handle(void);
 void ADD_7_Graph(interaction_figure_4_t _7,interaction_figure_t _0,interaction_figure_t _1,interaction_figure_t _2,interaction_figure_t _3,interaction_figure_t _4,interaction_figure_t _5,interaction_figure_t _6);
 void ADD_Character(client_custom_character_t _0,interaction_figure_t __0,uint8_t *data0,uint8_t size0);
+void MODIFY_Character(client_custom_character_t _0,interaction_figure_t __0,uint8_t *data0,uint8_t size0);
 void MODIFY_2_Character_Num(client_custom_character_t _0,interaction_figure_t __0,float data0,client_custom_character_t _1,interaction_figure_t __1,float data1);
-void MODIFY_7_Graph_DIY0(interaction_figure_4_t _7,interaction_figure_t _0,interaction_figure_t _1,interaction_figure_t _2,interaction_figure_t _3,interaction_figure_t _4,interaction_figure_t _5,interaction_figure_t _6);
+void MODIFY_7_Graph_DIY(interaction_figure_4_t _7,interaction_figure_t _0,interaction_figure_t _1,interaction_figure_t _2,interaction_figure_t _3,interaction_figure_t _4,interaction_figure_t _5,interaction_figure_t _6);
 void MODIFY_7_Graph_DIY1(interaction_figure_4_t _7,interaction_figure_t _0,interaction_figure_t _1,interaction_figure_t _2,interaction_figure_t _3,interaction_figure_t _4,interaction_figure_t _5,interaction_figure_t _6);
 void MODIFY_7_Graph_DIY2(interaction_figure_4_t _7,interaction_figure_t _0,interaction_figure_t _1,interaction_figure_t _2,interaction_figure_t _3,interaction_figure_t _4,interaction_figure_t _5,interaction_figure_t _6);
 
-void Send_bullet_remaining_num(void);
+//void Send_bullet_remaining_num(void);
 
 
 

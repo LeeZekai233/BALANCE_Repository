@@ -1,5 +1,5 @@
 #include "main.h"
-
+float UI_flag=0;
 
 /**
   ******************************************************************************
@@ -16,55 +16,53 @@
  **/
 #define WIDTH    3
 //准星坐标位置
-#define SIGHT1_X 950 
+#define SIGHT1_X 960 
 #define SIGHT1_Y 498
 //弹仓容量
-#define BULLET_SUM 495
+#define BULLET_SUM 700
 
 u16 client_custom_ID=0;
-static uint8_t dddata[120];
+uint8_t dddata[120];
 uint8_t  tx_buf[150];
-static uint8_t ddata[120];
+uint8_t ddata[120];
 
 UI_t UI=UI_DEFAULT;
 //id_data_t send_to_aerial;
 
 /*创建图形对象*/
-/*电容警示圈*///老
+/*电容警示圈*/
 interaction_figure_t cap_down_arc =         ARC(ADD,0,0,1,960,540,140*3-30,140*3-30,225,315,6,0,UI_BLACK);
 interaction_figure_t cap_up_arc =           ARC(ADD,0,0,2,960,540,140*3-30,140*3-30,225,315,5,1,UI_YELLOW);
-
-
-/*电容电压图线*///新
-interaction_figure_t cap_voltage_filte_line = LINE(ADD,0,1,1,384,474,864,864,5,1,UI_YELLOW);
-
-/*热量圈*///老
+/*热量圈*/
 interaction_figure_t heat_down_arc =        ARC(ADD,0,0,3,960,540,140*3-30,140*3-30,45,135,6,0,UI_BLACK);
 interaction_figure_t heat_up_arc =          ARC(ADD,0,0,4,960,540,140*3-30,140*3-30,45,135,5,1,UI_RB);
-
-/*热量图线*///新
-interaction_figure_t heat_line =            LINE(ADD,0,1,2,384,474,764,764,5,1,UI_BLACK);
-
-/*底盘状态*///老
+/*底盘状态*/
 interaction_figure_t yaw_down_arc =         ARC(ADD,0,0,5,960,130,40,40,0,359,15,0,UI_YELLOW);/*yaw底圈*/
 interaction_figure_t yaw_up_arc =           ARC(ADD,0,0,6,960,130,40,40,0,359,15,1,UI_CYAN);
-
-/*视觉状态*///沿用老的
-interaction_figure_t vision_c2 =         RECTANGLE(ADD,0,2,8,750,1170,700,380,1,1,UI_BLACK);//op,n1,n2,n3,x1,x2,y1,y2,w,l,c //自瞄锁定：2
-/*剩余发弹量*///沿用
+/*视觉状态*/
+interaction_figure_t vision_c2 =          RECTANGLE(ADD,0,2,8,650,1270,335,760,2,1,UI_PINK);
+/*剩余发弹量*/
 interaction_figure_t bullet =            FLOAT_NUM(ADD,0,0,8,230,540,0,20,4,0,UI_RB);
-/*等级*///沿用
+/*等级*/
 interaction_figure_t level  =            FLOAT_NUM(ADD,0,0,9,230,570,0,20,4,0,UI_RB);
 /*腿长*/
 interaction_figure_t leg  =              FLOAT_NUM(ADD,0,2,5,230,700,0,20,4,0,UI_RB);
 /*电容实际使用*/
-//interaction_figure_t cap_use  =          FLOAT_NUM(ADD,0,0,7,230,630,0,20,4,0,UI_YELLOW);
-/*跳跃距离*/
-interaction_figure_t jump_distance  =    FLOAT_NUM(ADD,0,2,7,1340,130,0,17,4,0,UI_PURPLE);
+interaction_figure_t cap_use  =          FLOAT_NUM(ADD,0,0,7,230,630,0,20,4,0,UI_YELLOW);
+/*跳跃距离*///这是之前的老测距，现在保留1，选挡位，删掉2
+interaction_figure_t jump_distance  =    FLOAT_NUM(ADD,0,2,7,1150,630,0,30,4,0,UI_PURPLE);           
+interaction_figure_t jump_distance_2  =    FLOAT_NUM(ADD,0,2,8,1300,130,0,17,4,0,UI_PURPLE);        
+/*血量*/
+interaction_figure_t current_HP  =    FLOAT_NUM(ADD,0,2,9,700,600,0,28,4,0,UI_CYAN);
 
+/*允许发弹量*/
+interaction_figure_t allow_bullet =    FLOAT_NUM(ADD,0,4,0,720,490,0,28,4,0,UI_CYAN);
+//速度 
+interaction_figure_t  speed =          FLOAT_NUM(ADD,0,4,1,200,600,0,28,4,0,UI_YELLOW);
+//	judge_rece_mesg.ext_bullet_remaining.bullet_remaining_num_17mm
 /*电池*/
 interaction_figure_t battery_ract =   RECTANGLE(ADD,0,1,0,600,730,115,155,3,0,UI_RB);
-interaction_figure_t battery =        FLOAT_NUM(ADD,0,1,1,607,144,0,17,4,1,UI_CYAN);//op,n1,n2,n3,x1,y1,_float,size,w,l,c
+interaction_figure_t battery =        FLOAT_NUM(ADD,0,1,1,680,680,0,24,4,1,UI_CYAN);//op,n1,n2,n3,x1,y1,_float,size,w,l,c
 /*准星*/
 interaction_figure_t sight =             CIRCLE(ADD,0,1,2,960,540,1,3,0,UI_YELLOW);
 interaction_figure_t sight1 =            CIRCLE(ADD,0,1,9,0,0,3,4,0,UI_YELLOW); // CIRCLE(ADD,0,1,9,950,498,3,4,0,UI_YELLOW);//465
@@ -98,13 +96,14 @@ interaction_figure_t chassis_mode_circle =  CIRCLE(ADD,0,3,6,0,0,7,8,1,UI_GREEN)
 interaction_figure_t _b1=CHARACTER(ADD,0,1,3,1600,540,20,20,2,0,UI_YELLOW);/*bullet*/    interaction_figure_t _r1=CHARACTER(ADD,0,1,3,50,540,20,20,2,0,UI_YELLOW);/*bullet*/
 interaction_figure_t _b2=CHARACTER(ADD,0,1,4,1600,570,20,20,2,0,UI_YELLOW);/*level*/     interaction_figure_t _r2=CHARACTER(ADD,0,1,4,50,570,20,20,2,0,UI_YELLOW);/*level*/
 
-interaction_figure_t _b3=CHARACTER(ADD,0,1,5,50,660,20,20,2,0,UI_PURPLE);/*NORMAL*/       interaction_figure_t _r3=CHARACTER(ADD,0,1,5,1660,660,20,20,2,0,UI_PURPLE);/*NORMAL*/
-interaction_figure_t _b5=CHARACTER(ADD,0,1,7,50,630,20,20,2,0,UI_PURPLE);/*SLOPE*/     	 interaction_figure_t _r5=CHARACTER(ADD,0,1,7,1660,630,20,20,2,0,UI_PURPLE);/*SLOPE*/
-interaction_figure_t _b7=CHARACTER(ADD,1,1,9,50,600,20,20,2,0,UI_PURPLE);/*GROUND*/    	 interaction_figure_t _r7=CHARACTER(ADD,1,1,9,1660,600,20,20,2,0,UI_PURPLE);/*GROUND*/
-interaction_figure_t _b8=CHARACTER(ADD,0,2,0,50,690,20,20,2,0,UI_PURPLE);/*JUMP1700,130,17,15 */ interaction_figure_t _r8=CHARACTER(ADD,0,2,0,1660,690,20,20,2,0,UI_PURPLE);/*JUMP*/ 
+interaction_figure_t _b3=CHARACTER(ADD,0,1,5,600,690,20,20,2,0,UI_PURPLE);/*NORMAL*/   //    interaction_figure_t _r3=CHARACTER(ADD,0,1,5,1660,660,20,20,2,0,UI_PURPLE);/*NORMAL*/
+//interaction_figure_t _b5=CHARACTER(ADD,0,1,7,50,690,20,20,2,0,UI_PURPLE);/*JUMP*/    // 	 interaction_figure_t _r5=CHARACTER(ADD,0,1,7,1660,630,20,20,2,0,UI_PURPLE);/*SLOPE*/
+//interaction_figure_t _b7=CHARACTER(ADD,1,1,9,50,690,20,20,2,0,UI_PURPLE);/**/    //	 interaction_figure_t _r7=CHARACTER(ADD,1,1,9,1660,600,20,20,2,0,UI_PURPLE);/*GROUND*/
+//interaction_figure_t _b8=CHARACTER(ADD,0,2,0,50,690,20,20,2,0,UI_PURPLE);
+//interaction_figure_t _b9=CHARACTER(ADD,0,2,1,50,690,20,20,2,0,UI_PURPLE);/*JUMP1700,130,17,15 */ interaction_figure_t _r8=CHARACTER(ADD,0,2,0,1660,690,20,20,2,0,UI_PURPLE);/*JUMP*/ 
 //interaction_figure_t _b8=CHARACTER(ADD,0,2,0,1700,130,17,15,2,0,UI_RB);/*JUMP1700,130,17,15 */ interaction_figure_t _r8=CHARACTER(ADD,0,2,0,1250,130,17,15,2,0,UI_RB);/*JUMP*/ 
 
-interaction_figure_t _b6=CHARACTER(ADD,0,1,8,1600,700,20,20,2,0,UI_YELLOW);/*leg*/       interaction_figure_t _r6=CHARACTER(ADD,0,1,8,50,700,20,20,2,0,UI_YELLOW);/*leg*/
+interaction_figure_t _b6=CHARACTER(ADD,0,1,8,720,540,30,40,3,0,UI_YELLOW);/*leg*/       interaction_figure_t _r6=CHARACTER(ADD,0,1,8,50,700,20,20,2,0,UI_YELLOW);/*leg*/
 
 /*创建 组合图形对象*/
 interaction_figure_4_t A;
@@ -112,26 +111,21 @@ interaction_figure_4_t AA;
 interaction_figure_4_t AB;
 interaction_figure_4_t AC;
 
-/*创建 字符对象*///旧
+/*创建 字符对象*/
 client_custom_character_t B;uint8_t dataB[]="BULLET";
 client_custom_character_t C;uint8_t dataC[]="LEVEL";
-client_custom_character_t D;uint8_t dataD[]="JUMP";  //跳跃模式
-client_custom_character_t E;uint8_t dataE[]="NORMAL";//正常
-client_custom_character_t F;uint8_t dataF[]="SLOPE"; //飞坡
-client_custom_character_t H;uint8_t dataH[]="GROUND"; //贴地模式
-client_custom_character_t G;uint8_t dataG[]="LEG";
+client_custom_character_t D;uint8_t dataD[]="J";  //跳跃模式
 
-//新
-client_custom_character_t I;uint8_t dataI[]="SC";//超电
-client_custom_character_t J;uint8_t dataJ[]="BD";//血量
-client_custom_character_t K;uint8_t dataK[]="BB";//大符
-client_custom_character_t L;uint8_t dataL[]="SB";//小符
-client_custom_character_t M;uint8_t dataM[]="BUTTLE";//允许发弹量
-
-
+client_custom_character_t E;uint8_t dataE[]="N  ";//正常
+client_custom_character_t F;uint8_t dataF[]="B  "; //陀螺
+client_custom_character_t H;uint8_t dataH[]="G  "; //下台阶
+client_custom_character_t G;uint8_t dataG[]="E  ";
+client_custom_character_t I;uint8_t dataI[]="F  ";
 /*UI刷新主函数*/
 void Client_Send_Handle(void)
 {
+
+
     UI.id=judge_rece_mesg.game_robot_state.robot_id;
     switch(UI.id)
     {
@@ -157,112 +151,128 @@ void Client_Send_Handle(void)
 
     switch(UI.cnt)
     {
-    case 1:/*静态显示*///全添加
+    case 1:/*静态显示*/
     {
-        UI.ADD_7Graph(A,cap_voltage_filte_line,cap_up_arc,heat_down_arc,heat_up_arc,yaw_down_arc,yaw_up_arc,sight1);//改一个电压直线
+        UI.ADD_7Graph(A,current_HP,allow_bullet,speed,battery,yaw_down_arc,yaw_up_arc,sight1);
     }
     break;
     case 2:
     {
-        UI.ADD_7Graph(AA,bullet,level,battery_ract,battery,jump_hint_line1,jump_hint_line2,leg);
+     //   UI.ADD_7Graph(AA,bullet,level,battery_ract,battery,jump_hint_line1,jump_hint_line2,leg);
     }
     break;
     case 3:
     {
-        UI.ADD_7Graph(AB,jump_distance,vision_c2,chassis_mode_circle,arrows1_l1,arrows1_l2,lollipop_line,lollipop_circle);
+        UI.ADD_7Graph(AB,jump_distance,vision_c2,jump_distance_2,arrows1_l1,arrows1_l2,lollipop_line,lollipop_circle);
     }
     break;
     case 4:
     {
-        if(UI.id < 50)
-        {
-            UI.ADD_Char(B,_r1,dataB,6);
-        } else
-        {
-            UI.ADD_Char(B,_b1,dataB,6);
-        }
-
+            UI.ADD_Char(E,_b6,dataE,3);//NORMAL
     }
     break;
-    case 5:
-    {
-        if(UI.id < 50)
-        {
-            UI.ADD_Char(C,_r2,dataC,5);
-        } else
-        {
-            UI.ADD_Char(C,_b2,dataC,5);
-        }
+//    case 5:
+//    {
+//        if(UI.id < 50)
+//        {
+//            UI.ADD_Char(C,_r2,dataC,5);
+//        } else
+//        {
+//            UI.ADD_Char(C,_b2,dataC,5);
+//        }
+//    }
+//    break;
+//    case 6:
+//    {
+//        if(UI.id < 50)
+//        {
+//            UI.ADD_Char(G,_r6,dataG,5);
+//        } else
+//        {
+//            UI.ADD_Char(G,_b6,dataG,5);
+//        }
+//    }
+//    break;
+//    case 7:
+//    {
+//        if(UI.id < 50)
+//        {
+//            UI.ADD_Char(D,_r8,dataD,5);//跳跃模式
+//        } else
+//        {
+//            UI.ADD_Char(D,_b8,dataD,5);
+//        }
+//    }
+//    break;
+//	  case 8:
+//    {
+//        if(UI.id < 50)
+//        {
+//            UI.ADD_Char(E,_r3,dataE,6);//NORMAL
+//        } else
+//        {
+//            UI.ADD_Char(E,_b3,dataE,6);
+//        }
+//    }
+//    break;
+//	  case 9:
+//    {
+//        if(UI.id < 50)
+//        {
+//            UI.ADD_Char(F,_r5,dataF,5);//SLOPE
+//        } else
+//        {
+//            UI.ADD_Char(F,_b5,dataF,5);
+//        }
+//    }
+//    break;
+//	  case 10:
+//    {
+//        if(UI.id < 50)
+//        {
+//            UI.ADD_Char(H,_r7,dataH,6);//GROUND
+//        } else
+//        {
+//            UI.ADD_Char(H,_b7,dataH,6);
+//        }
+//    }
+// break;
+    case 5:/*动态显示*/
+    {  
+        UI.MODIFY_7Graph_0(A,current_HP,allow_bullet,yaw_up_arc,speed,bullet,level,battery);
     }
     break;
     case 6:
     {
-        if(UI.id < 50)
-        {
-            UI.ADD_Char(G,_r6,dataG,5);
-        } else
-        {
-            UI.ADD_Char(G,_b6,dataG,5);
-        }
+        UI.MODIFY_7Graph_1(AA,sight1,vision_c2,jump_distance,jump_distance_2,arrows1_l2,lollipop_line,chassis_mode_circle);
     }
     break;
     case 7:
-    {
-        if(UI.id < 50)
-        {
-            UI.ADD_Char(D,_r8,dataD,5);//跳跃模式
-        } else
-        {
-            UI.ADD_Char(D,_b8,dataD,5);
-        }
-    }
-    break;
-	  case 8:
-    {
-        if(UI.id < 50)
-        {
-            UI.ADD_Char(E,_r3,dataE,6);//NORMAL
-        } else
-        {
-            UI.ADD_Char(E,_b3,dataE,6);
-        }
-    }
-    break;
-	  case 9:
-    {
-        if(UI.id < 50)
-        {
-            UI.ADD_Char(F,_r5,dataF,5);//SLOPE
-        } else
-        {
-            UI.ADD_Char(F,_b5,dataF,5);
-        }
-    }
-    break;
-	  case 10:
-    {
-        if(UI.id < 50)
-        {
-            UI.ADD_Char(H,_r7,dataH,6);//GROUND
-        } else
-        {
-            UI.ADD_Char(H,_b7,dataH,6);
-        }
-    }
-    break;
-    case 11:/*动态显示*///更改图像
-    {
-        UI.MODIFY_7Graph_0(A,cap_voltage_filte_line,heat_line,yaw_up_arc,leg,bullet,level,battery);
-    }
-    break;
-    case 12:
-    {
-        UI.MODIFY_7Graph_1(AA,sight1,vision_c2,jump_distance,arrows1_l1,arrows1_l2,lollipop_line,chassis_mode_circle);
-    }
-    break;
-    case 13:
-    {
-        UI.MODIFY_7Graph_2(AB,jump_hint_line1,jump_hint_line2,lollipop_circle,l3,l4,l5,wheel);
+    {            
+					if(Chassis.Control_Mode == CHASSIS_JUMP_UP)//350
+						{
+							 				  UI.MODIFY_Char(H,_b6,dataH,3);//NORMAL
+						}
+						else if(Chassis.Control_Mode == CHASSIS_ANTI_FLY_SLOPE)//返飞坡按键E	`
+						{
+						   				 UI.MODIFY_Char(I,_b6,dataI,3);//反飞
+						
+						}
+						else if(Chassis.Control_Mode == CHASSIS_JUMP_DOWN)//2台阶按键F
+						{
+						            UI.MODIFY_Char(G,_b6,dataG,3);//
+						}
+            else if(Chassis.Control_Mode == CHASSIS_CLOCKWISE_ROTATE || Chassis.Control_Mode == CHASSIS_ANTI_CLOCKWISE_ROTATE ||
+                Chassis.Control_Mode == CHASSIS_CLOCKWISE_ROTATE_ACC_SPEED || Chassis.Control_Mode == CHASSIS_ANTI_CLOCKWISE_ROTATE_ACC_SPEED)//按键B	
+            {
+							          UI_flag++;
+                        UI.MODIFY_Char(F,_b6,dataF,3);
+            }
+            else
+						{
+						           UI.MODIFY_Char(E,_b6,dataE,3);//NORMAL
+						}							
+				  
     }
     break;
     default:
@@ -279,13 +289,8 @@ void Client_Send_Handle(void)
     }
 
     UI.cnt++;
-    if(UI.cnt>13)/*在需要刷新的图层刷新*/
-        UI.cnt=1;
-
-//    if(RC_CtrlData.Key_Flag.Key_R_Flag)
-//    {
-//        UI.cnt = 1;
-//    }
+    if(UI.cnt>7)/*在需要刷新的图层刷新*/
+       UI.cnt=5;
 
 }
 
@@ -330,7 +335,24 @@ void ADD_7_Graph(interaction_figure_4_t _7,interaction_figure_t _0,interaction_f
     data_upload_handle(STUDENT_INTERACTIVE_HEADER_DATA_ID,dddata,sizeof(UI_data.id_data)+sizeof(interaction_figure_4_t),DN_REG_ID,tx_buf);
 }
 
+void MODIFY_Character(client_custom_character_t _0,interaction_figure_t __0,uint8_t *data0,uint8_t size0)
+{
+    robot_interaction_data_t UI_data;
 
+    UI_data.id_data.data_cmd_id=0x0110;
+    UI_data.id_data.sender_id =judge_rece_mesg.game_robot_state.robot_id;
+    UI_data.id_data.receiver_id=client_custom_ID; //客户端id
+
+    memcpy((uint8_t *)dddata,(uint8_t *)&UI_data.id_data,sizeof(UI_data.id_data));
+
+    _0.interaction_figure=__0;
+	  _0.interaction_figure.operate_tpye=MODIFY;
+    memcpy(_0.data,data0,size0);
+    *(client_custom_character_t*)(&dddata[6])=_0;
+    memcpy((uint8_t *)(dddata+6+sizeof(client_custom_character_t)),(uint8_t *)&UI_data.id_data,sizeof(UI_data.id_data));
+
+    data_upload_handle(STUDENT_INTERACTIVE_HEADER_DATA_ID,dddata,2*sizeof(UI_data.id_data)+sizeof(client_custom_character_t),DN_REG_ID,tx_buf);
+}
 void MODIFY_2_Character_Num(client_custom_character_t _0,interaction_figure_t __0,float data0,client_custom_character_t _1,interaction_figure_t __1,float data1)
 {
     robot_interaction_data_t UI_data;
@@ -353,8 +375,7 @@ void MODIFY_2_Character_Num(client_custom_character_t _0,interaction_figure_t __
     *(client_custom_character_t*)(&dddata[6+sizeof(client_custom_character_t)])=_1;
     data_upload_handle(STUDENT_INTERACTIVE_HEADER_DATA_ID,dddata,sizeof(UI_data.id_data)+2*sizeof(client_custom_character_t),DN_REG_ID,tx_buf);
 }
-
-void MODIFY_7_Graph_DIY0(interaction_figure_4_t _7,interaction_figure_t _0,interaction_figure_t _1,interaction_figure_t _2,interaction_figure_t _3,interaction_figure_t _4,interaction_figure_t _5,interaction_figure_t _6)
+void MODIFY_7_Graph_DIY(interaction_figure_4_t _7,interaction_figure_t _0,interaction_figure_t _1,interaction_figure_t _2,interaction_figure_t _3,interaction_figure_t _4,interaction_figure_t _5,interaction_figure_t _6)
 {
     robot_interaction_data_t UI_data;
 
@@ -377,42 +398,19 @@ void MODIFY_7_Graph_DIY0(interaction_figure_4_t _7,interaction_figure_t _0,inter
     _7.interaction_figure[4].operate_tpye=MODIFY;
     _7.interaction_figure[5].operate_tpye=MODIFY;
     _7.interaction_figure[6].operate_tpye=MODIFY;
-    /*第1个图形*/ //7graph0，第一个图形，超电
-    _7.interaction_figure[0].details_b=384+can_capacitance_message.cap_voltage_filte*90.0f/24.0f;
-    VAL_LIMIT(_7.interaction_figure[0].details_b,384,474);
-
-    if(can_capacitance_message.cap_voltage_filte<=0)
-    {
-        _7.interaction_figure[0].color=UI_YELLOW;
-        _7.interaction_figure[0].details_b=384;
-    }
-    if(can_capacitance_message.cap_voltage_filte>5)
-    {
-        if(Chassis.USART_Chassis_Data.V_y==2.5)
-        {
-            _7.interaction_figure[0].color=UI_GREEN;
-        } else
-        {
-            _7.interaction_figure[0].color=UI_YELLOW;
-        }
-    }
-    
-    /*第2个图形*///7graph0，第二个图形，热量
-    _7.interaction_figure[1].details_a=384;//7878
-    _7.interaction_figure[1].details_b=384+(judge_rece_mesg.power_heat_data.shooter_17mm_barrel_heat)*90.0f/judge_rece_mesg.game_robot_state.shooter_barrel_heat_limit;
-
-    if(Chassis.USART_Chassis_Data.fric_wheel_run==1)
-    {
-        _7.interaction_figure[1].color=UI_RB;
-    }
-    else
-    {
-        _7.interaction_figure[1].color=UI_YELLOW;
-    }
-    
+    /*第1个图形*/
+    uint32_t cap_temp_c = ((judge_rece_mesg.game_robot_state.current_HP) * 1000.0f);
+   _7.interaction_figure[0].details_c = cap_temp_c;
+   _7.interaction_figure[0].details_d = cap_temp_c >> 10;
+   _7.interaction_figure[0].details_e = cap_temp_c >> 21;
+    /*第2个图形*/
+   uint32_t allow_bullet_val = (judge_rece_mesg.Projectile_Allowance.projectile_allowance_17mm * 1000.0f);
+   _7.interaction_figure[1].details_c = allow_bullet_val;
+   _7.interaction_figure[1].details_d = allow_bullet_val >> 10;
+   _7.interaction_figure[1].details_e = allow_bullet_val >> 21;
     /*第3个图形*/
     float yaw__180_180;
-    float yaw_0_360	= Chassis.USART_Chassis_Data.Yaw_Encoder_Angle;
+    float yaw_0_360	=Chassis.USART_Chassis_Data.Yaw_Encoder_Angle*180.0f/PI;//Chassis.yaw_Encoder_ecd_angle*RAD_TO_ANGLE;
     if(yaw_0_360<0) {
         yaw_0_360+=360;
     }
@@ -431,7 +429,7 @@ void MODIFY_7_Graph_DIY0(interaction_figure_4_t _7,interaction_figure_t _0,inter
         yaw_0_360=yaw_0_360-360;
     _7.interaction_figure[2].details_b=yaw_0_360+345;//gimbal_gyro.yaw_Angle+345;
 
-//    if(b_chassis.ctrl_mode==CHASSIS_REVERSE)
+//    if(Ch.ctrl_mode==CHASSIS_REVERSE)
 //    {
 //        _7.interaction_figure[2].color = UI_PINK;
 //    } else
@@ -439,19 +437,13 @@ void MODIFY_7_Graph_DIY0(interaction_figure_4_t _7,interaction_figure_t _0,inter
 //        _7.interaction_figure[2].color = UI_CYAN;
 //    }
     /*第4个图形*/
-    uint32_t  cap_temp3=(Chassis.balance_loop.L0*1000.0f);
+    uint32_t  cap_temp3=(Chassis.Chassis_Ref.V_y*1000.0f);
     _7.interaction_figure[3].details_c=cap_temp3;
     _7.interaction_figure[3].details_d=cap_temp3>>10;
     _7.interaction_figure[3].details_e=cap_temp3>>21;
-    if(UI.id < 50)
-    {
-        _7.interaction_figure[3].start_x = 230;
-    } else
-    {
-        _7.interaction_figure[3].start_x = 1800;
-    }
+  
     /*第5个图形 */
-//    uint32_t  cap_temp=((BULLET_SUM - already_shoot)*1000.0f);
+//    uint32_t  cap_temp=((BULLET_SUM-already_shoot)*1000.0f);
 //    _7.interaction_figure[4].details_c=cap_temp;
 //    _7.interaction_figure[4].details_d=cap_temp>>10;
 //    _7.interaction_figure[4].details_e=cap_temp>>21;
@@ -462,7 +454,6 @@ void MODIFY_7_Graph_DIY0(interaction_figure_4_t _7,interaction_figure_t _0,inter
 //    {
 //        _7.interaction_figure[4].start_x = 1800;
 //    }
-    
     /*第6个图形*/
     uint32_t  cap_temp1=(judge_rece_mesg.game_robot_state.robot_level*1000.0f);
     _7.interaction_figure[5].details_c=cap_temp1;
@@ -475,7 +466,6 @@ void MODIFY_7_Graph_DIY0(interaction_figure_4_t _7,interaction_figure_t _0,inter
     {
         _7.interaction_figure[5].start_x = 1800;
     }
-    
     /*第7个图形*/
     uint32_t  cap_temp2=(can_capacitance_message.cap_voltage_filte*1000.0f);
     _7.interaction_figure[6].details_c=cap_temp2;
@@ -512,80 +502,50 @@ void MODIFY_7_Graph_DIY1(interaction_figure_4_t _7,interaction_figure_t _0,inter
     _7.interaction_figure[6].operate_tpye=MODIFY;
 
 
-//  if(usart_chassis_data.fric_wheel_run==1)
-//    {
-//		if(usart_chassis_data.lock_shoot_check==1)
-//		{
-//		  _7.interaction_figure[0].color=UI_BLACK;
-
-//		}
-//		else
-//		{
-//		 _7.interaction_figure[0].color=UI_YELLOW;
-
-//		}
-//        _7.interaction_figure[0].start_x = SIGHT1_X;
-//        _7.interaction_figure[0].start_y = SIGHT1_Y;
-//    } else
-//    {
-//        _7.interaction_figure[4].start_x = 0;
-//        _7.interaction_figure[4].start_y = 0;
-//    }
-//
-///////////////////////////////////////////////////////////////////////////////////////
-
-//自瞄状态
-    if(Chassis.USART_Chassis_Data.UI_auto_aim_state !=3 && Chassis.USART_Chassis_Data.UI_auto_aim_state !=0)
+  if(Chassis.USART_Chassis_Data.fric_wheel_run==1)
     {
-        if(Chassis.USART_Chassis_Data.UI_auto_aim_state == 1)
+		if(/*usart_chassis_data.lock_shoot_check==1*/1)
+		{
+		  _7.interaction_figure[0].color=UI_BLACK;
+
+		}
+		else
+		{
+		 _7.interaction_figure[0].color=UI_YELLOW;
+
+		}
+        _7.interaction_figure[0].start_x = SIGHT1_X;
+        _7.interaction_figure[0].start_y = SIGHT1_Y;
+    } else
+    {
+        _7.interaction_figure[4].start_x = 0;
+        _7.interaction_figure[4].start_y = 0;
+    }
+    ///////////////////////////////////////////////////////////////////////////////////////
+    if(Chassis.USART_Chassis_Data.UI_auto_aim_state!=3&&Chassis.USART_Chassis_Data.UI_auto_aim_state!=0)
+    {
+        if(Chassis.USART_Chassis_Data.UI_auto_aim_state==1)
         {
             _7.interaction_figure[1].color=UI_WHITE;
-        } 
-        else if(Chassis.USART_Chassis_Data.UI_auto_aim_state == 2)
+        } else if(Chassis.USART_Chassis_Data.UI_auto_aim_state==2)
         {
             _7.interaction_figure[1].color=UI_GREEN;
         }
     }
     //////////////////////////////////////////////////////////////////////////////////////////
 
-//    uint32_t  cap_temp1=(mea_distance*1000.0f);
-//    _7.interaction_figure[2].details_c=cap_temp1;
-//    _7.interaction_figure[2].details_d=cap_temp1>>10;
-//    _7.interaction_figure[2].details_e=cap_temp1>>21;
+    uint32_t  cap_temp1=(Chassis.USART_Chassis_Data.Jump_Height*1000.0f);
+    _7.interaction_figure[2].details_c=cap_temp1;
+    _7.interaction_figure[2].details_d=cap_temp1>>10;
+    _7.interaction_figure[2].details_e=cap_temp1>>21;
 
-//    if(init_abnormal_state==1)
-//    {
-//        _7.interaction_figure[2].color=UI_CYAN;
-//    }
-//    else
-//    {
-//        if(mea_distance<=1.0||mea_distance>1.9)
-//        {
-//            _7.interaction_figure[2].color=UI_BLACK;
-//        }
-//        else
-//        {
-//            _7.interaction_figure[2].color=UI_GREEN;
-//        }
-//    }
+//   uint32_t  cap_temp3=(Chassis.vl53l4cx_Right.Distance_mm*1000.0f);
+//    _7.interaction_figure[3].details_c=cap_temp3;
+//    _7.interaction_figure[3].details_d=cap_temp3>>10;
+//    _7.interaction_figure[3].details_e=cap_temp3>>21;
 
 
-    if(UI.id < 50)
-    {
-        _7.interaction_figure[3].start_x = 440;
-        _7.interaction_figure[3].start_y = 850;
-        _7.interaction_figure[3].details_d = 520;//x
-        _7.interaction_figure[3].details_e = 650;
-        _7.interaction_figure[3].color=UI_RB;
 
-    } else
-    {
-        _7.interaction_figure[3].start_x = 1400;
-        _7.interaction_figure[3].start_y = 650;
-        _7.interaction_figure[3].details_d = 1480;
-        _7.interaction_figure[3].details_e = 850;
-        _7.interaction_figure[3].color=UI_CYAN;
-    }
 
     if(UI.id < 50)
     {
@@ -637,61 +597,61 @@ void MODIFY_7_Graph_DIY1(interaction_figure_4_t _7,interaction_figure_t _0,inter
     }
 
 
-//	if(gimbal_control_state==1)
-//{
-//	if(balance_chassis.Driving_Encoder[0].if_online&&balance_chassis.Driving_Encoder[1].if_online)
-//  {
-//	  if(usart_chassis_data.fn_2_trigger_flag==1)
-//	  {
-//		_7.interaction_figure[6].color=UI_PURPLE;
+	if(Chassis.USART_Chassis_Data.Gimbal_Init_Finish_Flag ==1)
+{
+	if(Chassis.Driving_Motor[0].online_flag == 1&&Chassis.Driving_Motor[1].online_flag == 1)
+  {
+	  if(Chassis.USART_Chassis_Data.fn_2_trigger_flag==1)
+	  {
+		_7.interaction_figure[6].color=UI_PURPLE;
 
-//	  }
-//	  else
-//	  {
-//	   _7.interaction_figure[6].color=UI_GREEN;
-//	  }
-//  }
-//  else
-//  {
-//	   _7.interaction_figure[6].color=UI_BLACK;
-//  }
-//	  
-////	if(UI.id < 50)//红方
-////	{
-////		_7.interaction_figure[6].start_x = 1630;
-////	}
-////	else 
-////	{
-////		_7.interaction_figure[6].start_x = 190;
-////	}
-////		if(b_chassis.jump_flag==1)//跳跃
-////    {
-////        _7.interaction_figure[6].start_y = 682;       
-////    } 
-////	 else if(usart_chassis_data.overstep_cmd==1)//飞坡
-////	 {
-////		 _7.interaction_figure[6].start_y = 622;      
-////	 }
-////	 else if(usart_chassis_data.ctrl_mode==1)//倒地
-////	 {
-////		 _7.interaction_figure[6].start_y = 592;      
-////	 }
-////	 else if(b_chassis.ctrl_mode == CHASSIS_INIT)
-////	 {
-////		 _7.interaction_figure[6].start_y = 560; 
-////	 }
-////	else//正常
-////    {
-////        _7.interaction_figure[6].start_y = 652;	
-////			
-////    }
-////  
-////}
-//else
-//{
-//	_7.interaction_figure[6].start_x = 0;
-//	_7.interaction_figure[6].start_y = 0;
-//}
+	  }
+	  else
+	  {
+	   _7.interaction_figure[6].color=UI_GREEN;
+	  }
+  }
+  else
+  {
+	   _7.interaction_figure[6].color=UI_BLACK;
+  }
+	  
+	if(UI.id < 50)//红方
+	{
+		_7.interaction_figure[6].start_x = 1630;
+	}
+	else 
+	{
+		_7.interaction_figure[6].start_x = 190;
+	}
+		if(Chassis.Control_Mode == CHASSIS_JUMP_UP)//跳跃
+    {
+        _7.interaction_figure[6].start_y = 682;       
+    } 
+	 else if(Chassis.Control_Mode == CHASSIS_ANTI_FLY_SLOPE)//飞坡
+	 {
+		 _7.interaction_figure[6].start_y = 622;      
+	 }
+//	 else if(usart_chassis_data.ctrl_mode==1)//倒地
+//	 {
+//		 _7.interaction_figure[6].start_y = 592;      
+//	 }
+	 else if(Chassis.Control_Mode == CHASSIS_INIT)
+	 {
+		 _7.interaction_figure[6].start_y = 560; 
+	 }
+	else//正常
+    {
+        _7.interaction_figure[6].start_y = 652;	
+			
+    }
+  
+}
+else
+{
+	_7.interaction_figure[6].start_x = 0;
+	_7.interaction_figure[6].start_y = 0;
+}
 
 
     memcpy((uint8_t *)dddata,(uint8_t *)&UI_data.id_data,sizeof(UI_data.id_data));
@@ -732,24 +692,24 @@ void MODIFY_7_Graph_DIY2(interaction_figure_4_t _7,interaction_figure_t _0,inter
 
 
 
-//	if(b_chassis.jump_flag==1)
-//    {
-//        _7.interaction_figure[0].start_x = 960;
-//        _7.interaction_figure[0].start_y = 820;
-//        _7.interaction_figure[0].details_d = 1100;//x
-//        _7.interaction_figure[0].details_e = 760;
-//		
-//	    _7.interaction_figure[1].start_x = 960;
-//        _7.interaction_figure[1].start_y = 820;
-//        _7.interaction_figure[1].details_d = 820;//x
-//        _7.interaction_figure[1].details_e = 760;
-//    } else
-//    {
-//        _7.interaction_figure[0].start_x = 0;
-//        _7.interaction_figure[0].start_y = 0;	
-//	    _7.interaction_figure[1].start_x = 0;
-//        _7.interaction_figure[1].start_y = 0;
-//    }
+	if(Chassis.Jump_Process == JUMP_EXTEND)
+    {
+        _7.interaction_figure[0].start_x = 960;
+        _7.interaction_figure[0].start_y = 820;
+        _7.interaction_figure[0].details_d = 1100;//x
+        _7.interaction_figure[0].details_e = 760;
+		
+	    _7.interaction_figure[1].start_x = 960;
+        _7.interaction_figure[1].start_y = 820;
+        _7.interaction_figure[1].details_d = 820;//x
+        _7.interaction_figure[1].details_e = 760;
+    } else
+    {
+        _7.interaction_figure[0].start_x = 0;
+        _7.interaction_figure[0].start_y = 0;	
+	    _7.interaction_figure[1].start_x = 0;
+        _7.interaction_figure[1].start_y = 0;
+    }
 //////////////////////////////////////////////////////////////
 	    if(UI.id < 50)
     {

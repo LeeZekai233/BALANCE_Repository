@@ -158,7 +158,7 @@
         <Ww>
           <count>0</count>
           <WinNumber>1</WinNumber>
-          <ItemText>Shooter</ItemText>
+          <ItemText>Shooter,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>1</count>
@@ -233,12 +233,12 @@
         <Ww>
           <count>15</count>
           <WinNumber>1</WinNumber>
-          <ItemText>USART_Chassis_Data</ItemText>
+          <ItemText>USART_Chassis_Data,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>16</count>
           <WinNumber>1</WinNumber>
-          <ItemText>My_Auto_Shoot</ItemText>
+          <ItemText>My_Auto_Shoot,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>17</count>
@@ -279,6 +279,36 @@
           <count>24</count>
           <WinNumber>1</WinNumber>
           <ItemText>New_Auto_Aim_Medium</ItemText>
+        </Ww>
+        <Ww>
+          <count>25</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>flag</ItemText>
+        </Ww>
+        <Ww>
+          <count>26</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>My_Auto_Shoot</ItemText>
+        </Ww>
+        <Ww>
+          <count>27</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>_USART2_DMA_RX_BUF</ItemText>
+        </Ww>
+        <Ww>
+          <count>28</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>New_Auto_Aim</ItemText>
+        </Ww>
+        <Ww>
+          <count>29</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>New_Auto_Aim_Medium</ItemText>
+        </Ww>
+        <Ww>
+          <count>30</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>\\Project\../TASK/Shooter_Task/Shooter_Task.c\Shooter.Poke_Speed_Ref</ItemText>
         </Ww>
       </WatchWindow1>
       <Tracepoint>

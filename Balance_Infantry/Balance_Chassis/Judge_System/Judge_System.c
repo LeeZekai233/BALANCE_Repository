@@ -496,34 +496,34 @@ void data_upload_handle(uint16_t cmd_id, uint8_t *p_data, uint16_t len, uint8_t 
 }
 
 id_data_t send_to_aerial;
-void Send_bullet_remaining_num(void)
-{
-    switch(judge_rece_mesg.game_robot_state.robot_id)
-	{
-		case 3:
-			send_to_aerial.data_cmd_id=0x0203;//?????????? 0x0202 0x0203 0x0204----0x02FF
-			send_to_aerial.receiver_id = 6;
-		break;
-		case 4:
-			send_to_aerial.data_cmd_id=0x0204;
-			send_to_aerial.receiver_id = 6;
-		break;
+//void Send_bullet_remaining_num(void)
+//{
+//    switch(judge_rece_mesg.game_robot_state.robot_id)
+//	{
+//		case 3:
+//			send_to_aerial.data_cmd_id=0x0203;//?????????? 0x0202 0x0203 0x0204----0x02FF
+//			send_to_aerial.receiver_id = 6;
+//		break;
+//		case 4:
+//			send_to_aerial.data_cmd_id=0x0204;
+//			send_to_aerial.receiver_id = 6;
+//		break;
 
-		case 103://??
-			send_to_aerial.data_cmd_id=0x0203;
-			send_to_aerial.receiver_id = 106;
-		break;
-		case 104:
-			send_to_aerial.data_cmd_id=0x204;
-			send_to_aerial.receiver_id = 106;
-		break;
-	}
-    send_to_aerial.sender_id = judge_rece_mesg.game_robot_state.robot_id;
-    
-    memcpy((uint8_t *)dddata,(uint8_t *)&send_to_aerial,sizeof(send_to_aerial));
-    dddata[6] = (uint8_t)judge_rece_mesg.Projectile_Allowance.projectile_allowance_17mm;
-    dddata[7] = (uint8_t)(judge_rece_mesg.Projectile_Allowance.projectile_allowance_17mm >> 8);
-    data_upload_handle(ROBOT_INTERACTIVE_DATA_ID,dddata,sizeof(send_to_aerial)+sizeof(judge_rece_mesg.Projectile_Allowance.projectile_allowance_17mm),DN_REG_ID,USART5_Tx_Buf);
-}
+//		case 103://??
+//			send_to_aerial.data_cmd_id=0x0203;
+//			send_to_aerial.receiver_id = 106;
+//		break;
+//		case 104:
+//			send_to_aerial.data_cmd_id=0x204;
+//			send_to_aerial.receiver_id = 106;
+//		break;
+//	}
+//    send_to_aerial.sender_id = judge_rece_mesg.game_robot_state.robot_id;
+//    
+//    memcpy((uint8_t *)dddata,(uint8_t *)&send_to_aerial,sizeof(send_to_aerial));
+//    dddata[6] = (uint8_t)judge_rece_mesg.Projectile_Allowance.projectile_allowance_17mm;
+//    dddata[7] = (uint8_t)(judge_rece_mesg.Projectile_Allowance.projectile_allowance_17mm >> 8);
+//    data_upload_handle(ROBOT_INTERACTIVE_DATA_ID,dddata,sizeof(send_to_aerial)+sizeof(judge_rece_mesg.Projectile_Allowance.projectile_allowance_17mm),DN_REG_ID,USART5_Tx_Buf);
+//}
 
 

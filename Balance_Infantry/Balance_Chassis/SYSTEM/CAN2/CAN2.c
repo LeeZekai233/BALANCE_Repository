@@ -109,7 +109,7 @@ void CAN2_RX0_IRQHandler(void)
     {
         CAN_Receive(CAN2, CAN_FIFO0, &rx_message);
         CAN2_Receive_Task(&rx_message,&Chassis);
-//        Can_SuperCap_message_Process(&can_capacitance_message,&rx_message);
+       
         
         CAN_ClearITPendingBit(CAN2, CAN_IT_FMP0);
         CAN_ClearFlag(CAN2, CAN_FLAG_FF0);

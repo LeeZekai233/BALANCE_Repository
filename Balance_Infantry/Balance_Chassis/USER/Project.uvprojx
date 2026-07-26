@@ -605,14 +605,14 @@
               <FilePath>..\SYSTEM\USART2\USART2.c</FilePath>
             </File>
             <File>
-              <FileName>USART3.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\SYSTEM\USART3\USART3.c</FilePath>
-            </File>
-            <File>
               <FileName>USART6.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\SYSTEM\USART6\USART6.c</FilePath>
+            </File>
+            <File>
+              <FileName>USART3.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\SYSTEM\USART3\USART3.c</FilePath>
             </File>
             <File>
               <FileName>USART4.c</FileName>

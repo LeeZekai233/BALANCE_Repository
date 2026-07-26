@@ -2,7 +2,7 @@
 
 int main( )
 {
-      Infantry_Init( );
+    Infantry_Init( );
    
 	while (1)
 	{

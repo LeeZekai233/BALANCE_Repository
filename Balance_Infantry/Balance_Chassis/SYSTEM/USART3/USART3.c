@@ -104,8 +104,8 @@ void CH040_Data_Get(imu_data_t* imu_data , CH040DATA_t* CH040DATA)
         {
             return;
         }
-        CH040DATA->Pitch_Angle = imu_data->eul[1] - 0.363385022f;
-        CH040DATA->Roll_Angle = imu_data->eul[0];
+        CH040DATA->Pitch_Angle = imu_data->eul[1] - 0.363385022f - 0.306072295;
+        CH040DATA->Roll_Angle = imu_data->eul[0] - 0.0510219857;
         CH040DATA->Yaw_Angle = imu_data->eul[2];
         
         

@@ -52,6 +52,14 @@ float Transform_Angle_0_2PI(float angle)
 }
 
 
+
+float Gimbal_Gravity_Compensation_Get(float Pitch_Angle)
+{
+    float Force;
+    Force = 0.0498*Pitch_Angle*Pitch_Angle*Pitch_Angle - 0.4705*Pitch_Angle*Pitch_Angle -107.9193*Pitch_Angle -102.8611 - 1000;
+    return Force;
+}
+
 /**
 ************************************************************************************************************************
 * @Name     : Gimbal_Mode_Select
@@ -102,15 +110,26 @@ void Gimbal_Mode_Select(void)
                 auto_aim_mode_flag = 0;
             }
             
-            if(Remote_VTM.key.Key_X_Action.Short_Press_Flag == 1)//按X进小符模式
+            if(Remote_VTM.key.Key_X_Action.Long_Press_Flag == 1)//按X进小符模式
             {
                 small_buff_mode_flag = 1;
             }
+//            
+//            if(Remote_VTM.key.Key_X_Action.Long_Press_Flag == 1)//长按X退小符模式
+//            {
+//                small_buff_mode_flag = 0;
+//            }
             
-            if(Remote_VTM.key.Key_V_Action.Short_Press_Flag == 1)//按V进大符模式
+            
+            if(Remote_VTM.key.Key_V_Action.Long_Press_Flag == 1)//按V进大符模式
             {
                 big_buff_mode_flag = 1;
             }
+            
+//            if(Remote_VTM.key.Key_V_Action.Long_Press_Flag == 1)//长按V退大符模式
+//            {
+//                big_buff_mode_flag = 0;
+//            }
             
             if(fabs(Remote_VTM.Remote_mouse.z) > 0)//滚轮取消打符
             {
@@ -161,7 +180,7 @@ void Gimbal_Mode_Select(void)
             
         }
         
-        if(USART_Gimbal_Data.current_HP == 0)//死了失能
+        if(USART_Gimbal_Data.current_HP == 0 && USART_Gimbal_Data.power_management_chassis_output == 0)//死了失能
         {
             Gimbal.Remote_Gimbal_Mode = GIMBAL_RELAX ;
             auto_aim_mode_flag = 0 ;
@@ -174,7 +193,7 @@ void Gimbal_Mode_Select(void)
         Gimbal.Remote_Gimbal_Mode = GIMBAL_RELAX ;
     }
     
-    
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        
     
     if(USART_Gimbal_Data.Gimbal_Init_Cmd != 1 || Gimbal.Remote_Gimbal_Mode == GIMBAL_RELAX)
     {
@@ -224,11 +243,11 @@ void Gimbal_Feedback_Update(void)
     
     if(Remote_VTM.key.Key_D_Action.Original_Press_Flag == 1 && Remote_VTM.key.Key_A_Action.Original_Press_Flag == 0)//侧向对敌
     {
-        USART_Chassis_Data.Yaw_Encoder_Angle = Transform_Angle_0_2PI(Gimbal.Yaw_Motor_Encoder.Angle_Rad_fdb - 45.0f*DEG_TO_RAD);
+        USART_Chassis_Data.Yaw_Encoder_Angle = Transform_Angle_0_2PI(Gimbal.Yaw_Motor_Encoder.Angle_Rad_fdb - 43.0f*PI/180.0f);
     }
     else if(Remote_VTM.key.Key_D_Action.Original_Press_Flag == 0 && Remote_VTM.key.Key_A_Action.Original_Press_Flag == 1)
     {
-        USART_Chassis_Data.Yaw_Encoder_Angle = Transform_Angle_0_2PI(Gimbal.Yaw_Motor_Encoder.Angle_Rad_fdb + 45.0f*DEG_TO_RAD);
+        USART_Chassis_Data.Yaw_Encoder_Angle = Transform_Angle_0_2PI(Gimbal.Yaw_Motor_Encoder.Angle_Rad_fdb + 43.0f*PI/180.0f);
     }
     else
     {
@@ -309,7 +328,7 @@ void Gimbal_Reference_Update(void)
             case GIMBAL_BIG_BUFF :
             case GIMBAL_AUTO_BIG_BUFF :
             {
-                if(My_Auto_Shoot.Buff.Flag_Get_Target == 1 && Remote_VTM.Remote_mouse.Press_R_Action.Original_Press_Flag == 1)
+                if(My_Auto_Shoot.Buff.Flag_Get_Target == 1 /*&& Remote_VTM.Remote_mouse.Press_R_Action.Original_Press_Flag == 1*/)
                 {
                     Gimbal.Yaw_Angle_Ref = My_Auto_Shoot.Buff.Yaw_Angle ;
                     Gimbal.Pitch_Angle_Ref = My_Auto_Shoot.Buff.Pitch_Angle ;
@@ -337,6 +356,8 @@ void Gimbal_Reference_Update(void)
 }
 
 
+
+
 /**
 ************************************************************************************************************************
 * @Name     : Gimbal_Relax_Handle
@@ -355,6 +376,11 @@ void Gimbal_Relax_Handle(void)
     Gimbal.Yaw_Speed_Ref = 0;
     Gimbal.Yaw_Motor_Set_T = 0;
 }
+
+
+
+
+
 
 /**
 ************************************************************************************************************************
@@ -431,32 +457,51 @@ void Gimbal_Remote_Handle(void)
 void Gimbal_Auto_Aim_Handle(void)
 {
     Gimbal.Pitch_Speed_Ref = PID_Calc(&Gimbal.Auto_Aim_Pitch_Angle_PID ,Gimbal.Pitch_Angle_Fdb ,Gimbal.Pitch_Angle_Ref );
-    Gimbal.Pitch_Motor_Set_Current = PID_Calc(&Gimbal.Auto_Aim_Pitch_Speed_PID, Gimbal.Pitch_Speed_Fdb, Gimbal.Pitch_Speed_Ref);
+    Gimbal.Pitch_Motor_Set_Current =/* Gimbal_Gravity_Compensation_Get(Gimbal.CH040_Data.Pitch_Angle) + */PID_Calc(&Gimbal.Auto_Aim_Pitch_Speed_PID, Gimbal.Pitch_Speed_Fdb, Gimbal.Pitch_Speed_Ref);
     
-    Gimbal.Yaw_Speed_Ref = PID_Calc(&Gimbal.Auto_Aim_Pitch_Angle_PID, Gimbal.Yaw_Angle_Fdb , Gimbal.Yaw_Angle_Ref );
+    Gimbal.Yaw_Speed_Ref = PID_Calc(&Gimbal.Auto_Aim_Yaw_Angle_PID, Gimbal.Yaw_Angle_Fdb , Gimbal.Yaw_Angle_Ref );
     Gimbal.Yaw_Motor_Set_T = PID_Calc(&Gimbal.Auto_Aim_Yaw_Speed_PID, Gimbal.Yaw_Speed_Fdb , Gimbal.Yaw_Speed_Ref);
 }
 
 
 /**
 ************************************************************************************************************************
-* @Name     : Gimbal_Auto_Buff_Handle
-* @brief    : 云台打符处理
+* @Name     : Gimbal_Auto_Small_Buff_Handle
+* @brief    : 云台打小符处理
 * @param	: void
 * @retval   : void
 * @Note     : 
 ************************************************************************************************************************
 **/
-void Gimbal_Auto_Buff_Handle(void)
+void Gimbal_Auto_Small_Buff_Handle(void)
 {
-    Gimbal.Pitch_Speed_Ref = PID_Calc(&Gimbal.Auto_Buff_Pitch_Angle_PID ,Gimbal.Pitch_Angle_Fdb ,Gimbal.Pitch_Angle_Ref );
-    Gimbal.Pitch_Motor_Set_Current = PID_Calc(&Gimbal.Auto_Buff_Pitch_Speed_PID, Gimbal.Pitch_Speed_Fdb, Gimbal.Pitch_Speed_Ref);
+    Gimbal.Pitch_Speed_Ref = PID_Calc(&Gimbal.Auto_Small_Buff_Pitch_Angle_PID ,Gimbal.Pitch_Angle_Fdb ,Gimbal.Pitch_Angle_Ref );
+    Gimbal.Pitch_Motor_Set_Current = PID_Calc(&Gimbal.Auto_Small_Buff_Pitch_Speed_PID, Gimbal.Pitch_Speed_Fdb, Gimbal.Pitch_Speed_Ref);
     
-    Gimbal.Yaw_Speed_Ref = PID_Calc(&Gimbal.Auto_Buff_Pitch_Angle_PID, Gimbal.Yaw_Angle_Fdb , Gimbal.Yaw_Angle_Ref );
-    Gimbal.Yaw_Motor_Set_T = PID_Calc(&Gimbal.Auto_Buff_Yaw_Speed_PID, Gimbal.Yaw_Speed_Fdb , Gimbal.Yaw_Speed_Ref);
+    Gimbal.Yaw_Speed_Ref = PID_Calc(&Gimbal.Auto_Small_Buff_Yaw_Angle_PID, Gimbal.Yaw_Angle_Fdb , Gimbal.Yaw_Angle_Ref );
+    Gimbal.Yaw_Motor_Set_T = PID_Calc(&Gimbal.Auto_Small_Buff_Yaw_Speed_PID, Gimbal.Yaw_Speed_Fdb , Gimbal.Yaw_Speed_Ref);
 }
 
 
+
+
+/**
+************************************************************************************************************************
+* @Name     : Gimbal_Auto_Big_Buff_Handle
+* @brief    : 云台打大符处理
+* @param	: void
+* @retval   : void
+* @Note     : 
+************************************************************************************************************************
+**/
+void Gimbal_Auto_Big_Buff_Handle(void)
+{
+    Gimbal.Pitch_Speed_Ref = PID_Calc(&Gimbal.Auto_Big_Buff_Pitch_Angle_PID ,Gimbal.Pitch_Angle_Fdb ,Gimbal.Pitch_Angle_Ref );
+    Gimbal.Pitch_Motor_Set_Current = PID_Calc(&Gimbal.Auto_Big_Buff_Pitch_Speed_PID, Gimbal.Pitch_Speed_Fdb, Gimbal.Pitch_Speed_Ref);
+    
+    Gimbal.Yaw_Speed_Ref = PID_Calc(&Gimbal.Auto_Big_Buff_Yaw_Angle_PID, Gimbal.Yaw_Angle_Fdb , Gimbal.Yaw_Angle_Ref );
+    Gimbal.Yaw_Motor_Set_T = PID_Calc(&Gimbal.Auto_Big_Buff_Yaw_Speed_PID, Gimbal.Yaw_Speed_Fdb , Gimbal.Yaw_Speed_Ref);
+}
 
 /**
 ************************************************************************************************************************
@@ -485,6 +530,14 @@ void Gimbal_Control_Loop(void)
         break;
         case GIMBAL_AUTO_AIM:
             Gimbal_Auto_Aim_Handle( );
+            break;
+        case GIMBAL_AUTO_BIG_BUFF :
+        case GIMBAL_BIG_BUFF :
+            Gimbal_Auto_Big_Buff_Handle();
+            break;
+        case GIMBAL_AUTO_SMALL_BUFF :
+        case GIMBAL_SMALL_BUFF :
+            Gimbal_Auto_Small_Buff_Handle();
             break;
         default :
             break;

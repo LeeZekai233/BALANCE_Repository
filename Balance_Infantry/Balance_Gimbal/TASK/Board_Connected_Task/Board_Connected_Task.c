@@ -16,7 +16,7 @@ void USART_Chassis_Send(USART_Chassis_Data_t *data)
 {
     data->UI_auto_aim_state = My_Auto_Shoot.Auto_Aim.Link_State;//有些零散的上下板通信
     data->fric_wheel_run = (uint8_t)Shooter.Fric_State;
-    
+    data->Gimbal_Mode = Gimbal.Gimbal_Mode ;    
     memcpy(UART4_DMA_TX_BUF, data, 32);
     DMA_Cmd(DMA1_Stream4, DISABLE);
     while (DMA_GetCmdStatus(DMA1_Stream4) != DISABLE) {}
@@ -31,3 +31,5 @@ void USART_Chassis_Send(USART_Chassis_Data_t *data)
     DMA_SetCurrDataCounter(DMA1_Stream4, 32);
     DMA_Cmd(DMA1_Stream4, ENABLE);
 }
+
+
